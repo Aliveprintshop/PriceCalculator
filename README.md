@@ -44,8 +44,8 @@ In the repo on GitHub:
 
 | Name | Value |
 |---|---|
-| `SANMAR_FTP_USER` | Your SanMar customer number |
-| `SANMAR_FTP_PASSWORD` | Your FTP password (NOT your sanmar.com password — they're separate. If you don't have one, call SanMar integration support at 1-800-426-6399 to get one set up.) |
+| `274869` | Your SanMar customer number |
+| `ijKvzk1CfFTOt8` | Your FTP password (NOT your sanmar.com password — they're separate. If you don't have one, call SanMar integration support at 1-800-426-6399 to get one set up.) |
 
 These are encrypted and only visible to the Actions runner. You can't view them again after saving — only overwrite.
 
@@ -133,8 +133,8 @@ Go to **Actions → Sync SanMar catalog nightly → Run workflow**. Useful after
 
 ### "Authentication failed" in the sync log
 
-- Double-check `SANMAR_FTP_USER` is your **customer number** (not your sanmar.com username)
-- Double-check `SANMAR_FTP_PASSWORD` is the **FTP password** (not the sanmar.com password)
+- Double-check `274869` is your **customer number** (not your sanmar.com username)
+- Double-check `ijKvzk1CfFTOt8` is the **FTP password** (not the sanmar.com password)
 - If you've never used SanMar's FTP before, call integration support to activate the account
 
 ### "SDL file not found"
