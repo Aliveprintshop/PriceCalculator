@@ -1,0 +1,40 @@
+{
+  "_comment": "SanMar catalog filter rules. Edit this file anytime and the next nightly sync will apply your changes.",
+
+  "markup_percent": 50,
+  "_markup_comment": "Applied to SanMar case_price (and case_sale_price when active). 50 = × 1.5 multiplier. Markup applies to blanks only, NOT to decoration.",
+
+  "include_discontinued": false,
+  "_discontinued_comment": "If false, items with product_status = 'Discontinued' are dropped.",
+
+  "include_coming_soon": false,
+  "_coming_soon_comment": "If false, items with product_status = 'Coming Soon' are dropped. SanMar warns these items may have incomplete data.",
+
+  "category_whitelist": [],
+  "_category_whitelist_comment": "If non-empty, ONLY items whose CATEGORY_NAME matches one of these are kept. Case-insensitive. Examples: ['T-Shirts', 'Polos/Knits', 'Sweatshirts/Fleece', 'Caps', 'Bags']. Leave empty to allow all categories.",
+
+  "category_blacklist": [],
+  "_category_blacklist_comment": "Items whose CATEGORY_NAME matches any of these are dropped. Applied after whitelist. Examples: ['Workwear', 'Infant & Toddler'].",
+
+  "style_whitelist": [],
+  "_style_whitelist_comment": "If non-empty, ONLY these style numbers are kept. Case-insensitive. Example: ['PC54', 'G500', 'DT6000'].",
+
+  "style_blacklist": [],
+  "_style_blacklist_comment": "These style numbers are dropped. Applied after whitelist. Example: ['BADSTYLE1', 'BADSTYLE2'].",
+
+  "brand_whitelist": [],
+  "_brand_whitelist_comment": "If non-empty, ONLY these brands (MILL field) are kept. Case-insensitive. Example: ['PORT & COMPANY', 'GILDAN', 'BELLA+CANVAS'].",
+
+  "brand_blacklist": [],
+  "_brand_blacklist_comment": "These brands are dropped. Applied after whitelist.",
+
+  "min_case_price": null,
+  "max_case_price": null,
+  "_price_filter_comment": "Optional price range filter (applied to case_price before markup). null = no limit.",
+
+  "require_image": true,
+  "_image_comment": "If true, drops any product where no color has at least one image URL. Products without images can't be rendered in the calculator.",
+
+  "merge_custom_products": true,
+  "_custom_comment": "If true, reads custom-products.xlsx and merges those rows into products.json. See custom-products.xlsx template for the schema."
+}

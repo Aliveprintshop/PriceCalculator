@@ -1,0 +1,116 @@
+name: Sync SanMar catalog nightly
+
+on:
+  # Run every day at 08:00 UTC (≈ 1am PST / 4am EST — after SanMar's 6am PST file update).
+  # Adjust as needed. cron is UTC.
+  schedule:
+    - cron: '0 14 * * *'   # 14:00 UTC = 6am PST, giving SanMar's 6am PST feed time to complete
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Limit to first N styles (blank = all)'
+        required: false
+        default: ''
+
+# This workflow writes to the repo and publishes to Pages.
+permissions:
+  contents: write   # needed to commit products.json
+  pages: write      # needed to deploy to GitHub Pages
+  id-token: write   # needed for the Pages deploy action
+
+# Only one sync can run at a time
+concurrency:
+  group: sanmar-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run SanMar sync
+        env:
+          SANMAR_FTP_USER: ${{ secrets.SANMAR_FTP_USER }}
+          SANMAR_FTP_PASSWORD: ${{ secrets.SANMAR_FTP_PASSWORD }}
+        run: |
+          LIMIT_ARG=""
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            LIMIT_ARG="--limit ${{ github.event.inputs.limit }}"
+          fi
+          python sync-sanmar.py $LIMIT_ARG
+
+      - name: Show summary
+        run: |
+          echo "products.json size: $(wc -c < products.json) bytes"
+          echo "product count: $(python -c 'import json; print(json.load(open("products.json"))["product_count"])')"
+          echo "generated at:  $(python -c 'import json; print(json.load(open("products.json"))["generated_at"])')"
+
+      - name: Commit products.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add products.json
+          if git diff --staged --quiet; then
+            echo "No changes to products.json — skipping commit"
+          else
+            git commit -m "chore: nightly SanMar sync $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      # Prepare a folder to publish. We publish products.json and an index page
+      # so you can smoke-test the URL in a browser.
+      - name: Stage Pages artifact
+        run: |
+          mkdir -p _site
+          cp products.json _site/products.json
+          cat > _site/index.html <<'EOF'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>SanMar Live Pricing Data</title>
+          <style>
+            body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #222; }
+            code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+            a { color: #1b6cce; }
+          </style>
+          <h1>SanMar Live Pricing Data</h1>
+          <p>This page hosts the generated <code>products.json</code> for the pricing calculator.</p>
+          <p><a href="./products.json">→ products.json</a> (raw feed)</p>
+          <p>Updated nightly by GitHub Actions. Last deploy: <span id="ts"></span></p>
+          <script>
+            fetch('./products.json').then(r => r.json()).then(d => {
+              document.getElementById('ts').textContent =
+                new Date(d.generated_at).toLocaleString() +
+                ' — ' + d.product_count + ' products';
+            });
+          </script>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: sync
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
