@@ -44,8 +44,8 @@ In the repo on GitHub:
 
 | Name | Value |
 |---|---|
-| `274869` | Your SanMar customer number |
-| `ijKvzk1CfFTOt8` | Your FTP password (NOT your sanmar.com password — they're separate. If you don't have one, call SanMar integration support at 1-800-426-6399 to get one set up.) |
+| `SANMAR_FTP_USER` | Your SanMar customer number (the 6-digit FTP username SanMar gave you — *not* your sanmar.com login). |
+| `SANMAR_FTP_PASSWORD` | Your SanMar FTP password (NOT your sanmar.com password — they're separate. If you don't have one, call SanMar integration support at 1-800-426-6399 to get one set up). |
 
 These are encrypted and only visible to the Actions runner. You can't view them again after saving — only overwrite.
 
