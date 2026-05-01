@@ -291,6 +291,13 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
 .prod-card-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
 .prod-card-style{font-size:12px;color:var(--text3);margin-bottom:12px;}
+.swatch-row{margin:8px 0 10px;}
+.swatch-label{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.swatch-label span{color:var(--text);text-transform:none;letter-spacing:normal;font-weight:700;}
+.swatch-grid{display:flex;flex-wrap:wrap;gap:6px;max-width:340px;}
+.swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;outline:none;transition:transform 0.1s, box-shadow 0.1s;flex-shrink:0;}
+.swatch:hover{transform:scale(1.15);box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.swatch.active{border-color:var(--blue)!important;box-shadow:0 0 0 2px var(--surface), 0 0 0 4px var(--blue);}
 .prod-card-change{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all 0.15s;}
 .prod-card-change:hover{border-color:var(--blue);color:var(--blue);}
 /* MOBILE PRODUCT CARD */
@@ -354,6 +361,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-brand" id="prod-card-brand"></div>
           <div class="prod-card-name" id="prod-card-name"></div>
           <div class="prod-card-style" id="prod-card-style"></div>
+          <div class="swatch-row" id="swatch-row"></div>
           <button class="prod-card-change" onclick="changeItem()">&#9998; Change item</button>
         </div>
       </div>
@@ -508,6 +516,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="mob-prod-card-brand" id="mob-prod-card-brand"></div>
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
           <div class="mob-prod-card-style" id="mob-prod-card-style"></div>
+          <div class="swatch-row" id="mob-swatch-row" style="margin-top:10px;"></div>
           <button class="mob-prod-card-change" onclick="changeItem()">&#9998; Change item</button>
         </div>
       </div>
@@ -732,7 +741,23 @@ function setFi(rows,idx){rows.forEach(function(r,i){r.classList.toggle('focused'
 function pickItem(s){
   var item=null;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].s===s){item=ITEMS[i];break;}}
   if(!item)return;sel=item;
-  var src=PROD_IMGS[item.s.toUpperCase()]||PROD_IMGS[item.s];
+  // Pick initial color: White first if available, else first color in the list
+  var live=item._full||null;var initColor=null;
+  if(live&&Array.isArray(live.colors)&&live.colors.length){
+    for(var ci=0;ci<live.colors.length;ci++){
+      if(live.colors[ci].name&&live.colors[ci].name.toLowerCase()==='white'){initColor=live.colors[ci];break;}
+    }
+    if(!initColor)initColor=live.colors[0];
+  }
+  sel._activeColor=initColor;
+  // Image source: live SanMar color image > legacy PROD_IMGS > none
+  var src=null;
+  if(initColor&&initColor.images){
+    src=initColor.images.front_model||initColor.images.front_flat||initColor.images.back_model||null;
+  }
+  if(!src){
+    src=(typeof PROD_IMGS!=='undefined')?(PROD_IMGS[item.s.toUpperCase()]||PROD_IMGS[item.s]):null;
+  }
   var cleanName=item.n.replace(/&amp;/g,'&');
   // Desktop product card
   var sw=document.getElementById('sw');if(sw)sw.style.display='none';
@@ -752,7 +777,66 @@ function pickItem(s){
   var mpcs=document.getElementById('mob-prod-card-style');if(mpcs)mpcs.textContent='Style #'+item.s;
   // Hide mobile item step
   var msn2=document.getElementById('msn2');if(msn2){var ms=msn2.closest('.mob-step');if(ms)ms.style.display='none';}
+  // Render color swatches
+  renderSwatches(live);
   markDone(2);calc();
+}
+
+// Sort colors: White first (if present), then alphabetical by name
+function sortColors(colors){
+  if(!colors||!colors.length)return [];
+  var sorted=colors.slice();
+  sorted.sort(function(a,b){
+    var an=(a.name||'').toLowerCase(),bn=(b.name||'').toLowerCase();
+    if(an==='white'&&bn!=='white')return -1;
+    if(bn==='white'&&an!=='white')return 1;
+    return an.localeCompare(bn);
+  });
+  return sorted;
+}
+
+// Build clickable color swatches (desktop + mobile)
+function renderSwatches(live){
+  var dWrap=document.getElementById('swatch-row'),mWrap=document.getElementById('mob-swatch-row');
+  if(!live||!live.colors||!live.colors.length){
+    if(dWrap)dWrap.innerHTML='';
+    if(mWrap)mWrap.innerHTML='';
+    return;
+  }
+  var sorted=sortColors(live.colors);
+  function build(big){
+    var html='<div class="swatch-label">Color: <span id="'+(big?'':'mob-')+'active-color-name">'+(sel&&sel._activeColor?sel._activeColor.name:'')+'</span></div>';
+    html+='<div class="swatch-grid">';
+    sorted.forEach(function(c){
+      var isActive=sel&&sel._activeColor&&sel._activeColor.name===c.name;
+      var hex=c.hex||'#cccccc';
+      var bord=hex.toLowerCase()==='#ffffff'||hex.toLowerCase()==='#fff'?'#d0d0d0':'transparent';
+      html+='<button type="button" class="swatch'+(isActive?' active':'')+'" '+
+            'style="background:'+hex+';border-color:'+(isActive?'var(--blue)':bord)+';" '+
+            'title="'+c.name.replace(/"/g,'&quot;')+'" '+
+            'onclick="pickColor(\''+c.name.replace(/'/g,"\\'")+'\')"></button>';
+    });
+    html+='</div>';
+    return html;
+  }
+  if(dWrap)dWrap.innerHTML=build(true);
+  if(mWrap)mWrap.innerHTML=build(false);
+}
+
+function pickColor(name){
+  if(!sel||!sel._full||!sel._full.colors)return;
+  var colors=sel._full.colors;
+  var c=null;
+  for(var i=0;i<colors.length;i++){if(colors[i].name===name){c=colors[i];break;}}
+  if(!c)return;
+  sel._activeColor=c;
+  // Swap product image to selected color
+  var src=c.images?(c.images.front_model||c.images.front_flat||c.images.back_model||null):null;
+  if(src){
+    var pci=document.getElementById('prod-card-img');if(pci){pci.src=src;pci.style.display='block';}
+    var mpci=document.getElementById('mob-prod-card-img');if(mpci){mpci.src=src;mpci.style.display='block';}
+  }
+  renderSwatches(sel._full);
 }
 
 function clearItem(){
