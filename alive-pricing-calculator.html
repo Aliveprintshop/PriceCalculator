@@ -1356,13 +1356,6 @@ function clearSizes(){
   ['size-mismatch','mob-size-mismatch'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
 }
 
-// -- PRICE BREAKS TOGGLE --
-function toggleBreaks(){
-  var body=document.getElementById('breaks-body'),lbl=document.getElementById('breaks-lbl');
-  if(!body)return;var open=body.classList.toggle('open');
-  if(lbl)lbl.textContent=open?'\u25bc Hide price breaks':'\u25b6 See all price breaks';
-}
-
 // -- ORDER FORM --
 // GHL configuration (GHL webhook URL is defined above near the other endpoints)
 var FALLBACK_EMAIL='austin@aliveprintshop.com';
