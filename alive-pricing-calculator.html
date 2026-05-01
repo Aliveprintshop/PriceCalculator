@@ -285,9 +285,20 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .mob-size-input:focus{border-color:var(--blue);}
 .mob-size-input.has-qty{border-color:var(--blue-mid);background:var(--blue-light);}
 /* PRODUCT CARD */
-.prod-card{display:none;gap:16px;align-items:flex-start;padding:4px 0 0;}
+.prod-card{display:none;gap:20px;align-items:flex-start;padding:4px 0 0;}
 .prod-card.show{display:flex;}
-.prod-card-img{width:180px;height:216px;object-fit:cover;object-position:top center;border-radius:var(--r-lg);border:1.5px solid var(--border);flex-shrink:0;}
+.prod-card-imgcol{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0;}
+.prod-card-img{width:260px;height:312px;object-fit:cover;object-position:top center;border-radius:var(--r-lg);border:1.5px solid var(--border);flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;}
+.prod-card-img:hover{opacity:0.92;}
+.view-pills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.view-pill{padding:5px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:0.06em;outline:none;transition:all 0.12s;}
+.view-pill:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+.view-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.lightbox-overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;padding:48px 24px;box-sizing:border-box;}
+.lightbox-overlay.show{display:flex;}
+.lightbox-img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.5);}
+.lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,0.15);color:#fff;border:none;font-size:22px;line-height:1;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;}
+.lightbox-close:hover{background:rgba(255,255,255,0.3);}
 .prod-card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
 .prod-card-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
 .prod-card-style{font-size:12px;color:var(--text3);margin-bottom:12px;}
@@ -356,7 +367,10 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="step-head"><div class="step-num" id="sn2">2</div><div><div class="step-title">What are you printing on?</div><div class="step-hint">Search or pick from popular styles</div></div></div>
       <!-- Product Card (shown after item selected) -->
       <div class="prod-card" id="prod-card">
-        <img class="prod-card-img" id="prod-card-img" src="" alt="">
+        <div class="prod-card-imgcol">
+          <img class="prod-card-img" id="prod-card-img" src="" alt="" onclick="openLightbox()">
+          <div class="view-pills" id="view-pills"></div>
+        </div>
         <div>
           <div class="prod-card-brand" id="prod-card-brand"></div>
           <div class="prod-card-name" id="prod-card-name"></div>
@@ -511,7 +525,10 @@ textarea.of-input{resize:vertical;min-height:70px;}
     <!-- Mobile Product Card -->
     <div class="mob-prod-card" id="mob-prod-card">
       <div class="mob-prod-card-inner">
-        <img class="mob-prod-card-img" id="mob-prod-card-img" src="" alt="">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;">
+          <img class="mob-prod-card-img" id="mob-prod-card-img" src="" alt="" onclick="openLightbox()" style="cursor:zoom-in;">
+          <div class="view-pills" id="mob-view-pills"></div>
+        </div>
         <div>
           <div class="mob-prod-card-brand" id="mob-prod-card-brand"></div>
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
@@ -777,8 +794,10 @@ function pickItem(s){
   var mpcs=document.getElementById('mob-prod-card-style');if(mpcs)mpcs.textContent='Style #'+item.s;
   // Hide mobile item step
   var msn2=document.getElementById('msn2');if(msn2){var ms=msn2.closest('.mob-step');if(ms)ms.style.display='none';}
-  // Render color swatches
+  // Reset to front view, render swatches and view pills
+  currentView='front';
   renderSwatches(live);
+  if(typeof renderViewPills==='function')renderViewPills();
   markDone(2);calc();
 }
 
@@ -941,13 +960,16 @@ function pickColor(name){
   for(var i=0;i<colors.length;i++){if(colors[i].name===name){c=colors[i];break;}}
   if(!c)return;
   sel._activeColor=c;
-  // Swap product image to selected color
-  var src=c.images?(c.images.front_model||c.images.front_flat||c.images.back_model||null):null;
+  // Reset to front view when color changes
+  currentView='front';
+  // Swap product image to selected color (front view first, fall back if missing)
+  var src=c.images?(c.images.front_model||c.images.front_flat||c.images.back_model||c.images.back_flat||null):null;
   if(src){
     var pci=document.getElementById('prod-card-img');if(pci){pci.src=src;pci.style.display='block';}
     var mpci=document.getElementById('mob-prod-card-img');if(mpci){mpci.src=src;mpci.style.display='block';}
   }
   renderSwatches(sel._full);
+  if(typeof renderViewPills==='function')renderViewPills();
 }
 
 function clearItem(){
@@ -1531,6 +1553,64 @@ async function loadProducts(){
 }
 
 loadProducts();
+
+// =====================================================================
+// Image lightbox + view toggle (Front / Back / Side)
+// =====================================================================
+var currentView='front';
+function _resolveViewSrc(images,view){
+  if(!images)return null;
+  if(view==='front')return images.front_model||images.front_flat||null;
+  if(view==='back')return images.back_model||images.back_flat||null;
+  if(view==='side')return images.side_model||null;
+  return null;
+}
+function renderViewPills(){
+  var dWrap=document.getElementById('view-pills');
+  var mWrap=document.getElementById('mob-view-pills');
+  function clear(){if(dWrap)dWrap.innerHTML='';if(mWrap)mWrap.innerHTML='';}
+  if(!sel||!sel._activeColor||!sel._activeColor.images){clear();return;}
+  var imgs=sel._activeColor.images;
+  var available=[];
+  if(imgs.front_model||imgs.front_flat)available.push({key:'front',label:'Front'});
+  if(imgs.back_model||imgs.back_flat)available.push({key:'back',label:'Back'});
+  if(imgs.side_model)available.push({key:'side',label:'Side'});
+  // No choice to make if only one view exists.
+  if(available.length<2){clear();return;}
+  var html=available.map(function(v){
+    return '<button type="button" class="view-pill'+(v.key===currentView?' active':'')+'" onclick="setView(\''+v.key+'\')">'+v.label+'</button>';
+  }).join('');
+  if(dWrap)dWrap.innerHTML=html;
+  if(mWrap)mWrap.innerHTML=html;
+}
+function setView(view){
+  if(!sel||!sel._activeColor)return;
+  currentView=view;
+  var src=_resolveViewSrc(sel._activeColor.images||{},view);
+  if(src){
+    var pci=document.getElementById('prod-card-img');if(pci){pci.src=src;pci.style.display='block';}
+    var mpci=document.getElementById('mob-prod-card-img');if(mpci){mpci.src=src;mpci.style.display='block';}
+  }
+  renderViewPills();
+}
+function openLightbox(){
+  if(!sel||!sel._activeColor)return;
+  var src=_resolveViewSrc(sel._activeColor.images||{},currentView);
+  if(!src)return;
+  var img=document.getElementById('lightbox-img');
+  var box=document.getElementById('lightbox');
+  if(img&&box){img.src=src;box.classList.add('show');}
+}
+function closeLightbox(e){
+  if(e&&e.stopPropagation)e.stopPropagation();
+  var box=document.getElementById('lightbox');if(box)box.classList.remove('show');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
 </script>
+<!-- Image lightbox overlay (hidden by default) -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()" role="dialog" aria-label="Product image enlarged">
+  <button type="button" class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+</div>
 </body>
 </html>
