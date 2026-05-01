@@ -312,7 +312,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .browse-search:focus{border-color:var(--blue);background:var(--surface);}
 .browse-close{background:transparent;border:none;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;flex-shrink:0;}
 .browse-close:hover{background:var(--surface2);color:var(--text);}
-.browse-chips{display:flex;flex-wrap:nowrap;gap:6px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;}
+.browse-chips{display:flex;flex-wrap:nowrap;gap:6px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;align-items:center;}
+.browse-chips.compact{padding:10px 18px;background:var(--surface);}
+.browse-chips-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-right:4px;flex-shrink:0;}
 .browse-chips::-webkit-scrollbar{height:6px;}
 .browse-chips::-webkit-scrollbar-track{background:transparent;}
 .browse-chips::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
@@ -1698,6 +1700,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
 // Browse Products modal: category chips + filterable visual grid
 // =====================================================================
 var _browseCategory='T-Shirts'; // default category on first open
+var _browseBrand='All Brands'; // default brand filter
 var _browseSearch='';
 // Standard category display order (most-popular first). Categories not in
 // this list are appended in alphabetical order.
@@ -1718,11 +1721,43 @@ function renderBrowseChips(){
            c.name+'<span class="browse-chip-count">'+c.count+'</span></button>';
   }).join('');
 }
+// Build brand chips for products currently in the active category. Counts
+// reflect the category filter, so when you switch categories the brand
+// list reshuffles to match.
+function renderBrowseBrandChips(){
+  var host=document.getElementById('browse-brand-chips');if(!host)return;
+  var brandCounts={};var totalInCat=0;
+  ITEMS.forEach(function(it){
+    var p=it._full;if(!p||p.category!==_browseCategory)return;
+    totalInCat++;
+    var b=p.brand||'(Unknown)';
+    brandCounts[b]=(brandCounts[b]||0)+1;
+  });
+  var brands=Object.entries(brandCounts).sort(function(a,b){return b[1]-a[1];});
+  // Build chips: All Brands first, then ranked
+  var html='<span class="browse-chips-lbl">Brand:</span>';
+  html+='<button type="button" class="browse-chip'+(_browseBrand==='All Brands'?' active':'')+'" onclick="setBrowseBrand(\'All Brands\')">All Brands<span class="browse-chip-count">'+totalInCat+'</span></button>';
+  brands.forEach(function(entry){
+    var name=entry[0],count=entry[1];
+    var safe=name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    html+='<button type="button" class="browse-chip'+(_browseBrand===name?' active':'')+'" onclick="setBrowseBrand(\''+safe+'\')">'+name+'<span class="browse-chip-count">'+count+'</span></button>';
+  });
+  host.innerHTML=html;
+}
+
+function setBrowseBrand(brand){
+  _browseBrand=brand;
+  renderBrowseBrandChips();
+  renderBrowseGrid();
+  var body=document.querySelector('.browse-body');if(body)body.scrollTop=0;
+}
+
 function _browseFiltered(){
   var q=(_browseSearch||'').toLowerCase().trim();
   return ITEMS.filter(function(it){
     var p=it._full;if(!p)return false;
     if(p.category!==_browseCategory)return false;
+    if(_browseBrand&&_browseBrand!=='All Brands'&&p.brand!==_browseBrand)return false;
     if(!q)return true;
     var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
     return hay.indexOf(q)!==-1;
@@ -1760,9 +1795,11 @@ function renderBrowseGrid(){
 }
 function setBrowseCategory(cat){
   _browseCategory=cat;
+  _browseBrand='All Brands';
   _browseSearch='';
   var s=document.getElementById('browse-search');if(s)s.value='';
   renderBrowseChips();
+  renderBrowseBrandChips();
   renderBrowseGrid();
   var body=document.querySelector('.browse-body');if(body)body.scrollTop=0;
 }
@@ -1778,7 +1815,9 @@ function openBrowseModal(){
     _browseCategory=cats[0].name;
   }
   _browseSearch='';var ss=document.getElementById('browse-search');if(ss)ss.value='';
+  _browseBrand='All Brands';
   renderBrowseChips();
+  renderBrowseBrandChips();
   renderBrowseGrid();
   var ov=document.getElementById('browse-overlay');if(ov)ov.classList.add('show');
   document.body.style.overflow='hidden';
@@ -1808,6 +1847,7 @@ document.addEventListener('keydown',function(e){
       <button type="button" class="browse-close" onclick="closeBrowseModal()" aria-label="Close browse">&times;</button>
     </div>
     <div class="browse-chips" id="browse-chips"></div>
+    <div class="browse-chips compact" id="browse-brand-chips"></div>
     <div class="browse-body">
       <div class="browse-grid" id="browse-grid"></div>
     </div>
