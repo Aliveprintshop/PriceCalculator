@@ -270,7 +270,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 /* SIZES */
 .size-section{margin-top:14px;}
 .size-section-lbl{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
-.size-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;}
+.size-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:5px;}
 .size-box{display:flex;flex-direction:column;align-items:center;gap:3px;}
 .size-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:var(--text2);}
 .size-input{width:100%;padding:6px 2px;font-size:12px;font-family:'Montserrat',sans-serif;font-weight:600;text-align:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;min-width:0;box-sizing:border-box;}
@@ -278,7 +278,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .size-input.has-qty{border-color:var(--blue-mid);background:var(--blue-light);}
 .size-total-row{display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding:5px 10px;background:var(--surface2);border-radius:var(--r);font-size:12px;}
 .size-mismatch{font-size:11px;color:#dc2626;margin-top:5px;display:none;}
-.mob-size-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px;}
+.mob-size-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:5px;margin-top:8px;}
 .mob-size-box{display:flex;flex-direction:column;align-items:center;gap:2px;}
 .mob-size-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:var(--text2);}
 .mob-size-input{width:100%;padding:7px 2px;font-size:13px;font-family:'Montserrat',sans-serif;font-weight:700;text-align:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;}
@@ -397,7 +397,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">How many pieces do you need?</div><div class="step-hint">Min 24 for screen printing, 10 for heat transfer &mdash; prices drop as quantity goes up</div></div></div>
       <div class="qty-wrap"><input class="qty-input" id="qty" type="number" value="24" min="10" step="1"><div class="qty-hint" id="qty-hint">Price breaks at<br><strong>50, 72, 144, 300, 500+</strong></div></div>
       <div class="moq-warn" id="moq-warn">&#9888; Minimum order is 36 pieces.</div>
-      <div class="size-section"><div class="size-section-lbl">Size breakdown &mdash; qty per size</div><div class="size-grid"><div class="size-box"><div class="size-lbl">XS</div><input class="size-input" id="sz-xs" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">S</div><input class="size-input" id="sz-s" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">M</div><input class="size-input" id="sz-m" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">L</div><input class="size-input" id="sz-l" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">XL</div><input class="size-input" id="sz-xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">2XL</div><input class="size-input" id="sz-2xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">3XL</div><input class="size-input" id="sz-3xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="size-box"><div class="size-lbl">4XL</div><input class="size-input" id="sz-4xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch">&#9888; Size total doesn't match quantity</div></div>
+      <div class="size-section"><div class="size-section-lbl">Size breakdown &mdash; qty per size</div><div class="size-grid" id="size-grid-host"></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch">&#9888; Size total doesn't match quantity</div></div>
     </div>
 
     <!-- Step 3: Locations -->
@@ -563,8 +563,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <!-- Size breakdown BELOW -->
       <div style="margin-top:12px;">
         <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Size breakdown</div>
-        <div class="mob-size-grid"><div class="mob-size-box"><div class="mob-size-lbl">XS</div><input class="mob-size-input" id="mob-sz-xs" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="mob-size-box"><div class="mob-size-lbl">S</div><input class="mob-size-input" id="mob-sz-s" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="mob-size-box"><div class="mob-size-lbl">M</div><input class="mob-size-input" id="mob-sz-m" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="mob-size-box"><div class="mob-size-lbl">L</div><input class="mob-size-input" id="mob-sz-l" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div></div>
-        <div class="mob-size-grid"><div class="mob-size-box"><div class="mob-size-lbl">XL</div><input class="mob-size-input" id="mob-sz-xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="mob-size-box"><div class="mob-size-lbl">2XL</div><input class="mob-size-input" id="mob-sz-2xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="mob-size-box"><div class="mob-size-lbl">3XL</div><input class="mob-size-input" id="mob-sz-3xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div><div class="mob-size-box"><div class="mob-size-lbl">4XL</div><input class="mob-size-input" id="mob-sz-4xl" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div></div>
+        <div class="mob-size-grid" id="mob-size-grid-host"></div>
         <div style="display:flex;justify-content:space-between;margin-top:7px;padding:5px 10px;background:var(--surface2);border-radius:var(--r);font-size:12px;">
           <span style="color:var(--text3);">Size total</span>
           <span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="mob-size-total-display">0 pcs</span>
@@ -798,6 +797,8 @@ function pickItem(s){
   currentView='front';
   renderSwatches(live);
   if(typeof renderViewPills==='function')renderViewPills();
+  // Rebuild the size grid for the selected product
+  buildSizeGrid(live?live.available_sizes:null);
   markDone(2);calc();
 }
 
@@ -1210,8 +1211,13 @@ function calc(){
   var curBreak=breaksArr[0];
   for(var bi=0;bi<breaksArr.length;bi++){if(qty>=breaksArr[bi])curBreak=breaksArr[bi];}
   var curIdx=breaksArr.indexOf(curBreak);
-  var start=Math.max(0,curIdx-2),end=Math.min(breaksArr.length,start+5);
-  if(end-start<5)start=Math.max(0,end-5);
+  var start,end;
+  if(_breaksExpanded){
+    start=0;end=breaksArr.length;
+  }else{
+    start=Math.max(0,curIdx-2);end=Math.min(breaksArr.length,start+5);
+    if(end-start<5)start=Math.max(0,end-5);
+  }
   function buildBreaks(cls){
     var th='<table class="'+cls+'"><thead><tr><th>Qty</th><th>Per Unit</th><th>Total</th><th>Savings</th></tr></thead><tbody>';
     breaksArr.slice(start,end).forEach(function(q){
@@ -1277,8 +1283,57 @@ function setDeco(method){
   calc();
 }
 
+// -- PRICE BREAKS TOGGLE --
+var _breaksExpanded=false;
+function toggleBreaks(){
+  _breaksExpanded=!_breaksExpanded;
+  var lbl=document.getElementById('breaks-lbl');
+  if(lbl)lbl.innerHTML=_breaksExpanded?'▼ Hide price breaks':'▶ See all price breaks';
+  calc();
+}
+
 // -- SIZE BREAKDOWN --
 var SIZES=["XS","S","M","L","XL","2XL","3XL","4XL"];
+// Display labels for sizes whose label differs from the code (e.g., 'osfa' -> 'OSFA')
+var SIZE_LABELS={'osfa':'OSFA','yxs':'YXS','ys':'YS','ym':'YM','yl':'YL','yxl':'YXL','y2xl':'Y2XL'};
+// Sort order for size codes (lower = first). Numeric sizes get keyed by their value+100.
+var _SIZE_ORDER=['osfa','yxs','ys','ym','yl','yxl','y2xl','xs','s','m','l','xl','lt','xlt','2xl','3xl','4xl','5xl','6xl','7xl','8xl'];
+function _sizeSortKey(code){
+  var k=String(code||'').toLowerCase();
+  var i=_SIZE_ORDER.indexOf(k);
+  if(i>=0)return i;
+  var n=parseInt(code,10);
+  if(!isNaN(n))return 100+n;
+  return 999;
+}
+function _sizeLabel(code){
+  var k=String(code||'').toLowerCase();
+  return SIZE_LABELS[k]||String(code||'').toUpperCase();
+}
+// Render the size grid based on the product's available_sizes array.
+// Falls back to standard adult set if the array is missing or empty.
+function buildSizeGrid(availableSizes){
+  if(!Array.isArray(availableSizes)||availableSizes.length===0){
+    availableSizes=['XS','S','M','L','XL','2XL','3XL','4XL'];
+  }
+  var sizes=availableSizes.slice().sort(function(a,b){return _sizeSortKey(a)-_sizeSortKey(b);});
+  SIZES=sizes.slice().map(function(s){return s.toUpperCase();});
+  function gridHtml(boxCls,lblCls,inputCls,prefix){
+    return sizes.map(function(s){
+      var key=s.toLowerCase();
+      return '<div class="'+boxCls+'"><div class="'+lblCls+'">'+_sizeLabel(s)+'</div>'+
+             '<input class="'+inputCls+'" id="'+prefix+'-'+key+'" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div>';
+    }).join('');
+  }
+  var dHost=document.getElementById('size-grid-host');
+  if(dHost)dHost.innerHTML=gridHtml('size-box','size-lbl','size-input','sz');
+  var mHost=document.getElementById('mob-size-grid-host');
+  if(mHost)mHost.innerHTML=gridHtml('mob-size-box','mob-size-lbl','mob-size-input','mob-sz');
+  // Reset displayed totals
+  ['size-total-display','mob-size-total-display'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent='0 pcs';});
+  ['size-mismatch','mob-size-mismatch'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+}
+
 function getSizeQty(s){var key=s.toLowerCase();var d=document.getElementById('sz-'+key),m=document.getElementById('mob-sz-'+key);var dv=d&&d.value?parseInt(d.value)||0:0,mv=m&&m.value?parseInt(m.value)||0:0;return dv||mv;}
 function getSizeTotal(){return SIZES.reduce(function(t,s){return t+getSizeQty(s);},0);}
 function getSizeBreakdown(){var p=[];SIZES.forEach(function(s){var q=getSizeQty(s);if(q>0)p.push(s+': '+q);});return p.join(', ');}
