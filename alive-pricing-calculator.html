@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alive Print Shop &mdash; Pricing Calculator</title>
+<title>Alive Print Shop &mdash; Insta-Price</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -312,10 +312,10 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .browse-search:focus{border-color:var(--blue);background:var(--surface);}
 .browse-close{background:transparent;border:none;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;flex-shrink:0;}
 .browse-close:hover{background:var(--surface2);color:var(--text);}
-.browse-chips{display:flex;flex-wrap:nowrap;gap:6px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;align-items:center;}
-.browse-chips.compact{padding:10px 18px;background:var(--surface);}
+.browse-chips{display:flex;flex-wrap:wrap;gap:6px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0;align-items:center;max-height:30vh;overflow-y:auto;}
+.browse-chips.compact{padding:10px 18px;background:var(--surface);max-height:24vh;}
 .browse-chips-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-right:4px;flex-shrink:0;}
-.browse-chips::-webkit-scrollbar{height:6px;}
+.browse-chips::-webkit-scrollbar{width:6px;}
 .browse-chips::-webkit-scrollbar-track{background:transparent;}
 .browse-chips::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 .browse-chip{padding:6px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:18px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.12s;outline:none;}
@@ -417,7 +417,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-name" id="prod-card-name"></div>
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="swatch-row" id="swatch-row"></div>
-          <button class="prod-card-change" onclick="openBrowseModal()">&#9998; Browse / Change Item</button>
+          <a class="prod-card-change" href="index.html" style="text-decoration:none;">&#9998; Browse / Change Item</a>
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -575,7 +575,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
           <div class="mob-prod-card-style" id="mob-prod-card-style"></div>
           <div class="swatch-row" id="mob-swatch-row" style="margin-top:10px;"></div>
-          <button class="mob-prod-card-change" onclick="openBrowseModal()">&#9998; Browse / Change Item</button>
+          <a class="mob-prod-card-change" href="index.html" style="text-decoration:none;">&#9998; Browse / Change Item</a>
         </div>
       </div>
     </div>
@@ -1625,13 +1625,21 @@ async function loadProducts(){
     var msi=document.getElementById('mob-si'),mdd=document.getElementById('mob-dd');
     if(msi&&mdd)buildDDFor(msi,mdd);
 
-    // Pick the first POPULAR style that actually exists in the live catalog,
-    // otherwise fall back to whatever loaded first.
+    // Pick selection priority:
+    //   1) ?style=XXX URL parameter (deep-link from the product page)
+    //   2) first POPULAR style present in the catalog
+    //   3) first item in the catalog
     var have = {};
     for(var k=0; k<ITEMS.length; k++) have[ITEMS[k].s.toUpperCase()] = ITEMS[k].s;
     var pickStyle = null;
-    for(var j=0; j<POPULAR.length; j++){
-      if(have[POPULAR[j].toUpperCase()]){ pickStyle = have[POPULAR[j].toUpperCase()]; break; }
+    try {
+      var urlStyle = new URLSearchParams(window.location.search).get('style');
+      if(urlStyle && have[String(urlStyle).toUpperCase()]) pickStyle = have[String(urlStyle).toUpperCase()];
+    } catch(e) {}
+    if(!pickStyle){
+      for(var j=0; j<POPULAR.length; j++){
+        if(have[POPULAR[j].toUpperCase()]){ pickStyle = have[POPULAR[j].toUpperCase()]; break; }
+      }
     }
     if(!pickStyle && ITEMS.length) pickStyle = ITEMS[0].s;
     if(pickStyle) pickItem(pickStyle);
@@ -1838,21 +1846,7 @@ document.addEventListener('keydown',function(e){
   }
 });
 </script>
-<!-- Browse Products modal (hidden by default) -->
-<div class="browse-overlay" id="browse-overlay" onclick="if(event.target===this)closeBrowseModal()" role="dialog" aria-label="Browse products by category">
-  <div class="browse-modal">
-    <div class="browse-header">
-      <div class="browse-title">Browse Products</div>
-      <input type="text" class="browse-search" id="browse-search" placeholder="Search within this view..." autocomplete="off" spellcheck="false" oninput="onBrowseSearch()">
-      <button type="button" class="browse-close" onclick="closeBrowseModal()" aria-label="Close browse">&times;</button>
-    </div>
-    <div class="browse-chips" id="browse-chips"></div>
-    <div class="browse-chips compact" id="browse-brand-chips"></div>
-    <div class="browse-body">
-      <div class="browse-grid" id="browse-grid"></div>
-    </div>
-  </div>
-</div>
+<!-- Browse modal removed: customers browse from index.html and deep-link with ?style=XXX -->
 <!-- Image lightbox overlay (hidden by default) -->
 <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()" role="dialog" aria-label="Product image enlarged">
   <button type="button" class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>

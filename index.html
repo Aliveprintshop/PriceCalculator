@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Alive Print Shop — Browse Products</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1B6CCE; --blue-mid:#5294D9; --blue-light:#E8F1FB;
+  --surface:#FFFFFF; --surface2:#F7F8FA; --border:#E2E5EC; --border2:#CBD2DB;
+  --text:#1A2330; --text2:#3D4A5C; --text3:#7B8696;
+  --r:8px; --r-lg:12px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text);}
+a{color:var(--blue);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.brand{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--blue);font-size:20px;letter-spacing:-0.01em;}
+.brand small{font-weight:600;color:var(--text3);font-size:12px;letter-spacing:0;text-transform:uppercase;margin-left:8px;}
+.header-cta{display:flex;align-items:center;gap:10px;}
+.header-cta-text{font-size:13px;color:var(--text2);}
+.header-cta-link{padding:8px 16px;background:var(--blue);color:#fff!important;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none!important;transition:background 0.15s;}
+.header-cta-link:hover{background:#1857a8;}
+
+.page-wrap{max-width:1400px;margin:0 auto;padding:24px 24px 48px;}
+.page-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:28px;color:var(--text);margin:0 0 6px;}
+.page-sub{font-size:14px;color:var(--text3);margin:0 0 22px;}
+
+.toolbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:0;overflow:hidden;margin-bottom:22px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.toolbar-search-row{padding:14px 16px;border-bottom:1px solid var(--border);}
+.toolbar-search{width:100%;padding:10px 16px;border:1.5px solid var(--border);border-radius:20px;font-family:'Open Sans',sans-serif;font-size:14px;outline:none;background:var(--surface2);}
+.toolbar-search:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
+.toolbar-search::placeholder{color:var(--text3);}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface2);align-items:center;max-height:30vh;overflow-y:auto;}
+.chips.compact{padding:10px 16px;background:var(--surface);max-height:24vh;border-bottom:none;}
+.chips-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-right:4px;flex-shrink:0;}
+.chips::-webkit-scrollbar{width:6px;}
+.chips::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.chip{padding:6px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:18px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.12s;outline:none;}
+.chip:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+.chip.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.chip-count{margin-left:6px;font-size:10px;opacity:0.7;font-weight:500;}
+
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.results-count{font-size:13px;color:var(--text2);}
+.results-count strong{color:var(--text);font-weight:700;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
+.card-img{width:100%;aspect-ratio:5/6;object-fit:cover;object-position:top center;background:#f7f7f9;border-bottom:1px solid var(--border);}
+.card-info{padding:12px 14px;display:flex;flex-direction:column;gap:3px;}
+.card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);}
+.card-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-price{font-size:13px;color:var(--text3);margin-top:6px;}
+.card-price strong{color:var(--text);font-weight:700;}
+
+.empty{text-align:center;padding:64px 20px;color:var(--text3);font-size:15px;}
+.loading{text-align:center;padding:64px 20px;color:var(--text3);font-size:14px;}
+
+@media(max-width:600px){
+  .page-header{padding:12px 16px;}
+  .brand{font-size:17px;}
+  .brand small{display:none;}
+  .header-cta-text{display:none;}
+  .page-wrap{padding:14px 14px 32px;}
+  .page-title{font-size:22px;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="brand">Alive Print Shop <small>Custom Apparel</small></div>
+  <div class="header-cta">
+    <span class="header-cta-text">Already know what you want?</span>
+    <a class="header-cta-link" href="alive-pricing-calculator.html">Insta-Price &rarr;</a>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <h1 class="page-title">Browse Products</h1>
+  <p class="page-sub">Pick an item to instantly price your custom print job. We carry <span id="brand-count-stat">37</span> brands across <span id="cat-count-stat">16</span> categories.</p>
+
+  <div class="toolbar">
+    <div class="toolbar-search-row">
+      <input type="text" class="toolbar-search" id="page-search" placeholder="Search by brand, style number, or product name (e.g. Carhartt, DM130, Tritee)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
+    </div>
+    <div class="chips" id="page-chips"></div>
+    <div class="chips compact" id="page-brand-chips"></div>
+  </div>
+
+  <div class="results-bar">
+    <div class="results-count" id="results-count"></div>
+  </div>
+
+  <div class="grid" id="page-grid">
+    <div class="loading" style="grid-column:1/-1;">Loading our 2,900+ products&hellip;</div>
+  </div>
+</main>
+
+<script>
+// =====================================================================
+// Data layer: fetch products.json, build ITEMS array, color hex resolver
+// =====================================================================
+var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
+var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
+var ITEMS=[];
+var _BROWSE_CAT_ORDER=['T-Shirts','Sweatshirts/Fleece','Polos/Knits','Outerwear','Caps','Bags','Activewear','Workwear','Woven Shirts','Accessories',"Women's",'Youth','Bottoms','Tall','Personal Protection','Infant & Toddler'];
+
+// State
+var _category='T-Shirts';
+var _brand='All Brands';
+var _search='';
+
+// Color hex resolver (mirrors the one in alive-pricing-calculator.html, used to decide swatch tints if we want them later)
+var COLOR_HEX_MAP={};
+function buildHexLookup(rows){
+  if(!Array.isArray(rows))return;
+  rows.forEach(function(p){
+    if(!Array.isArray(p.colors))return;
+    p.colors.forEach(function(c){
+      if(c.name&&c.hex&&c.hex!=='#888888'){
+        var key=c.name.toLowerCase();
+        if(!COLOR_HEX_MAP[key])COLOR_HEX_MAP[key]=c.hex;
+      }
+    });
+  });
+}
+
+// Categories present + counts
+function categoryList(){
+  var counts={};
+  ITEMS.forEach(function(it){var c=it._full&&it._full.category;if(c)counts[c]=(counts[c]||0)+1;});
+  var known=_BROWSE_CAT_ORDER.filter(function(c){return counts[c];});
+  var extras=Object.keys(counts).filter(function(c){return _BROWSE_CAT_ORDER.indexOf(c)===-1;}).sort();
+  return known.concat(extras).map(function(c){return{name:c,count:counts[c]};});
+}
+
+function renderCategoryChips(){
+  var host=document.getElementById('page-chips');if(!host)return;
+  var cats=categoryList();
+  var html='<span class="chips-lbl">Category:</span>';
+  html+=cats.map(function(c){
+    var safe=c.name.replace(/'/g,"\\'");
+    return '<button type="button" class="chip'+(c.name===_category?' active':'')+'" onclick="setCategory(\''+safe+'\')">'+c.name+'<span class="chip-count">'+c.count+'</span></button>';
+  }).join('');
+  host.innerHTML=html;
+}
+
+function renderBrandChips(){
+  var host=document.getElementById('page-brand-chips');if(!host)return;
+  var brandCounts={};var totalInCat=0;
+  ITEMS.forEach(function(it){
+    var p=it._full;if(!p||p.category!==_category)return;
+    totalInCat++;
+    var b=p.brand||'(Unknown)';
+    brandCounts[b]=(brandCounts[b]||0)+1;
+  });
+  var brands=Object.entries(brandCounts).sort(function(a,b){return b[1]-a[1];});
+  var html='<span class="chips-lbl">Brand:</span>';
+  html+='<button type="button" class="chip'+(_brand==='All Brands'?' active':'')+'" onclick="setBrand(\'All Brands\')">All Brands<span class="chip-count">'+totalInCat+'</span></button>';
+  brands.forEach(function(entry){
+    var name=entry[0],count=entry[1];
+    var safe=name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    html+='<button type="button" class="chip'+(_brand===name?' active':'')+'" onclick="setBrand(\''+safe+'\')">'+name+'<span class="chip-count">'+count+'</span></button>';
+  });
+  host.innerHTML=html;
+}
+
+function filtered(){
+  var q=(_search||'').toLowerCase().trim();
+  return ITEMS.filter(function(it){
+    var p=it._full;if(!p)return false;
+    if(p.category!==_category)return false;
+    if(_brand&&_brand!=='All Brands'&&p.brand!==_brand)return false;
+    if(!q)return true;
+    var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
+    return hay.indexOf(q)!==-1;
+  });
+}
+
+function renderGrid(){
+  var host=document.getElementById('page-grid');if(!host)return;
+  var rows=filtered();
+  var countEl=document.getElementById('results-count');
+  if(countEl){
+    var bnPart=_brand==='All Brands'?'':' &middot; '+_brand;
+    var srPart=_search?' &middot; matching "'+_search+'"':'';
+    countEl.innerHTML='<strong>'+rows.length.toLocaleString()+'</strong> '+(rows.length===1?'product':'products')+' in '+_category+bnPart+srPart;
+  }
+  if(!rows.length){
+    host.innerHTML='<div class="empty" style="grid-column:1/-1;">No products match your filters. Try a different category, brand, or search term.</div>';
+    return;
+  }
+  // Sort by popularity then alpha
+  rows.sort(function(a,b){
+    var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
+    if(ap>-1&&bp>-1)return ap-bp;
+    if(ap>-1)return -1;if(bp>-1)return 1;
+    return (a.b+a.n).localeCompare(b.b+b.n);
+  });
+  host.innerHTML=rows.map(function(it){
+    var p=it._full;
+    var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
+    var imgs=firstColor&&firstColor.images?firstColor.images:{};
+    var src=imgs.front_model||imgs.front_flat||'';
+    var name=(it.n||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+    var brand=(it.b||'').replace(/"/g,'&quot;');
+    var safeStyle=encodeURIComponent(it.s);
+    return '<a class="card" href="alive-pricing-calculator.html?style='+safeStyle+'">'+
+           '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+           '<div class="card-info">'+
+             '<div class="card-brand">'+brand+'</div>'+
+             '<div class="card-name">'+name+'</div>'+
+             '<div class="card-price">from <strong>$'+(it.p).toFixed(2)+'</strong>/pc</div>'+
+           '</div></a>';
+  }).join('');
+}
+
+function setCategory(cat){
+  _category=cat;
+  _brand='All Brands';
+  _search='';
+  var s=document.getElementById('page-search');if(s)s.value='';
+  renderCategoryChips();renderBrandChips();renderGrid();
+  window.scrollTo({top:document.querySelector('.results-bar').offsetTop-20,behavior:'smooth'});
+}
+function setBrand(brand){
+  _brand=brand;
+  renderBrandChips();renderGrid();
+}
+function onPageSearch(){
+  var s=document.getElementById('page-search');
+  _search=s?s.value:'';
+  renderGrid();
+}
+
+async function loadProducts(){
+  try{
+    var res=await fetch(PRODUCTS_JSON_URL,{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var data=await res.json();
+    var rows=Array.isArray(data)?data:(data.products||[]);
+    var flat=[];
+    for(var i=0;i<rows.length;i++){
+      var p=rows[i];
+      if(!p||!p.style)continue;
+      if(p.discontinued===true)continue;
+      var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
+      if(basePrice==null||isNaN(basePrice))continue;
+      var unitPrice=+(basePrice*1.5).toFixed(2);
+      var firstColor='';
+      if(Array.isArray(p.colors)&&p.colors.length&&p.colors[0].name)firstColor=p.colors[0].name;
+      flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,_full:p});
+    }
+    ITEMS=flat;
+    buildHexLookup(rows);
+    // Update header stats
+    var cats=categoryList();
+    var brandSet=new Set();ITEMS.forEach(function(it){if(it._full&&it._full.brand)brandSet.add(it._full.brand);});
+    var bcs=document.getElementById('brand-count-stat');if(bcs)bcs.textContent=brandSet.size;
+    var ccs=document.getElementById('cat-count-stat');if(ccs)ccs.textContent=cats.length;
+    // Initial render
+    renderCategoryChips();renderBrandChips();renderGrid();
+  }catch(err){
+    console.error('[Alive] loadProducts failed:',err);
+    var host=document.getElementById('page-grid');
+    if(host)host.innerHTML='<div class="empty" style="grid-column:1/-1;">We couldn&rsquo;t load the catalog. <a href="javascript:location.reload()">Retry</a> or visit our <a href="alive-pricing-calculator.html">price calculator</a> directly.</div>';
+  }
+}
+
+loadProducts();
+</script>
+</body>
+</html>
