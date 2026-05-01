@@ -68,6 +68,7 @@ jobs:
             echo "No changes to products.json — skipping commit"
           else
             git commit -m "chore: nightly SanMar sync $(date -u +%Y-%m-%d)"
+            git pull --rebase origin main || true
             git push
           fi
 
