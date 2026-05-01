@@ -72,8 +72,8 @@ jobs:
             git push
           fi
 
-      # Prepare a folder to publish. We publish products.json and an index page
-      # so you can smoke-test the URL in a browser.
+      # Prepare a folder to publish. We publish products.json, the calculator,
+      # and our index.html (the product browse page) so / serves the catalog.
       - name: Stage Pages artifact
         run: |
           mkdir -p _site
@@ -100,6 +100,8 @@ jobs:
             });
           </script>
           EOF
+          # Override the placeholder index above with our real product browse page.
+          cp -f index.html _site/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
