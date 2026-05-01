@@ -782,6 +782,117 @@ function pickItem(s){
   markDone(2);calc();
 }
 
+// =====================================================================
+// Color hex resolver: products.json has placeholder #888888 for ~38% of
+// SanMar's color names. We build a runtime lookup from the catalog's own
+// good hex values, then use heuristics for "X Frost" / "Heathered X" /
+// multi-tone variants, plus a small extras table for known specific names.
+// =====================================================================
+var COLOR_HEX_MAP={};
+var SANMAR_COLOR_EXTRAS={
+  'tanzanite':'#3D2C8D','lemongrass':'#A8B85A','sea mist':'#B5D4C4','storm cloud':'#5B6770',
+  'ice blue':'#B5D6E5','eucalyptus blue':'#3F7A8C','jewel green':'#1A6B3F','bright blue':'#0066CC',
+  'moss green':'#5C7148','oat milk':'#E5D9B6','pool blue':'#5BB7C5','lagoon':'#0F8B8D',
+  'island reef':'#7BC0AB','granite':'#7B7B82','brick':'#8B3A2F','royal caribe':'#2C7BB6',
+  'crunchberry':'#D72E5E','blossom':'#F4B5D0','melon':'#F39C8B','sandstone':'#C8B89D',
+  'chili':'#A8341E','paprika':'#C44536','sapphire':'#1F4FA0','banana':'#F5E16C',
+  'mustard':'#D4A93C','hemp':'#9F8E6E','citrus':'#E5B33B','emerald':'#2EAA6A',
+  'periwinkle':'#8094D4','china blue':'#5C84A6','bay':'#5C8A9A','mystic':'#5E5290',
+  'grape':'#552E72','island green':'#3FA37D','neon cantaloupe':'#FFA552','hibiscus':'#D43A6E',
+  'umber':'#5E4031','heliconia':'#E5346B','indigo blue':'#2B4D8E','fiji blue':'#4F9FBA',
+  'sea glass':'#A5C9C0','aqua':'#5BB7C5','coral':'#F39C8B','salmon':'#F39C8B',
+  'mint':'#A5C9C0','lime':'#9AC74C','cream':'#F4E5C7','natural':'#F4E5C7',
+  'stone':'#A89E8E','olive':'#7A6B3D','khaki':'#B5A57A','tan':'#C8B89D',
+  'gold':'#D4A93C','bronze':'#7A5C3A','copper':'#B86A3A','rust':'#A8492A',
+  'plum':'#5E2C5C','wine':'#5E1F2E','burgundy':'#5C1F2E','rose':'#D58CA0',
+  'fuchsia':'#D72E8E','magenta':'#C2185B','blush':'#E8C5C5','peach':'#FAB89E',
+  'apricot':'#F4A57C','tangerine':'#F08040','sage':'#9CAE7E','seafoam':'#A6D6BB',
+  'jade':'#3FA37D','spruce':'#3F5E4E','hunter':'#234E3D','kelly':'#3DA456',
+  'lavender':'#B7A5D4','lilac':'#C5A5D6','violet':'#8B5BA8','iris':'#5C5BA8'
+};
+function _hexToRgb(hex){
+  hex=String(hex).replace('#','');
+  if(hex.length===3)hex=hex.split('').map(function(c){return c+c;}).join('');
+  return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)];
+}
+function _rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(function(v){
+    v=Math.max(0,Math.min(255,Math.round(v))).toString(16);
+    return v.length===1?'0'+v:v;
+  }).join('');
+}
+function lightenHex(hex,amount){
+  amount=Math.max(0,Math.min(1,amount||0.3));
+  var rgb=_hexToRgb(hex);
+  return _rgbToHex(rgb[0]+(255-rgb[0])*amount,rgb[1]+(255-rgb[1])*amount,rgb[2]+(255-rgb[2])*amount);
+}
+function desaturateHex(hex,amount){
+  amount=Math.max(0,Math.min(1,amount||0.4));
+  var rgb=_hexToRgb(hex);
+  var avg=(rgb[0]+rgb[1]+rgb[2])/3;
+  return _rgbToHex(rgb[0]*(1-amount)+avg*amount,rgb[1]*(1-amount)+avg*amount,rgb[2]*(1-amount)+avg*amount);
+}
+// Build COLOR_HEX_MAP from any rows that have non-placeholder hex values.
+function buildHexLookup(rows){
+  if(!Array.isArray(rows))return;
+  rows.forEach(function(p){
+    if(!Array.isArray(p.colors))return;
+    p.colors.forEach(function(c){
+      if(c.name&&c.hex&&c.hex!=='#888888'){
+        var key=c.name.toLowerCase();
+        if(!COLOR_HEX_MAP[key])COLOR_HEX_MAP[key]=c.hex;
+      }
+    });
+  });
+  // Layer in extras (only if catalog hasn't already defined them)
+  Object.keys(SANMAR_COLOR_EXTRAS).forEach(function(k){
+    if(!COLOR_HEX_MAP[k])COLOR_HEX_MAP[k]=SANMAR_COLOR_EXTRAS[k];
+  });
+}
+var _SUBSTRING_BASES={
+  'black':'#000000','white':'#FFFFFF','red':'#B21F2D','navy':'#1B2C55','royal':'#1F3FA3',
+  'forest':'#2E5033','green':'#3DA456','yellow':'#F2C500','orange':'#E67E22',
+  'pink':'#FF77AA','purple':'#603B8E','charcoal':'#3F4343','maroon':'#66253F',
+  'brown':'#6B4326','gold':'#D4A93C','silver':'#C4C4C4','teal':'#0F8B8D',
+  'turquoise':'#3FBFBF','blue':'#1F3FA3','grey':'#888888','gray':'#888888'
+};
+function resolveColorHex(name,providedHex){
+  // If catalog has a real hex value for this exact color, use it.
+  if(providedHex&&providedHex!=='#888888')return providedHex;
+  if(!name)return '#cccccc';
+  var key=name.toLowerCase().trim();
+  if(COLOR_HEX_MAP[key])return COLOR_HEX_MAP[key];
+  // Multi-tone: "X/ Y" or "X / Y" — use first segment.
+  var parts=name.split('/').map(function(s){return s.trim();});
+  if(parts.length>1){
+    var firstKey=parts[0].toLowerCase();
+    if(COLOR_HEX_MAP[firstKey])return COLOR_HEX_MAP[firstKey];
+  }
+  // "X Frost" — heathered/melange version of X — lighten X.
+  var m=name.match(/^(.+?)\s+Frost$/i);
+  if(m){
+    var base=COLOR_HEX_MAP[m[1].toLowerCase()];
+    if(base)return lightenHex(base,0.45);
+  }
+  // "Heathered X" / "Heather X" — desaturate X.
+  m=name.match(/^Heathere?d?\s+(.+)$/i);
+  if(m){
+    var base2=COLOR_HEX_MAP[m[1].toLowerCase()];
+    if(base2)return desaturateHex(base2,0.4);
+  }
+  // "Athletic X" — usually saturated X.
+  m=name.match(/^Athletic\s+(.+)$/i);
+  if(m){
+    var base3=COLOR_HEX_MAP[m[1].toLowerCase()];
+    if(base3)return base3;
+  }
+  // Substring match against well-known base color words.
+  for(var b in _SUBSTRING_BASES){
+    if(key.indexOf(b)!==-1)return _SUBSTRING_BASES[b];
+  }
+  return '#cccccc';
+}
+
 // Sort colors: White first (if present), then alphabetical by name
 function sortColors(colors){
   if(!colors||!colors.length)return [];
@@ -809,7 +920,7 @@ function renderSwatches(live){
     html+='<div class="swatch-grid">';
     sorted.forEach(function(c){
       var isActive=sel&&sel._activeColor&&sel._activeColor.name===c.name;
-      var hex=c.hex||'#cccccc';
+      var hex=resolveColorHex(c.name,c.hex);
       var bord=hex.toLowerCase()==='#ffffff'||hex.toLowerCase()==='#fff'?'#d0d0d0':'transparent';
       html+='<button type="button" class="swatch'+(isActive?' active':'')+'" '+
             'style="background:'+hex+';border-color:'+(isActive?'var(--blue)':bord)+';" '+
@@ -1389,6 +1500,9 @@ async function loadProducts(){
     }
 
     ITEMS = flat;
+
+    // Build the color hex lookup from the catalog's good entries (and extras).
+    buildHexLookup(rows);
 
     // Rebuild IDX (same logic as the original initial declaration).
     IDX = ITEMS.map(function(i){return{item:i,k:(i.b+' '+i.s+' '+i.n+' '+i.c).toLowerCase().replace(/&amp;/g,'&'),pop:POPULAR.indexOf(i.s.toUpperCase())};});
