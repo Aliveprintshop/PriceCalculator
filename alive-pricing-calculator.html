@@ -312,7 +312,10 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .browse-search:focus{border-color:var(--blue);background:var(--surface);}
 .browse-close{background:transparent;border:none;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;flex-shrink:0;}
 .browse-close:hover{background:var(--surface2);color:var(--text);}
-.browse-chips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;}
+.browse-chips{display:flex;flex-wrap:nowrap;gap:6px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;}
+.browse-chips::-webkit-scrollbar{height:6px;}
+.browse-chips::-webkit-scrollbar-track{background:transparent;}
+.browse-chips::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 .browse-chip{padding:6px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:18px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.12s;outline:none;}
 .browse-chip:hover{border-color:var(--blue);color:var(--blue);}
 .browse-chip.active{background:var(--blue);color:#fff;border-color:var(--blue);}
@@ -412,7 +415,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-name" id="prod-card-name"></div>
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="swatch-row" id="swatch-row"></div>
-          <button class="prod-card-change" onclick="changeItem()">&#9998; Change item</button>
+          <button class="prod-card-change" onclick="openBrowseModal()">&#9998; Browse / Change Item</button>
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -422,13 +425,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <button class="pill-x" onclick="clearItem()">&#x2715;</button>
         </div>
         <div id="sw">
-          <div style="display:flex;gap:8px;align-items:stretch;">
-            <input class="search-input" id="si" type="text" placeholder="e.g. Gildan 5000, Next Level, Comfort Colors..." autocomplete="off" spellcheck="false" style="flex:1;">
-            <button type="button" class="browse-btn" onclick="openBrowseModal()" aria-label="Browse all products">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-              Browse
-            </button>
-          </div>
+          <input class="search-input" id="si" type="text" placeholder="e.g. Gildan 5000, Next Level, Comfort Colors..." autocomplete="off" spellcheck="false">
           <div class="dd" id="dd"></div>
         </div>
       </div>
@@ -576,7 +573,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
           <div class="mob-prod-card-style" id="mob-prod-card-style"></div>
           <div class="swatch-row" id="mob-swatch-row" style="margin-top:10px;"></div>
-          <button class="mob-prod-card-change" onclick="changeItem()">&#9998; Change item</button>
+          <button class="mob-prod-card-change" onclick="openBrowseModal()">&#9998; Browse / Change Item</button>
         </div>
       </div>
     </div>
@@ -589,16 +586,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <span style="flex:1;font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="mob-sel-name"></span>
           <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px 4px;" onclick="clearItem()">&#x2715;</button>
         </div>
-        <div id="mob-sw">
-          <div style="display:flex;gap:6px;align-items:stretch;">
-            <input style="flex:1;padding:13px 14px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;" id="mob-si" type="text" placeholder="Search brand, style # or name..." autocomplete="off" spellcheck="false">
-            <button type="button" class="browse-btn browse-btn-mob" onclick="openBrowseModal()" aria-label="Browse all products">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-              Browse
-            </button>
-          </div>
-          <div class="dd" id="mob-dd"></div>
-        </div>
+        <div id="mob-sw"><input style="width:100%;padding:13px 14px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;" id="mob-si" type="text" placeholder="Search brand, style # or name..." autocomplete="off" spellcheck="false"><div class="dd" id="mob-dd"></div></div>
       </div>
     </div>
 
