@@ -299,6 +299,42 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .lightbox-img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.5);}
 .lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,0.15);color:#fff;border:none;font-size:22px;line-height:1;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;}
 .lightbox-close:hover{background:rgba(255,255,255,0.3);}
+/* BROWSE PRODUCTS MODAL */
+.browse-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;white-space:nowrap;flex-shrink:0;}
+.browse-btn:hover{background:#1857a8;}
+.browse-btn-mob{padding:8px 14px;font-size:12px;border-radius:var(--r);}
+.browse-overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+.browse-overlay.show{display:flex;}
+.browse-modal{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:1100px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,0.25);}
+.browse-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface);}
+.browse-title{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--text);flex-shrink:0;margin-right:8px;}
+.browse-search{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:20px;font-family:'Montserrat',sans-serif;font-size:13px;outline:none;background:var(--surface2);}
+.browse-search:focus{border-color:var(--blue);background:var(--surface);}
+.browse-close{background:transparent;border:none;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;flex-shrink:0;}
+.browse-close:hover{background:var(--surface2);color:var(--text);}
+.browse-chips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;}
+.browse-chip{padding:6px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:18px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.12s;outline:none;}
+.browse-chip:hover{border-color:var(--blue);color:var(--blue);}
+.browse-chip.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.browse-chip-count{margin-left:6px;font-size:10px;opacity:0.7;font-weight:500;}
+.browse-body{flex:1;overflow-y:auto;padding:16px 18px;}
+.browse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+.browse-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;}
+.browse-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);}
+.browse-card-img{width:100%;aspect-ratio:5/6;object-fit:cover;object-position:top center;background:#f7f7f9;border-bottom:1px solid var(--border);}
+.browse-card-info{padding:10px 12px;display:flex;flex-direction:column;gap:2px;}
+.browse-card-brand{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);}
+.browse-card-name{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.browse-card-price{font-size:12px;color:var(--text3);margin-top:4px;}
+.browse-card-price strong{color:var(--text);font-weight:700;}
+.browse-empty{text-align:center;padding:48px 20px;color:var(--text3);font-size:14px;}
+@media(max-width:600px){
+  .browse-overlay{padding:0;}
+  .browse-modal{max-width:100%;max-height:100%;height:100%;border-radius:0;}
+  .browse-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+  .browse-title{display:none;}
+  .browse-card-img{aspect-ratio:1/1.1;}
+}
 .prod-card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
 .prod-card-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px;}
 .prod-card-style{font-size:12px;color:var(--text3);margin-bottom:12px;}
@@ -386,7 +422,13 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <button class="pill-x" onclick="clearItem()">&#x2715;</button>
         </div>
         <div id="sw">
-          <input class="search-input" id="si" type="text" placeholder="e.g. Gildan 5000, Next Level, Comfort Colors..." autocomplete="off" spellcheck="false">
+          <div style="display:flex;gap:8px;align-items:stretch;">
+            <input class="search-input" id="si" type="text" placeholder="e.g. Gildan 5000, Next Level, Comfort Colors..." autocomplete="off" spellcheck="false" style="flex:1;">
+            <button type="button" class="browse-btn" onclick="openBrowseModal()" aria-label="Browse all products">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+              Browse
+            </button>
+          </div>
           <div class="dd" id="dd"></div>
         </div>
       </div>
@@ -547,7 +589,16 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <span style="flex:1;font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="mob-sel-name"></span>
           <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px 4px;" onclick="clearItem()">&#x2715;</button>
         </div>
-        <div id="mob-sw"><input style="width:100%;padding:13px 14px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;" id="mob-si" type="text" placeholder="Search brand, style # or name..." autocomplete="off" spellcheck="false"><div class="dd" id="mob-dd"></div></div>
+        <div id="mob-sw">
+          <div style="display:flex;gap:6px;align-items:stretch;">
+            <input style="flex:1;padding:13px 14px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;" id="mob-si" type="text" placeholder="Search brand, style # or name..." autocomplete="off" spellcheck="false">
+            <button type="button" class="browse-btn browse-btn-mob" onclick="openBrowseModal()" aria-label="Browse all products">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:-2px;"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+              Browse
+            </button>
+          </div>
+          <div class="dd" id="mob-dd"></div>
+        </div>
       </div>
     </div>
 
@@ -1654,7 +1705,126 @@ function closeLightbox(e){
   var box=document.getElementById('lightbox');if(box)box.classList.remove('show');
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+
+// =====================================================================
+// Browse Products modal: category chips + filterable visual grid
+// =====================================================================
+var _browseCategory='T-Shirts'; // default category on first open
+var _browseSearch='';
+// Standard category display order (most-popular first). Categories not in
+// this list are appended in alphabetical order.
+var _BROWSE_CAT_ORDER=['T-Shirts','Sweatshirts/Fleece','Polos/Knits','Outerwear','Caps','Bags','Activewear','Workwear','Woven Shirts','Accessories','Women\'s','Youth','Bottoms','Tall','Personal Protection','Infant & Toddler'];
+function _browseCatList(){
+  var counts={};
+  ITEMS.forEach(function(it){var c=it._full&&it._full.category;if(c)counts[c]=(counts[c]||0)+1;});
+  var known=_BROWSE_CAT_ORDER.filter(function(c){return counts[c];});
+  var extras=Object.keys(counts).filter(function(c){return _BROWSE_CAT_ORDER.indexOf(c)===-1;}).sort();
+  return known.concat(extras).map(function(c){return{name:c,count:counts[c]};});
+}
+function renderBrowseChips(){
+  var host=document.getElementById('browse-chips');if(!host)return;
+  var cats=_browseCatList();
+  host.innerHTML=cats.map(function(c){
+    var isActive=c.name===_browseCategory;
+    return '<button type="button" class="browse-chip'+(isActive?' active':'')+'" onclick="setBrowseCategory(\''+c.name.replace(/'/g,"\\'")+'\')">'+
+           c.name+'<span class="browse-chip-count">'+c.count+'</span></button>';
+  }).join('');
+}
+function _browseFiltered(){
+  var q=(_browseSearch||'').toLowerCase().trim();
+  return ITEMS.filter(function(it){
+    var p=it._full;if(!p)return false;
+    if(p.category!==_browseCategory)return false;
+    if(!q)return true;
+    var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
+    return hay.indexOf(q)!==-1;
+  });
+}
+function renderBrowseGrid(){
+  var host=document.getElementById('browse-grid');if(!host)return;
+  var rows=_browseFiltered();
+  if(!rows.length){
+    host.innerHTML='<div class="browse-empty" style="grid-column:1/-1;">No products match your search in this category.</div>';
+    return;
+  }
+  // Sort by popularity first (POPULAR list), then alpha
+  rows.sort(function(a,b){
+    var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
+    if(ap>-1&&bp>-1)return ap-bp;
+    if(ap>-1)return -1;if(bp>-1)return 1;
+    return (a.b+a.n).localeCompare(b.b+b.n);
+  });
+  host.innerHTML=rows.map(function(it){
+    var p=it._full;
+    var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
+    var imgs=firstColor&&firstColor.images?firstColor.images:{};
+    var src=imgs.front_model||imgs.front_flat||'';
+    var name=(it.n||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+    var brand=(it.b||'').replace(/"/g,'&quot;');
+    return '<div class="browse-card" onclick="pickFromBrowse(\''+it.s.replace(/'/g,"\\'")+'\')">'+
+           '<img class="browse-card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+           '<div class="browse-card-info">'+
+             '<div class="browse-card-brand">'+brand+'</div>'+
+             '<div class="browse-card-name">'+name+'</div>'+
+             '<div class="browse-card-price">from <strong>$'+(it.p).toFixed(2)+'</strong>/pc</div>'+
+           '</div></div>';
+  }).join('');
+}
+function setBrowseCategory(cat){
+  _browseCategory=cat;
+  _browseSearch='';
+  var s=document.getElementById('browse-search');if(s)s.value='';
+  renderBrowseChips();
+  renderBrowseGrid();
+  var body=document.querySelector('.browse-body');if(body)body.scrollTop=0;
+}
+function onBrowseSearch(){
+  var s=document.getElementById('browse-search');
+  _browseSearch=s?s.value:'';
+  renderBrowseGrid();
+}
+function openBrowseModal(){
+  // Pick a sensible default category if T-Shirts isn't present (it always is in the SanMar catalog, but be safe)
+  var cats=_browseCatList();
+  if(!cats.some(function(c){return c.name===_browseCategory;})&&cats.length){
+    _browseCategory=cats[0].name;
+  }
+  _browseSearch='';var ss=document.getElementById('browse-search');if(ss)ss.value='';
+  renderBrowseChips();
+  renderBrowseGrid();
+  var ov=document.getElementById('browse-overlay');if(ov)ov.classList.add('show');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){if(ss&&window.innerWidth>820)ss.focus();},50);
+}
+function closeBrowseModal(){
+  var ov=document.getElementById('browse-overlay');if(ov)ov.classList.remove('show');
+  document.body.style.overflow='';
+}
+function pickFromBrowse(style){
+  closeBrowseModal();
+  pickItem(style);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    var ov=document.getElementById('browse-overlay');
+    if(ov&&ov.classList.contains('show'))closeBrowseModal();
+  }
+});
 </script>
+<!-- Browse Products modal (hidden by default) -->
+<div class="browse-overlay" id="browse-overlay" onclick="if(event.target===this)closeBrowseModal()" role="dialog" aria-label="Browse products by category">
+  <div class="browse-modal">
+    <div class="browse-header">
+      <div class="browse-title">Browse Products</div>
+      <input type="text" class="browse-search" id="browse-search" placeholder="Search within this view..." autocomplete="off" spellcheck="false" oninput="onBrowseSearch()">
+      <button type="button" class="browse-close" onclick="closeBrowseModal()" aria-label="Close browse">&times;</button>
+    </div>
+    <div class="browse-chips" id="browse-chips"></div>
+    <div class="browse-body">
+      <div class="browse-grid" id="browse-grid"></div>
+    </div>
+  </div>
+</div>
 <!-- Image lightbox overlay (hidden by default) -->
 <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()" role="dialog" aria-label="Product image enlarged">
   <button type="button" class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>
