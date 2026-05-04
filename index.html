@@ -21,16 +21,7 @@ html,body{margin:0;padding:0;font-family:'Open Sans',sans-serif;background:#F2F4
 a{color:var(--blue);text-decoration:none;}
 a:hover{text-decoration:underline;}
 
-/* HEADER */
-.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-.brand{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--blue);font-size:20px;letter-spacing:-0.01em;}
-.brand small{font-weight:600;color:var(--text3);font-size:12px;letter-spacing:0;text-transform:uppercase;margin-left:8px;}
-.header-cta{display:flex;align-items:center;gap:10px;}
-.header-cta-text{font-size:13px;color:var(--text2);}
-.header-cta-link{padding:8px 16px;background:var(--blue);color:#fff!important;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none!important;transition:background 0.15s;}
-.header-cta-link:hover{background:#1857a8;}
-
-/* TWO-COLUMN LAYOUT */
+/* TWO-COLUMN LAYOUT (no top header — page is embedded) */
 .shell{max-width:1500px;margin:0 auto;padding:24px;display:grid;grid-template-columns:var(--sidebar-w) 1fr;gap:28px;align-items:start;}
 
 /* SIDEBAR */
@@ -56,9 +47,7 @@ a:hover{text-decoration:underline;}
 
 /* MAIN CONTENT */
 .content{min-width:0;}
-.page-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:26px;color:var(--text);margin:0 0 4px;}
-.page-sub{font-size:13px;color:var(--text3);margin:0 0 18px;}
-.toolbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.toolbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
 .toolbar-search{width:100%;padding:10px 16px;border:1.5px solid var(--border);border-radius:20px;font-family:'Open Sans',sans-serif;font-size:14px;outline:none;background:var(--surface2);}
 .toolbar-search:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
 .toolbar-search::placeholder{color:var(--text3);}
@@ -87,6 +76,32 @@ a:hover{text-decoration:underline;}
 
 .empty,.loading{text-align:center;padding:64px 20px;color:var(--text3);font-size:14px;grid-column:1/-1;}
 
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-top:24px;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.pagination-info{font-size:13px;color:var(--text2);font-family:'Open Sans',sans-serif;}
+.pagination-info strong{color:var(--text);font-weight:700;}
+.pag-pages{display:flex;align-items:center;gap:4px;}
+.pag-btn{min-width:34px;height:34px;padding:0 9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;font-weight:600;color:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.12s;}
+.pag-btn:hover:not(.active):not(:disabled){background:var(--blue-light);border-color:var(--blue-mid);}
+.pag-btn.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue);font-weight:700;cursor:default;}
+.pag-btn:disabled{color:var(--border2);cursor:not-allowed;background:var(--surface);}
+.pag-ellipsis{padding:0 4px;color:var(--text3);user-select:none;}
+.pagination-perpage{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);}
+.pagination-perpage select{padding:6px 28px 6px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%237B8696' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;}
+.pagination-perpage select:focus{border-color:var(--blue);}
+.back-to-top-wrap{margin-top:14px;text-align:center;}
+.back-to-top{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;background:none;border:none;padding:6px 12px;font-family:'Open Sans',sans-serif;}
+.back-to-top:hover{text-decoration:underline;}
+
+/* TRUST BANNER */
+.trust-banner{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.trust-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.trust-icon{width:40px;height:40px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.trust-icon svg{display:block;}
+.trust-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.trust-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);line-height:1.2;}
+.trust-sub{font-size:12px;color:var(--text3);line-height:1.35;}
+
 /* MOBILE */
 .filters-toggle{display:none;}
 @media(max-width:820px){
@@ -97,24 +112,16 @@ a:hover{text-decoration:underline;}
   .filters-toggle::after{content:'\25BE';font-size:14px;color:var(--text3);}
   .sidebar{display:none;}
   .sidebar.open{display:block;}
-  .page-header{padding:12px 16px;}
-  .brand{font-size:17px;}
-  .brand small{display:none;}
-  .header-cta-text{display:none;}
-  .page-title{font-size:21px;}
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+  .trust-banner{grid-template-columns:1fr;gap:8px;}
+  .trust-tile{padding:12px 14px;}
+  .pagination{flex-direction:column;align-items:stretch;gap:10px;text-align:center;}
+  .pag-pages{justify-content:center;flex-wrap:wrap;}
+  .pagination-perpage{justify-content:center;}
 }
 </style>
 </head>
 <body>
-
-<header class="page-header">
-  <div class="brand">Alive Print Shop <small>Custom Apparel</small></div>
-  <div class="header-cta">
-    <span class="header-cta-text">Already know what you want?</span>
-    <a class="header-cta-link" href="alive-pricing-calculator.html">Insta-Price &rarr;</a>
-  </div>
-</header>
 
 <div class="shell">
 
@@ -143,8 +150,9 @@ a:hover{text-decoration:underline;}
   </aside>
 
   <main class="content">
-    <h1 class="page-title">Browse Products</h1>
-    <p class="page-sub">Pick an item to instantly price your custom print job. Tap <a href="alive-pricing-calculator.html">Insta-Price</a> to skip ahead.</p>
+
+    <!-- TRUST BANNER (swap content via the BANNER_ITEMS array in JS for promos) -->
+    <div class="trust-banner" id="trust-banner"></div>
 
     <div class="toolbar">
       <input type="text" class="toolbar-search" id="page-search" placeholder="Search by brand, style number, or product name (e.g. Carhartt, DM130, Tritee)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
@@ -157,6 +165,24 @@ a:hover{text-decoration:underline;}
     <div class="grid" id="page-grid">
       <div class="loading">Loading our 2,900+ products&hellip;</div>
     </div>
+
+    <div class="pagination" id="pagination" style="display:none;">
+      <div class="pagination-info" id="pag-info"></div>
+      <div class="pag-pages" id="pag-pages"></div>
+      <div class="pagination-perpage">
+        <label for="per-page">Products Per Page</label>
+        <select id="per-page" onchange="setPerPage(this.value)">
+          <option value="24">24</option>
+          <option value="48" selected>48</option>
+          <option value="96">96</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="back-to-top-wrap">
+      <button type="button" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">&uarr; Back to Top</button>
+    </div>
+
   </main>
 
 </div>
@@ -165,12 +191,43 @@ a:hover{text-decoration:underline;}
 // =====================================================================
 // Data + state
 // =====================================================================
+// =====================================================================
+// Trust banner config — edit this array to swap to promo content later.
+// Icons are simple inline SVG so anything renders without external assets.
+// =====================================================================
+var BANNER_ITEMS=[
+  {
+    icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    title:'No Setup Fees',
+    sub:'The price you see is the price you pay'
+  },
+  {
+    icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    title:'Proof Before We Print',
+    sub:'You sign off on a digital proof first'
+  },
+  {
+    icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v7c0 5-4 8-8 10-4-2-8-5-8-10V5l8-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    title:'100% Print Guarantee',
+    sub:"If it’s not right, we make it right"
+  }
+];
+function renderTrustBanner(){
+  var host=document.getElementById('trust-banner');if(!host)return;
+  host.innerHTML=BANNER_ITEMS.map(function(item){
+    return '<div class="trust-tile">'+
+           '<div class="trust-icon">'+item.icon+'</div>'+
+           '<div class="trust-text">'+
+             '<div class="trust-title">'+item.title+'</div>'+
+             '<div class="trust-sub">'+item.sub+'</div>'+
+           '</div></div>';
+  }).join('');
+}
+
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
 var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
 var ITEMS=[];
 
-// 13 category buckets. "Tank Tops" is detected by NAME (any product whose
-// name contains "tank") and takes priority over its raw SanMar category.
 var CATEGORY_BUCKETS=[
   {label:'T-Shirts',              cats:['T-Shirts','Activewear']},
   {label:'Tank Tops',             cats:[],                         tankFromName:true},
@@ -186,9 +243,7 @@ var CATEGORY_BUCKETS=[
   {label:'Toddler',               cats:['Infant & Toddler']},
   {label:'Specialty',             cats:['Tall','Accessories']}
 ];
-function isTankTop(p){
-  return !!(p && p.name && /\btanks?\b/i.test(p.name));
-}
+function isTankTop(p){return !!(p && p.name && /\btanks?\b/i.test(p.name));}
 function bucketForProduct(p){
   if(!p)return null;
   if(isTankTop(p))return 'Tank Tops';
@@ -204,14 +259,13 @@ var _cats=new Set();
 var _brands=new Set();
 var _search='';
 var _brandsExpanded=false;
+var _page=1;
+var _perPage=48;
 var BRANDS_VISIBLE=8;
 
 function escAttr(s){return String(s||'').replace(/"/g,'&quot;');}
 function escJs(s){return String(s||'').replace(/'/g,"\\'");}
 
-// Strip the brand name from the start of the product name (case-insensitive)
-// so "District Perfect TriTee. DM130" with brand "District" becomes
-// "Perfect TriTee. DM130".
 function cleanName(name, brand){
   if(!name)return '';
   if(!brand)return name;
@@ -220,7 +274,7 @@ function cleanName(name, brand){
 }
 
 // =====================================================================
-// Color hex resolver (for swatches)
+// Color hex resolver
 // =====================================================================
 var COLOR_HEX_MAP={};
 var SANMAR_COLOR_EXTRAS={
@@ -247,17 +301,8 @@ function _rgbToHex(r,g,b){
     return v.length===1?'0'+v:v;
   }).join('');
 }
-function lightenHex(hex,amount){
-  amount=Math.max(0,Math.min(1,amount||0.3));
-  var rgb=_hexToRgb(hex);
-  return _rgbToHex(rgb[0]+(255-rgb[0])*amount,rgb[1]+(255-rgb[1])*amount,rgb[2]+(255-rgb[2])*amount);
-}
-function desaturateHex(hex,amount){
-  amount=Math.max(0,Math.min(1,amount||0.4));
-  var rgb=_hexToRgb(hex);
-  var avg=(rgb[0]+rgb[1]+rgb[2])/3;
-  return _rgbToHex(rgb[0]*(1-amount)+avg*amount,rgb[1]*(1-amount)+avg*amount,rgb[2]*(1-amount)+avg*amount);
-}
+function lightenHex(hex,amount){amount=Math.max(0,Math.min(1,amount||0.3));var rgb=_hexToRgb(hex);return _rgbToHex(rgb[0]+(255-rgb[0])*amount,rgb[1]+(255-rgb[1])*amount,rgb[2]+(255-rgb[2])*amount);}
+function desaturateHex(hex,amount){amount=Math.max(0,Math.min(1,amount||0.4));var rgb=_hexToRgb(hex);var avg=(rgb[0]+rgb[1]+rgb[2])/3;return _rgbToHex(rgb[0]*(1-amount)+avg*amount,rgb[1]*(1-amount)+avg*amount,rgb[2]*(1-amount)+avg*amount);}
 function buildHexLookup(rows){
   if(!Array.isArray(rows))return;
   rows.forEach(function(p){
@@ -269,17 +314,9 @@ function buildHexLookup(rows){
       }
     });
   });
-  Object.keys(SANMAR_COLOR_EXTRAS).forEach(function(k){
-    if(!COLOR_HEX_MAP[k])COLOR_HEX_MAP[k]=SANMAR_COLOR_EXTRAS[k];
-  });
+  Object.keys(SANMAR_COLOR_EXTRAS).forEach(function(k){if(!COLOR_HEX_MAP[k])COLOR_HEX_MAP[k]=SANMAR_COLOR_EXTRAS[k];});
 }
-var _SUBSTRING_BASES={
-  'black':'#000000','white':'#FFFFFF','red':'#B21F2D','navy':'#1B2C55','royal':'#1F3FA3',
-  'forest':'#2E5033','green':'#3DA456','yellow':'#F2C500','orange':'#E67E22',
-  'pink':'#FF77AA','purple':'#603B8E','charcoal':'#3F4343','maroon':'#66253F',
-  'brown':'#6B4326','gold':'#D4A93C','silver':'#C4C4C4','teal':'#0F8B8D',
-  'turquoise':'#3FBFBF','blue':'#1F3FA3','grey':'#888888','gray':'#888888'
-};
+var _SUBSTRING_BASES={'black':'#000000','white':'#FFFFFF','red':'#B21F2D','navy':'#1B2C55','royal':'#1F3FA3','forest':'#2E5033','green':'#3DA456','yellow':'#F2C500','orange':'#E67E22','pink':'#FF77AA','purple':'#603B8E','charcoal':'#3F4343','maroon':'#66253F','brown':'#6B4326','gold':'#D4A93C','silver':'#C4C4C4','teal':'#0F8B8D','turquoise':'#3FBFBF','blue':'#1F3FA3','grey':'#888888','gray':'#888888'};
 function resolveColorHex(name,providedHex){
   if(providedHex&&providedHex!=='#888888')return providedHex;
   if(!name)return '#cccccc';
@@ -296,11 +333,7 @@ function resolveColorHex(name,providedHex){
   for(var b in _SUBSTRING_BASES){if(key.indexOf(b)!==-1)return _SUBSTRING_BASES[b];}
   return '#cccccc';
 }
-function isLightHex(hex){
-  if(!hex)return false;
-  var h=hex.toLowerCase();
-  return h==='#ffffff'||h==='#fff';
-}
+function isLightHex(hex){if(!hex)return false;var h=hex.toLowerCase();return h==='#ffffff'||h==='#fff';}
 
 // =====================================================================
 // Counts & filtering
@@ -310,11 +343,7 @@ function bucketCounts(){
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_brands.size>0&&!_brands.has(p.brand))return;
-    if(_search){
-      var q=_search.toLowerCase().trim();
-      var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();
-      if(hay.indexOf(q)===-1)return;
-    }
+    if(_search){var q=_search.toLowerCase().trim();var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();if(hay.indexOf(q)===-1)return;}
     var b=bucketForProduct(p);
     if(b)c[b]=(c[b]||0)+1;
   });
@@ -325,11 +354,7 @@ function brandCounts(){
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_cats.size>0){var b=bucketForProduct(p);if(!_cats.has(b))return;}
-    if(_search){
-      var q=_search.toLowerCase().trim();
-      var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();
-      if(hay.indexOf(q)===-1)return;
-    }
+    if(_search){var q=_search.toLowerCase().trim();var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();if(hay.indexOf(q)===-1)return;}
     var name=p.brand||'(Unknown)';
     c[name]=(c[name]||0)+1;
   });
@@ -356,9 +381,7 @@ function renderBrandList(){
   var counts=brandCounts();
   var entries=Object.entries(counts).filter(function(e){return e[1]>0;}).sort(function(a,b){return a[0].localeCompare(b[0]);});
   _brands.forEach(function(b){
-    if(!entries.some(function(e){return e[0]===b;})){
-      entries.push([b,0]);entries.sort(function(a,b){return a[0].localeCompare(b[0]);});
-    }
+    if(!entries.some(function(e){return e[0]===b;})){entries.push([b,0]);entries.sort(function(a,b){return a[0].localeCompare(b[0]);});}
   });
   var visible=_brandsExpanded?entries:entries.slice(0,BRANDS_VISIBLE);
   var html=visible.map(function(e){
@@ -407,9 +430,71 @@ function swatchesHtml(p){
   return parts.join('');
 }
 
+// =====================================================================
+// Pagination
+// =====================================================================
+function totalPages(rowCount){return Math.max(1, Math.ceil(rowCount/_perPage));}
+
+function renderPagination(rowCount){
+  var pagBar=document.getElementById('pagination');
+  var pagInfo=document.getElementById('pag-info');
+  var pagPages=document.getElementById('pag-pages');
+  if(!pagBar||!pagInfo||!pagPages)return;
+  if(!rowCount){pagBar.style.display='none';return;}
+  pagBar.style.display='flex';
+  var pages=totalPages(rowCount);
+  var start=(_page-1)*_perPage+1;
+  var end=Math.min(_page*_perPage,rowCount);
+  pagInfo.innerHTML='<strong>'+start+'–'+end+'</strong> of <strong>'+rowCount.toLocaleString()+'</strong> products';
+  // Build page numbers with ellipsis: 1 ... cur-1 cur cur+1 ... last
+  var nums=[];
+  function add(n){if(nums.indexOf(n)===-1)nums.push(n);}
+  add(1);
+  for(var i=Math.max(2,_page-1);i<=Math.min(pages-1,_page+1);i++)add(i);
+  if(pages>1)add(pages);
+  nums.sort(function(a,b){return a-b;});
+  var html='<button type="button" class="pag-btn" '+(_page<=1?'disabled':'')+' onclick="setPage('+(_page-1)+')" aria-label="Previous">&lsaquo;</button>';
+  var prev=0;
+  nums.forEach(function(n){
+    if(n-prev>1)html+='<span class="pag-ellipsis">&hellip;</span>';
+    html+='<button type="button" class="pag-btn'+(n===_page?' active':'')+'" onclick="setPage('+n+')">'+n+'</button>';
+    prev=n;
+  });
+  html+='<button type="button" class="pag-btn" '+(_page>=pages?'disabled':'')+' onclick="setPage('+(_page+1)+')" aria-label="Next">&rsaquo;</button>';
+  pagPages.innerHTML=html;
+  // Sync per-page select
+  var sel=document.getElementById('per-page');if(sel)sel.value=String(_perPage);
+}
+
+function setPage(n){
+  var rows=filtered();
+  var pages=totalPages(rows.length);
+  _page=Math.max(1,Math.min(pages,n));
+  renderGrid();
+  // Smooth-scroll to top of grid
+  var grid=document.getElementById('page-grid');
+  if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function setPerPage(v){
+  _perPage=parseInt(v,10)||48;
+  _page=1;
+  renderGrid();
+}
+
+// =====================================================================
+// Grid render (paginated)
+// =====================================================================
 function renderGrid(){
   var host=document.getElementById('page-grid');if(!host)return;
   var rows=filtered();
+  // Sort by popularity then alpha
+  rows.sort(function(a,b){
+    var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
+    if(ap>-1&&bp>-1)return ap-bp;
+    if(ap>-1)return -1;if(bp>-1)return 1;
+    return (a.b+a.n).localeCompare(b.b+b.n);
+  });
+  // Update count display
   var countEl=document.getElementById('results-count');
   if(countEl){
     var bits=[];
@@ -421,15 +506,15 @@ function renderGrid(){
   }
   if(!rows.length){
     host.innerHTML='<div class="empty">No products match your filters. Try removing a filter or adjusting your search.</div>';
+    renderPagination(0);
     return;
   }
-  rows.sort(function(a,b){
-    var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
-    if(ap>-1&&bp>-1)return ap-bp;
-    if(ap>-1)return -1;if(bp>-1)return 1;
-    return (a.b+a.n).localeCompare(b.b+b.n);
-  });
-  host.innerHTML=rows.map(function(it){
+  // Clamp page if filters changed
+  var pages=totalPages(rows.length);
+  if(_page>pages)_page=1;
+  var startIdx=(_page-1)*_perPage;
+  var pageRows=rows.slice(startIdx,startIdx+_perPage);
+  host.innerHTML=pageRows.map(function(it){
     var p=it._full;
     var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
     var imgs=firstColor&&firstColor.images?firstColor.images:{};
@@ -450,17 +535,18 @@ function renderGrid(){
              '</div>'+
            '</div></a>';
   }).join('');
+  renderPagination(rows.length);
 }
 
 // =====================================================================
-// Interactions
+// Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);renderCategoryList();renderBrandList();renderGrid();}
-function clearCategories(){_cats.clear();renderCategoryList();renderBrandList();renderGrid();}
-function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);renderCategoryList();renderBrandList();renderGrid();}
-function clearBrands(){_brands.clear();renderCategoryList();renderBrandList();renderGrid();}
+function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();}
+function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();}
+function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();}
+function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';renderCategoryList();renderBrandList();renderGrid();}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';_page=1;renderCategoryList();renderBrandList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
@@ -478,7 +564,6 @@ async function loadProducts(){
       var p=rows[i];
       if(!p||!p.style)continue;
       if(p.discontinued===true)continue;
-      // Exclude socks, gloves, mittens by product name
       if(p.name&&EXCLUDE_NAME.test(p.name))continue;
       var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
       if(basePrice==null||isNaN(basePrice))continue;
@@ -489,6 +574,7 @@ async function loadProducts(){
     }
     ITEMS=flat;
     buildHexLookup(rows);
+    renderTrustBanner();
     renderCategoryList();renderBrandList();renderGrid();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
