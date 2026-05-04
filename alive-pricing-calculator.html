@@ -180,8 +180,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
   .mob-price-cell.green{background:var(--green);}
   .mob-price-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);font-family:'Montserrat',sans-serif;}
   .mob-price-val{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1.1;}
-  .mob-content{padding:10px 10px 0;}
-  .mob-step{background:var(--surface);border-radius:var(--r-lg);padding:14px 12px;margin-bottom:8px;border:1px solid var(--border);}
+  /* Edge-to-edge: zero side padding so steps fill the viewport */
+  .mob-content{padding:0;}
+  .mob-step{background:var(--surface);border-radius:0;padding:14px 14px;margin-bottom:0;border:none;border-bottom:6px solid #F2F4F8;}
   .mob-step-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
   .mob-step-num{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
   .mob-step-num.done{background:var(--green);}
@@ -222,7 +223,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
   .mob-ta-card.sel-std .mob-radio,.mob-ta-card.sel-rush .mob-radio{border-color:var(--blue);background:var(--blue);}
   .mob-ta-card.sel-super .mob-radio{border-color:#7c3aed;background:#7c3aed;}
   .mob-radio-dot{width:8px;height:8px;border-radius:50%;background:#fff;}
-  .mob-results{background:var(--surface);border-radius:var(--r-lg);padding:14px 12px;margin-bottom:8px;border:1px solid var(--border);}
+  .mob-results{background:var(--surface);border-radius:0;padding:14px;margin-bottom:0;border:none;border-bottom:6px solid #F2F4F8;}
   .mob-big-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
   .mob-big-card{border-radius:var(--r-lg);padding:11px 12px;}
   .mob-big-card.accent{background:var(--blue);}
