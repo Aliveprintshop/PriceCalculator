@@ -24,9 +24,13 @@ body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);f
 .right{padding:12px 12px 12px 0;display:flex;flex-direction:column;gap:0;width:100%;box-sizing:border-box;}
 
 /* STEPS */
-.step-block{padding:22px 0;border-bottom:1px solid var(--border);}
+.step-block{padding:16px 0;border-bottom:1px solid var(--border);}
 .step-block:last-child{border-bottom:none;}
-.step-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+/* 2-column grid for paired compact steps. Wraps multiple .step-block items. */
+.steps-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:24px;align-items:start;}
+.step-block.full{grid-column:1 / -1;}
+.step-block.full + .step-block:not(.full){border-top:none;}
 .step-num{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
 .step-num.done{background:var(--green);}
 .step-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);}
@@ -288,7 +292,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card{display:none;gap:20px;align-items:flex-start;padding:4px 0 0;}
 .prod-card.show{display:flex;}
 .prod-card-imgcol{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0;}
-.prod-card-img{width:260px;height:312px;object-fit:cover;object-position:top center;border-radius:var(--r-lg);border:1.5px solid var(--border);flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;}
+.prod-card-img{width:260px;height:312px;object-fit:contain;object-position:center;background:#fff;border-radius:var(--r-lg);border:1.5px solid var(--border);flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;padding:6px;}
 .prod-card-img:hover{opacity:0.92;}
 .view-pills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
 .view-pill{padding:5px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:0.06em;outline:none;transition:all 0.12s;}
@@ -356,7 +360,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .mob-prod-card{display:none;}
 .mob-prod-card.show{display:block;}
 .mob-prod-card-inner{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.mob-prod-card-img{width:110px;height:132px;object-fit:cover;object-position:top center;border-radius:var(--r);flex-shrink:0;}
+.mob-prod-card-img{width:110px;height:132px;object-fit:contain;object-position:center;background:#fff;border-radius:var(--r);flex-shrink:0;padding:4px;border:1px solid var(--border);}
 .mob-prod-card-brand{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:2px;}
 .mob-prod-card-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px;}
 .mob-prod-card-style{font-size:11px;color:var(--text3);margin-bottom:8px;}
@@ -392,9 +396,10 @@ textarea.of-input{resize:vertical;min-height:70px;}
 <!-- ── DESKTOP ── -->
 <div class="desktop-layout">
   <div class="left">
+    <div class="steps-grid">
 
     <!-- Step 1: Decoration -->
-    <div class="step-block">
+    <div class="step-block full">
       <div class="step-head"><div class="step-num">1</div><div><div class="step-title">How are you decorating?</div><div class="step-hint">Choose your print method</div></div></div>
       <div class="deco-tabs">
         <button class="deco-tab active" id="deco-sp" onclick="setDeco('sp')"><svg width="13" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:middle;"><path d="M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0c0-5-7-13-7-13z" fill="currentColor" opacity="0.9"/></svg> Screen Printing<span class="deco-badge">24+ pcs</span></button>
@@ -404,7 +409,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
     </div>
 
         <!-- Step 2: Item -->
-    <div class="step-block">
+    <div class="step-block full">
       <div class="step-head"><div class="step-num" id="sn2">2</div><div><div class="step-title">What are you printing on?</div><div class="step-hint">Search or pick from popular styles</div></div></div>
       <!-- Product Card (shown after item selected) -->
       <div class="prod-card" id="prod-card">
@@ -433,8 +438,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
-    <!-- Step 2: Qty -->
-    <div class="step-block">
+    <!-- Step 3: Qty -->
+    <div class="step-block full">
       <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">How many pieces do you need?</div><div class="step-hint">Min 24 for screen printing, 10 for heat transfer &mdash; prices drop as quantity goes up</div></div></div>
       <div class="qty-wrap"><input class="qty-input" id="qty" type="number" value="24" min="10" step="1"><div class="qty-hint" id="qty-hint">Price breaks at<br><strong>50, 72, 144, 300, 500+</strong></div></div>
       <div class="moq-warn" id="moq-warn">&#9888; Minimum order is 36 pieces.</div>
@@ -467,8 +472,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
-    <!-- Step 5: Turnaround -->
-    <div class="step-block">
+    <!-- Step 6: Turnaround -->
+    <div class="step-block full">
       <div class="step-head"><div class="step-num" id="sn6">6</div><div><div class="step-title">When do you need it?</div><div class="step-hint">Standard is free &mdash; rush options add to the total</div></div></div>
       <div class="ta-grid3">
         <div class="ta-card sel-std" id="ta-std" onclick="selectTA('std')"><div class="ta-top-row"><span class="ta-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="7" y="12" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="10.75" y="12" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="14.5" y="12" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="7" y="16" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="10.75" y="16" width="2.5" height="2.5" rx="0.5" fill="currentColor"/></svg></span><span class="ta-title">2-Week Standard</span></div><div class="ta-date" id="ta-std-date">-</div><div class="ta-detail">10 business days</div><div style="margin-top:3px;font-size:11px;font-weight:600;color:var(--green);" id="fee-std">Free</div></div>
@@ -478,7 +483,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
     </div>
 
     <!-- Bottom pricing summary — mirrors the top estimate cards so price is always visible -->
-    <div class="step-block" id="bottom-price-block" style="border-bottom:none;">
+    <div class="step-block full" id="bottom-price-block" style="border-bottom:none;">
       <div id="r-guide-bottom" class="empty-msg" style="margin-bottom:10px;"><strong>&#9888; Select a product to continue</strong>Pick a product above in Step 2 to see live pricing.</div>
       <div class="big-grid">
         <div class="big-card accent"><div class="big-lbl">Per Unit</div><div class="big-val" id="r-per-bottom">&mdash;</div></div>
@@ -486,6 +491,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
+    </div><!-- /steps-grid -->
   </div><!-- /left -->
 
   <div class="right" id="right-panel">
