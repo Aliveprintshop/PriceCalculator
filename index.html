@@ -10,6 +10,7 @@
 <style>
 :root{
   --blue:#1B6CCE; --blue-mid:#5294D9; --blue-light:#E8F1FB;
+  --green:#1F8B4C; --green-light:#E5F4EC;
   --surface:#FFFFFF; --surface2:#F7F8FA; --border:#E2E5EC; --border2:#CBD2DB;
   --text:#1A2330; --text2:#3D4A5C; --text3:#7B8696;
   --r:8px; --r-lg:12px;
@@ -41,7 +42,6 @@ a:hover{text-decoration:underline;}
 .filter-row{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 2px;color:var(--text2);font-size:14px;line-height:1.3;user-select:none;}
 .filter-row:hover{color:var(--text);}
 .filter-row.checked{color:var(--text);font-weight:600;}
-/* Custom checkbox */
 .cbox{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1.5px solid var(--border2);border-radius:4px;background:var(--surface);cursor:pointer;flex-shrink:0;position:relative;transition:all 0.12s;margin:0;}
 .cbox:hover{border-color:var(--blue);}
 .cbox:checked{background:var(--blue);border-color:var(--blue);}
@@ -67,19 +67,27 @@ a:hover{text-decoration:underline;}
 .results-count{font-size:13px;color:var(--text2);}
 .results-count strong{color:var(--text);font-weight:700;}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
 .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
-.card-img{width:100%;aspect-ratio:5/6;object-fit:cover;object-position:top center;background:#f7f7f9;border-bottom:1px solid var(--border);}
-.card-info{padding:12px 14px;display:flex;flex-direction:column;gap:3px;}
+.card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
+.card-swatches{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);min-height:36px;}
+.sw{width:14px;height:14px;border-radius:50%;border:1.5px solid transparent;flex-shrink:0;}
+.sw.light{border-color:#d0d0d0;}
+.sw-more{font-size:11px;color:var(--text3);font-weight:600;margin-left:2px;}
+.card-info{padding:12px 14px 14px;display:flex;flex-direction:column;gap:3px;}
 .card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);}
 .card-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .card-price{font-size:13px;color:var(--text3);margin-top:6px;}
 .card-price strong{color:var(--text);font-weight:700;}
+.card-meta{margin-top:8px;display:flex;flex-direction:column;gap:3px;}
+.card-meta-rush{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:3px 8px;border-radius:11px;align-self:flex-start;letter-spacing:0.02em;}
+.card-meta-rush::before{content:'\26A1';font-size:10px;}
+.card-meta-moq{font-size:11px;color:var(--text3);font-weight:500;padding-left:2px;}
 
 .empty,.loading{text-align:center;padding:64px 20px;color:var(--text3);font-size:14px;grid-column:1/-1;}
 
-/* MOBILE: collapse sidebar into a top "Filters" accordion */
+/* MOBILE */
 .filters-toggle{display:none;}
 @media(max-width:820px){
   .shell{grid-template-columns:1fr;gap:14px;padding:14px;}
@@ -94,7 +102,7 @@ a:hover{text-decoration:underline;}
   .brand small{display:none;}
   .header-cta-text{display:none;}
   .page-title{font-size:21px;}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
 }
 </style>
 </head>
@@ -161,24 +169,37 @@ var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products
 var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
 var ITEMS=[];
 
+// 13 category buckets. "Tank Tops" is detected by NAME (any product whose
+// name contains "tank") and takes priority over its raw SanMar category.
 var CATEGORY_BUCKETS=[
   {label:'T-Shirts',              cats:['T-Shirts','Activewear']},
+  {label:'Tank Tops',             cats:[],                         tankFromName:true},
   {label:'Sweatshirts & Hoodies', cats:['Sweatshirts/Fleece']},
   {label:'Polos & Button-Downs',  cats:['Polos/Knits','Woven Shirts']},
   {label:'Outerwear',             cats:['Outerwear']},
   {label:'Headwear',              cats:['Caps']},
   {label:'Bags',                  cats:['Bags']},
   {label:'Workwear & Safety',     cats:['Workwear','Personal Protection']},
-  {label:'Specialty',             cats:["Women's",'Youth','Tall','Infant & Toddler','Bottoms','Accessories']}
+  {label:'Bottoms',               cats:['Bottoms']},
+  {label:'Women',                 cats:["Women's"]},
+  {label:'Youth',                 cats:['Youth']},
+  {label:'Toddler',               cats:['Infant & Toddler']},
+  {label:'Specialty',             cats:['Tall','Accessories']}
 ];
-function bucketForCategory(cat){
+function isTankTop(p){
+  return !!(p && p.name && /\btanks?\b/i.test(p.name));
+}
+function bucketForProduct(p){
+  if(!p)return null;
+  if(isTankTop(p))return 'Tank Tops';
   for(var i=0;i<CATEGORY_BUCKETS.length;i++){
-    if(CATEGORY_BUCKETS[i].cats.indexOf(cat)>=0)return CATEGORY_BUCKETS[i].label;
+    var b=CATEGORY_BUCKETS[i];
+    if(b.cats.indexOf(p.category)>=0)return b.label;
   }
   return null;
 }
 
-// State (multi-select sets, both empty = no filter applied)
+// State
 var _cats=new Set();
 var _brands=new Set();
 var _search='';
@@ -188,21 +209,113 @@ var BRANDS_VISIBLE=8;
 function escAttr(s){return String(s||'').replace(/"/g,'&quot;');}
 function escJs(s){return String(s||'').replace(/'/g,"\\'");}
 
+// Strip the brand name from the start of the product name (case-insensitive)
+// so "District Perfect TriTee. DM130" with brand "District" becomes
+// "Perfect TriTee. DM130".
+function cleanName(name, brand){
+  if(!name)return '';
+  if(!brand)return name;
+  var b=brand.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return name.replace(new RegExp('^\\s*'+b+'\\s*[\\-\\.\\:\\u2014]?\\s*','i'),'').trim();
+}
+
 // =====================================================================
-// Counts (filter-aware so brand counts narrow when categories are picked)
+// Color hex resolver (for swatches)
+// =====================================================================
+var COLOR_HEX_MAP={};
+var SANMAR_COLOR_EXTRAS={
+  'tanzanite':'#3D2C8D','lemongrass':'#A8B85A','sea mist':'#B5D4C4','storm cloud':'#5B6770',
+  'ice blue':'#B5D6E5','eucalyptus blue':'#3F7A8C','jewel green':'#1A6B3F','bright blue':'#0066CC',
+  'moss green':'#5C7148','oat milk':'#E5D9B6','pool blue':'#5BB7C5','lagoon':'#0F8B8D',
+  'island reef':'#7BC0AB','granite':'#7B7B82','brick':'#8B3A2F','royal caribe':'#2C7BB6',
+  'sandstone':'#C8B89D','sapphire':'#1F4FA0','periwinkle':'#8094D4','china blue':'#5C84A6',
+  'plum':'#5E2C5C','rose':'#D58CA0','blush':'#E8C5C5','peach':'#FAB89E','apricot':'#F4A57C',
+  'sage':'#9CAE7E','seafoam':'#A6D6BB','jade':'#3FA37D','spruce':'#3F5E4E','hunter':'#234E3D',
+  'kelly':'#3DA456','lavender':'#B7A5D4','lilac':'#C5A5D6','aqua':'#5BB7C5','coral':'#F39C8B',
+  'mint':'#A5C9C0','lime':'#9AC74C','cream':'#F4E5C7','natural':'#F4E5C7','stone':'#A89E8E',
+  'olive':'#7A6B3D','khaki':'#B5A57A','tan':'#C8B89D','gold':'#D4A93C','rust':'#A8492A',
+  'wine':'#5E1F2E','burgundy':'#5C1F2E','fuchsia':'#D72E8E'
+};
+function _hexToRgb(hex){
+  hex=String(hex).replace('#','');
+  if(hex.length===3)hex=hex.split('').map(function(c){return c+c;}).join('');
+  return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)];
+}
+function _rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(function(v){
+    v=Math.max(0,Math.min(255,Math.round(v))).toString(16);
+    return v.length===1?'0'+v:v;
+  }).join('');
+}
+function lightenHex(hex,amount){
+  amount=Math.max(0,Math.min(1,amount||0.3));
+  var rgb=_hexToRgb(hex);
+  return _rgbToHex(rgb[0]+(255-rgb[0])*amount,rgb[1]+(255-rgb[1])*amount,rgb[2]+(255-rgb[2])*amount);
+}
+function desaturateHex(hex,amount){
+  amount=Math.max(0,Math.min(1,amount||0.4));
+  var rgb=_hexToRgb(hex);
+  var avg=(rgb[0]+rgb[1]+rgb[2])/3;
+  return _rgbToHex(rgb[0]*(1-amount)+avg*amount,rgb[1]*(1-amount)+avg*amount,rgb[2]*(1-amount)+avg*amount);
+}
+function buildHexLookup(rows){
+  if(!Array.isArray(rows))return;
+  rows.forEach(function(p){
+    if(!Array.isArray(p.colors))return;
+    p.colors.forEach(function(c){
+      if(c.name&&c.hex&&c.hex!=='#888888'){
+        var key=c.name.toLowerCase();
+        if(!COLOR_HEX_MAP[key])COLOR_HEX_MAP[key]=c.hex;
+      }
+    });
+  });
+  Object.keys(SANMAR_COLOR_EXTRAS).forEach(function(k){
+    if(!COLOR_HEX_MAP[k])COLOR_HEX_MAP[k]=SANMAR_COLOR_EXTRAS[k];
+  });
+}
+var _SUBSTRING_BASES={
+  'black':'#000000','white':'#FFFFFF','red':'#B21F2D','navy':'#1B2C55','royal':'#1F3FA3',
+  'forest':'#2E5033','green':'#3DA456','yellow':'#F2C500','orange':'#E67E22',
+  'pink':'#FF77AA','purple':'#603B8E','charcoal':'#3F4343','maroon':'#66253F',
+  'brown':'#6B4326','gold':'#D4A93C','silver':'#C4C4C4','teal':'#0F8B8D',
+  'turquoise':'#3FBFBF','blue':'#1F3FA3','grey':'#888888','gray':'#888888'
+};
+function resolveColorHex(name,providedHex){
+  if(providedHex&&providedHex!=='#888888')return providedHex;
+  if(!name)return '#cccccc';
+  var key=name.toLowerCase().trim();
+  if(COLOR_HEX_MAP[key])return COLOR_HEX_MAP[key];
+  var parts=name.split('/').map(function(s){return s.trim();});
+  if(parts.length>1){var f=COLOR_HEX_MAP[parts[0].toLowerCase()];if(f)return f;}
+  var m=name.match(/^(.+?)\s+Frost$/i);
+  if(m){var b=COLOR_HEX_MAP[m[1].toLowerCase()];if(b)return lightenHex(b,0.45);}
+  m=name.match(/^Heathere?d?\s+(.+)$/i);
+  if(m){var b2=COLOR_HEX_MAP[m[1].toLowerCase()];if(b2)return desaturateHex(b2,0.4);}
+  m=name.match(/^Athletic\s+(.+)$/i);
+  if(m){var b3=COLOR_HEX_MAP[m[1].toLowerCase()];if(b3)return b3;}
+  for(var b in _SUBSTRING_BASES){if(key.indexOf(b)!==-1)return _SUBSTRING_BASES[b];}
+  return '#cccccc';
+}
+function isLightHex(hex){
+  if(!hex)return false;
+  var h=hex.toLowerCase();
+  return h==='#ffffff'||h==='#fff';
+}
+
+// =====================================================================
+// Counts & filtering
 // =====================================================================
 function bucketCounts(){
   var c={};CATEGORY_BUCKETS.forEach(function(b){c[b.label]=0;});
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
-    // Category counts respect brand + search filters but ignore category filter (so user can see counts even if they're filtering categories).
     if(_brands.size>0&&!_brands.has(p.brand))return;
     if(_search){
       var q=_search.toLowerCase().trim();
       var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();
       if(hay.indexOf(q)===-1)return;
     }
-    var b=bucketForCategory(p.category);
+    var b=bucketForProduct(p);
     if(b)c[b]=(c[b]||0)+1;
   });
   return c;
@@ -211,11 +324,7 @@ function brandCounts(){
   var c={};
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
-    // Brand counts respect category + search filters but ignore brand filter.
-    if(_cats.size>0){
-      var b=bucketForCategory(p.category);
-      if(!_cats.has(b))return;
-    }
+    if(_cats.size>0){var b=bucketForProduct(p);if(!_cats.has(b))return;}
     if(_search){
       var q=_search.toLowerCase().trim();
       var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();
@@ -227,9 +336,6 @@ function brandCounts(){
   return c;
 }
 
-// =====================================================================
-// Renderers
-// =====================================================================
 function renderCategoryList(){
   var host=document.getElementById('cat-list');if(!host)return;
   var counts=bucketCounts();
@@ -248,13 +354,10 @@ function renderCategoryList(){
 function renderBrandList(){
   var host=document.getElementById('brand-list');if(!host)return;
   var counts=brandCounts();
-  // Sort brands alphabetically; hide brands with 0 count under current other filters
   var entries=Object.entries(counts).filter(function(e){return e[1]>0;}).sort(function(a,b){return a[0].localeCompare(b[0]);});
-  // Always include selected brands even if their count is 0 in the current filter context
   _brands.forEach(function(b){
     if(!entries.some(function(e){return e[0]===b;})){
-      entries.push([b,0]);
-      entries.sort(function(a,b){return a[0].localeCompare(b[0]);});
+      entries.push([b,0]);entries.sort(function(a,b){return a[0].localeCompare(b[0]);});
     }
   });
   var visible=_brandsExpanded?entries:entries.slice(0,BRANDS_VISIBLE);
@@ -272,9 +375,7 @@ function renderBrandList(){
     html+='<li><button type="button" class="show-more" onclick="toggleBrandsExpanded()">'+
           (_brandsExpanded?'Show less':'Show more ('+(entries.length-BRANDS_VISIBLE)+' more)')+'</button></li>';
   }
-  if(!entries.length){
-    html='<li style="color:var(--text3);font-size:13px;padding:4px 0;">No matching brands</li>';
-  }
+  if(!entries.length)html='<li style="color:var(--text3);font-size:13px;padding:4px 0;">No matching brands</li>';
   host.innerHTML=html;
   document.getElementById('clear-brands').style.display=_brands.size>0?'inline':'none';
 }
@@ -283,15 +384,27 @@ function filtered(){
   var q=(_search||'').toLowerCase().trim();
   return ITEMS.filter(function(it){
     var p=it._full;if(!p)return false;
-    if(_cats.size>0){
-      var bk=bucketForCategory(p.category);
-      if(!_cats.has(bk))return false;
-    }
+    if(_cats.size>0){var bk=bucketForProduct(p);if(!_cats.has(bk))return false;}
     if(_brands.size>0&&!_brands.has(p.brand))return false;
     if(!q)return true;
     var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
     return hay.indexOf(q)!==-1;
   });
+}
+
+function swatchesHtml(p){
+  if(!Array.isArray(p.colors)||!p.colors.length)return '<span class="sw-more" style="margin:0;">No colors</span>';
+  var max=8;
+  var visible=p.colors.slice(0,max);
+  var more=p.colors.length-visible.length;
+  var parts=visible.map(function(c){
+    var hex=resolveColorHex(c.name,c.hex);
+    var lightCls=isLightHex(hex)?' light':'';
+    var title=(c.name||'').replace(/"/g,'&quot;');
+    return '<span class="sw'+lightCls+'" style="background:'+hex+';" title="'+title+'"></span>';
+  });
+  if(more>0)parts.push('<span class="sw-more">+'+more+'</span>');
+  return parts.join('');
 }
 
 function renderGrid(){
@@ -321,15 +434,20 @@ function renderGrid(){
     var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
     var imgs=firstColor&&firstColor.images?firstColor.images:{};
     var src=imgs.front_model||imgs.front_flat||'';
-    var name=(it.n||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+    var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
     return '<a class="card" href="alive-pricing-calculator.html?style='+safeStyle+'">'+
-           '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+           '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+           '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
              '<div class="card-brand">'+brand+'</div>'+
-             '<div class="card-name">'+name+'</div>'+
+             '<div class="card-name">'+displayName+'</div>'+
              '<div class="card-price">from <strong>$'+(it.p).toFixed(2)+'</strong>/pc</div>'+
+             '<div class="card-meta">'+
+               '<span class="card-meta-rush">Rush Available</span>'+
+               '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>'+
+             '</div>'+
            '</div></a>';
   }).join('');
 }
@@ -337,28 +455,13 @@ function renderGrid(){
 // =====================================================================
 // Interactions
 // =====================================================================
-function toggleCategory(label){
-  if(_cats.has(label))_cats.delete(label);
-  else _cats.add(label);
-  renderCategoryList();renderBrandList();renderGrid();
-}
+function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);renderCategoryList();renderBrandList();renderGrid();}
 function clearCategories(){_cats.clear();renderCategoryList();renderBrandList();renderGrid();}
-function toggleBrand(name){
-  if(_brands.has(name))_brands.delete(name);
-  else _brands.add(name);
-  renderCategoryList();renderBrandList();renderGrid();
-}
+function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);renderCategoryList();renderBrandList();renderGrid();}
 function clearBrands(){_brands.clear();renderCategoryList();renderBrandList();renderGrid();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){
-  var s=document.getElementById('page-search');
-  _search=s?s.value:'';
-  renderCategoryList();renderBrandList();renderGrid();
-}
-function toggleSidebar(){
-  var sb=document.getElementById('sidebar');
-  if(sb)sb.classList.toggle('open');
-}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';renderCategoryList();renderBrandList();renderGrid();}
+function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
 // Boot
@@ -370,10 +473,13 @@ async function loadProducts(){
     var data=await res.json();
     var rows=Array.isArray(data)?data:(data.products||[]);
     var flat=[];
+    var EXCLUDE_NAME=/\b(socks?|gloves?|mittens?)\b/i;
     for(var i=0;i<rows.length;i++){
       var p=rows[i];
       if(!p||!p.style)continue;
       if(p.discontinued===true)continue;
+      // Exclude socks, gloves, mittens by product name
+      if(p.name&&EXCLUDE_NAME.test(p.name))continue;
       var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
       if(basePrice==null||isNaN(basePrice))continue;
       var unitPrice=+(basePrice*1.5).toFixed(2);
@@ -382,6 +488,7 @@ async function loadProducts(){
       flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,_full:p});
     }
     ITEMS=flat;
+    buildHexLookup(rows);
     renderCategoryList();renderBrandList();renderGrid();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
