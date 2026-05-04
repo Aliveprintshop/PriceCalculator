@@ -32,39 +32,36 @@ a:hover{text-decoration:underline;}
 /* TWO-COLUMN LAYOUT */
 .shell{max-width:1500px;margin:0 auto;padding:24px;display:grid;grid-template-columns:var(--sidebar-w) 1fr;gap:28px;align-items:start;}
 
-/* SIDEBAR (BRANDS) */
-.sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.sidebar-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin:0 0 14px;}
-.brand-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
-.brand-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1.5px solid transparent;border-radius:var(--r);cursor:pointer;transition:all 0.12s;background:transparent;text-align:left;font-family:inherit;font-size:13px;color:var(--text2);width:100%;}
-.brand-item:hover:not(.active){background:var(--surface2);border-color:var(--border);color:var(--text);}
-.brand-item.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue);font-weight:600;}
-.brand-item.all{font-weight:600;color:var(--text);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;margin-bottom:6px;padding-bottom:14px;}
-.brand-item.all.active{font-weight:700;}
-.brand-logo-wrap{width:72px;height:28px;display:flex;align-items:center;justify-content:flex-start;flex-shrink:0;}
-.brand-logo{max-width:100%;max-height:100%;object-fit:contain;object-position:left center;}
-.brand-text{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text);line-height:1.1;}
-.brand-item.active .brand-text{color:var(--blue);}
-.brand-name{flex:1;}
-.brand-count{font-size:10px;color:var(--text3);font-weight:600;}
-.brand-item.active .brand-count{color:var(--blue);opacity:0.7;}
+/* SIDEBAR */
+.sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:6px 0;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.filter-section{padding:18px 20px;border-bottom:1px solid var(--border);}
+.filter-section:last-child{border-bottom:none;}
+.filter-title{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin:0 0 12px;}
+.filter-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.filter-row{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 2px;color:var(--text2);font-size:14px;line-height:1.3;user-select:none;}
+.filter-row:hover{color:var(--text);}
+.filter-row.checked{color:var(--text);font-weight:600;}
+/* Custom checkbox */
+.cbox{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1.5px solid var(--border2);border-radius:4px;background:var(--surface);cursor:pointer;flex-shrink:0;position:relative;transition:all 0.12s;margin:0;}
+.cbox:hover{border-color:var(--blue);}
+.cbox:checked{background:var(--blue);border-color:var(--blue);}
+.cbox:checked::after{content:'';position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.filter-name{flex:1;}
+.filter-count{color:var(--text3);font-size:13px;font-weight:400;}
+.filter-row.checked .filter-count{color:var(--text2);}
+.show-more{background:none;border:none;padding:6px 0 0;color:var(--blue);font-family:'Open Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;}
+.show-more:hover{text-decoration:underline;}
+.clear-link{background:none;border:none;padding:0;color:var(--blue);font-family:'Open Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;float:right;margin-top:2px;}
+.clear-link:hover{text-decoration:underline;}
 
 /* MAIN CONTENT */
 .content{min-width:0;}
 .page-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:26px;color:var(--text);margin:0 0 4px;}
 .page-sub{font-size:13px;color:var(--text3);margin:0 0 18px;}
-
-.toolbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:0;overflow:hidden;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.toolbar-search-row{padding:14px 16px;border-bottom:1px solid var(--border);}
+.toolbar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
 .toolbar-search{width:100%;padding:10px 16px;border:1.5px solid var(--border);border-radius:20px;font-family:'Open Sans',sans-serif;font-size:14px;outline:none;background:var(--surface2);}
 .toolbar-search:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
 .toolbar-search::placeholder{color:var(--text3);}
-
-.cat-row{display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px;background:var(--surface2);}
-.cat{padding:8px 16px;background:var(--surface);border:1.5px solid var(--border2);border-radius:22px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.12s;outline:none;}
-.cat:hover:not(.active){border-color:var(--blue);color:var(--blue);transform:translateY(-1px);}
-.cat.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 6px rgba(27,108,206,0.25);}
-.cat-count{margin-left:6px;font-size:10px;opacity:0.7;font-weight:500;}
 
 .results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
 .results-count{font-size:13px;color:var(--text2);}
@@ -82,25 +79,22 @@ a:hover{text-decoration:underline;}
 
 .empty,.loading{text-align:center;padding:64px 20px;color:var(--text3);font-size:14px;grid-column:1/-1;}
 
-/* MOBILE: collapse sidebar into a top accordion */
-.brand-toggle{display:none;}
+/* MOBILE: collapse sidebar into a top "Filters" accordion */
+.filters-toggle{display:none;}
 @media(max-width:820px){
   .shell{grid-template-columns:1fr;gap:14px;padding:14px;}
-  .sidebar{position:static;max-height:none;padding:0;overflow:visible;}
-  .sidebar-title{display:none;}
-  .brand-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;background:var(--surface);border:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;}
-  .brand-toggle::after{content:'\25BE';font-size:14px;color:var(--text3);}
-  .brand-toggle.open::after{transform:rotate(180deg);display:inline-block;}
-  .brand-list{display:none;margin-top:10px;padding:14px;background:var(--surface);border-radius:var(--r-lg);}
-  .brand-list.open{display:flex;}
+  .sidebar{position:static;max-height:none;padding:0;overflow:visible;background:transparent;border:none;box-shadow:none;}
+  .filter-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px;border-bottom:1px solid var(--border);}
+  .filters-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;}
+  .filters-toggle::after{content:'\25BE';font-size:14px;color:var(--text3);}
+  .sidebar{display:none;}
+  .sidebar.open{display:block;}
   .page-header{padding:12px 16px;}
   .brand{font-size:17px;}
   .brand small{display:none;}
   .header-cta-text{display:none;}
   .page-title{font-size:21px;}
   .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
-  .cat-row{padding:10px 12px;gap:6px;}
-  .cat{padding:6px 12px;font-size:12px;}
 }
 </style>
 </head>
@@ -116,12 +110,28 @@ a:hover{text-decoration:underline;}
 
 <div class="shell">
 
-  <aside class="sidebar">
-    <button type="button" class="brand-toggle" id="brand-toggle" onclick="toggleBrandList()">
-      <span><span id="brand-toggle-label">All Brands</span></span>
-    </button>
-    <h2 class="sidebar-title">Shop by Brand</h2>
-    <ul class="brand-list" id="brand-list"></ul>
+  <button type="button" class="filters-toggle" id="filters-toggle" onclick="toggleSidebar()">
+    <span id="filters-toggle-label">Filters</span>
+  </button>
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="filter-section">
+      <h2 class="filter-title">
+        Categories
+        <button type="button" class="clear-link" id="clear-cats" onclick="clearCategories()" style="display:none;">Clear</button>
+      </h2>
+      <ul class="filter-list" id="cat-list"></ul>
+    </div>
+
+    <div class="filter-section">
+      <h2 class="filter-title">
+        Brands
+        <button type="button" class="clear-link" id="clear-brands" onclick="clearBrands()" style="display:none;">Clear</button>
+      </h2>
+      <ul class="filter-list" id="brand-list"></ul>
+    </div>
+
   </aside>
 
   <main class="content">
@@ -129,10 +139,7 @@ a:hover{text-decoration:underline;}
     <p class="page-sub">Pick an item to instantly price your custom print job. Tap <a href="alive-pricing-calculator.html">Insta-Price</a> to skip ahead.</p>
 
     <div class="toolbar">
-      <div class="toolbar-search-row">
-        <input type="text" class="toolbar-search" id="page-search" placeholder="Search by brand, style number, or product name (e.g. Carhartt, DM130, Tritee)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
-      </div>
-      <div class="cat-row" id="cat-row"></div>
+      <input type="text" class="toolbar-search" id="page-search" placeholder="Search by brand, style number, or product name (e.g. Carhartt, DM130, Tritee)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
     </div>
 
     <div class="results-bar">
@@ -148,22 +155,21 @@ a:hover{text-decoration:underline;}
 
 <script>
 // =====================================================================
-// Data layer
+// Data + state
 // =====================================================================
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
 var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
 var ITEMS=[];
 
-// 8 simplified buckets that group SanMar's 16 raw categories.
 var CATEGORY_BUCKETS=[
-  {label:'T-Shirts',           cats:['T-Shirts','Activewear']},
+  {label:'T-Shirts',              cats:['T-Shirts','Activewear']},
   {label:'Sweatshirts & Hoodies', cats:['Sweatshirts/Fleece']},
   {label:'Polos & Button-Downs',  cats:['Polos/Knits','Woven Shirts']},
-  {label:'Outerwear',          cats:['Outerwear']},
-  {label:'Headwear',           cats:['Caps']},
-  {label:'Bags',               cats:['Bags']},
-  {label:'Workwear & Safety',  cats:['Workwear','Personal Protection']},
-  {label:'Specialty',          cats:["Women's",'Youth','Tall','Infant & Toddler','Bottoms','Accessories']}
+  {label:'Outerwear',             cats:['Outerwear']},
+  {label:'Headwear',              cats:['Caps']},
+  {label:'Bags',                  cats:['Bags']},
+  {label:'Workwear & Safety',     cats:['Workwear','Personal Protection']},
+  {label:'Specialty',             cats:["Women's",'Youth','Tall','Infant & Toddler','Bottoms','Accessories']}
 ];
 function bucketForCategory(cat){
   for(var i=0;i<CATEGORY_BUCKETS.length;i++){
@@ -172,92 +178,116 @@ function bucketForCategory(cat){
   return null;
 }
 
-// State
-var _bucket='T-Shirts';
-var _brand='All Brands';
+// State (multi-select sets, both empty = no filter applied)
+var _cats=new Set();
+var _brands=new Set();
 var _search='';
+var _brandsExpanded=false;
+var BRANDS_VISIBLE=8;
 
-// Slug helper for logo lookup
-function brandSlug(name){
-  return String(name||'').toLowerCase()
-    .replace(/[^a-z0-9]+/g,'-')
-    .replace(/^-+|-+$/g,'');
-}
+function escAttr(s){return String(s||'').replace(/"/g,'&quot;');}
+function escJs(s){return String(s||'').replace(/'/g,"\\'");}
 
+// =====================================================================
+// Counts (filter-aware so brand counts narrow when categories are picked)
+// =====================================================================
 function bucketCounts(){
-  var counts={};
-  CATEGORY_BUCKETS.forEach(function(b){counts[b.label]=0;});
-  ITEMS.forEach(function(it){
-    var b=it._full && bucketForCategory(it._full.category);
-    if(b)counts[b]=(counts[b]||0)+1;
-  });
-  return counts;
-}
-
-function renderCategoryRow(){
-  var host=document.getElementById('cat-row');if(!host)return;
-  var counts=bucketCounts();
-  host.innerHTML=CATEGORY_BUCKETS.map(function(b){
-    var safe=b.label.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    return '<button type="button" class="cat'+(b.label===_bucket?' active':'')+'" onclick="setBucket(\''+safe+'\')">'+
-           b.label+'<span class="cat-count">'+(counts[b.label]||0)+'</span></button>';
-  }).join('');
-}
-
-function brandsForBucket(bucketLabel){
-  var counts={};var totalInBucket=0;
-  var bucket=CATEGORY_BUCKETS.find(function(x){return x.label===bucketLabel;});
-  if(!bucket)return {brands:[],total:0};
+  var c={};CATEGORY_BUCKETS.forEach(function(b){c[b.label]=0;});
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
-    if(bucket.cats.indexOf(p.category)<0)return;
-    totalInBucket++;
-    var b=p.brand||'(Unknown)';
-    counts[b]=(counts[b]||0)+1;
+    // Category counts respect brand + search filters but ignore category filter (so user can see counts even if they're filtering categories).
+    if(_brands.size>0&&!_brands.has(p.brand))return;
+    if(_search){
+      var q=_search.toLowerCase().trim();
+      var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();
+      if(hay.indexOf(q)===-1)return;
+    }
+    var b=bucketForCategory(p.category);
+    if(b)c[b]=(c[b]||0)+1;
   });
-  return {
-    brands:Object.entries(counts).sort(function(a,b){return b[1]-a[1];}).map(function(e){return{name:e[0],count:e[1]};}),
-    total:totalInBucket
-  };
+  return c;
+}
+function brandCounts(){
+  var c={};
+  ITEMS.forEach(function(it){
+    var p=it._full;if(!p)return;
+    // Brand counts respect category + search filters but ignore brand filter.
+    if(_cats.size>0){
+      var b=bucketForCategory(p.category);
+      if(!_cats.has(b))return;
+    }
+    if(_search){
+      var q=_search.toLowerCase().trim();
+      var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();
+      if(hay.indexOf(q)===-1)return;
+    }
+    var name=p.brand||'(Unknown)';
+    c[name]=(c[name]||0)+1;
+  });
+  return c;
 }
 
-function brandItemHTML(name, count, isActive){
-  var slug=brandSlug(name);
-  var safeName=name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-  var attrName=name.replace(/"/g,'&quot;');
-  // Try to load /brand-logos/{slug}.svg; on error replace with styled text.
-  var logoHtml='<img class="brand-logo" alt="'+attrName+'" src="brand-logos/'+slug+'.svg" '+
-               'onerror="this.outerHTML=\'<span class=&quot;brand-text&quot;>'+attrName.replace(/'/g,'&#39;')+'</span>\'">';
-  return '<button type="button" class="brand-item'+(isActive?' active':'')+'" onclick="setBrand(\''+safeName+'\')">'+
-         '<span class="brand-logo-wrap">'+logoHtml+'</span>'+
-         '<span class="brand-name"></span>'+
-         '<span class="brand-count">'+count+'</span></button>';
+// =====================================================================
+// Renderers
+// =====================================================================
+function renderCategoryList(){
+  var host=document.getElementById('cat-list');if(!host)return;
+  var counts=bucketCounts();
+  host.innerHTML=CATEGORY_BUCKETS.map(function(b){
+    var checked=_cats.has(b.label);
+    var safeLabel=escJs(b.label);
+    return '<li><label class="filter-row'+(checked?' checked':'')+'">'+
+           '<input type="checkbox" class="cbox" '+(checked?'checked':'')+' onchange="toggleCategory(\''+safeLabel+'\')">'+
+           '<span class="filter-name">'+b.label+'</span>'+
+           '<span class="filter-count">('+(counts[b.label]||0)+')</span>'+
+           '</label></li>';
+  }).join('');
+  document.getElementById('clear-cats').style.display=_cats.size>0?'inline':'none';
 }
 
 function renderBrandList(){
   var host=document.getElementById('brand-list');if(!host)return;
-  var info=brandsForBucket(_bucket);
-  // "All Brands" entry first
-  var html='<li><button type="button" class="brand-item all'+(_brand==='All Brands'?' active':'')+'" onclick="setBrand(\'All Brands\')">'+
-           '<span class="brand-name" style="font-size:13px;font-weight:700;">All Brands</span>'+
-           '<span class="brand-count">'+info.total+'</span></button></li>';
-  info.brands.forEach(function(b){
-    html+='<li>'+brandItemHTML(b.name, b.count, _brand===b.name)+'</li>';
+  var counts=brandCounts();
+  // Sort brands alphabetically; hide brands with 0 count under current other filters
+  var entries=Object.entries(counts).filter(function(e){return e[1]>0;}).sort(function(a,b){return a[0].localeCompare(b[0]);});
+  // Always include selected brands even if their count is 0 in the current filter context
+  _brands.forEach(function(b){
+    if(!entries.some(function(e){return e[0]===b;})){
+      entries.push([b,0]);
+      entries.sort(function(a,b){return a[0].localeCompare(b[0]);});
+    }
   });
+  var visible=_brandsExpanded?entries:entries.slice(0,BRANDS_VISIBLE);
+  var html=visible.map(function(e){
+    var name=e[0],count=e[1];
+    var checked=_brands.has(name);
+    var safeName=escJs(name);
+    return '<li><label class="filter-row'+(checked?' checked':'')+'">'+
+           '<input type="checkbox" class="cbox" '+(checked?'checked':'')+' onchange="toggleBrand(\''+safeName+'\')">'+
+           '<span class="filter-name">'+name+'</span>'+
+           '<span class="filter-count">('+count+')</span>'+
+           '</label></li>';
+  }).join('');
+  if(entries.length>BRANDS_VISIBLE){
+    html+='<li><button type="button" class="show-more" onclick="toggleBrandsExpanded()">'+
+          (_brandsExpanded?'Show less':'Show more ('+(entries.length-BRANDS_VISIBLE)+' more)')+'</button></li>';
+  }
+  if(!entries.length){
+    html='<li style="color:var(--text3);font-size:13px;padding:4px 0;">No matching brands</li>';
+  }
   host.innerHTML=html;
-  // Update mobile toggle label
-  var toggle=document.getElementById('brand-toggle-label');
-  if(toggle)toggle.textContent='Brand: '+_brand;
+  document.getElementById('clear-brands').style.display=_brands.size>0?'inline':'none';
 }
 
 function filtered(){
   var q=(_search||'').toLowerCase().trim();
-  var bucket=CATEGORY_BUCKETS.find(function(x){return x.label===_bucket;});
-  if(!bucket)return [];
   return ITEMS.filter(function(it){
     var p=it._full;if(!p)return false;
-    if(bucket.cats.indexOf(p.category)<0)return false;
-    if(_brand&&_brand!=='All Brands'&&p.brand!==_brand)return false;
+    if(_cats.size>0){
+      var bk=bucketForCategory(p.category);
+      if(!_cats.has(bk))return false;
+    }
+    if(_brands.size>0&&!_brands.has(p.brand))return false;
     if(!q)return true;
     var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
     return hay.indexOf(q)!==-1;
@@ -269,12 +299,15 @@ function renderGrid(){
   var rows=filtered();
   var countEl=document.getElementById('results-count');
   if(countEl){
-    var bnPart=_brand==='All Brands'?'':' &middot; '+_brand;
-    var srPart=_search?' &middot; matching "'+_search+'"':'';
-    countEl.innerHTML='<strong>'+rows.length.toLocaleString()+'</strong> '+(rows.length===1?'product':'products')+' in '+_bucket+bnPart+srPart;
+    var bits=[];
+    if(_cats.size>0)bits.push(Array.from(_cats).join(', '));
+    if(_brands.size>0)bits.push(Array.from(_brands).join(', '));
+    if(_search)bits.push('matching "'+_search+'"');
+    var qual=bits.length?' &middot; '+bits.join(' &middot; '):'';
+    countEl.innerHTML='<strong>'+rows.length.toLocaleString()+'</strong> '+(rows.length===1?'product':'products')+qual;
   }
   if(!rows.length){
-    host.innerHTML='<div class="empty">No products match your filters. Try a different category, brand, or search term.</div>';
+    host.innerHTML='<div class="empty">No products match your filters. Try removing a filter or adjusting your search.</div>';
     return;
   }
   rows.sort(function(a,b){
@@ -301,42 +334,35 @@ function renderGrid(){
   }).join('');
 }
 
-function setBucket(bucket){
-  _bucket=bucket;
-  _brand='All Brands';
-  _search='';
-  var s=document.getElementById('page-search');if(s)s.value='';
-  renderCategoryRow();
-  renderBrandList();
-  renderGrid();
-  if(window.innerWidth>820){
-    window.scrollTo({top:document.querySelector('.results-bar').offsetTop-20,behavior:'smooth'});
-  }
+// =====================================================================
+// Interactions
+// =====================================================================
+function toggleCategory(label){
+  if(_cats.has(label))_cats.delete(label);
+  else _cats.add(label);
+  renderCategoryList();renderBrandList();renderGrid();
 }
-function setBrand(brand){
-  _brand=brand;
-  renderBrandList();
-  renderGrid();
-  // Auto-close mobile brand list after picking
-  if(window.innerWidth<=820){
-    var list=document.getElementById('brand-list');
-    var toggle=document.getElementById('brand-toggle');
-    if(list)list.classList.remove('open');
-    if(toggle)toggle.classList.remove('open');
-  }
+function clearCategories(){_cats.clear();renderCategoryList();renderBrandList();renderGrid();}
+function toggleBrand(name){
+  if(_brands.has(name))_brands.delete(name);
+  else _brands.add(name);
+  renderCategoryList();renderBrandList();renderGrid();
 }
+function clearBrands(){_brands.clear();renderCategoryList();renderBrandList();renderGrid();}
+function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
 function onPageSearch(){
   var s=document.getElementById('page-search');
   _search=s?s.value:'';
-  renderGrid();
+  renderCategoryList();renderBrandList();renderGrid();
 }
-function toggleBrandList(){
-  var list=document.getElementById('brand-list');
-  var toggle=document.getElementById('brand-toggle');
-  if(list)list.classList.toggle('open');
-  if(toggle)toggle.classList.toggle('open');
+function toggleSidebar(){
+  var sb=document.getElementById('sidebar');
+  if(sb)sb.classList.toggle('open');
 }
 
+// =====================================================================
+// Boot
+// =====================================================================
 async function loadProducts(){
   try{
     var res=await fetch(PRODUCTS_JSON_URL,{cache:'no-store'});
@@ -356,7 +382,7 @@ async function loadProducts(){
       flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,_full:p});
     }
     ITEMS=flat;
-    renderCategoryRow();renderBrandList();renderGrid();
+    renderCategoryList();renderBrandList();renderGrid();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
     var host=document.getElementById('page-grid');
