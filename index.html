@@ -538,7 +538,7 @@ function renderGrid(){
     var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
-    return '<a class="card" href="alive-pricing-calculator.html?style='+safeStyle+'" target="_top">'+
+    return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
