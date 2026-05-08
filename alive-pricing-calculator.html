@@ -18,7 +18,8 @@
 body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
 
 /* ── DESKTOP LAYOUT ── */
-.desktop-layout{display:grid;grid-template-columns:1fr 420px;max-width:1200px;margin:0 auto;align-items:start;width:100%;}
+.desktop-layout{display:grid;grid-template-columns:1fr 420px;max-width:1200px;margin:0 auto;align-items:start;width:100%;padding-bottom:0;}
+body{margin:0;padding:0;}
 .mobile-layout{display:none;}
 .left{padding:28px 32px;border-right:1px solid var(--border);}
 .right{padding:12px 12px 12px 0;display:flex;flex-direction:column;gap:0;width:100%;box-sizing:border-box;}
@@ -1708,13 +1709,56 @@ function openLightbox(){
   if(!src)return;
   var img=document.getElementById('lightbox-img');
   var box=document.getElementById('lightbox');
-  if(img&&box){img.src=src;box.classList.add('show');}
+  if(!img||!box)return;
+  img.src=src;
+  // When this page is embedded in an iframe (aliveprintshop.com/products), `position:fixed`
+  // is fixed to the iframe's viewport — which may be off-screen if the parent is scrolled.
+  // Reposition the overlay using absolute coordinates anchored to the page's scroll position
+  // so it visually appears in the customer's viewport. Falls back to fixed otherwise.
+  try{
+    var inIframe=window.self!==window.top;
+    if(inIframe){
+      // Compute the visible portion of THIS document inside the parent's viewport.
+      // We can't read parent scroll directly (cross-origin) so we anchor to our own scroll.
+      var scrollY=window.pageYOffset||document.documentElement.scrollTop||0;
+      var viewportH=window.innerHeight;
+      box.style.position='absolute';
+      box.style.top=scrollY+'px';
+      box.style.height=viewportH+'px';
+      // Also ask the parent to scroll the iframe into view, in case our content extends past viewport
+      try{window.parent.postMessage({type:'alive-lightbox-open'},'*');}catch(e){}
+    }else{
+      box.style.position='';box.style.top='';box.style.height='';
+    }
+  }catch(e){}
+  box.classList.add('show');
 }
 function closeLightbox(e){
   if(e&&e.stopPropagation)e.stopPropagation();
   var box=document.getElementById('lightbox');if(box)box.classList.remove('show');
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+
+// Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
+// so the parent page can size the iframe to match (eliminates wasted whitespace).
+// Parent page should listen for {type:'alive-resize', height:N} messages and set iframe height.
+(function(){
+  if(window.self===window.top)return; // not in iframe
+  function broadcastHeight(){
+    try{
+      var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);
+      window.parent.postMessage({type:'alive-resize',height:h,page:'calculator'},'*');
+    }catch(e){}
+  }
+  window.addEventListener('load',broadcastHeight);
+  window.addEventListener('resize',broadcastHeight);
+  if(window.ResizeObserver){
+    var ro=new ResizeObserver(broadcastHeight);
+    ro.observe(document.body);
+  }else{
+    setInterval(broadcastHeight,1000);
+  }
+})();
 
 // =====================================================================
 // Browse Products modal: category chips + filterable visual grid

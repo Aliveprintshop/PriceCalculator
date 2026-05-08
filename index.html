@@ -538,7 +538,7 @@ function renderGrid(){
     var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
-    return '<a class="card" href="alive-pricing-calculator.html?style='+safeStyle+'">'+
+    return '<a class="card" href="alive-pricing-calculator.html?style='+safeStyle+'" target="_top">'+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
@@ -600,6 +600,26 @@ async function loadProducts(){
 }
 
 loadProducts();
+
+// Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
+// so the parent page can size the iframe to match (eliminates wasted whitespace).
+(function(){
+  if(window.self===window.top)return;
+  function broadcastHeight(){
+    try{
+      var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);
+      window.parent.postMessage({type:'alive-resize',height:h,page:'products'},'*');
+    }catch(e){}
+  }
+  window.addEventListener('load',broadcastHeight);
+  window.addEventListener('resize',broadcastHeight);
+  if(window.ResizeObserver){
+    var ro=new ResizeObserver(broadcastHeight);
+    ro.observe(document.body);
+  }else{
+    setInterval(broadcastHeight,1000);
+  }
+})();
 </script>
 </body>
 </html>
