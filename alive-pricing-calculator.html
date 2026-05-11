@@ -1495,23 +1495,22 @@ function buildOrderPayload(d,source){
   };
 }
 
-// POST the full order payload directly to the GHL inbound webhook.
-// GHL's webhook endpoint may not return CORS headers, so we use mode:'no-cors'
-// (request goes through but response is opaque). text/plain content-type avoids
-// the CORS preflight that application/json would trigger; GHL still parses JSON
-// from the body since it's valid JSON.
+// POST the full order payload to the GHL inbound webhook as multipart FormData.
+// GHL's webhook accepts FormData and silently drops text/plain JSON bodies.
+// FormData is a CORS-safelisted content type, so no preflight is triggered and
+// we get a real response back (no need for mode:'no-cors').
 function postToGhlWebhook(payload){
-  return fetch(GHL,{
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'text/plain;charset=UTF-8'},
-    body:JSON.stringify(payload)
-  })
+  var fd=new FormData();
+  Object.keys(payload).forEach(function(k){
+    var v=payload[k];
+    if(v===null||v===undefined)fd.append(k,'');
+    else if(typeof v==='object')fd.append(k,JSON.stringify(v));
+    else fd.append(k,String(v));
+  });
+  return fetch(GHL,{method:'POST',body:fd})
     .then(function(r){
-      console.log('[Alive] Webhook submitted (opaque response, type='+r.type+')');
-      // With mode:'no-cors', r.type is 'opaque' and r.ok is false. Treat any
-      // non-thrown response as success — the network call completed.
-      return true;
+      console.log('[Alive] Webhook submitted, status='+r.status);
+      return r.ok;
     })
     .catch(function(e){console.error('[Alive] Webhook failed:',e);return false;});
 }
