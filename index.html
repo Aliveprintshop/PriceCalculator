@@ -245,8 +245,10 @@ var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
 var ITEMS=[];
 
 var CATEGORY_BUCKETS=[
-  {label:'T-Shirts',              cats:['T-Shirts','Activewear']},
+  {label:'T-Shirts',              cats:['T-Shirts']},
+  {label:'Long Sleeve',           cats:[],                         longSleeveFromName:true},
   {label:'Tank Tops',             cats:[],                         tankFromName:true},
+  {label:'Activewear',            cats:['Activewear']},
   {label:'Sweatshirts & Hoodies', cats:['Sweatshirts/Fleece']},
   {label:'Polos & Button-Downs',  cats:['Polos/Knits','Woven Shirts']},
   {label:'Outerwear',             cats:['Outerwear']},
@@ -259,10 +261,34 @@ var CATEGORY_BUCKETS=[
   {label:'Toddler',               cats:['Infant & Toddler']},
   {label:'Specialty',             cats:['Tall','Accessories']}
 ];
+// Name-based detectors. Order in bucketForProduct matters — audience
+// (Toddler/Youth) wins over garment so a "Youth Long Sleeve Tee" stays in Youth.
 function isTankTop(p){return !!(p && p.name && /\btanks?\b/i.test(p.name));}
+function isShort(p){return !!(p && p.name && /\bshorts?\b(?!\s+sleeve)/i.test(p.name));}
+function isLongSleeveTee(p){
+  // Only reclassify tees and activewear shirts — leave long-sleeve polos,
+  // woven shirts, and sweatshirts/hoodies in their original buckets.
+  return !!(p && p.name && /\blong[\s-]?sleeve\b/i.test(p.name)
+    && (p.category==='T-Shirts' || p.category==='Activewear'));
+}
+function isYouthByName(p){return !!(p && p.name && /\byouth\b/i.test(p.name));}
+function isToddlerByName(p){return !!(p && p.name && /\b(infant|toddler)\b/i.test(p.name));}
+function isSportTekOrA4Tee(p){
+  return !!(p && p.category==='T-Shirts' && (p.brand==='Sport-Tek' || p.brand==='A4'));
+}
 function bucketForProduct(p){
   if(!p)return null;
+  // 1. Audience overrides (kids' stuff goes to their tab regardless of garment).
+  if(isToddlerByName(p))return 'Toddler';
+  if(isYouthByName(p))return 'Youth';
+  // 2. Garment-specific overrides.
   if(isTankTop(p))return 'Tank Tops';
+  if(isShort(p))return 'Bottoms';
+  if(isLongSleeveTee(p))return 'Long Sleeve';
+  // 3. Brand override — Sport-Tek + A4 "T-Shirts" are all moisture-wicking
+  // performance gear and belong in Activewear, not the regular T-Shirts bucket.
+  if(isSportTekOrA4Tee(p))return 'Activewear';
+  // 4. Default: SanMar category mapping.
   for(var i=0;i<CATEGORY_BUCKETS.length;i++){
     var b=CATEGORY_BUCKETS[i];
     if(b.cats.indexOf(p.category)>=0)return b.label;
