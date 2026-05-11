@@ -265,6 +265,7 @@ var CATEGORY_BUCKETS=[
 // (Toddler/Youth) wins over garment so a "Youth Long Sleeve Tee" stays in Youth.
 function isTankTop(p){return !!(p && p.name && /\btanks?\b/i.test(p.name));}
 function isShort(p){return !!(p && p.name && /\bshorts?\b(?!\s+sleeve)/i.test(p.name));}
+function isLegging(p){return !!(p && p.name && /\bleggings?\b/i.test(p.name));}
 function isLongSleeveTee(p){
   // Only reclassify tees and activewear shirts — leave long-sleeve polos,
   // woven shirts, and sweatshirts/hoodies in their original buckets.
@@ -284,6 +285,7 @@ function bucketForProduct(p){
   // 2. Garment-specific overrides.
   if(isTankTop(p))return 'Tank Tops';
   if(isShort(p))return 'Bottoms';
+  if(isLegging(p))return 'Bottoms';
   if(isLongSleeveTee(p))return 'Long Sleeve';
   // 3. Brand override — Sport-Tek + A4 "T-Shirts" are all moisture-wicking
   // performance gear and belong in Activewear, not the regular T-Shirts bucket.
