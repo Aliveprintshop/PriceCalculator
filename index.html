@@ -552,6 +552,8 @@ function renderGrid(){
            '</div></a>';
   }).join('');
   renderPagination(rows.length);
+  // Re-broadcast iframe height now that the grid has changed.
+  if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
 }
 
 // =====================================================================
@@ -602,23 +604,51 @@ async function loadProducts(){
 loadProducts();
 
 // Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
-// so the parent page can size the iframe to match (eliminates wasted whitespace).
+// so the parent page can size the iframe to match (eliminates wasted whitespace AND
+// prevents bottom cutoff). Adds a 60px safety buffer so the pagination bar +
+// "Back to Top" button are always fully visible.
 (function(){
   if(window.self===window.top)return;
-  function broadcastHeight(){
+  var BUFFER=60;          // safety pad to keep pagination + back-to-top in view
+  var _lastH=0;
+  var _t=null;
+  function measure(){
+    return Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight
+    )+BUFFER;
+  }
+  function send(){
     try{
-      var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);
+      var h=measure();
+      if(h===_lastH)return;     // skip identical posts
+      _lastH=h;
       window.parent.postMessage({type:'alive-resize',height:h,page:'products'},'*');
     }catch(e){}
   }
+  function broadcastHeight(){
+    // Debounce to ~50ms — avoids spamming the parent on every layout shift.
+    if(_t)clearTimeout(_t);
+    _t=setTimeout(send,50);
+  }
+  // Expose a manual trigger so renderGrid() can re-broadcast immediately after
+  // filter / pagination changes.
+  window.aliveBroadcastHeight=broadcastHeight;
   window.addEventListener('load',broadcastHeight);
   window.addEventListener('resize',broadcastHeight);
+  document.addEventListener('DOMContentLoaded',broadcastHeight);
   if(window.ResizeObserver){
     var ro=new ResizeObserver(broadcastHeight);
     ro.observe(document.body);
   }else{
     setInterval(broadcastHeight,1000);
   }
+  // Fallback: after every image loads, content height grows — re-broadcast.
+  document.addEventListener('load',function(e){
+    if(e.target && e.target.tagName==='IMG')broadcastHeight();
+  },true);
 })();
 </script>
 </body>
