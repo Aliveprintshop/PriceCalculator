@@ -624,7 +624,14 @@ loadProducts();
       var h=measure();
       if(h===_lastH)return;     // skip identical posts
       _lastH=h;
-      window.parent.postMessage({type:'alive-resize',height:h,page:'products'},'*');
+      var msg={type:'alive-resize',height:h,page:'products'};
+      // Broadcast to direct parent (Hostinger embed sandbox iframe — runs my embed listener).
+      window.parent.postMessage(msg,'*');
+      // Also broadcast to top window (aliveprintshop.com) so Hostinger's
+      // fixed-height grid section can be overridden by a parent-page listener.
+      if(window.top && window.top!==window.parent){
+        try{window.top.postMessage(msg,'*');}catch(e){}
+      }
     }catch(e){}
   }
   function broadcastHeight(){
