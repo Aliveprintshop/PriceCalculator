@@ -609,16 +609,15 @@ loadProducts();
 // "Back to Top" button are always fully visible.
 (function(){
   if(window.self===window.top)return;
-  var BUFFER=60;          // safety pad to keep pagination + back-to-top in view
+  var BUFFER=40;          // safety pad to keep pagination + back-to-top in view
   var _lastH=0;
   var _t=null;
   function measure(){
-    return Math.max(
-      document.body.scrollHeight,
-      document.documentElement.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.offsetHeight
-    )+BUFFER;
+    // IMPORTANT: only measure body content, NOT documentElement. When the parent
+    // listener resizes the iframe element, documentElement.scrollHeight grows to
+    // match — feeding back into the next broadcast and causing runaway growth.
+    // body.scrollHeight reflects true content height regardless of iframe size.
+    return Math.max(document.body.scrollHeight, document.body.offsetHeight)+BUFFER;
   }
   function send(){
     try{
