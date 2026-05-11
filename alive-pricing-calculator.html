@@ -67,12 +67,13 @@ body{margin:0;padding:0;}
 .moq-warn{margin-top:6px;padding:6px 10px;background:#eff6ff;border:1px solid #a8c8f0;border-radius:var(--r);font-size:11px;color:#1558a8;display:none;}
 
 /* LOCATIONS */
-.loc-pills{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
-.loc-pill{padding:10px 8px;font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:600;border:1.5px solid var(--border2);border-radius:30px;background:var(--surface);color:var(--text2);cursor:pointer;transition:all 0.12s;text-align:center;white-space:nowrap;}
+.loc-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.loc-pill{padding:10px 20px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;border:1.5px solid var(--border2);border-radius:30px;background:var(--surface);color:var(--text2);cursor:pointer;transition:all 0.12s;white-space:nowrap;}
 .loc-pill.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 .loc-pill:hover:not(.active){border-color:var(--blue);color:var(--blue);}
-.color-block{display:none;min-width:170px;}
+.color-block{display:none;width:165px;flex-shrink:0;}
 .color-block.show{display:block;}
+.color-block .color-select{width:100%;}
 .color-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;}
 .color-select{width:100%;padding:11px 14px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;cursor:pointer;}
 .color-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
@@ -451,8 +452,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="size-section"><div class="size-section-lbl">Size breakdown &mdash; qty per size</div><div class="size-grid" id="size-grid-host"></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch">&#9888; Size total doesn't match quantity</div></div>
     </div>
 
-    <!-- Step 3: Locations -->
-    <div class="step-block">
+    <!-- Step 4: Locations -->
+    <div class="step-block full">
       <div class="step-head"><div class="step-num" id="sn4">4</div><div><div class="step-title">Where does your design go?</div><div class="step-hint">Select all locations you need</div></div></div>
       <div class="loc-pills">
         <button class="loc-pill active" data-loc="front" onclick="toggleLoc(this)">Front</button>
@@ -467,8 +468,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
-    <!-- Step 4: Add-ons -->
-    <div class="step-block">
+    <!-- Step 5: Add-ons -->
+    <div class="step-block full">
       <div class="step-head"><div class="step-num" id="sn5">5</div><div><div class="step-title">Want to add finishing touches?</div><div class="step-hint">Optional extras that make your order feel premium</div></div></div>
       <div class="addons-toggle" id="addons-toggle" onclick="toggleAddons()"><div class="addons-icon">+</div><div class="addons-toggle-text">Show branding add-ons</div></div>
       <div class="addons-body" id="addons-body">
