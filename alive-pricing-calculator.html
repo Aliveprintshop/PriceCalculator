@@ -457,7 +457,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="loc-pills">
         <button class="loc-pill active" data-loc="front" onclick="toggleLoc(this)">Front</button>
         <button class="loc-pill" data-loc="back" onclick="toggleLoc(this)">Back</button>
-        <button class="loc-pill" data-loc="sleeve" onclick="toggleLoc(this)">Sleeve</button>
+        <button class="loc-pill" data-loc="left-sleeve" onclick="toggleLoc(this)">Left Sleeve</button>
+        <button class="loc-pill" data-loc="right-sleeve" onclick="toggleLoc(this)">Right Sleeve</button>
       </div>
       <div class="color-blocks">
         <div class="color-block show" id="fr-blk"><div class="color-lbl">Front colors</div><select class="color-select" id="fr-r" onchange="calc()"><option value="1">1 color</option><option value="2">2 colors</option><option value="3">3 colors</option><option value="4">4 colors</option><option value="5">5 colors</option><option value="6">6 colors</option><option value="7">7 colors</option><option value="8">8 colors</option></select></div>
@@ -628,7 +629,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="mob-loc-pills">
         <button class="mob-loc-pill active" data-loc="front" onclick="mobToggleLoc(this)">Front</button>
         <button class="mob-loc-pill" data-loc="back" onclick="mobToggleLoc(this)">Back</button>
-        <button class="mob-loc-pill" data-loc="sleeve" onclick="mobToggleLoc(this)">Sleeve</button>
+        <button class="mob-loc-pill" data-loc="left-sleeve" onclick="mobToggleLoc(this)">Left Sleeve</button>
+        <button class="mob-loc-pill" data-loc="right-sleeve" onclick="mobToggleLoc(this)">Right Sleeve</button>
       </div>
       <div id="mob-fr-blk" style="margin-top:10px;"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Front colors</div><select class="mob-color-select" id="mob-fr-r" onchange="calc()"><option value="1">1 color</option><option value="2">2 colors</option><option value="3">3 colors</option><option value="4">4 colors</option><option value="5">5 colors</option><option value="6">6 colors</option><option value="7">7 colors</option><option value="8">8 colors</option></select></div>
       <div id="mob-bk-blk" style="display:none;margin-top:10px;"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Back colors</div><select class="mob-color-select" id="mob-bk-r" onchange="calc()"><option value="1">1 color</option><option value="2">2 colors</option><option value="3">3 colors</option><option value="4">4 colors</option><option value="5">5 colors</option><option value="6">6 colors</option><option value="7">7 colors</option><option value="8">8 colors</option></select></div>
@@ -1052,6 +1054,10 @@ function unmarkDone(n){
 }
 
 // -- LOCATIONS --
+// Map internal location keys to customer-facing labels.
+var LOC_LABEL={front:'Front',back:'Back','left-sleeve':'Left Sleeve','right-sleeve':'Right Sleeve'};
+function locLabel(l){return LOC_LABEL[l]||l;}
+function locsDisplay(){return Array.from(locs).map(locLabel).join(', ');}
 function toggleLoc(btn){
   var l=btn.dataset.loc;
   if(locs.has(l)){if(locs.size===1)return;locs.delete(l);btn.classList.remove('active');}
@@ -1059,7 +1065,7 @@ function toggleLoc(btn){
   var isSP=(decoMethod==='sp');
   document.getElementById('fr-blk').classList.toggle('show',isSP&&locs.has('front'));
   document.getElementById('bk-blk').classList.toggle('show',isSP&&locs.has('back'));
-  document.getElementById('sl-note').classList.toggle('show',locs.has('sleeve'));
+  document.getElementById('sl-note').classList.toggle('show',locs.has('left-sleeve')||locs.has('right-sleeve'));
   calc();
 }
 function mobToggleLoc(btn){
@@ -1162,16 +1168,17 @@ function getMinQty(){return decoMethod==='ht'?10:24;}
 function calcPP(qty){
   if(!sel||qty<getMinQty())return null;
   var c=sel.p;
+  var sleeveCount=(locs.has('left-sleeve')?1:0)+(locs.has('right-sleeve')?1:0);
   if(decoMethod==='ht'){
     var htp=getHTP(qty);
     if(locs.has('front'))c+=htp;
     if(locs.has('back'))c+=htp;
-    if(locs.has('sleeve'))c+=HT_SLEEVE;
+    c+=sleeveCount*HT_SLEEVE;
   }else{
     var qb=getQB(qty);
     if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrEl()];
     if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkEl()];
-    if(locs.has('sleeve'))c+=1.50;
+    c+=sleeveCount*1.50;
   }
   if(addons.neck)c+=0.75;
   if(addons.hem)c+=getHem(qty);
@@ -1234,16 +1241,17 @@ function calc(){
   // Rush fee display
   var baseNoRush=(function(){
     var c=sel.p;
+    var sleeveCount=(locs.has('left-sleeve')?1:0)+(locs.has('right-sleeve')?1:0);
     if(decoMethod==='ht'){
       var htp=getHTP(qty);
       if(locs.has('front'))c+=htp;
       if(locs.has('back'))c+=htp;
-      if(locs.has('sleeve'))c+=HT_SLEEVE;
+      c+=sleeveCount*HT_SLEEVE;
     }else{
       var qb=getQB(qty);
       if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrEl()];
       if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkEl()];
-      if(locs.has('sleeve'))c+=1.50;
+      c+=sleeveCount*1.50;
     }
     if(addons.neck)c+=0.75;
     if(addons.hem)c+=getHem(qty);
@@ -1423,7 +1431,7 @@ function updateOrderSummary(){
     ['Qty',qty.toLocaleString()+' pcs'],
     szB?['Sizes',szB]:null,
     ['Method',decoMethod==='ht'?'Heat Transfer':'Screen Printing'],
-    ['Locations',Array.from(locs).join(', ')],
+    ['Locations',locsDisplay()],
     addonList.length?['Add-ons',addonList.join(', ')]:null,
     ['Per unit',fmt(pp)],
     ['Total',fmtK(pp*qty)],
@@ -1472,7 +1480,7 @@ function buildOrderPayload(d,source){
     garmentBrand:sel?sel.b:'',
     garmentStyle:sel?sel.s:'',
     decoration:decoMethod==='ht'?'Heat Transfer':'Screen Printing',
-    locations:Array.from(locs).join(', '),
+    locations:locsDisplay(),
     addons:addonList.length?addonList.join(', '):'None',
     turnaround:taLabel,
     pricePerUnit:pp?fmt(pp):'',
