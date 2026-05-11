@@ -93,6 +93,10 @@ a:hover{text-decoration:underline;}
 .back-to-top{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;background:none;border:none;padding:6px 12px;font-family:'Open Sans',sans-serif;}
 .back-to-top:hover{text-decoration:underline;}
 
+/* BRAND HERO BANNER — shows when a single brand with a configured banner is selected */
+.brand-banner{margin-bottom:14px;}
+.brand-banner img{width:100%;height:auto;display:block;border-radius:12px;}
+
 /* TRUST BANNER */
 .trust-banner{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
 .trust-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
@@ -116,6 +120,9 @@ a:hover{text-decoration:underline;}
   .sidebar.open{display:block;}
   .content{padding:0;}
   /* Trust banner: stack vertically, full width, no side gutter */
+  /* Brand banner: edge-to-edge on mobile, no rounded corners */
+  .brand-banner{margin:0;}
+  .brand-banner img{border-radius:0;border-bottom:6px solid #F2F4F8;}
   .trust-banner{grid-template-columns:1fr;gap:0;margin:0;}
   .trust-tile{padding:14px 16px;border:none;border-radius:0;border-bottom:1px solid var(--border);box-shadow:none;}
   .trust-tile:last-child{border-bottom:6px solid #F2F4F8;}
@@ -166,6 +173,12 @@ a:hover{text-decoration:underline;}
   </aside>
 
   <main class="content">
+
+    <!-- BRAND HERO BANNER — shown when a single brand with a configured banner is selected.
+         Add new brands by pasting their image URL into BRAND_BANNERS in JS. -->
+    <div class="brand-banner" id="brand-banner" style="display:none;">
+      <img alt="" loading="lazy">
+    </div>
 
     <!-- TRUST BANNER (swap content via the BANNER_ITEMS array in JS for promos) -->
     <div class="trust-banner" id="trust-banner"></div>
@@ -238,6 +251,47 @@ function renderTrustBanner(){
              '<div class="trust-sub">'+item.sub+'</div>'+
            '</div></div>';
   }).join('');
+}
+
+// =====================================================================
+// Hero banners — full-width image above the trust banner.
+// DEFAULT_BANNER shows when no brand is selected, multiple brands are selected,
+// or a single brand with no configured banner is selected.
+// BRAND_BANNERS overrides the default when EXACTLY ONE listed brand is selected.
+// Image format: any web-displayable URL. Recommended aspect ratio ~3:1
+// (e.g. 1400×450 or 940×285).
+// =====================================================================
+var DEFAULT_BANNER='https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/alive-print-shop-made-real-bPduWsfllGvOlPC9.png';
+var BRAND_BANNERS={
+  'A4':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-a4-plp-final-OCXPmrgFlrxEX8Lx.jpg',
+  'Bella + Canvas':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/bella-canvas-LRhBQzPAPbJW7zzi.png',
+  'Champion':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/champion-6-logosremoved1-5ffaDE9KcXFo8j96.png',
+  'Comfort Colors':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/comfort-colors-Zh2gOE3w9bXGD4s6.png',
+  'District':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-plpbanner-district-XhXQ5U6lWn2yw1ln.jpg',
+  'Gildan':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/gildan.approved-ZwUNNQOUITOGu8cC.png',
+  'Mercer+Mettle':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-m-m-plp-banner-final-PrzflN34E5DZyMvC.jpg',
+  'Next Level Apparel':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/nl-1-MeOjhw5JKmjAnnf4.png',
+  'Nike':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-nike-plp-final-44IZG0r59p4vcUda.jpg',
+  'Sport-Tek':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-sport-tek-plp-final-aLHs4rqMOcCPYEVz.png',
+  'Stanley/Stella':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/stanleystella-banner-26-r-ufXQypg62MecmhRB.jpg',
+  'The North Face':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-tnf-plp-final-jeYhJswXfdGAoLQH.png',
+  'TravisMathew':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-tm-plp-final-E4kFEhC0Zjwtvyxu.png'
+};
+function updateBrandBanner(){
+  var host=document.getElementById('brand-banner');if(!host)return;
+  var url=DEFAULT_BANNER;
+  var alt='Alive Print Shop';
+  if(_brands.size===1){
+    var brand=Array.from(_brands)[0];
+    if(BRAND_BANNERS[brand]){url=BRAND_BANNERS[brand]; alt=brand+' featured banner';}
+  }
+  if(url){
+    var img=host.querySelector('img');
+    if(img.getAttribute('src')!==url){img.setAttribute('src',url); img.setAttribute('alt',alt);}
+    host.style.display='block';
+  }else{
+    host.style.display='none';
+  }
 }
 
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
@@ -589,8 +643,8 @@ function renderGrid(){
 // =====================================================================
 function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();}
 function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();}
-function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();}
-function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();}
+function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();}
+function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
 function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';_page=1;renderCategoryList();renderBrandList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
@@ -621,6 +675,7 @@ async function loadProducts(){
     ITEMS=flat;
     buildHexLookup(rows);
     renderTrustBanner();
+    updateBrandBanner();
     renderCategoryList();renderBrandList();renderGrid();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
