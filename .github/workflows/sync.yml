@@ -73,12 +73,13 @@ jobs:
           fi
 
       # Prepare a folder to publish. We publish products.json, the calculator,
-      # and our index.html (the product browse page) so / serves the catalog.
+      # the cart page, and our index.html (the product browse page).
       - name: Stage Pages artifact
         run: |
           mkdir -p _site
           cp products.json _site/products.json
           cp alive-pricing-calculator.html _site/alive-pricing-calculator.html
+          cp cart.html _site/cart.html
           cat > _site/index.html <<'EOF'
           <!doctype html>
           <meta charset="utf-8">
