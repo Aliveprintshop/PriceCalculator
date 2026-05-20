@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Alive Print Shop — Your Cart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1B6CCE; --blue-mid:#5294D9; --blue-light:#E8F1FB; --blue-dark:#1857a8;
+  --green:#1F8B4C; --green-light:#E5F4EC;
+  --surface:#FFFFFF; --surface2:#F7F8FA; --border:#E2E5EC; --border2:#CBD2DB;
+  --text:#1A2330; --text2:#3D4A5C; --text3:#7B8696;
+  --r:8px; --r-lg:12px; --r-xl:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text);font-size:14px;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
+
+/* HEADER */
+.page-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:var(--text);}
+.continue-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;text-decoration:none;}
+.continue-link:hover{text-decoration:underline;}
+
+/* LEFT: ITEM LIST */
+.items{display:flex;flex-direction:column;gap:14px;}
+
+/* PROMO BAR */
+.promo-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.promo-bar.active{background:var(--green-light);border-color:var(--green);}
+.promo-bar-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.promo-bar.active .promo-bar-lbl{color:var(--green);}
+.promo-input-row{display:flex;gap:8px;}
+.promo-input{flex:1;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;min-width:0;}
+.promo-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
+.promo-input::placeholder{color:var(--text3);text-transform:none;letter-spacing:0;font-weight:400;font-family:'Open Sans',sans-serif;}
+.promo-btn{padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s;}
+.promo-btn:hover{background:var(--blue-dark);}
+.promo-applied-row{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--green);font-weight:700;}
+.promo-clear-btn{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;line-height:1;padding:4px 8px;border-radius:4px;}
+.promo-clear-btn:hover{background:var(--surface);color:var(--text);}
+.promo-msg{font-size:12px;color:#dc2626;display:none;margin-top:6px;}
+.promo-msg.show{display:block;}
+
+/* ITEM CARD */
+.item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;gap:0;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.item-img{width:120px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);padding:10px;display:flex;align-items:center;justify-content:center;}
+.item-img img{max-width:100%;max-height:140px;object-fit:contain;}
+.item-body{flex:1;padding:14px 16px;min-width:0;display:flex;flex-direction:column;gap:10px;}
+.item-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.item-title-block{flex:1;min-width:0;}
+.item-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:2px;}
+.item-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3;}
+.item-meta{font-size:12px;color:var(--text3);margin-top:3px;}
+.item-actions{display:flex;gap:6px;flex-shrink:0;}
+.item-action-btn{background:transparent;border:1.5px solid var(--border2);color:var(--text2);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--r);cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;}
+.item-action-btn:hover{border-color:var(--blue);color:var(--blue);}
+.item-action-btn.danger:hover{border-color:#dc2626;color:#dc2626;}
+
+.item-spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:12px;color:var(--text2);}
+.item-spec-grid b{color:var(--text);}
+.item-spec-grid .label{color:var(--text3);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+
+.item-artwork{display:flex;flex-direction:column;gap:4px;font-size:12px;}
+.item-artwork-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);}
+.item-artwork-input{width:100%;padding:7px 10px;font-size:12px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;}
+.item-artwork-input:focus{border-color:var(--blue);background:var(--surface);}
+
+.item-prices{display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border);}
+.item-prices-left{font-size:12px;color:var(--text3);}
+.item-prices-left strong{color:var(--text);font-weight:700;}
+.item-line-total{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--text);}
+.item-promo-tag{display:inline-block;margin-top:2px;font-size:11px;font-weight:700;color:var(--green);background:var(--green-light);padding:2px 7px;border-radius:11px;}
+
+/* EMPTY STATE */
+.empty-state{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:64px 24px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.empty-state .icon{font-size:48px;color:var(--text3);margin-bottom:14px;}
+.empty-state h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.empty-state p{font-size:13px;color:var(--text3);margin-bottom:18px;}
+.empty-state a{display:inline-block;padding:11px 22px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;}
+.empty-state a:hover{background:var(--blue-dark);}
+
+/* RIGHT: ORDER SUMMARY + CUSTOMER FORM */
+.summary-panel{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;}
+.summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.summary h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+.summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2);}
+.summary-row.savings{color:var(--green);font-weight:700;}
+.summary-row.total{padding-top:12px;border-top:1.5px solid var(--border);margin-top:8px;font-size:16px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;}
+
+.checkout-form{background:var(--surface);border:2px solid var(--blue-mid);border-radius:var(--r-lg);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.checkout-form h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+.cf-row{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
+.cf-row.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cf-row.two > div{display:flex;flex-direction:column;gap:5px;}
+.cf-lbl{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
+.cf-input{padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;transition:border-color 0.15s;}
+.cf-input:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
+.cf-textarea{padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:60px;}
+.cf-textarea:focus{border-color:var(--blue);background:var(--surface);}
+.cf-err{font-size:12px;color:#dc2626;margin-bottom:8px;display:none;}
+.cf-err.show{display:block;}
+.checkout-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:background 0.15s;margin-top:6px;}
+.checkout-btn:hover{background:var(--blue-dark);}
+.checkout-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.checkout-fineprint{font-size:10px;color:var(--text3);text-align:center;margin-top:8px;line-height:1.5;}
+
+.success-box{display:none;background:var(--surface);border:2px solid var(--green);border-radius:var(--r-lg);padding:32px 18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.success-box.show{display:block;}
+.success-box .check{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;color:var(--green);}
+.success-box h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.success-box p{font-size:13px;color:var(--text2);line-height:1.5;}
+
+/* MOBILE */
+@media(max-width:820px){
+  body{background:var(--surface);}
+  .wrap{grid-template-columns:1fr;gap:0;padding:0;max-width:100%;}
+  .page-header{padding:14px 16px;margin:0;border-bottom:6px solid #F2F4F8;}
+  .page-title{font-size:20px;}
+  .items{gap:0;}
+  .promo-bar{border-left:none;border-right:none;border-top:none;border-radius:0;box-shadow:none;border-bottom:6px solid #F2F4F8;}
+  .item{border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:6px solid #F2F4F8;box-shadow:none;flex-direction:column;}
+  .item-img{width:100%;border-right:none;border-bottom:1px solid var(--border);padding:14px;}
+  .item-img img{max-height:200px;}
+  .item-body{padding:14px 16px;}
+  .summary-panel{position:static;}
+  .summary,.checkout-form,.success-box{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;border-bottom:6px solid #F2F4F8;}
+  .checkout-form{border:none;border-bottom:6px solid #F2F4F8;border-top:3px solid var(--blue-mid);}
+  .empty-state{margin:0;border-radius:0;border:none;border-bottom:6px solid #F2F4F8;box-shadow:none;padding:48px 24px;}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="page-header">
+    <div class="page-title" id="cart-title">Your Cart</div>
+    <a class="continue-link" href="https://aliveprintshop.com/insta-price" target="_top">&larr; Continue shopping</a>
+  </div>
+
+  <div class="items" id="items-host">
+    <div class="empty-state" id="empty-state">
+      <div class="icon">🛒</div>
+      <h3>Your cart is empty</h3>
+      <p>Add a product from the calculator to get started.</p>
+      <a href="https://aliveprintshop.com/insta-price" target="_top">Browse Products</a>
+    </div>
+  </div>
+
+  <aside class="summary-panel" id="summary-panel" style="display:none;">
+
+    <div class="promo-bar" id="promo-bar">
+      <div class="promo-bar-lbl" id="promo-bar-lbl">Have a promo code?</div>
+      <div class="promo-input-row" id="promo-input-row">
+        <input type="text" class="promo-input" id="promo-input" placeholder="Enter code" autocomplete="off" spellcheck="false" maxlength="32" onkeydown="if(event.key==='Enter'){event.preventDefault();applyPromo();}">
+        <button type="button" class="promo-btn" onclick="applyPromo()">Apply</button>
+      </div>
+      <div class="promo-applied-row" id="promo-applied-row" style="display:none;">
+        <span>&#10003; <span id="promo-applied-code"></span> applied</span>
+        <button type="button" class="promo-clear-btn" onclick="clearPromoCode()" title="Remove code">&times;</button>
+      </div>
+      <div class="promo-msg" id="promo-msg">Invalid code</div>
+    </div>
+
+    <div class="summary">
+      <h3>Order Summary</h3>
+      <div class="summary-row"><span id="sum-items-lbl">Subtotal (0 items)</span><span id="sum-subtotal">$0.00</span></div>
+      <div class="summary-row savings" id="sum-savings-row" style="display:none;"><span>Promo savings</span><span id="sum-savings">-$0.00</span></div>
+      <div class="summary-row total"><span>Total</span><span id="sum-total">$0.00</span></div>
+    </div>
+
+    <form class="checkout-form" id="checkout-form" onsubmit="submitOrder(event)">
+      <h3>Submit Your Order</h3>
+      <div class="cf-row two">
+        <div><label class="cf-lbl">Full Name *</label><input class="cf-input" id="cf-name" type="text" placeholder="John Smith" required></div>
+        <div><label class="cf-lbl">Company</label><input class="cf-input" id="cf-company" type="text" placeholder="Your company"></div>
+      </div>
+      <div class="cf-row"><label class="cf-lbl">Email *</label><input class="cf-input" id="cf-email" type="email" placeholder="you@company.com" required></div>
+      <div class="cf-row"><label class="cf-lbl">Phone *</label><input class="cf-input" id="cf-phone" type="tel" placeholder="(702) 555-0100" required></div>
+      <div class="cf-row"><label class="cf-lbl">Shipping address (optional)</label><textarea class="cf-textarea" id="cf-shipping" placeholder="Street, city, state, ZIP" style="min-height:46px;"></textarea></div>
+      <div class="cf-row"><label class="cf-lbl">Order notes (optional)</label><textarea class="cf-textarea" id="cf-notes" placeholder="In-hands date, special requests, etc."></textarea></div>
+      <div class="cf-err" id="cf-err"></div>
+      <button type="submit" class="checkout-btn" id="cf-btn">Submit Order Request &rarr;</button>
+      <div class="checkout-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
+    </form>
+
+    <div class="success-box" id="success-box">
+      <div class="check">&#10003;</div>
+      <h3>Order Request Received!</h3>
+      <p>We'll be in touch within 1 business day with your final quote.<br><br>Call us anytime: <strong>(702) 685-6270</strong></p>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+// =====================================================================
+// Shared with the calculator via localStorage.
+// =====================================================================
+var PROMO_CODES={
+  'SAMPLE50':0.5,
+  'SAMPLE80':0.8
+};
+var CART={
+  K_ITEMS:'alive_cart_items_v1',
+  K_PROMO:'alive_cart_promo_v1',
+  _safeParse:function(raw,fb){try{return raw?JSON.parse(raw):fb;}catch(e){return fb;}},
+  getItems:function(){return this._safeParse(localStorage.getItem(this.K_ITEMS),[]);},
+  setItems:function(items){try{localStorage.setItem(this.K_ITEMS,JSON.stringify(items||[]));}catch(e){}},
+  removeItem:function(id){this.setItems(this.getItems().filter(function(it){return it.id!==id;}));},
+  updateItem:function(id,patch){
+    var items=this.getItems();
+    for(var i=0;i<items.length;i++){if(items[i].id===id){Object.assign(items[i],patch);break;}}
+    this.setItems(items);
+  },
+  clear:function(){this.setItems([]);},
+  getCount:function(){return this.getItems().length;},
+  getPiecesTotal:function(){return this.getItems().reduce(function(s,it){return s+(parseInt(it.qty,10)||0);},0);},
+  getDollarTotal:function(){return parseFloat(this.getItems().reduce(function(s,it){return s+(parseFloat(it.lineTotal)||0);},0).toFixed(2));},
+  getPromo:function(){return this._safeParse(localStorage.getItem(this.K_PROMO),null);},
+  setPromo:function(promo){try{if(promo&&promo.code)localStorage.setItem(this.K_PROMO,JSON.stringify(promo));else localStorage.removeItem(this.K_PROMO);}catch(e){}},
+  clearPromo:function(){try{localStorage.removeItem(this.K_PROMO);}catch(e){}}
+};
+
+var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53';
+var FALLBACK_EMAIL='austin@aliveprintshop.com';
+
+function fmt(n){return'$'+(parseFloat(n)||0).toFixed(2);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ---- Rendering ----
+function render(){
+  var items=CART.getItems();
+  var host=document.getElementById('items-host');
+  var summary=document.getElementById('summary-panel');
+  var empty=document.getElementById('empty-state');
+  var title=document.getElementById('cart-title');
+  if(!items.length){
+    if(empty)empty.style.display='block';
+    if(summary)summary.style.display='none';
+    if(title)title.textContent='Your Cart';
+    // Clear any in-flight item nodes
+    Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state')ch.remove();});
+    broadcastHeight();
+    return;
+  }
+  if(empty)empty.style.display='none';
+  if(summary)summary.style.display='flex';
+  if(title)title.textContent='Your Cart ('+items.length+(items.length===1?' item)':' items)');
+
+  // Build item cards
+  var html=items.map(function(it){
+    var locs=Array.isArray(it.locations)?it.locations.map(function(l){return l.replace('-',' ').replace(/\b\w/g,function(c){return c.toUpperCase();});}).join(', '):'';
+    var sizeLine='';
+    if(it.sizes&&Object.keys(it.sizes).length){
+      sizeLine=Object.entries(it.sizes).map(function(e){return e[0]+': '+e[1];}).join(', ');
+    }
+    var addonLine=it.addonList&&it.addonList.length?it.addonList.join(', '):'None';
+    var decoDetail=it.decoLabel||'';
+    if(it.decoMethod==='sp'){
+      var parts=[];
+      if(it.locations&&it.locations.indexOf('front')>-1)parts.push('Front '+(it.frontColors||1)+' color');
+      if(it.locations&&it.locations.indexOf('back')>-1)parts.push('Back '+(it.backColors||1)+' color');
+      if(parts.length)decoDetail+=' — '+parts.join(', ');
+    }
+    var promoTag=it.promoCodeAtAdd?'<span class="item-promo-tag">Promo: '+esc(it.promoCodeAtAdd)+' (−'+fmt(it.promoSavingsTotal||0)+')</span>':'';
+    var img=it.productImage?'<img src="'+esc(it.productImage)+'" alt="'+esc(it.productName)+'" loading="lazy" onerror="this.style.display=\'none\';">':'';
+
+    return '<div class="item" data-id="'+esc(it.id)+'">'+
+      '<div class="item-img">'+img+'</div>'+
+      '<div class="item-body">'+
+        '<div class="item-head">'+
+          '<div class="item-title-block">'+
+            '<div class="item-brand">'+esc(it.brand||'')+'</div>'+
+            '<div class="item-name">'+esc(it.productName||'')+'</div>'+
+            '<div class="item-meta">Style '+esc(it.style||'')+(it.color?' &middot; '+esc(it.color):'')+'</div>'+
+          '</div>'+
+          '<div class="item-actions">'+
+            '<a class="item-action-btn" href="https://aliveprintshop.com/insta-price?style='+encodeURIComponent(it.style||'')+'" target="_top" onclick="prepareEdit(\''+esc(it.id)+'\')">Edit</a>'+
+            '<button type="button" class="item-action-btn danger" onclick="removeItem(\''+esc(it.id)+'\')">Remove</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="item-spec-grid">'+
+          '<div><div class="label">Quantity</div><b>'+(it.qty||0)+' pcs</b></div>'+
+          '<div><div class="label">Decoration</div><b>'+esc(decoDetail)+'</b></div>'+
+          (sizeLine?'<div style="grid-column:1/-1;"><div class="label">Size breakdown</div><b>'+esc(sizeLine)+'</b></div>':'')+
+          (addonLine!=='None'?'<div style="grid-column:1/-1;"><div class="label">Add-ons</div><b>'+esc(addonLine)+'</b></div>':'')+
+          '<div style="grid-column:1/-1;"><div class="label">Turnaround</div><b>'+esc(it.turnaroundLabel||'')+'</b></div>'+
+        '</div>'+
+        '<div class="item-artwork">'+
+          '<div class="item-artwork-label">Artwork link (optional)</div>'+
+          '<input class="item-artwork-input" type="url" placeholder="Paste Dropbox / Drive / WeTransfer link" data-id="'+esc(it.id)+'" data-field="artworkLink" value="'+esc(it.artworkLink||'')+'" oninput="updateField(this)">'+
+        '</div>'+
+        (it.notes?'<div style="font-size:12px;color:var(--text2);"><span style="font-family:\'Montserrat\',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);">Notes:</span> '+esc(it.notes)+'</div>':'')+
+        '<div class="item-prices">'+
+          '<div class="item-prices-left"><strong>'+fmt(it.unitPrice||0)+'</strong>/pc × '+(it.qty||0)+(it.promoCodeAtAdd?'<br>'+promoTag:'')+'</div>'+
+          '<div class="item-line-total">'+fmt(it.lineTotal||0)+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  // Replace the items (preserving empty-state node out of the way)
+  Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state')ch.remove();});
+  host.insertAdjacentHTML('beforeend',html);
+
+  // Summary numbers
+  var subtotal=CART.getDollarTotal();
+  var savings=items.reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0);
+  document.getElementById('sum-items-lbl').textContent='Subtotal ('+items.length+' '+(items.length===1?'item':'items')+', '+CART.getPiecesTotal()+' pcs)';
+  document.getElementById('sum-subtotal').textContent=fmt(subtotal+savings); // pre-promo subtotal for clarity
+  document.getElementById('sum-total').textContent=fmt(subtotal);
+  var srow=document.getElementById('sum-savings-row');
+  if(savings>0){srow.style.display='flex';document.getElementById('sum-savings').textContent='-'+fmt(savings);}
+  else srow.style.display='none';
+
+  renderPromoUI();
+  broadcastHeight();
+}
+
+// ---- Item actions ----
+function removeItem(id){
+  if(!confirm('Remove this item from your cart?'))return;
+  CART.removeItem(id);
+  render();
+}
+function updateField(input){
+  var id=input.getAttribute('data-id');
+  var field=input.getAttribute('data-field');
+  var patch={};patch[field]=input.value||'';
+  CART.updateItem(id,patch);
+}
+// Lite edit: remove the item from the cart, customer reconfigures from scratch via the calculator deep-link.
+function prepareEdit(id){CART.removeItem(id);}
+
+// ---- Promo ----
+function renderPromoUI(errMsg){
+  var p=CART.getPromo();
+  var bar=document.getElementById('promo-bar');
+  var row=document.getElementById('promo-input-row');
+  var applied=document.getElementById('promo-applied-row');
+  var msg=document.getElementById('promo-msg');
+  var lbl=document.getElementById('promo-bar-lbl');
+  if(p&&p.code&&PROMO_CODES.hasOwnProperty(p.code)){
+    bar.classList.add('active');
+    row.style.display='none';
+    applied.style.display='flex';
+    document.getElementById('promo-applied-code').textContent=p.code;
+    lbl.textContent='Promo code applied to all items';
+    msg.classList.remove('show');
+  }else{
+    bar.classList.remove('active');
+    row.style.display='flex';
+    applied.style.display='none';
+    lbl.textContent='Have a promo code?';
+    if(errMsg){msg.textContent=errMsg;msg.classList.add('show');}else msg.classList.remove('show');
+  }
+}
+function applyPromo(){
+  var raw=(document.getElementById('promo-input').value||'').trim().toUpperCase();
+  if(!raw){renderPromoUI('Enter a code');return;}
+  if(PROMO_CODES.hasOwnProperty(raw)){
+    CART.setPromo({code:raw,discount:PROMO_CODES[raw]});
+    // Note: existing items keep the price they had when added. New items added on the calculator after this code is entered will pick up the discount.
+    renderPromoUI();
+  }else{
+    renderPromoUI('Invalid code');
+  }
+}
+function clearPromoCode(){
+  CART.clearPromo();
+  document.getElementById('promo-input').value='';
+  renderPromoUI();
+}
+
+// ---- GHL submission ----
+function buildPayload(form){
+  var items=CART.getItems();
+  var promo=CART.getPromo();
+  var nameParts=(form.name||'').trim().split(/\s+/);
+  var firstName=nameParts[0]||'';
+  var lastName=nameParts.slice(1).join(' ')||'';
+  var subtotal=CART.getDollarTotal();
+  var savings=items.reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0);
+  var itemsText=items.map(function(it,i){
+    var locs=Array.isArray(it.locations)?it.locations.join(', '):'';
+    var sizes=it.sizes?Object.entries(it.sizes).map(function(e){return e[0]+':'+e[1];}).join(', '):'';
+    return '#'+(i+1)+' '+it.brand+' '+it.style+' '+it.productName+' ('+it.color+')'+
+      ' — '+it.qty+' pcs ('+sizes+')'+
+      ' — '+it.decoLabel+' on '+locs+
+      (it.decoMethod==='sp'?' [Front '+(it.frontColors||1)+'c, Back '+(it.backColors||1)+'c]':'')+
+      (it.addonList&&it.addonList.length?' — Addons: '+it.addonList.join(', '):'')+
+      ' — '+it.turnaroundLabel+
+      ' — Unit '+fmt(it.unitPrice)+', Line '+fmt(it.lineTotal)+
+      (it.artworkLink?' — Artwork: '+it.artworkLink:'')+
+      (it.notes?' — Notes: '+it.notes:'')+
+      (it.promoCodeAtAdd?' — Promo: '+it.promoCodeAtAdd:'');
+  }).join('\n');
+  return{
+    firstName:firstName,lastName:lastName,
+    email:form.email,phone:form.phone,company:form.company,
+    shippingAddress:form.shipping,
+    orderNotes:form.notes,
+    itemCount:items.length,
+    pieceCount:CART.getPiecesTotal(),
+    cartSubtotal:fmt(subtotal+savings),
+    cartTotal:fmt(subtotal),
+    cartTotalValue:subtotal,
+    promoCode:promo?promo.code:'',
+    promoSavings:fmt(savings),
+    promoSavingsValue:savings,
+    items:JSON.stringify(items),    // structured for downstream automations
+    itemsSummary:itemsText,         // readable for sales team
+    source:'Multi-item cart checkout',
+    submittedAt:new Date().toISOString()
+  };
+}
+function submitOrder(ev){
+  ev.preventDefault();
+  var err=document.getElementById('cf-err');err.classList.remove('show');
+  var data={
+    name:document.getElementById('cf-name').value.trim(),
+    email:document.getElementById('cf-email').value.trim(),
+    phone:document.getElementById('cf-phone').value.trim(),
+    company:document.getElementById('cf-company').value.trim(),
+    shipping:document.getElementById('cf-shipping').value.trim(),
+    notes:document.getElementById('cf-notes').value.trim()
+  };
+  if(!data.name||!data.email||!data.phone){
+    err.textContent='Name, email, and phone are required.';err.classList.add('show');return;
+  }
+  if(!CART.getCount()){err.textContent='Your cart is empty.';err.classList.add('show');return;}
+  var btn=document.getElementById('cf-btn');btn.disabled=true;btn.textContent='Sending...';
+  var payload=buildPayload(data);
+  var fd=new FormData();
+  Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
+  fetch(GHL_WEBHOOK,{method:'POST',body:fd})
+    .then(function(r){
+      if(r.ok){
+        // Clear cart + show success
+        CART.clear();
+        document.getElementById('checkout-form').style.display='none';
+        document.getElementById('success-box').classList.add('show');
+        // Empty the item list
+        render();
+        broadcastHeight();
+      }else{
+        showSendFailure(err,btn,payload);
+      }
+    })
+    .catch(function(){showSendFailure(err,btn,payload);});
+}
+function showSendFailure(err,btn,payload){
+  btn.disabled=false;btn.textContent='Submit Order Request →';
+  var lines=[];Object.keys(payload).forEach(function(k){lines.push(k+': '+payload[k]);});
+  var subj='Multi-item order request from '+(payload.firstName+' '+payload.lastName).trim();
+  var body=lines.join('\n');
+  var mailto='mailto:'+FALLBACK_EMAIL+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+  err.innerHTML='We couldn’t reach our server. <a href="'+mailto+'" style="color:var(--blue);text-decoration:underline;font-weight:600;">Click here to email us your order</a> and we’ll respond right away.';
+  err.classList.add('show');
+}
+
+// ---- Iframe height broadcast for Hostinger embed ----
+(function(){
+  if(window.self===window.top)return;
+  var BUFFER=40,_lastH=0,_t=null;
+  function measure(){return Math.max(document.body.scrollHeight,document.body.offsetHeight)+BUFFER;}
+  function send(){try{var h=measure();if(h===_lastH)return;_lastH=h;var msg={type:'alive-resize',height:h,page:'cart'};window.parent.postMessage(msg,'*');if(window.top&&window.top!==window.parent){try{window.top.postMessage(msg,'*');}catch(e){}}}catch(e){}}
+  window.aliveBroadcastHeight=function(){if(_t)clearTimeout(_t);_t=setTimeout(send,50);};
+  window.addEventListener('load',window.aliveBroadcastHeight);
+  window.addEventListener('resize',window.aliveBroadcastHeight);
+  document.addEventListener('DOMContentLoaded',window.aliveBroadcastHeight);
+  if(window.ResizeObserver){var ro=new ResizeObserver(window.aliveBroadcastHeight);ro.observe(document.body);}
+})();
+function broadcastHeight(){if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();}
+
+// ---- Boot ----
+render();
+</script>
+
+</body>
+</html>

@@ -416,6 +416,13 @@ textarea.of-input{resize:vertical;min-height:70px;}
 </head>
 <body>
 
+<!-- ── MINI CART BAR (only shows when cart has items) ── -->
+<a id="mini-cart-bar" href="https://aliveprintshop.com/cart" target="_top" style="display:none;align-items:center;gap:10px;padding:10px 16px;background:linear-gradient(135deg,var(--blue) 0%,#1857a8 100%);color:#fff;text-decoration:none;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(27,108,206,0.25);position:sticky;top:0;z-index:200;justify-content:center;">
+  <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.18);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="21" r="1.5" fill="currentColor"/><circle cx="18" cy="21" r="1.5" fill="currentColor"/></svg></span>
+  <span><span id="mini-cart-count">0 items</span> in your cart &middot; <span id="mini-cart-total">$0.00</span></span>
+  <span style="margin-left:6px;">View Cart &rarr;</span>
+</a>
+
 <!-- ── DESKTOP ── -->
 <div class="desktop-layout">
   <div class="left">
@@ -554,33 +561,31 @@ textarea.of-input{resize:vertical;min-height:70px;}
     <!-- ORDER FORM -->
     <div class="r-form-wrap" id="r-of-wrap" style="display:none;">
       <div id="r-of-form">
-        <div class="r-form-title">Submit Your Order</div>
+        <div class="r-form-title">Ready to order?</div>
         <div id="of-summary" style="background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:12px;display:none;">
           <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">Your Configuration</div>
           <div id="of-summary-grid" style="display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--text2);"></div>
         </div>
         <div class="r-form-fields">
-          <div class="r-form-row">
-            <div class="r-form-field"><label class="r-form-lbl">Full Name *</label><input class="r-form-input" id="of-name" type="text" placeholder="John Smith"></div>
-            <div class="r-form-field"><label class="r-form-lbl">Company</label><input class="r-form-input" id="of-company" type="text" placeholder="Your company"></div>
-          </div>
-          <div class="r-form-field"><label class="r-form-lbl">Email *</label><input class="r-form-input" id="of-email" type="email" placeholder="you@company.com"></div>
-          <div class="r-form-field"><label class="r-form-lbl">Phone *</label><input class="r-form-input" id="of-phone" type="tel" placeholder="(702) 555-0100"></div>
           <div class="r-form-field">
             <label class="r-form-lbl">Artwork Link (optional)</label>
-            <input class="r-form-input" id="of-artwork-link" type="url" placeholder="Paste Dropbox, Google Drive, or WeTransfer link">
-            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Upload your artwork to Dropbox, Google Drive, or WeTransfer and paste the shareable link here. You can also share artwork later after we respond.</div>
+            <input class="r-form-input" id="of-artwork-link" type="url" placeholder="Paste Dropbox, Drive, or WeTransfer link">
+            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Optional — you can also share artwork later. Each item in your cart can have its own artwork link.</div>
           </div>
-          <div class="r-form-field"><label class="r-form-lbl">Notes &amp; Special Instructions</label><textarea class="r-form-textarea" id="of-notes" placeholder="Garment color, ship-to address, in-hands date, or anything else..."></textarea></div>
+          <div class="r-form-field"><label class="r-form-lbl">Notes for this item (optional)</label><textarea class="r-form-textarea" id="of-notes" placeholder="Garment color, anything specific to this item..."></textarea></div>
         </div>
         <div class="r-err" id="of-err"></div>
-        <button class="r-submit" id="of-btn" onclick="submitOrder()">Submit Order Request &rarr;</button>
-        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;">We'll be in touch within 1 business day.</div>
+        <button class="r-submit" id="of-btn" onclick="addToCartFromForm()">+ Add to Cart</button>
+        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;">Add multiple items — pay nothing now. We send a quote.</div>
       </div>
       <div id="of-success" style="display:none;text-align:center;padding:16px 0;">
         <div style="width:48px;height:48px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;color:var(--green);">&#10003;</div>
-        <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Request Received!</div>
-        <div style="font-size:12px;color:var(--text3);line-height:1.6;">We'll be in touch within 1 business day.<br><br>Call us: <strong>(702) 685-6270</strong></div>
+        <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Added to cart!</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:14px;">Cart total: <strong id="of-cart-total">&mdash;</strong> &middot; <span id="of-cart-count">0 items</span></div>
+        <div style="display:flex;gap:8px;flex-direction:column;">
+          <a href="https://aliveprintshop.com/cart" target="_top" style="display:block;padding:11px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;">Go to Cart &rarr;</a>
+          <button type="button" onclick="dismissAddedConfirmation()" style="padding:9px;background:transparent;color:var(--blue);border:1.5px solid var(--blue);border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Add Another Item</button>
+        </div>
       </div>
     </div>
 
@@ -712,32 +717,30 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
-    <!-- Mobile Order Form -->
+    <!-- Mobile: Add to Cart -->
     <div class="mob-step" style="border-top:2px solid var(--blue-mid);">
-      <div class="mob-step-head"><div class="mob-step-num">7</div><div><div class="mob-step-title">Submit Your Order</div><div class="mob-step-hint">Fill in your details</div></div></div>
+      <div class="mob-step-head"><div class="mob-step-num">7</div><div><div class="mob-step-title">Add to your cart</div><div class="mob-step-hint">No payment now &mdash; we send a quote</div></div></div>
       <div id="mob-of-form">
         <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Full Name *</label><input id="mob-of-name" type="text" placeholder="John Smith" style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;"></div>
-            <div><label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Company</label><input id="mob-of-company" type="text" placeholder="Your company" style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;"></div>
-          </div>
-          <div><label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Email *</label><input id="mob-of-email" type="email" placeholder="you@company.com" style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;"></div>
-          <div><label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Phone *</label><input id="mob-of-phone" type="tel" placeholder="(702) 555-0100" style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;"></div>
           <div>
             <label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Artwork Link (optional)</label>
             <input id="mob-of-artwork-link" type="url" placeholder="Paste Dropbox, Drive, or WeTransfer link" style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;">
-            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Upload to Dropbox, Drive, or WeTransfer and paste the link. Or share artwork later.</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Optional &mdash; each cart item can have its own artwork link.</div>
           </div>
-          <div><label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Notes</label><textarea id="mob-of-notes" placeholder="Garment color, ship date, anything else..." style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:70px;box-sizing:border-box;"></textarea></div>
+          <div><label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Notes for this item (optional)</label><textarea id="mob-of-notes" placeholder="Anything specific to this item..." style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:60px;box-sizing:border-box;"></textarea></div>
         </div>
         <div id="mob-of-err" style="font-size:12px;color:#dc2626;margin-bottom:8px;display:none;"></div>
-        <button onclick="submitMobOrder()" id="mob-of-btn" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">Submit Order Request &rarr;</button>
-        <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;">We'll be in touch within 1 business day.</div>
+        <button onclick="addToCartFromForm('mob')" id="mob-of-btn" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">+ Add to Cart</button>
+        <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;">Add multiple items &mdash; checkout later.</div>
       </div>
       <div id="mob-of-success" style="display:none;text-align:center;padding:20px 0;">
         <div style="width:54px;height:54px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px;color:var(--green);">&#10003;</div>
-        <div style="font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;">Request Received!</div>
-        <div style="font-size:13px;color:var(--text3);line-height:1.6;">We'll be in touch within 1 business day.<br><br>Call: <strong>(702) 685-6270</strong></div>
+        <div style="font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;">Added to cart!</div>
+        <div style="font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:16px;">Cart total: <strong id="mob-of-cart-total">&mdash;</strong> &middot; <span id="mob-of-cart-count">0 items</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <a href="https://aliveprintshop.com/cart" target="_top" style="display:block;padding:14px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;text-align:center;">Go to Cart &rarr;</a>
+          <button type="button" onclick="dismissAddedConfirmation('mob')" style="padding:12px;background:transparent;color:var(--blue);border:1.5px solid var(--blue);border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Add Another Item</button>
+        </div>
       </div>
     </div>
 
@@ -786,6 +789,76 @@ var PROMO_CODES={
   'SAMPLE80':0.8
 };
 var _activePromo=null; // {code:'SAMPLE50', discount:0.5} when applied
+
+// =====================================================================
+// CART — multi-item shopping cart backed by localStorage. Shared across
+// the calculator page (this file) and the /cart page (cart.html).
+// localStorage keys:
+//   alive_cart_items_v1  — array of cart items (see schema below)
+//   alive_cart_promo_v1  — {code, discount} when a promo is active
+// Item schema (set at "Add to Cart" time, immutable after):
+// {
+//   id: unique string,
+//   addedAt: ISO timestamp,
+//   style, productName, brand, color, productImage,
+//   decoMethod ('sp'|'ht'),
+//   locations [array of 'front','back','left-sleeve','right-sleeve'],
+//   frontColors, backColors (only for screen printing),
+//   qty (total), sizes {XS:n,S:n,...} (qty per size if specified),
+//   addons {neck, hem, bag}, turnaround ('std'|'rush'|'super'),
+//   artworkLink, notes,
+//   unitPrice, lineTotal,                       // final prices with promo applied
+//   promoCodeAtAdd, promoDiscountAtAdd          // promo snapshot for audit
+// }
+// =====================================================================
+var CART={
+  K_ITEMS:'alive_cart_items_v1',
+  K_PROMO:'alive_cart_promo_v1',
+  _safeParse:function(raw,fb){try{return raw?JSON.parse(raw):fb;}catch(e){return fb;}},
+  getItems:function(){return this._safeParse(localStorage.getItem(this.K_ITEMS),[]);},
+  setItems:function(items){try{localStorage.setItem(this.K_ITEMS,JSON.stringify(items||[]));}catch(e){}},
+  addItem:function(item){
+    var items=this.getItems();
+    item.id='ci_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7);
+    item.addedAt=new Date().toISOString();
+    items.push(item);
+    this.setItems(items);
+    return item;
+  },
+  removeItem:function(id){
+    var items=this.getItems().filter(function(it){return it.id!==id;});
+    this.setItems(items);
+  },
+  getItem:function(id){
+    var items=this.getItems();
+    for(var i=0;i<items.length;i++){if(items[i].id===id)return items[i];}
+    return null;
+  },
+  clear:function(){this.setItems([]);},
+  getCount:function(){return this.getItems().length;},
+  getPiecesTotal:function(){return this.getItems().reduce(function(s,it){return s+(parseInt(it.qty,10)||0);},0);},
+  getDollarTotal:function(){return parseFloat(this.getItems().reduce(function(s,it){return s+(parseFloat(it.lineTotal)||0);},0).toFixed(2));},
+  // Promo persistence (decoupled from items so a customer's code follows them across items)
+  getPromo:function(){return this._safeParse(localStorage.getItem(this.K_PROMO),null);},
+  setPromo:function(promo){
+    try{
+      if(promo&&promo.code)localStorage.setItem(this.K_PROMO,JSON.stringify(promo));
+      else localStorage.removeItem(this.K_PROMO);
+    }catch(e){}
+  },
+  clearPromo:function(){try{localStorage.removeItem(this.K_PROMO);}catch(e){}}
+};
+
+// Sync _activePromo from localStorage at script load. If the saved code is
+// no longer in PROMO_CODES (e.g. it was removed by us), drop it silently.
+(function loadPromoOnBoot(){
+  var p=CART.getPromo();
+  if(p&&p.code&&PROMO_CODES.hasOwnProperty(p.code)){
+    _activePromo={code:p.code,discount:PROMO_CODES[p.code]};
+  }else if(p){
+    CART.clearPromo();
+  }
+})();
 
 var sel=null, locs=new Set(['front']), addons={neck:false,hem:false,bag:false}, rush='std', addonsOpen=false, mobQty=24, fi=-1;
 
@@ -1235,6 +1308,7 @@ function applyPromo(source){
   if(!raw){renderPromoUI('Enter a code');return;}
   if(PROMO_CODES.hasOwnProperty(raw)){
     _activePromo={code:raw,discount:PROMO_CODES[raw]};
+    CART.setPromo(_activePromo); // persist so the next item the customer configures keeps the discount
     renderPromoUI();
     calc();
   }else{
@@ -1243,6 +1317,7 @@ function applyPromo(source){
 }
 function clearPromo(){
   _activePromo=null;
+  CART.clearPromo();
   var i1=document.getElementById('promo-input');if(i1)i1.value='';
   var i2=document.getElementById('mob-promo-input');if(i2)i2.value='';
   renderPromoUI();
@@ -1709,23 +1784,124 @@ function runOrderSubmit(cfg){
     });
 }
 
-function submitOrder(){
-  runOrderSubmit({
-    ids:{name:'of-name',email:'of-email',phone:'of-phone',company:'of-company',notes:'of-notes',artworkLink:'of-artwork-link'},
-    errId:'of-err',btnId:'of-btn',
-    formId:'r-of-form',successId:'of-success',
-    source:'Full Calculator'
-  });
+// LEGACY: kept so any existing call sites don't error. They no longer submit
+// directly to GHL — the new cart flow submits a consolidated payload from /cart.
+function submitOrder(){addToCartFromForm();}
+function submitMobOrder(){addToCartFromForm('mob');}
+
+// =====================================================================
+// Cart — snapshot the current calculator config and push to localStorage.
+// Customer info collection is deferred to the /cart page (one form, all items).
+// =====================================================================
+function captureCartItem(source){
+  if(!sel)return{ok:false,msg:'Pick a product before adding to cart.'};
+  var qty=getQty(),minQ=getMinQty();
+  if(qty<minQ)return{ok:false,msg:'Minimum order is '+minQ+' pieces for '+(decoMethod==='ht'?'heat transfer':'screen printing')+'.'};
+  var pp=calcPP(qty);
+  if(pp==null)return{ok:false,msg:'Adjust your selections to see a price first.'};
+  var lineTotal=parseFloat((pp*qty).toFixed(2));
+  // Size breakdown via the shared getSizeQty helper (reads from both desktop and mobile inputs).
+  var sizes={};
+  SIZES.forEach(function(sz){var n=getSizeQty(sz);if(n>0)sizes[sz]=n;});
+  // Pull product image (first color, front model)
+  var img='';
+  if(sel._full&&Array.isArray(sel._full.colors)&&sel._full.colors[0]){
+    var col=sel._full.colors[0];
+    if(col.images){img=col.images.front_model||col.images.front_flat||'';}
+  }
+  var artworkId=source==='mob'?'mob-of-artwork-link':'of-artwork-link';
+  var notesId=source==='mob'?'mob-of-notes':'of-notes';
+  var artworkLink=(document.getElementById(artworkId)||{}).value||'';
+  var notes=(document.getElementById(notesId)||{}).value||'';
+  var addonList=[];if(addons.neck)addonList.push('Inside Neck Print');if(addons.hem)addonList.push('Custom Hem Tag');if(addons.bag)addonList.push('Fold & Bag');
+  var baseBD=rush==='super'?5:rush==='rush'?7:10;
+  var effBD=baseBD+(addons.hem?5:0);
+  var taLabel=(rush==='super'?'Super Rush':rush==='rush'?'Rush':'Standard')+' ('+effBD+' business days'+(addons.hem?', includes +5 bd for hem tags':'')+')';
+  var item={
+    style:sel.s,
+    productName:(sel.n||'').replace(/&amp;/g,'&'),
+    brand:sel.b||'',
+    color:sel.c||'',
+    productImage:img,
+    decoMethod:decoMethod, // 'sp' | 'ht'
+    decoLabel:decoMethod==='ht'?'Heat Transfer':'Screen Printing',
+    locations:Array.from(locs),
+    frontColors:decoMethod==='sp'?(getFrEl()+1):null, // 1-based color count
+    backColors:decoMethod==='sp'?(getBkEl()+1):null,
+    qty:qty,
+    sizes:sizes,
+    addons:Object.assign({},addons),
+    addonList:addonList,
+    rush:rush,
+    turnaroundLabel:taLabel,
+    artworkLink:artworkLink,
+    notes:notes,
+    unitPrice:pp,
+    lineTotal:lineTotal,
+    promoCodeAtAdd:_activePromo?_activePromo.code:'',
+    promoDiscountAtAdd:_activePromo?_activePromo.discount:0,
+    promoSavingsPerUnit:getPromoSavingsPerUnit(),
+    promoSavingsTotal:parseFloat((getPromoSavingsPerUnit()*qty).toFixed(2))
+  };
+  return{ok:true,item:item};
 }
 
-function submitMobOrder(){
-  runOrderSubmit({
-    ids:{name:'mob-of-name',email:'mob-of-email',phone:'mob-of-phone',company:'mob-of-company',notes:'mob-of-notes',artworkLink:'mob-of-artwork-link'},
-    errId:'mob-of-err',btnId:'mob-of-btn',
-    formId:'mob-of-form',successId:'mob-of-success',
-    source:'Calculator (Mobile)'
-  });
+function addToCartFromForm(source){
+  var errId=source==='mob'?'mob-of-err':'of-err';
+  var formId=source==='mob'?'mob-of-form':'r-of-form';
+  var successId=source==='mob'?'mob-of-success':'of-success';
+  var btnId=source==='mob'?'mob-of-btn':'of-btn';
+  var totalId=source==='mob'?'mob-of-cart-total':'of-cart-total';
+  var countId=source==='mob'?'mob-of-cart-count':'of-cart-count';
+
+  var err=document.getElementById(errId);if(err)err.style.display='none';
+  var btn=document.getElementById(btnId);if(btn){btn.disabled=true;btn.style.opacity='0.7';}
+
+  var cap=captureCartItem(source);
+  if(!cap.ok){
+    if(err){err.textContent=cap.msg;err.style.display='block';}
+    if(btn){btn.disabled=false;btn.style.opacity='';}
+    return;
+  }
+  CART.addItem(cap.item);
+
+  // Show success state with cart summary + actions
+  var f=document.getElementById(formId),s=document.getElementById(successId);
+  if(f)f.style.display='none';
+  if(s)s.style.display='block';
+  var t=document.getElementById(totalId);if(t)t.textContent=fmtK(CART.getDollarTotal());
+  var c=document.getElementById(countId);if(c)c.textContent=CART.getCount()+' '+(CART.getCount()===1?'item':'items');
+  if(btn){btn.disabled=false;btn.style.opacity='';}
+  updateMiniCart();
 }
+
+// Reset the form (and clear artwork link / notes) so the user can configure the next item.
+function dismissAddedConfirmation(source){
+  var formId=source==='mob'?'mob-of-form':'r-of-form';
+  var successId=source==='mob'?'mob-of-success':'of-success';
+  var f=document.getElementById(formId),s=document.getElementById(successId);
+  if(s)s.style.display='none';
+  if(f)f.style.display='block';
+  // Clear per-item inputs so they don't carry over
+  ['of-artwork-link','of-notes','mob-of-artwork-link','mob-of-notes'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  // Scroll up to the product selector so they can pick a new product
+  var topEl=document.getElementById('si')||document.querySelector('.left')||document.body;
+  if(topEl&&topEl.scrollIntoView)topEl.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Refresh the sticky mini-cart bar (top of page) from current CART contents.
+function updateMiniCart(){
+  var bar=document.getElementById('mini-cart-bar');if(!bar)return;
+  var n=CART.getCount();
+  if(n<=0){bar.style.display='none';return;}
+  bar.style.display='flex';
+  var cnt=document.getElementById('mini-cart-count');if(cnt)cnt.textContent=n+' '+(n===1?'item':'items');
+  var tot=document.getElementById('mini-cart-total');if(tot)tot.textContent=fmtK(CART.getDollarTotal());
+}
+// Initial render on script load
+updateMiniCart();
 
 // Legacy function kept for compatibility with any older call sites
 function showOrderSuccess(){
