@@ -98,9 +98,9 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 .cf-row.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cf-row.two > div{display:flex;flex-direction:column;gap:5px;}
 .cf-lbl{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
-.cf-input{padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;transition:border-color 0.15s;}
+.cf-input{width:100%;min-width:0;padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;transition:border-color 0.15s;}
 .cf-input:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
-.cf-textarea{padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:60px;}
+.cf-textarea{width:100%;min-width:0;padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:60px;}
 .cf-textarea:focus{border-color:var(--blue);background:var(--surface);}
 .cf-err{font-size:12px;color:#dc2626;margin-bottom:8px;display:none;}
 .cf-err.show{display:block;}
@@ -114,6 +114,30 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 .success-box .check{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;color:var(--green);}
 .success-box h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
 .success-box p{font-size:13px;color:var(--text2);line-height:1.5;}
+
+/* THANK YOU PAGE (full-width takeover after a successful submit) */
+.thankyou{display:none;max-width:680px;margin:0 auto;padding:48px 24px 64px;text-align:center;}
+.thankyou.show{display:block;}
+.thankyou .ty-check{width:88px;height:88px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:44px;color:var(--green);box-shadow:0 4px 18px rgba(31,139,76,0.18);}
+.thankyou h1{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:10px;letter-spacing:-0.01em;}
+.thankyou .ty-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:28px;}
+.thankyou .ty-sub strong{color:var(--text);}
+.ty-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;margin:0 auto 24px;text-align:left;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.ty-summary-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+.ty-summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2);}
+.ty-summary-row.total{padding-top:12px;border-top:1.5px solid var(--border);margin-top:8px;font-size:16px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;}
+.ty-steps{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--r-lg);padding:18px 22px;margin:0 auto 22px;text-align:left;}
+.ty-steps-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
+.ty-steps ol{margin:0;padding-left:22px;font-size:13px;color:var(--text2);line-height:1.7;}
+.ty-steps ol li{margin-bottom:4px;}
+.ty-steps ol li strong{color:var(--text);}
+.ty-contact{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:24px;}
+.ty-contact strong{color:var(--text);font-family:'Montserrat',sans-serif;}
+.ty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.ty-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;transition:background 0.15s;}
+.ty-btn:hover{background:var(--blue-dark);}
+.ty-btn.secondary{background:transparent;color:var(--blue);border:1.5px solid var(--blue);}
+.ty-btn.secondary:hover{background:var(--blue-light);}
 
 /* MOBILE */
 @media(max-width:820px){
@@ -131,12 +155,46 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
   .summary,.checkout-form,.success-box{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;border-bottom:6px solid #F2F4F8;}
   .checkout-form{border:none;border-bottom:6px solid #F2F4F8;border-top:3px solid var(--blue-mid);}
   .empty-state{margin:0;border-radius:0;border:none;border-bottom:6px solid #F2F4F8;box-shadow:none;padding:48px 24px;}
+  .thankyou{padding:32px 18px 48px;}
+  .thankyou h1{font-size:24px;}
+  .thankyou .ty-check{width:72px;height:72px;font-size:36px;}
+  .ty-summary,.ty-steps{padding:16px 18px;}
+  .ty-actions{flex-direction:column;}
+  .ty-btn{justify-content:center;}
 }
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<!-- THANK YOU PAGE — full-width takeover after successful submission. -->
+<div class="thankyou" id="thankyou">
+  <div class="ty-check">&#10003;</div>
+  <h1>Thank you!</h1>
+  <p class="ty-sub">Your order request has been sent. We'll respond within <strong>1 business day</strong> with a final quote.</p>
+
+  <div class="ty-summary" id="ty-summary"></div>
+
+  <div class="ty-steps">
+    <div class="ty-steps-title">What happens next</div>
+    <ol>
+      <li>We review your selections and prep a <strong>final quote</strong> &mdash; usually within 1 business day.</li>
+      <li>You approve the quote and we send a <strong>digital proof</strong> for your sign-off.</li>
+      <li>Once approved, we print and ship. Standard turnaround is 10 business days.</li>
+    </ol>
+  </div>
+
+  <div class="ty-contact">
+    Questions in the meantime?<br>
+    Call us anytime at <strong>(702) 685-6270</strong> or reply to the confirmation email.
+  </div>
+
+  <div class="ty-actions">
+    <a class="ty-btn" href="https://aliveprintshop.com/insta-price" target="_top">Start Another Order</a>
+    <a class="ty-btn secondary" href="https://aliveprintshop.com/" target="_top">Back to Home</a>
+  </div>
+</div>
+
+<div class="wrap" id="cart-wrap">
 
   <div class="page-header">
     <div class="page-title" id="cart-title">Your Cart</div>
@@ -440,21 +498,48 @@ function submitOrder(ev){
   var payload=buildPayload(data);
   var fd=new FormData();
   Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
+  // Snapshot the order summary BEFORE we clear the cart — used on the thank-you page.
+  var snapshot={
+    itemCount:CART.getCount(),
+    pieceCount:CART.getPiecesTotal(),
+    subtotalWithSavings:CART.getDollarTotal()+CART.getItems().reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0),
+    savings:CART.getItems().reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0),
+    total:CART.getDollarTotal(),
+    promoCode:(CART.getPromo()||{}).code||'',
+    customerEmail:data.email,
+    customerName:data.name
+  };
   fetch(GHL_WEBHOOK,{method:'POST',body:fd})
     .then(function(r){
       if(r.ok){
-        // Clear cart + show success
+        // Clear cart and the saved promo so the customer starts fresh next time.
         CART.clear();
-        document.getElementById('checkout-form').style.display='none';
-        document.getElementById('success-box').classList.add('show');
-        // Empty the item list
-        render();
-        broadcastHeight();
+        CART.clearPromo();
+        showThankYou(snapshot);
       }else{
         showSendFailure(err,btn,payload);
       }
     })
     .catch(function(){showSendFailure(err,btn,payload);});
+}
+
+// Hide the cart UI and show a full-page thank-you with the order snapshot.
+function showThankYou(snap){
+  var cartWrap=document.getElementById('cart-wrap');if(cartWrap)cartWrap.style.display='none';
+  var ty=document.getElementById('thankyou');if(ty)ty.classList.add('show');
+  var sumHost=document.getElementById('ty-summary');
+  if(sumHost){
+    var rows='<div class="ty-summary-title">Order summary</div>'+
+      '<div class="ty-summary-row"><span>Items</span><span><strong>'+snap.itemCount+'</strong> '+(snap.itemCount===1?'product':'products')+' &middot; '+snap.pieceCount+' pcs</span></div>'+
+      '<div class="ty-summary-row"><span>Subtotal</span><span>'+fmt(snap.subtotalWithSavings)+'</span></div>'+
+      (snap.savings>0?'<div class="ty-summary-row" style="color:var(--green);font-weight:700;"><span>Promo savings'+(snap.promoCode?' ('+snap.promoCode+')':'')+'</span><span>-'+fmt(snap.savings)+'</span></div>':'')+
+      '<div class="ty-summary-row total"><span>Total</span><span>'+fmt(snap.total)+'</span></div>'+
+      (snap.customerEmail?'<div class="ty-summary-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);color:var(--text3);"><span>Confirmation sent to</span><span style="color:var(--text);">'+esc(snap.customerEmail)+'</span></div>':'');
+    sumHost.innerHTML=rows;
+  }
+  // Scroll the iframe content to top, then broadcast new height so the parent iframe shrinks.
+  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}
+  broadcastHeight();
 }
 function showSendFailure(err,btn,payload){
   btn.disabled=false;btn.textContent='Submit Order Request →';
