@@ -1803,12 +1803,14 @@ function captureCartItem(source){
   // Size breakdown via the shared getSizeQty helper (reads from both desktop and mobile inputs).
   var sizes={};
   SIZES.forEach(function(sz){var n=getSizeQty(sz);if(n>0)sizes[sz]=n;});
-  // Pull product image (first color, front model)
+  // Pull product image + color name from the currently SELECTED color (sel._activeColor),
+  // falling back to the first color if nothing has been selected yet.
+  var activeColor=sel._activeColor||(sel._full&&Array.isArray(sel._full.colors)?sel._full.colors[0]:null);
   var img='';
-  if(sel._full&&Array.isArray(sel._full.colors)&&sel._full.colors[0]){
-    var col=sel._full.colors[0];
-    if(col.images){img=col.images.front_model||col.images.front_flat||'';}
+  if(activeColor&&activeColor.images){
+    img=activeColor.images.front_model||activeColor.images.front_flat||'';
   }
+  var colorName=activeColor&&activeColor.name?activeColor.name:(sel.c||'');
   var artworkId=source==='mob'?'mob-of-artwork-link':'of-artwork-link';
   var notesId=source==='mob'?'mob-of-notes':'of-notes';
   var artworkLink=(document.getElementById(artworkId)||{}).value||'';
@@ -1821,7 +1823,7 @@ function captureCartItem(source){
     style:sel.s,
     productName:(sel.n||'').replace(/&amp;/g,'&'),
     brand:sel.b||'',
-    color:sel.c||'',
+    color:colorName,
     productImage:img,
     decoMethod:decoMethod, // 'sp' | 'ht'
     decoLabel:decoMethod==='ht'?'Heat Transfer':'Screen Printing',
@@ -1864,15 +1866,15 @@ function addToCartFromForm(source){
     return;
   }
   CART.addItem(cap.item);
-
-  // Show success state with cart summary + actions
-  var f=document.getElementById(formId),s=document.getElementById(successId);
-  if(f)f.style.display='none';
-  if(s)s.style.display='block';
-  var t=document.getElementById(totalId);if(t)t.textContent=fmtK(CART.getDollarTotal());
-  var c=document.getElementById(countId);if(c)c.textContent=CART.getCount()+' '+(CART.getCount()===1?'item':'items');
-  if(btn){btn.disabled=false;btn.style.opacity='';}
   updateMiniCart();
+
+  // Briefly flash the button label as feedback, then take the customer straight to the cart.
+  if(btn){btn.textContent='✓ Added — going to cart...';btn.style.background='var(--green)';}
+  // Use window.top so we break out of any iframe (Hostinger embed) and land on aliveprintshop.com/cart.
+  setTimeout(function(){
+    try{window.top.location.href='https://aliveprintshop.com/cart';}
+    catch(e){window.location.href='https://aliveprintshop.com/cart';}
+  },350);
 }
 
 // Reset the form (and clear artwork link / notes) so the user can configure the next item.
