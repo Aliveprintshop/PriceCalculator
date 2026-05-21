@@ -20,7 +20,6 @@
 html,body{margin:0;padding:0;font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text);}
 a{color:var(--blue);text-decoration:none;}
 a:hover{text-decoration:underline;}
-  
 
 /* TWO-COLUMN LAYOUT (no top header — page is embedded) */
 .shell{max-width:1500px;margin:0 auto;padding:24px;display:grid;grid-template-columns:var(--sidebar-w) 1fr;gap:28px;align-items:start;}
@@ -586,8 +585,33 @@ function setPerPage(v){
 function renderGrid(){
   var host=document.getElementById('page-grid');if(!host)return;
   var rows=filtered();
-  // Sort by popularity then alpha
+
+  // Category-aware priority boost — when exactly one of these categories is
+  // the active filter, items matching the rule float to the top.
+  //   brand: brand name (case-insensitive exact match)
+  //   nameRegex: regex tested against the product name
+  var CATEGORY_PRIORITY={
+    'Headwear':{brand:'richardson'},
+    'Bags':{nameRegex:/\btotes?\b/i},
+    'Activewear':{brand:'sport-tek'}
+  };
+  var priorityRule=null;
+  if(_cats.size===1){
+    var onlyCat=Array.from(_cats)[0];
+    if(CATEGORY_PRIORITY[onlyCat])priorityRule=CATEGORY_PRIORITY[onlyCat];
+  }
+  function isPriority(it){
+    if(!priorityRule)return false;
+    if(priorityRule.brand&&it.b&&it.b.toLowerCase()===priorityRule.brand)return true;
+    if(priorityRule.nameRegex&&it.n&&priorityRule.nameRegex.test(it.n))return true;
+    return false;
+  }
+
+  // Sort: priority bucket first → POPULAR list rank → brand+name alpha
   rows.sort(function(a,b){
+    var pa=isPriority(a),pb=isPriority(b);
+    if(pa&&!pb)return -1;
+    if(pb&&!pa)return 1;
     var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
     if(ap>-1&&bp>-1)return ap-bp;
     if(ap>-1)return -1;if(bp>-1)return 1;
@@ -661,11 +685,17 @@ async function loadProducts(){
     var rows=Array.isArray(data)?data:(data.products||[]);
     var flat=[];
     var EXCLUDE_NAME=/\b(socks?|gloves?|mittens?)\b/i;
+    // Per-style blacklist — add SanMar style numbers here to hide them from the browse grid.
+    var EXCLUDE_STYLES={'CTA202':1,'CTA207':1,'CTA267':1,'CT104485':1,'CS820':1,'CS800':1};
+    // Exact-name blacklist (case-insensitive). For custom/local-supplier items where there's no style number to filter on.
+    var EXCLUDE_NAME_EXACT={'trucker hat - local supplier':1};
     for(var i=0;i<rows.length;i++){
       var p=rows[i];
       if(!p||!p.style)continue;
       if(p.discontinued===true)continue;
       if(p.name&&EXCLUDE_NAME.test(p.name))continue;
+      if(EXCLUDE_STYLES[String(p.style).toUpperCase()])continue;
+      if(p.name&&EXCLUDE_NAME_EXACT[p.name.toLowerCase().trim()])continue;
       var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
       if(basePrice==null||isNaN(basePrice))continue;
       var unitPrice=+(basePrice*1.5).toFixed(2);
