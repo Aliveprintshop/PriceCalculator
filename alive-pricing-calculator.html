@@ -1130,8 +1130,9 @@ function pickItem(s){
   currentView='front';
   renderSwatches(live);
   if(typeof renderViewPills==='function')renderViewPills();
-  // Rebuild the size grid for the selected product
+  // Rebuild the size grid for the selected product, then seed a default qty of 36.
   buildSizeGrid(live?live.available_sizes:null);
+  applyDefaultQty();
   // Update deco-method tabs + imprint location pills for this product type.
   if(typeof renderDecoTabs==='function')renderDecoTabs();
   if(typeof renderLocationPills==='function')renderLocationPills();
@@ -1882,6 +1883,27 @@ function clearSizes(){
   ['size-mismatch','mob-size-mismatch'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
 }
 
+// Seed a default quantity (36 pcs) into one size slot when a product is loaded.
+// Picks the best available size in this order: M, L, OSFA, S, XL, first-available.
+function applyDefaultQty(){
+  var DEFAULT_QTY=36;
+  // Don't overwrite if the user has already entered any sizes (e.g. they navigated back from cart).
+  if(typeof getSizeTotal==='function'&&getSizeTotal()>0)return;
+  var preferred=['M','L','OSFA','S','XL','XS','2XL'];
+  var picked=null;
+  for(var i=0;i<preferred.length;i++){
+    if(SIZES.indexOf(preferred[i])>-1){picked=preferred[i];break;}
+  }
+  if(!picked&&SIZES.length)picked=SIZES[0];
+  if(!picked)return;
+  var key=picked.toLowerCase();
+  var d=document.getElementById('sz-'+key);
+  if(d){d.value=DEFAULT_QTY;d.classList.add('has-qty');}
+  var m=document.getElementById('mob-sz-'+key);
+  if(m){m.value=DEFAULT_QTY;m.classList.add('has-qty');}
+  if(typeof onSizeInput==='function')onSizeInput();
+}
+
 // -- ORDER FORM --
 // GHL configuration (GHL webhook URL is defined above near the other endpoints)
 var FALLBACK_EMAIL='austin@aliveprintshop.com';
@@ -1898,7 +1920,7 @@ function updateOrderSummary(){
     ['Item',sel.s+' \u2014 '+sel.n.replace(/&amp;/g,'&')],
     ['Qty',qty.toLocaleString()+' pcs'],
     szB?['Sizes',szB]:null,
-    ['Method',decoMethod==='ht'?'Heat Transfer':'Screen Printing'],
+    ['Method',decoMethod==='em'?'Embroidery':(decoMethod==='ht'?'Heat Transfer':'Screen Printing')],
     ['Locations',locsDisplay()],
     addonList.length?['Add-ons',addonList.join(', ')]:null,
     ['Per unit',fmt(pp)],
