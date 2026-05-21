@@ -315,6 +315,35 @@ var CATEGORY_BUCKETS=[
   {label:'Toddler',               cats:['Infant & Toddler']},
   {label:'Specialty',             cats:['Tall','Accessories']}
 ];
+
+// =====================================================================
+// URL routing for shareable category links.
+// Slug format: lowercase, "&" dropped, non-alphanumeric -> hyphens.
+//   "Headwear"             -> "headwear"
+//   "Bags"                 -> "bags"
+//   "Sweatshirts & Hoodies"-> "sweatshirts-hoodies"
+//   "Polos & Button-Downs" -> "polos-button-downs"
+// Parent /products page uses the fragment (#headwear) as the canonical URL.
+// On boot we read ?cat= from our own URL (set by the Hostinger embed),
+// then sync filter changes back to the parent via postMessage so the
+// top-frame hash always reflects the active single-category filter.
+// =====================================================================
+function labelToSlug(label){
+  return String(label||'').toLowerCase().replace(/&/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+function slugToBucketLabel(slug){
+  if(!slug)return null;
+  var t=String(slug).toLowerCase().trim();
+  for(var i=0;i<CATEGORY_BUCKETS.length;i++){
+    if(labelToSlug(CATEGORY_BUCKETS[i].label)===t)return CATEGORY_BUCKETS[i].label;
+  }
+  return null;
+}
+function notifyParentRoute(){
+  if(window.self===window.top)return;
+  var slug=(_cats.size===1)?labelToSlug(Array.from(_cats)[0]):'';
+  try{window.parent.postMessage({type:'alive-route',slug:slug},'*');}catch(e){}
+}
 // Name-based detectors. Order in bucketForProduct matters — audience
 // (Toddler/Youth) wins over garment so a "Youth Long Sleeve Tee" stays in Youth.
 function isTankTop(p){return !!(p && p.name && /\btanks?\b/i.test(p.name));}
@@ -666,8 +695,8 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();}
-function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();}
+function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();notifyParentRoute();}
 function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();}
 function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
@@ -705,6 +734,14 @@ async function loadProducts(){
     }
     ITEMS=flat;
     buildHexLookup(rows);
+    // Apply initial category from ?cat= URL param (set by Hostinger embed from parent hash).
+    try{
+      var initCat=new URLSearchParams(window.location.search).get('cat');
+      if(initCat){
+        var label=slugToBucketLabel(initCat);
+        if(label){_cats.clear();_cats.add(label);}
+      }
+    }catch(e){}
     renderTrustBanner();
     updateBrandBanner();
     renderCategoryList();renderBrandList();renderGrid();
@@ -716,6 +753,18 @@ async function loadProducts(){
 }
 
 loadProducts();
+
+// Listen for category route changes pushed from the parent (e.g. back/forward button on aliveprintshop.com).
+window.addEventListener('message',function(e){
+  var d=e&&e.data;
+  if(!d||d.type!=='alive-route-set')return;
+  var slug=d.slug||'';
+  var label=slug?slugToBucketLabel(slug):null;
+  _cats.clear();
+  if(label)_cats.add(label);
+  _page=1;
+  renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();
+},false);
 
 // Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
 // so the parent page can size the iframe to match (eliminates wasted whitespace AND
