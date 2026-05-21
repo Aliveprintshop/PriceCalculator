@@ -326,6 +326,11 @@ function render(){
       if(it.locations&&it.locations.indexOf('front')>-1)parts.push('Front '+(it.frontColors||1)+' color');
       if(it.locations&&it.locations.indexOf('back')>-1)parts.push('Back '+(it.backColors||1)+' color');
       if(parts.length)decoDetail+=' — '+parts.join(', ');
+    } else if(it.decoMethod==='em'){
+      // Show locations inline so customer sees what's included; pricing already incorporates the $45 setup fee.
+      var locsTxt=Array.isArray(it.locations)?it.locations.map(function(l){return String(l).replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});}).join(', '):'';
+      if(locsTxt)decoDetail+=' — '+locsTxt;
+      decoDetail+=' (incl. $45 setup, est. only — see disclaimer)';
     }
     var promoTag=it.promoCodeAtAdd?'<span class="item-promo-tag">Promo: '+esc(it.promoCodeAtAdd)+' (−'+fmt(it.promoSavingsTotal||0)+')</span>':'';
     var img=it.productImage?'<img src="'+esc(it.productImage)+'" alt="'+esc(it.productName)+'" loading="lazy" onerror="this.style.display=\'none\';">':'';
