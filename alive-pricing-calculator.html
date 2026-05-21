@@ -158,7 +158,7 @@ table.pt tr.cur td:first-child{color:var(--blue);}
 .promo-msg.show{display:block;}
 
 /* TRUST BADGES */
-.trust-badges{display:flex;flex-direction:column;gap:6px;}
+.trust-badges{display:none;}  /* Desktop trust badges hidden per design — mobile .mob-trust still shows them */
 .trust-badge{display:flex;align-items:center;gap:9px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);cursor:pointer;user-select:none;transition:background 0.15s,border-color 0.15s;}
 .trust-badge:hover,.trust-badge.open{background:var(--blue-light);border-color:var(--blue-mid);}
 .trust-icon-wrap{width:28px;height:28px;border-radius:50%;background:#fff;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue);transition:all 0.15s;}
@@ -470,12 +470,14 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
-    <!-- Step 3: Qty -->
+    <!-- Step 3: Qty (size-grid-driven — total is computed from per-size inputs) -->
     <div class="step-block full">
       <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">How many pieces do you need?</div><div class="step-hint">Min 24 for screen printing, 10 for heat transfer &mdash; prices drop as quantity goes up</div></div></div>
-      <div class="qty-wrap"><input class="qty-input" id="qty" type="number" value="24" min="10" step="1"><div class="qty-hint" id="qty-hint">Price breaks at<br><strong>50, 72, 144, 300, 500+</strong></div></div>
-      <div class="moq-warn" id="moq-warn">&#9888; Minimum order is 36 pieces.</div>
-      <div class="size-section"><div class="size-section-lbl">Size breakdown &mdash; qty per size</div><div class="size-grid" id="size-grid-host"></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch">&#9888; Size total doesn't match quantity</div></div>
+      <!-- Hidden — qty is derived from the size grid below. Kept for legacy onSizeInput sync. -->
+      <input type="hidden" id="qty" value="0">
+      <div class="qty-hint" id="qty-hint" style="display:none;"></div>
+      <div class="moq-warn" id="moq-warn" style="display:none;">&#9888; Minimum order is 36 pieces.</div>
+      <div class="size-section" style="margin-top:0;"><div class="size-section-lbl">Size breakdown &mdash; qty per size</div><div class="size-grid" id="size-grid-host"></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch" style="display:none;">&#9888; Size total doesn't match quantity</div></div>
     </div>
 
     <!-- Step 4: Locations -->
@@ -554,7 +556,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
         </div>
       </div>
       <div class="trust-badges">
-        <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="trust-title">No Setup Fees</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">The price you see is the price you pay.</div></div>
+        <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6l-3 3V7a2 2 0 0 1 1-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 9h8M7 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="trust-title">Free Mockups &amp; Design Review</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">We design with you before anything goes to print.</div></div>
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="18" r="4" fill="var(--blue)" stroke="white" stroke-width="1.2"/><path d="M16.5 18l1 1 2-2" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="trust-title">Proof Before We Print</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">You sign off before anything goes to print.</div></div>
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 4.8 5.6.8-4 3.9.9 5.5L12 14.4l-4.9 2.6.9-5.5-4-3.9 5.6-.8L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="trust-title">100% Print Guarantee</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">If it&rsquo;s not right, we make it right.</div></div>
       </div>
@@ -715,7 +717,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="promo-msg" id="mob-promo-msg">Invalid code</div>
       </div>
       <div class="mob-trust" style="margin-top:12px;">
-        <div class="mob-trust-item" onclick="this.classList.toggle('open')"><div class="mob-trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mob-trust-title">No Setup Fees</div><div class="mob-trust-chevron">&#9660;</div><div class="mob-trust-detail">The price you see is the price you pay.</div></div>
+        <div class="mob-trust-item" onclick="this.classList.toggle('open')"><div class="mob-trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6l-3 3V7a2 2 0 0 1 1-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 9h8M7 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="mob-trust-title">Free Mockups &amp; Design Review</div><div class="mob-trust-chevron">&#9660;</div><div class="mob-trust-detail">We design with you before anything goes to print.</div></div>
         <div class="mob-trust-item" onclick="this.classList.toggle('open')"><div class="mob-trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="18" r="4" fill="var(--blue)" stroke="white" stroke-width="1.2"/><path d="M16.5 18l1 1 2-2" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mob-trust-title">Proof Before We Print</div><div class="mob-trust-chevron">&#9660;</div><div class="mob-trust-detail">You sign off on a proof before anything goes to print.</div></div>
         <div class="mob-trust-item" onclick="this.classList.toggle('open')"><div class="mob-trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 4.8 5.6.8-4 3.9.9 5.5L12 14.4l-4.9 2.6.9-5.5-4-3.9 5.6-.8L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="mob-trust-title">100% Print Guarantee</div><div class="mob-trust-chevron">&#9660;</div><div class="mob-trust-detail">If it's not right, we make it right.</div></div>
       </div>
@@ -1000,7 +1002,18 @@ function getQB(q){for(var i=QB.length-1;i>=0;i--){if(q>=QB[i])return QB[i];}retu
 function getHem(q){var r=HEMTAG[0][1];for(var i=0;i<HEMTAG.length;i++){if(q>=HEMTAG[i][0])r=HEMTAG[i][1];}return r;}
 function fmt(n){return'$'+n.toFixed(2);}
 function fmtK(n){return'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function getQty(){var m=window.innerWidth<=820;return m?mobQty:(parseInt(document.getElementById('qty').value)||0);}
+function getQty(){
+  var m=window.innerWidth<=820;
+  if(m)return mobQty;
+  // Desktop: the size grid IS the quantity selector. Sum all per-size inputs.
+  if(typeof getSizeTotal==='function'){
+    var t=getSizeTotal();
+    if(t>0)return t;
+  }
+  // Fallback to the hidden qty input (legacy code path that syncs into it)
+  var el=document.getElementById('qty');
+  return el?(parseInt(el.value)||0):0;
+}
 function getFrEl(){var e=document.getElementById('fr-r');return e?parseInt(e.value)-1:0;}
 function getBkEl(){var e=document.getElementById('bk-r');return e?parseInt(e.value)-1:0;}
 
