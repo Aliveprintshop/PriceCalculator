@@ -1147,6 +1147,7 @@ function pickItem(s){
 // =====================================================================
 var COLOR_HEX_MAP={};
 var SANMAR_COLOR_EXTRAS={
+  // — original entries —
   'tanzanite':'#3D2C8D','lemongrass':'#A8B85A','sea mist':'#B5D4C4','storm cloud':'#5B6770',
   'ice blue':'#B5D6E5','eucalyptus blue':'#3F7A8C','jewel green':'#1A6B3F','bright blue':'#0066CC',
   'moss green':'#5C7148','oat milk':'#E5D9B6','pool blue':'#5BB7C5','lagoon':'#0F8B8D',
@@ -1165,7 +1166,125 @@ var SANMAR_COLOR_EXTRAS={
   'fuchsia':'#D72E8E','magenta':'#C2185B','blush':'#E8C5C5','peach':'#FAB89E',
   'apricot':'#F4A57C','tangerine':'#F08040','sage':'#9CAE7E','seafoam':'#A6D6BB',
   'jade':'#3FA37D','spruce':'#3F5E4E','hunter':'#234E3D','kelly':'#3DA456',
-  'lavender':'#B7A5D4','lilac':'#C5A5D6','violet':'#8B5BA8','iris':'#5C5BA8'
+  'lavender':'#B7A5D4','lilac':'#C5A5D6','violet':'#8B5BA8','iris':'#5C5BA8',
+
+  // — greys / dark neutrals —
+  'anthracite':'#2D2E2F','asphalt':'#3A3D40','asphalt slub':'#3A3D40','athletic oxford':'#6B6F73',
+  'cement':'#8A8987','cement triblend':'#8A8987','chrome':'#C6C6C6','cinder':'#3C3F41',
+  'coal':'#2B2B2B','concrete':'#9D9C99','dust':'#B5B0A6','fracture':'#4A4D52',
+  'gravel':'#6B6968','greige':'#9F9684','griege':'#9F9684','heavy metal':'#565759',
+  'iron gate':'#4E5359','magnet':'#4A4F54','marshmallow':'#F1ECE2','metallic':'#B8B8B8',
+  'nickel':'#8F8F8F','noise':'#7A7A7A','oxford':'#6B6F73','putty':'#B5A99D',
+  'rock':'#6E6963','shadow':'#5C5C5C','soapstone':'#C5C0BA','snow caps':'#E5E3E0',
+  'storm':'#5B6770','storm triblend':'#5B6770','tarmac':'#4C4F52','vintage heavy metal':'#565759',
+  'washed coal':'#4F4F4F','light graphite twist':'#9AA0A4','starlight':'#D8D8D6',
+  'check steel malt':'#6B6E73','window pane':'#B0AFA6','superior':'#4A4744',
+  'shiitake':'#786D5F','silk':'#E8E2D3','stone marble':'#B0A793',
+
+  // — tans / browns / cream / earth —
+  'almond':'#E5D4BC','bark':'#5F4B3B','bone':'#DCD0BA','boulder':'#7F7470',
+  'buttermilk':'#F1E4C0','butterscotch':'#CB8E3E','camel':'#B8915D','canvas':'#D9C9A8',
+  'chai':'#C7B299','chestnut':'#8B4F39','city street':'#6F6F6E','cocoa':'#4E3530',
+  'cocoa mist':'#8E6E63','coffee bean':'#3D2A20','cornsilk':'#F5DD8D','creme':'#F4E5C7',
+  'cumin':'#B27A29','desert':'#C9B083','desert dust':'#D0BB95','desert sun':'#D8A85C',
+  'dijon':'#B58E2B','dune':'#C3B091','dune mist':'#DEC9A6','fawn':'#C6A98A',
+  'gardenia':'#F4E9D8','huckleberry':'#563058','ivory chiffon':'#F5EFD9',
+  'latte':'#B5917A','light bronze':'#B58A50','light suede':'#C9AC8C',
+  'limestone':'#C2B89F','macchiato':'#9F7E5C','mushroom':'#B6A78D','natural raw':'#EFE6D2',
+  'nispero':'#D89B66','oat':'#DAC9A7','oatmeal':'#D6CAB2','oatmeal triblend':'#D6CAB2',
+  'oyster':'#DDD3C0','pale blush':'#F5E1D9','parchment':'#E5D9B6','pfd':'#F4E5C7',
+  'popcorn':'#F5E4B1','prairie dust':'#C2A481','roan rouge':'#8B3A4A','russet':'#80391E',
+  'safari':'#9F8E6E','sahara':'#C9A876','sand dune':'#C5B59A','sand camo':'#C5B59A',
+  'soft beige':'#D8C8A8','soft camel':'#BB9966','surprise':'#F6C0A6','taupe':'#8A7B6D',
+  'toast':'#B07F4D','tweed':'#79706B','walnut':'#5B3D1E','warm taupe':'#9A8377',
+  'washed chestnut':'#815544','washed cocoa':'#6E4E3F','wheat':'#D6BC8B',
+  'autumn':'#C97F2F','terra texture':'#9A7B5C','prairie':'#C2A481',
+
+  // — greens —
+  'aloe':'#84A87F','army':'#4B5320','cactus':'#6E8B5C','celadon':'#ACCDB8',
+  'true celadon':'#ACCDB8','celery juice':'#B7C886','citron':'#BFD12E',
+  'deep emerald':'#006A4D','emerald triblend':'#00876A','envy':'#178F58',
+  'fresh fatigue':'#4D5D43','guacamole':'#7BAB52','jade dome':'#2A6B5C',
+  'antique jade dome':'#3F7F70','jadeite':'#00A693','kelly mist':'#65B57B',
+  'kelly triblend':'#3DA456','solid kelly triblend':'#3DA456','kiwi':'#9CCB3B',
+  'leaf':'#4C7A3F','misty jade':'#88B9AA','olive leaf':'#6E6B3A','olive oil':'#8D8E3F',
+  'olive triblend':'#7A6B3D','palm trees':'#2C6D40','pine':'#2F4F37','washed pine':'#2F4738',
+  'pistachio':'#B5CC8D','spearmint':'#8AC9A3','thyme':'#7E834A','washed thyme':'#6F7B59',
+  'viridian pine':'#1E4A3C','planet earth colorburst':'#4A7A53','jeweltone colorburst':'#1E7F60',
+  'soft olive plaid':'#7E7A4F','dark pine multi check':'#2F4738','grape harvest':'#5E3870',
+
+  // — blues / teals —
+  'aqua triblend':'#5BB7C5','aquamarine':'#76D5C9','aquatic':'#2A8A86','arctic mist':'#B5D6E5',
+  'beach':'#5A9FB8','blustery':'#8FB1C8','cancun':'#1F8FB1','caribbean':'#00A7B5',
+  'caribbean mist':'#87C2C8','chill':'#A0C5D8','continental':'#2E6B8F','dark adriatic':'#1A3D5C',
+  'deep cyan':'#008099','deep marine':'#214463','deep periwinkle':'#5B6FA8',
+  'denim slub':'#4E6E91','denim triblend':'#4E6E91','drenched':'#5C7088','heather lapis':'#4A6B95',
+  'lapis':'#5C7AB0','lakeshore':'#305F77','marina':'#1F6A8E','marine':'#1B4E6E',
+  'maritime':'#284B6A','antique sapphire':'#3D6386','vintage sapphire':'#2C4F70',
+  'mist':'#BFD0DC','new railroad':'#25405A','ocean depth':'#154360','peacock':'#1B6C7E',
+  'wave':'#5A8FB8','tidal wave':'#1F7D9F','indigo':'#3F4D7E','washed indigo':'#3F557A',
+  'vintage indigo':'#3A4E6B','ocean rainbow':'#2D8FB5','saltwater':'#3A8DA0',
+  'lagoon colorburst':'#0F8B8D','watercolor spiral':'#B9CFD6','island spiral':'#5BB7C5',
+
+  // — pinks / purples / mauves —
+  'allure':'#B79DBE','antique heliconia':'#C24A6E','ashen plum':'#6B4A6F','azalea':'#DD4E8E',
+  'berry burst':'#B83A75','berry triblend':'#7C2E48','bordeaux':'#5D1A2E',
+  'bright lavender':'#B997D2','bubble gum':'#FF9CC9','bubblegum':'#FF9CC9',
+  'cherry blossom':'#F8B4C8','cherrywood':'#4F1F26','crimson end on end':'#952640',
+  'dark fuchsia':'#A4286E','dark lavender':'#7C5E97','dark lavender triblend':'#7C5E97',
+  'lavender dust':'#C9B8D6','daisy mist':'#FAE8A0','deep rose':'#B85072',
+  'desert rose':'#C58A8F','dusty lavender':'#B8A0C6','dusty rose':'#C99098',
+  'eggplant':'#4B2A4F','elderberry':'#553753','flamingo':'#F58FA7','fruit punch':'#D72E5E',
+  'garnet':'#79152F','lilac triblend':'#C5A5D6','mauve':'#B17888','mauve marble':'#B5949C',
+  'mauve triblend':'#B17888','mauvelous':'#E6A6B5','merlot':'#6D2E3E','mulberry':'#6B2F58',
+  'nostalgia rose':'#C98591','orchid haze':'#B498BE','orchid triblend':'#9F5DA6',
+  'oxblood':'#4A1A1F','plumrose':'#8F6B7F','port':'#4F2A37','vintage port':'#4F2A37',
+  'vintage plum':'#5D3B5F','vintage rose':'#B07882','rose fleck':'#B85B73',
+  'raspberry fleck':'#B83A75','wineberry':'#4D2B3B','wisteria':'#9C7AB8',
+  'shiraz':'#6D1A2A','smokey iris':'#6B5985','stargazer':'#2E3158','warm quartz':'#C9AAA3',
+  'paradise':'#E66B9F',
+
+  // — reds / oranges / yellows / corals —
+  'cantaloupe':'#F4A35A','cooked carrot':'#C56A33','coral reef':'#FA8072',
+  'coral silk':'#F08D7F','coral splash':'#F8A192','daisy':'#FBE068','dandelion':'#FED857',
+  'fierce coral space dye':'#F66C5F','fiesta':'#D04A2C','flag scarlet':'#BB132E',
+  'lime shock':'#B7E532','lime shock electric':'#BAF034','varsity maize':'#F5C84B',
+  'maize':'#F5C84B','poppy':'#E63946','sangria':'#962748','scarlet':'#C8102E',
+  'scarlet ombre':'#C8102E','team scarlet':'#C8102E','team anthracite':'#2D2E2F',
+  'smoked paprika':'#9F3923','soft ruby':'#B33144','sunset':'#F26C45','sunset triblend':'#F26C45',
+  'tangerine mist':'#FBC09A','zinnia':'#DA2E48','volt':'#D4F742','sherbet colorburst':'#F8B198',
+  'peach slub':'#FAB89E','peach triblend':'#FAB89E','blaze rainbow':'#FF7A1A',
+
+  // — multicolor / camo / patterns / rainbows —
+  'arctic camo':'#B9C4CB','buffalo plaid':'#B7272F','cobalt tartan':'#234580',
+  'desert camo':'#B59B7C','harvest duck camo':'#A98455','blaze duck camo':'#E26A1A',
+  'kryptek highlander':'#8A8466','kryptek typhon':'#3E3E3E','military camo':'#4F5037',
+  'mossy oak break-up country':'#6B6147','mossy oak new break-up':'#6B6147',
+  'real tree max-7':'#5C5340','realtree edge':'#5C5340','realtree hardwoods':'#5C5340',
+  'realtree xtra':'#5C5340','vintage camo':'#6B6147','winter camo':'#9CA899',
+  'rainbow':'#C1272D','rainbow stripe':'#C1272D','neon rainbow':'#FF6F61',
+  'mint rainbow':'#A5C9C0','pastel rainbow':'#F8D5E8','usa rainbow':'#BB132E',
+  'rosewood':'#65000B','blaze':'#E26A1A','canyon':'#9C5A3C','fjord':'#3F6B8F',
+
+  // — heuristic bases (so "Heather X" / "X Frost" / slash combos resolve) —
+  'haze':'#A8B7C6','sand':'#C5B59A','solid':'#3A3D40',
+  'mint to be':'#A5D9B5','solid asphalt':'#3A3D40','solid natural':'#F4E5C7',
+  'solid slate':'#6B7280','clay':'#A8542F','clay triblend':'#A8542F',
+  'brick triblend':'#8B3A2F','cardinal':'#9E1B32','cardinal triblend':'#9E1B32',
+  'paragon':'#5C6878','mustard triblend':'#D4A93C','mint triblend':'#A5C9C0',
+  'tan triblend':'#C8B89D','washed mustard':'#C9A442','washed mauve':'#B79A9D',
+  'washed lavender':'#B6A2C5',
+
+  // — refined common shades (precision over substring match) —
+  'forest':'#2E5033','forest green':'#2E5033','royal blue':'#1F3FA3','navy blue':'#1B2C55',
+  'sky blue':'#A2C8E2','olive green':'#7A6B3D','military green':'#54593A',
+  'mint green':'#A5C9C0','irish green':'#00A55F','aquatic blue':'#2A8A86',
+  'french vanilla':'#F0DFB0',
+
+  // — final stragglers found during verify pass —
+  'glacier':'#B7D6E1','chartreuse':'#DFFF00','metal':'#565759','prism sunset':'#F08070',
+  'solid natural blend':'#F4E5C7','solid natural triblend':'#F4E5C7',
+  'solid asphalt blend':'#3A3D40','solid asphalt triblend':'#3A3D40','solid slate triblend':'#6B7280'
 };
 function _hexToRgb(hex){
   hex=String(hex).replace('#','');
