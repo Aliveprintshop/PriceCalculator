@@ -1309,12 +1309,16 @@ function desaturateHex(hex,amount){
   return _rgbToHex(rgb[0]*(1-amount)+avg*amount,rgb[1]*(1-amount)+avg*amount,rgb[2]*(1-amount)+avg*amount);
 }
 // Build COLOR_HEX_MAP from any rows that have non-placeholder hex values.
+// IMPORTANT: skip slash names ("Black/ White" etc.) — SanMar's catalog stores
+// the SECOND color's hex for two-tone names, which would pollute the map and
+// make the resolver return the wrong single color. Two-tone rendering is
+// handled separately via resolveTwoTone().
 function buildHexLookup(rows){
   if(!Array.isArray(rows))return;
   rows.forEach(function(p){
     if(!Array.isArray(p.colors))return;
     p.colors.forEach(function(c){
-      if(c.name&&c.hex&&c.hex!=='#888888'){
+      if(c.name&&c.hex&&c.hex!=='#888888'&&c.name.indexOf('/')===-1){
         var key=c.name.toLowerCase();
         if(!COLOR_HEX_MAP[key])COLOR_HEX_MAP[key]=c.hex;
       }
@@ -1332,41 +1336,58 @@ var _SUBSTRING_BASES={
   'brown':'#6B4326','gold':'#D4A93C','silver':'#C4C4C4','teal':'#0F8B8D',
   'turquoise':'#3FBFBF','blue':'#1F3FA3','grey':'#888888','gray':'#888888'
 };
-function resolveColorHex(name,providedHex){
-  // If catalog has a real hex value for this exact color, use it.
-  if(providedHex&&providedHex!=='#888888')return providedHex;
-  if(!name)return '#cccccc';
+// Resolve a single segment (no slash). Used internally by both the single-color
+// resolver and the two-tone resolver. Does NOT honor providedHex (caller decides).
+function _resolveSegment(name){
+  if(!name)return null;
   var key=name.toLowerCase().trim();
   if(COLOR_HEX_MAP[key])return COLOR_HEX_MAP[key];
-  // Multi-tone: "X/ Y" or "X / Y" — use first segment.
-  var parts=name.split('/').map(function(s){return s.trim();});
-  if(parts.length>1){
-    var firstKey=parts[0].toLowerCase();
-    if(COLOR_HEX_MAP[firstKey])return COLOR_HEX_MAP[firstKey];
-  }
   // "X Frost" — heathered/melange version of X — lighten X.
   var m=name.match(/^(.+?)\s+Frost$/i);
-  if(m){
-    var base=COLOR_HEX_MAP[m[1].toLowerCase()];
-    if(base)return lightenHex(base,0.45);
-  }
+  if(m){var base=COLOR_HEX_MAP[m[1].toLowerCase()];if(base)return lightenHex(base,0.45);}
   // "Heathered X" / "Heather X" — desaturate X.
   m=name.match(/^Heathere?d?\s+(.+)$/i);
-  if(m){
-    var base2=COLOR_HEX_MAP[m[1].toLowerCase()];
-    if(base2)return desaturateHex(base2,0.4);
-  }
+  if(m){var b2=COLOR_HEX_MAP[m[1].toLowerCase()];if(b2)return desaturateHex(b2,0.4);}
   // "Athletic X" — usually saturated X.
   m=name.match(/^Athletic\s+(.+)$/i);
-  if(m){
-    var base3=COLOR_HEX_MAP[m[1].toLowerCase()];
-    if(base3)return base3;
-  }
+  if(m){var b3=COLOR_HEX_MAP[m[1].toLowerCase()];if(b3)return b3;}
   // Substring match against well-known base color words.
-  for(var b in _SUBSTRING_BASES){
-    if(key.indexOf(b)!==-1)return _SUBSTRING_BASES[b];
+  for(var b in _SUBSTRING_BASES){if(key.indexOf(b)!==-1)return _SUBSTRING_BASES[b];}
+  return null;
+}
+// Two-tone resolver: returns [hex1, hex2] if name contains '/', else null.
+// Ignores providedHex because SanMar's catalog stores only the SECOND color's
+// hex for two-tone names (e.g. "Black/ White" → #FFFFFF), which made every
+// two-tone swatch render as a single misleading color.
+function resolveTwoTone(name){
+  if(!name||name.indexOf('/')===-1)return null;
+  var parts=name.split('/').map(function(s){return s.trim();}).filter(Boolean);
+  if(parts.length<2)return null;
+  var h1=_resolveSegment(parts[0]);
+  var h2=_resolveSegment(parts[1]);
+  // If 3+ parts (e.g. "Black/ Black/ Light Grey"), use first and last for max contrast
+  if(parts.length>2){h2=_resolveSegment(parts[parts.length-1])||h2;}
+  if(!h1&&!h2)return null;
+  return [h1||'#cccccc', h2||'#cccccc'];
+}
+function resolveColorHex(name,providedHex){
+  if(!name)return '#cccccc';
+  var hasSlash=name.indexOf('/')>-1;
+  // Single-color: if catalog has a real hex, use it.
+  if(!hasSlash&&providedHex&&providedHex!=='#888888')return providedHex;
+  // Try exact key first (handles "Black", and pre-baked slash keys like "anthracite/ anthracite")
+  var key=name.toLowerCase().trim();
+  if(COLOR_HEX_MAP[key])return COLOR_HEX_MAP[key];
+  // Slash names: resolve from first segment (ignoring providedHex which is the SECOND color in SanMar's data)
+  if(hasSlash){
+    var firstKey=name.split('/')[0].trim().toLowerCase();
+    if(COLOR_HEX_MAP[firstKey])return COLOR_HEX_MAP[firstKey];
+    var seg=_resolveSegment(name.split('/')[0].trim());
+    if(seg)return seg;
   }
-  return '#cccccc';
+  // Fallbacks: heuristics + substring
+  var s=_resolveSegment(name);
+  return s||'#cccccc';
 }
 
 // Sort colors: White first (if present), then alphabetical by name
@@ -1396,10 +1417,20 @@ function renderSwatches(live){
     html+='<div class="swatch-grid">';
     sorted.forEach(function(c){
       var isActive=sel&&sel._activeColor&&sel._activeColor.name===c.name;
-      var hex=resolveColorHex(c.name,c.hex);
-      var bord=hex.toLowerCase()==='#ffffff'||hex.toLowerCase()==='#fff'?'#d0d0d0':'transparent';
+      // Two-tone names render as a diagonal split swatch showing both colors.
+      var twoTone=resolveTwoTone(c.name);
+      var bg,bord;
+      if(twoTone){
+        bg='linear-gradient(135deg, '+twoTone[0]+' 0%, '+twoTone[0]+' 50%, '+twoTone[1]+' 50%, '+twoTone[1]+' 100%)';
+        var whiteSide=(twoTone[0].toLowerCase()==='#ffffff'||twoTone[1].toLowerCase()==='#ffffff');
+        bord=whiteSide?'#d0d0d0':'transparent';
+      } else {
+        var hex=resolveColorHex(c.name,c.hex);
+        bg=hex;
+        bord=hex.toLowerCase()==='#ffffff'||hex.toLowerCase()==='#fff'?'#d0d0d0':'transparent';
+      }
       html+='<button type="button" class="swatch'+(isActive?' active':'')+'" '+
-            'style="background:'+hex+';border-color:'+(isActive?'var(--blue)':bord)+';" '+
+            'style="background:'+bg+';border-color:'+(isActive?'var(--blue)':bord)+';" '+
             'title="'+c.name.replace(/"/g,'&quot;')+'" '+
             'onclick="pickColor(\''+c.name.replace(/'/g,"\\'")+'\')"></button>';
     });
