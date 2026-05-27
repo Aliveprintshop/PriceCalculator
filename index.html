@@ -108,24 +108,40 @@ a:hover{text-decoration:underline;}
 
 /* MOBILE */
 .filters-toggle{display:none;}
+.cat-chip-row{display:none;}
 @media(max-width:820px){
   /* True edge-to-edge: every section spans the full viewport, no side gutters anywhere */
   body{background:var(--surface);}
   .shell{grid-template-columns:1fr;gap:0;padding:0;max-width:100%;}
   .sidebar{position:static;max-height:none;padding:0;overflow:visible;background:transparent;border:none;border-radius:0;box-shadow:none;}
   .filter-section{background:var(--surface);border:none;border-radius:0;margin:0;padding:18px 0;border-bottom:6px solid #F2F4F8;}
-  .filters-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin:0;padding:14px 0;background:var(--surface);border:none;border-radius:0;border-bottom:6px solid #F2F4F8;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;}
-  .filters-toggle::after{content:'\25BE';font-size:14px;color:var(--text3);}
+  /* Filters: real button — solid blue pill with funnel icon + active-count badge */
+  .filters-toggle{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 28px);margin:12px 14px;padding:12px 18px;background:var(--blue);border:none;border-radius:999px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 2px 6px rgba(31,63,163,0.25);}
+  .filters-toggle::before{content:'';display:inline-block;width:16px;height:16px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3 5h18l-7 9v6l-4-2v-4z'/></svg>") center/contain no-repeat;}
+  .filters-toggle::after{content:'';}
+  .filters-toggle .filt-badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;background:#fff;color:var(--blue);font-size:12px;font-weight:800;border-radius:999px;margin-left:4px;}
+  .filters-toggle .filt-badge.zero{display:none;}
   .sidebar{display:none;}
   .sidebar.open{display:block;}
   .content{padding:0;}
-  /* Trust banner: stack vertically, full width, no side gutter */
-  /* Brand banner: edge-to-edge on mobile, no rounded corners */
+  /* Brand banner: edge-to-edge on mobile, no rounded corners; height-clamped so it doesn't dominate */
   .brand-banner{margin:0;}
-  .brand-banner img{border-radius:0;border-bottom:6px solid #F2F4F8;}
-  .trust-banner{grid-template-columns:1fr;gap:0;margin:0;}
-  .trust-tile{padding:14px 0;border:none;border-radius:0;border-bottom:1px solid var(--border);box-shadow:none;}
-  .trust-tile:last-child{border-bottom:6px solid #F2F4F8;}
+  .brand-banner img{border-radius:0;border-bottom:6px solid #F2F4F8;max-height:140px;object-fit:cover;object-position:center;}
+  /* Trust banner: compact 3-column horizontal strip (icon on top + short title only) */
+  .trust-banner{grid-template-columns:repeat(3,1fr);gap:0;margin:0;background:var(--surface);border-bottom:6px solid #F2F4F8;}
+  .trust-tile{flex-direction:column;align-items:center;text-align:center;gap:6px;padding:10px 6px;border:none;border-radius:0;box-shadow:none;background:var(--surface);}
+  .trust-tile:last-child{border-bottom:none;}
+  .trust-icon{width:28px;height:28px;}
+  .trust-icon svg{width:16px;height:16px;}
+  .trust-title{font-size:10.5px;font-weight:700;line-height:1.15;letter-spacing:0.01em;}
+  .trust-sub{display:none;}
+  /* Category chip row: horizontal scrolling chips above the search bar */
+  .cat-chip-row{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:12px 14px;background:var(--surface);border-bottom:6px solid #F2F4F8;scrollbar-width:none;}
+  .cat-chip-row::-webkit-scrollbar{display:none;}
+  .cat-chip{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1.5px solid var(--border);border-radius:999px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;transition:all 0.15s;}
+  .cat-chip:hover{border-color:var(--blue);}
+  .cat-chip.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .cat-chip.more-chip{font-weight:700;}
   /* Search/toolbar full width, no side gutter */
   .toolbar{margin:0;padding:14px 0;border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:6px solid #F2F4F8;box-shadow:none;}
   .results-bar{padding:8px 0;margin-bottom:0;background:var(--surface);}
@@ -150,6 +166,7 @@ a:hover{text-decoration:underline;}
 
   <button type="button" class="filters-toggle" id="filters-toggle" onclick="toggleSidebar()">
     <span id="filters-toggle-label">Filters</span>
+    <span class="filt-badge zero" id="filt-badge">0</span>
   </button>
 
   <aside class="sidebar" id="sidebar">
@@ -182,6 +199,9 @@ a:hover{text-decoration:underline;}
 
     <!-- TRUST BANNER (swap content via the BANNER_ITEMS array in JS for promos) -->
     <div class="trust-banner" id="trust-banner"></div>
+
+    <!-- CATEGORY CHIP ROW (mobile only) — horizontal scrolling quick-nav above search -->
+    <div class="cat-chip-row" id="cat-chip-row"></div>
 
     <div class="toolbar">
       <input type="text" class="toolbar-search" id="page-search" placeholder="Search by brand, style number, or product name (e.g. Carhartt, DM130, Tritee)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
@@ -228,29 +248,80 @@ var BANNER_ITEMS=[
   {
     icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6l-3 3V7a2 2 0 0 1 1-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 9h8M7 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     title:'Free Mockups &amp; Design Review',
+    shortTitle:'Free Mockups',
     sub:'We design with you before anything goes to print'
   },
   {
     icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     title:'Proof Before We Print',
+    shortTitle:'Proof First',
     sub:'You sign off on a digital proof first'
   },
   {
     icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v7c0 5-4 8-8 10-4-2-8-5-8-10V5l8-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     title:'100% Print Guarantee',
+    shortTitle:'100% Guaranteed',
     sub:"If it’s not right, we make it right"
   }
 ];
+
+// Mobile-only quick-nav category chips (shown above search; tap to filter).
+// Labels must match a CATEGORY_BUCKETS label so toggleCategory() finds them.
+var QUICK_CATEGORIES=[
+  {label:'T-Shirts',              chip:'T-Shirts'},
+  {label:'Headwear',              chip:'Hats'},
+  {label:'Polos & Button-Downs',  chip:'Polos'},
+  {label:'Sweatshirts & Hoodies', chip:'Hoodies'},
+  {label:'Outerwear',             chip:'Jackets'},
+  {label:'Activewear',            chip:'Activewear'},
+  {label:'Bags',                  chip:'Bags'}
+];
 function renderTrustBanner(){
   var host=document.getElementById('trust-banner');if(!host)return;
+  var isMobile=window.matchMedia&&window.matchMedia('(max-width:820px)').matches;
   host.innerHTML=BANNER_ITEMS.map(function(item){
+    var title=isMobile&&item.shortTitle?item.shortTitle:item.title;
     return '<div class="trust-tile">'+
            '<div class="trust-icon">'+item.icon+'</div>'+
            '<div class="trust-text">'+
-             '<div class="trust-title">'+item.title+'</div>'+
+             '<div class="trust-title">'+title+'</div>'+
              '<div class="trust-sub">'+item.sub+'</div>'+
            '</div></div>';
   }).join('');
+}
+
+// Render the mobile category chip row above the search bar.
+function renderChipRow(){
+  var host=document.getElementById('cat-chip-row');if(!host)return;
+  var html=QUICK_CATEGORIES.map(function(q){
+    var active=_cats.has(q.label);
+    return '<button type="button" class="cat-chip'+(active?' active':'')+'" '+
+           'onclick="quickPickCategory(\''+q.label.replace(/'/g,"\\'")+'\')">'+q.chip+'</button>';
+  }).join('');
+  html+='<button type="button" class="cat-chip more-chip" onclick="openSidebarFromChip()">More ▾</button>';
+  host.innerHTML=html;
+}
+// Single-select behavior from chips feels more natural on mobile — clear other
+// categories, then toggle the picked one. (Multi-select still works in sidebar.)
+function quickPickCategory(label){
+  var wasActive=_cats.has(label);
+  _cats.clear();
+  if(!wasActive)_cats.add(label);
+  _page=1;renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
+  // Scroll up so the product grid is visible after a category tap.
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function openSidebarFromChip(){
+  toggleSidebar();
+  var sb=document.getElementById('sidebar');
+  if(sb&&sb.classList.contains('open')){sb.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+// Update the "Filters · N" badge with count of active filters.
+function updateFilterBadge(){
+  var badge=document.getElementById('filt-badge');if(!badge)return;
+  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0);
+  badge.textContent=n;
+  if(n===0)badge.classList.add('zero'); else badge.classList.remove('zero');
 }
 
 // =====================================================================
@@ -695,10 +766,10 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();notifyParentRoute();}
-function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();notifyParentRoute();}
-function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();}
-function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();}
+function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();updateFilterBadge();updateBrandBanner();}
+function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();updateFilterBadge();updateBrandBanner();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
 function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';_page=1;renderCategoryList();renderBrandList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
@@ -744,7 +815,7 @@ async function loadProducts(){
     }catch(e){}
     renderTrustBanner();
     updateBrandBanner();
-    renderCategoryList();renderBrandList();renderGrid();
+    renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
     var host=document.getElementById('page-grid');
@@ -763,7 +834,7 @@ window.addEventListener('message',function(e){
   _cats.clear();
   if(label)_cats.add(label);
   _page=1;
-  renderCategoryList();renderBrandList();renderGrid();updateBrandBanner();
+  renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
 },false);
 
 // Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
@@ -807,6 +878,8 @@ window.addEventListener('message',function(e){
   window.aliveBroadcastHeight=broadcastHeight;
   window.addEventListener('load',broadcastHeight);
   window.addEventListener('resize',broadcastHeight);
+  // Trust banner uses short titles on mobile, full titles on desktop — re-render on resize.
+  var _resizeT;window.addEventListener('resize',function(){clearTimeout(_resizeT);_resizeT=setTimeout(renderTrustBanner,150);});
   document.addEventListener('DOMContentLoaded',broadcastHeight);
   if(window.ResizeObserver){
     var ro=new ResizeObserver(broadcastHeight);
