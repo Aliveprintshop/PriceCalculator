@@ -707,8 +707,54 @@ function renderGrid(){
     return false;
   }
 
-  // Sort: priority bucket first → POPULAR list rank → brand+name alpha
+  // ---- Polo page custom ordering ----
+  // When the ONLY active category is "Polos & Button-Downs", order the grid as:
+  //   Tier 0: pinned styles (exact order below)
+  //   Tier 1: featured brands, "assorted" (round-robin interleave so it doesn't
+  //           show as one brand block after another)
+  //   Tier 2: everything else (falls back to the normal POPULAR/alpha sort)
+  // Edit POLO_PINNED / POLO_FEATURE_BRANDS to change which items lead the page.
+  var POLO_PINNED=['OG101','ST550','799802'];
+  var POLO_FEATURE_BRANDS=['travismathew','nike','ogio','sporttek'];
+  function normBrand(b){return (b||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+  var poloMode=(_cats.size===1 && Array.from(_cats)[0]==='Polos & Button-Downs');
+  function poloTier(it){
+    if(POLO_PINNED.indexOf((it.s||'').toUpperCase())>-1)return 0;
+    if(POLO_FEATURE_BRANDS.indexOf(normBrand(it.b))>-1)return 1;
+    return 2;
+  }
+  // Precompute a stable "assorted" index for the featured-brand tier.
+  var poloAssort=null;
+  if(poloMode){
+    poloAssort=new Map();
+    var byBrand={};
+    rows.forEach(function(it){
+      if(poloTier(it)!==1)return;
+      var k=normBrand(it.b);(byBrand[k]=byBrand[k]||[]).push(it);
+    });
+    Object.keys(byBrand).forEach(function(k){
+      byBrand[k].sort(function(a,b){return (a.n||'').localeCompare(b.n||'');});
+    });
+    var order=[],depth=0,more=true;
+    while(more){more=false;
+      POLO_FEATURE_BRANDS.forEach(function(k){
+        var arr=byBrand[k];
+        if(arr&&arr[depth]){order.push(arr[depth]);more=true;}
+      });
+      depth++;
+    }
+    order.forEach(function(it,i){poloAssort.set(it,i);});
+  }
+
+  // Sort: [polo tiers when on polo page] → priority bucket → POPULAR rank → brand+name alpha
   rows.sort(function(a,b){
+    if(poloMode){
+      var ta=poloTier(a),tb=poloTier(b);
+      if(ta!==tb)return ta-tb;
+      if(ta===0)return POLO_PINNED.indexOf((a.s||'').toUpperCase())-POLO_PINNED.indexOf((b.s||'').toUpperCase());
+      if(ta===1)return (poloAssort.get(a)||0)-(poloAssort.get(b)||0);
+      // tier 2 falls through to the standard ordering below
+    }
     var pa=isPriority(a),pb=isPriority(b);
     if(pa&&!pb)return -1;
     if(pb&&!pa)return 1;
