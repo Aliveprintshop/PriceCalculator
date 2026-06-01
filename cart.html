@@ -465,6 +465,48 @@ function buildPayload(form){
       (it.notes?' — Notes: '+it.notes:'')+
       (it.promoCodeAtAdd?' — Promo: '+it.promoCodeAtAdd:'');
   }).join('\n');
+
+  // Multi-line, human-readable breakdown of every cart item (one block per item).
+  var itemsBlock=items.map(function(it,i){
+    var locs=Array.isArray(it.locations)?it.locations.join(', '):'';
+    var sizes=it.sizes?Object.entries(it.sizes).map(function(e){return e[0]+':'+e[1];}).join(', '):'';
+    var lines=[];
+    lines.push('Item #'+(i+1)+': '+it.brand+' '+it.style+' '+it.productName+' ('+it.color+')');
+    lines.push('  Qty: '+it.qty+' pcs ('+sizes+')');
+    lines.push('  Decoration: '+it.decoLabel+(it.decoMethod==='sp'?' [Front '+(it.frontColors||1)+'c, Back '+(it.backColors||1)+'c]':''));
+    lines.push('  Locations: '+(locs||'—'));
+    if(it.addonList&&it.addonList.length) lines.push('  Add-ons: '+it.addonList.join(', '));
+    lines.push('  Turnaround: '+it.turnaroundLabel);
+    lines.push('  Price: '+fmt(it.unitPrice)+'/unit, '+fmt(it.lineTotal)+' line total');
+    if(it.promoCodeAtAdd) lines.push('  Promo: '+it.promoCodeAtAdd);
+    if(it.artworkLink) lines.push('  Artwork: '+it.artworkLink);
+    if(it.notes) lines.push('  Notes: '+it.notes);
+    return lines.join('\n');
+  }).join('\n\n');
+
+  var submittedAt=new Date().toISOString();
+
+  // One fully-formatted note for GHL — drop this single field into the workflow's
+  // "Add Note" / internal notification and every order detail shows, any # of items.
+  var noteText=
+    '🛍 NEW QUOTE REQUEST\n'+
+    'Submitted: '+submittedAt+'\n'+
+    'Source: Multi-item cart checkout\n\n'+
+    '— CUSTOMER —\n'+
+    'Name: '+(firstName+' '+lastName).trim()+'\n'+
+    'Company: '+(form.company||'—')+'\n'+
+    'Email: '+(form.email||'—')+'\n'+
+    'Phone: '+(form.phone||'—')+'\n'+
+    'Shipping: '+(form.shipping||'—')+'\n\n'+
+    '— ORDER ('+items.length+' '+(items.length===1?'item':'items')+', '+CART.getPiecesTotal()+' pcs) —\n'+
+    itemsBlock+'\n\n'+
+    '— PRICING —\n'+
+    'Subtotal: '+fmt(subtotal+savings)+'\n'+
+    (savings>0?'Promo '+(promo?promo.code:'')+': −'+fmt(savings)+'\n':'')+
+    'Total: '+fmt(subtotal)+'\n\n'+
+    '— CUSTOMER NOTES —\n'+
+    (form.notes||'—');
+
   return{
     firstName:firstName,lastName:lastName,
     email:form.email,phone:form.phone,company:form.company,
@@ -475,13 +517,17 @@ function buildPayload(form){
     cartSubtotal:fmt(subtotal+savings),
     cartTotal:fmt(subtotal),
     cartTotalValue:subtotal,
+    totalPrice:fmt(subtotal),       // same field name the single-item calculator sends, so GHL's existing mapping picks it up
+    totalPriceValue:subtotal,       // numeric value for the GHL opportunity / monetary field
     promoCode:promo?promo.code:'',
     promoSavings:fmt(savings),
     promoSavingsValue:savings,
     items:JSON.stringify(items),    // structured for downstream automations
-    itemsSummary:itemsText,         // readable for sales team
+    itemsSummary:itemsText,         // readable one-line-per-item (legacy)
+    itemsBlock:itemsBlock,          // readable multi-line-per-item
+    noteText:noteText,              // ONE pre-formatted block for the GHL note — use this
     source:'Multi-item cart checkout',
-    submittedAt:new Date().toISOString()
+    submittedAt:submittedAt
   };
 }
 function submitOrder(ev){
