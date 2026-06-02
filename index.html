@@ -187,6 +187,14 @@ a:hover{text-decoration:underline;}
       <ul class="filter-list" id="brand-list"></ul>
     </div>
 
+    <div class="filter-section">
+      <h2 class="filter-title">
+        Shop By Industry
+        <button type="button" class="clear-link" id="clear-industry" onclick="clearIndustry()" style="display:none;">Clear</button>
+      </h2>
+      <ul class="filter-list" id="industry-list"></ul>
+    </div>
+
   </aside>
 
   <main class="content">
@@ -307,7 +315,8 @@ function quickPickCategory(label){
   var wasActive=_cats.has(label);
   _cats.clear();
   if(!wasActive)_cats.add(label);
-  _page=1;renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
+  _industry=null;
+  _page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
   // Scroll up so the product grid is visible after a category tap.
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -319,7 +328,7 @@ function openSidebarFromChip(){
 // Update the "Filters · N" badge with count of active filters.
 function updateFilterBadge(){
   var badge=document.getElementById('filt-badge');if(!badge)return;
-  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0);
+  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0)+(_industry?1:0);
   badge.textContent=n;
   if(n===0)badge.classList.add('zero'); else badge.classList.remove('zero');
 }
@@ -386,6 +395,30 @@ var CATEGORY_BUCKETS=[
   {label:'Toddler',               cats:['Infant & Toddler']},
   {label:'Specialty',             cats:['Tall','Accessories']}
 ];
+
+// =====================================================================
+// SHOP BY INDUSTRY — curated style lists.
+// Tapping an industry shows ONLY these styles (in this order) and clears
+// any category/brand filters. To edit: change the style numbers below
+// (case doesn't matter). To add an industry: copy a block and give it a
+// new label + styles. To remove one: delete its block.
+// =====================================================================
+var INDUSTRY_LISTS=[
+  {label:'Schools / Education', styles:['5000','5000B','NL6210','NL3312','18500','18500B','B050','B400','ST350','ST370','ST550','LST550','BG500','PC144','PC145','PC145Y','PC144Y']},
+  {label:'Construction / Trades', styles:['G2400','LST350','CS401','CS401LS','ST467','OG101','ST420LSH','ST520LS','ST420LS','112','112FP','112PM','CTK87','CT106652','CTK84','CT100614','CS430','CS440','CSV100','CS800']},
+  {label:'Corporate / Office', styles:['799802','TM1MU412','OG101','F247','K584','CN9492','BB18830','MMB200','91005']},
+  {label:'Church / Non-Profit', styles:['1717','DM130','DT130Y','NL6210','NL3312','DT7075','5000B','5000','BC4610','ST307','BC3725','C855','BC3001','BC3001Y','DT7804','DT7800','DT1302']},
+  {label:'Events / Tradeshow', styles:['NL6210','DM130','LOG101','OG101','ST550','LST550','DT7804','DT7800','ST245','LST407','ST407','ST270','ST841','LST840','ST840','BG1500','BG424','B100','112','STC26','C813']},
+  {label:'Sports / Teams', styles:['ST350','LST350','YST350','ST446','LST446','ST440','ST442','YST440','ST445','ST441','ST254','ST274','ST266','ST253','ST307']}
+];
+// Build fast lookups: label -> {set of UPPER styles, order map}
+var _INDUSTRY_INDEX={};
+INDUSTRY_LISTS.forEach(function(ind){
+  var order={};var set={};
+  ind.styles.forEach(function(s,i){var u=String(s).toUpperCase();set[u]=true;if(!(u in order))order[u]=i;});
+  _INDUSTRY_INDEX[ind.label]={set:set,order:order};
+});
+function industryByLabel(label){for(var i=0;i<INDUSTRY_LISTS.length;i++){if(INDUSTRY_LISTS[i].label===label)return INDUSTRY_LISTS[i];}return null;}
 
 // =====================================================================
 // URL routing for shareable category links.
@@ -455,6 +488,7 @@ function bucketForProduct(p){
 // State
 var _cats=new Set();
 var _brands=new Set();
+var _industry=null;   // active "Shop By Industry" label, or null
 var _search='';
 var _brandsExpanded=false;
 var _page=1;
@@ -601,12 +635,35 @@ function renderBrandList(){
   document.getElementById('clear-brands').style.display=_brands.size>0?'inline':'none';
 }
 
+function renderIndustryList(){
+  var host=document.getElementById('industry-list');if(!host)return;
+  host.innerHTML=INDUSTRY_LISTS.map(function(ind){
+    var active=_industry===ind.label;
+    var safeLabel=escJs(ind.label);
+    // Count how many of the curated styles actually exist in the catalog.
+    var set=_INDUSTRY_INDEX[ind.label].set;
+    var count=ITEMS.reduce(function(n,it){return n+(set[(it.s||'').toUpperCase()]?1:0);},0);
+    return '<li><label class="filter-row'+(active?' checked':'')+'">'+
+           '<input type="checkbox" class="cbox" '+(active?'checked':'')+' onchange="toggleIndustry(\''+safeLabel+'\')">'+
+           '<span class="filter-name">'+ind.label+'</span>'+
+           '<span class="filter-count">('+count+')</span>'+
+           '</label></li>';
+  }).join('');
+  var clr=document.getElementById('clear-industry');
+  if(clr)clr.style.display=_industry?'inline':'none';
+}
+
 function filtered(){
   var q=(_search||'').toLowerCase().trim();
+  // Industry mode: show only the curated styles for the active industry.
+  var indSet=_industry&&_INDUSTRY_INDEX[_industry]?_INDUSTRY_INDEX[_industry].set:null;
   return ITEMS.filter(function(it){
     var p=it._full;if(!p)return false;
-    if(_cats.size>0){var bk=bucketForProduct(p);if(!_cats.has(bk))return false;}
-    if(_brands.size>0&&!_brands.has(p.brand))return false;
+    if(indSet){if(!indSet[(it.s||'').toUpperCase()])return false;}
+    else{
+      if(_cats.size>0){var bk=bucketForProduct(p);if(!_cats.has(bk))return false;}
+      if(_brands.size>0&&!_brands.has(p.brand))return false;
+    }
     if(!q)return true;
     var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
     return hay.indexOf(q)!==-1;
@@ -746,6 +803,16 @@ function renderGrid(){
     order.forEach(function(it,i){poloAssort.set(it,i);});
   }
 
+  // Industry mode: keep the curated order from INDUSTRY_LISTS.
+  if(_industry&&_INDUSTRY_INDEX[_industry]){
+    var ord=_INDUSTRY_INDEX[_industry].order;
+    rows.sort(function(a,b){
+      var oa=ord[(a.s||'').toUpperCase()],ob=ord[(b.s||'').toUpperCase()];
+      if(oa==null)oa=9999;if(ob==null)ob=9999;
+      if(oa!==ob)return oa-ob;
+      return (a.b+a.n).localeCompare(b.b+b.n);
+    });
+  } else
   // Sort: [polo tiers when on polo page] → priority bucket → POPULAR rank → brand+name alpha
   rows.sort(function(a,b){
     if(poloMode){
@@ -812,12 +879,20 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function toggleBrand(name){if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderGrid();updateFilterBadge();updateBrandBanner();}
-function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderGrid();updateFilterBadge();updateBrandBanner();}
+function toggleCategory(label){_industry=null;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleBrand(name){_industry=null;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();}
+function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();}
+// Shop By Industry: single-select. Selecting one clears category/brand filters and shows only its curated list.
+function toggleIndustry(label){
+  if(_industry===label){_industry=null;}
+  else{_industry=label;_cats.clear();_brands.clear();}
+  _page=1;
+  renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
+}
+function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';_page=1;renderCategoryList();renderBrandList();renderGrid();}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search&&_industry)_industry=null;_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
@@ -861,7 +936,7 @@ async function loadProducts(){
     }catch(e){}
     renderTrustBanner();
     updateBrandBanner();
-    renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();
+    renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
     var host=document.getElementById('page-grid');
@@ -877,10 +952,11 @@ window.addEventListener('message',function(e){
   if(!d||d.type!=='alive-route-set')return;
   var slug=d.slug||'';
   var label=slug?slugToBucketLabel(slug):null;
+  _industry=null;
   _cats.clear();
   if(label)_cats.add(label);
   _page=1;
-  renderCategoryList();renderBrandList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
+  renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
 },false);
 
 // Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
