@@ -57,6 +57,10 @@ a:hover{text-decoration:underline;}
 .results-count strong{color:var(--text);font-weight:700;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+/* Shop By Industry spotlight banner — slim full-width brand promo inside the grid */
+.industry-spotlight{grid-column:1/-1;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
+.industry-spotlight:hover{border-color:var(--blue);box-shadow:0 6px 18px rgba(27,108,206,0.15);}
+.industry-spotlight img{display:block;width:100%;height:68px;object-fit:cover;}
 .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
@@ -148,6 +152,9 @@ a:hover{text-decoration:underline;}
   /* Product grid: 2 columns edge-to-edge, hairline between */
   .grid{grid-template-columns:repeat(2, 1fr);gap:1px;background:var(--border);padding:0;}
   .card{border-radius:0;border:none;}
+  /* Spotlight banner edge-to-edge on mobile, matching the search bar */
+  .industry-spotlight{border-radius:0;border-left:none;border-right:none;box-shadow:none;}
+  .industry-spotlight img{height:64px;}
   .card-info{padding:10px 12px 12px;}
   .card-name{font-size:12px;}
   .card-price{font-size:12px;}
@@ -403,13 +410,16 @@ var CATEGORY_BUCKETS=[
 // (case doesn't matter). To add an industry: copy a block and give it a
 // new label + styles. To remove one: delete its block.
 // =====================================================================
+// spotlight (optional): a clickable brand banner shown after the first 6 items.
+//   brand = exact catalog brand name (clicking it shows ALL of that brand)
+//   img   = banner image URL (wide & short, ~1600x100). Leave '' to hide until ready.
 var INDUSTRY_LISTS=[
-  {label:'Schools / Education', styles:['5000','5000B','NL6210','NL3312','18500','18500B','B050','B400','ST350','ST370','ST550','LST550','BG500','PC144','PC145','PC145Y','PC144Y']},
-  {label:'Construction / Trades', styles:['G2400','LST350','CS401','CS401LS','ST467','OG101','ST420LSH','ST520LS','ST420LS','112','112FP','112PM','CTK87','CT106652','CTK84','CT100614','CS430','CS440','CSV100','CS800']},
+  {label:'Schools / Education', styles:['5000','5000B','NL6210','NL3312','18500','18500B','B050','B400','ST350','ST370','ST550','LST550','BG500','PC144','PC145','PC145Y','PC144Y'], spotlight:{brand:'Port & Co', img:'', alt:'Shop all Port & Co'}},
+  {label:'Construction / Trades', styles:['G2400','LST350','CS401','CS401LS','ST467','OG101','ST420LSH','ST520LS','ST420LS','112','112FP','112PM','CTK87','CT106652','CTK84','CT100614','CS430','CS440','CSV100','CS800'], spotlight:{brand:'Carhartt', img:'', alt:'Shop all Carhartt'}},
   {label:'Corporate / Office', styles:['799802','TM1MU412','OG101','F247','K584','CN9492','BB18830','MMB200','91005']},
-  {label:'Church / Non-Profit', styles:['1717','DM130','DT130Y','NL6210','NL3312','DT7075','5000B','5000','BC4610','ST307','BC3725','C855','BC3001','BC3001Y','DT7804','DT7800','DT1302']},
-  {label:'Events / Tradeshow', styles:['NL6210','DM130','LOG101','OG101','ST550','LST550','DT7804','DT7800','ST245','LST407','ST407','ST270','ST841','LST840','ST840','BG1500','BG424','B100','112','STC26','C813']},
-  {label:'Sports / Teams', styles:['ST350','LST350','YST350','ST446','LST446','ST440','ST442','YST440','ST445','ST441','ST254','ST274','ST266','ST253','ST307']}
+  {label:'Church / Non-Profit', styles:['1717','DM130','DT130Y','NL6210','NL3312','DT7075','5000B','5000','BC4610','ST307','BC3725','C855','BC3001','BC3001Y','DT7804','DT7800','DT1302'], spotlight:{brand:'Comfort Colors', img:'', alt:'Shop all Comfort Colors'}},
+  {label:'Events / Tradeshow', styles:['NL6210','DM130','LOG101','OG101','ST550','LST550','DT7804','DT7800','ST245','LST407','ST407','ST270','ST841','LST840','ST840','BG1500','BG424','B100','112','STC26','C813'], spotlight:{brand:'TravisMathew', img:'', alt:'Shop Travis Mathew'}},
+  {label:'Sports / Teams', styles:['ST350','LST350','YST350','ST446','LST446','ST440','ST442','YST440','ST445','ST441','ST254','ST274','ST266','ST253','ST307'], spotlight:{brand:'Sport-Tek', img:'', alt:'Shop all Sport-Tek'}}
 ];
 // Build fast lookups: label -> {set of UPPER styles, order map}
 var _INDUSTRY_INDEX={};
@@ -850,7 +860,7 @@ function renderGrid(){
   if(_page>pages)_page=1;
   var startIdx=(_page-1)*_perPage;
   var pageRows=rows.slice(startIdx,startIdx+_perPage);
-  host.innerHTML=pageRows.map(function(it){
+  var cards=pageRows.map(function(it){
     var p=it._full;
     var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
     var imgs=firstColor&&firstColor.images?firstColor.images:{};
@@ -870,7 +880,21 @@ function renderGrid(){
                '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>'+
              '</div>'+
            '</div></a>';
-  }).join('');
+  });
+  // Industry spotlight banner: clickable brand promo after the first 6 items (page 1 only).
+  if(_industry&&_page===1){
+    var indDef=industryByLabel(_industry);
+    if(indDef&&indDef.spotlight&&indDef.spotlight.img){
+      var sp=indDef.spotlight;
+      var spAlt=escAttr(sp.alt||('Shop all '+sp.brand));
+      var banner='<a class="industry-spotlight" href="javascript:void(0)" title="'+spAlt+'" '+
+        'onclick="spotlightBrand(\''+escJs(sp.brand)+'\');return false;">'+
+        '<img src="'+escAttr(sp.img)+'" alt="'+spAlt+'" loading="lazy" '+
+        'onerror="this.parentNode.style.display=\'none\';"></a>';
+      cards.splice(Math.min(6,cards.length),0,banner);
+    }
+  }
+  host.innerHTML=cards.join('');
   renderPagination(rows.length);
   // Re-broadcast iframe height now that the grid has changed.
   if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
@@ -891,6 +915,14 @@ function toggleIndustry(label){
   renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
 }
 function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
+// Spotlight click: exit industry view and show ALL of the promoted brand.
+function spotlightBrand(brand){
+  _industry=null;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
+  var sb=document.getElementById('page-search');if(sb)sb.value='';
+  _page=1;
+  renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
+  var grid=document.getElementById('page-grid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
 function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search&&_industry)_industry=null;_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
