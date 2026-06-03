@@ -58,9 +58,9 @@ a:hover{text-decoration:underline;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
 /* Shop By Industry spotlight banner — slim full-width brand promo inside the grid */
-.industry-spotlight{grid-column:1/-1;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
+.industry-spotlight{grid-column:1/-1;justify-self:start;width:100%;max-width:800px;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
 .industry-spotlight:hover{border-color:var(--blue);box-shadow:0 6px 18px rgba(27,108,206,0.15);}
-.industry-spotlight img{display:block;width:100%;height:68px;object-fit:cover;}
+.industry-spotlight img{display:block;width:100%;height:auto;}
 .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
@@ -152,9 +152,9 @@ a:hover{text-decoration:underline;}
   /* Product grid: 2 columns edge-to-edge, hairline between */
   .grid{grid-template-columns:repeat(2, 1fr);gap:1px;background:var(--border);padding:0;}
   .card{border-radius:0;border:none;}
-  /* Spotlight banner edge-to-edge on mobile, matching the search bar */
-  .industry-spotlight{border-radius:0;border-left:none;border-right:none;box-shadow:none;}
-  .industry-spotlight img{height:64px;}
+  /* Spotlight banner spans full width on mobile (grid is 2 cols), edge-to-edge */
+  .industry-spotlight{grid-column:1/-1;max-width:none;border-radius:0;border-left:none;border-right:none;box-shadow:none;}
+  .industry-spotlight img{height:auto;}
   .card-info{padding:10px 12px 12px;}
   .card-name{font-size:12px;}
   .card-price{font-size:12px;}
@@ -415,10 +415,10 @@ var CATEGORY_BUCKETS=[
 //   img   = banner image URL (wide & short, ~1600x100). Leave '' to hide until ready.
 var INDUSTRY_LISTS=[
   {label:'Schools / Education', styles:['5000','5000B','NL6210','NL3312','18500','18500B','B050','B400','ST350','ST370','ST550','LST550','BG500','PC144','PC145','PC145Y','PC144Y'], spotlight:{brand:'Port & Co', img:'', alt:'Shop all Port & Co'}},
-  {label:'Construction / Trades', styles:['G2400','LST350','CS401','CS401LS','ST467','OG101','ST420LSH','ST520LS','ST420LS','112','112FP','112PM','CTK87','CT106652','CTK84','CT100614','CS430','CS440','CSV100','CS800'], spotlight:{brand:'Carhartt', img:'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/carhartt-banner-B3AyVfQ8XTQJzYo9.png', alt:'Shop all Carhartt'}},
+  {label:'Construction / Trades', styles:['G2400','LST350','CS401','CS401LS','ST467','OG101','ST420LSH','ST520LS','ST420LS','112','112FP','112PM','CTK87','CT106652','CTK84','CT100614','CS430','CS440','CSV100','CS800'], spotlight:{brand:'Carhartt', img:'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/carhartt-banner-5U0IuLh9YK3mNNl3.png', alt:'Shop all Carhartt'}},
   {label:'Corporate / Office', styles:['799802','TM1MU412','OG101','F247','K584','CN9492','BB18830','MMB200','91005']},
   {label:'Church / Non-Profit', styles:['1717','DM130','DT130Y','NL6210','NL3312','DT7075','5000B','5000','BC4610','ST307','BC3725','C855','BC3001','BC3001Y','DT7804','DT7800','DT1302'], spotlight:{brand:'Comfort Colors', img:'', alt:'Shop all Comfort Colors'}},
-  {label:'Events / Tradeshow', styles:['NL6210','DM130','LOG101','OG101','ST550','LST550','DT7804','DT7800','ST245','LST407','ST407','ST270','ST841','LST840','ST840','BG1500','BG424','B100','112','STC26','C813'], spotlight:{brand:'TravisMathew', img:'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/travismathew-banner-MGytKEQPPenNVUN2.png', alt:'Shop Travis Mathew'}},
+  {label:'Events / Tradeshow', styles:['NL6210','DM130','LOG101','OG101','ST550','LST550','DT7804','DT7800','ST245','LST407','ST407','ST270','ST841','LST840','ST840','BG1500','BG424','B100','112','STC26','C813'], spotlight:{brand:'TravisMathew', img:'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/travismathew-banner-jlsSeRwOODKs4exw.png', alt:'Shop Travis Mathew'}},
   {label:'Sports / Teams', styles:['ST350','LST350','YST350','ST446','LST446','ST440','ST442','YST440','ST445','ST441','ST254','ST274','ST266','ST253','ST307'], spotlight:{brand:'Sport-Tek', img:'', alt:'Shop all Sport-Tek'}}
 ];
 // Build fast lookups: label -> {set of UPPER styles, order map}
