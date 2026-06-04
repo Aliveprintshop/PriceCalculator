@@ -1114,7 +1114,9 @@ function pickItem(s){
   var dd=document.getElementById('dd');if(dd)dd.classList.remove('open');
   var pc=document.getElementById('prod-card');if(pc)pc.classList.add('show');
   var pci=document.getElementById('prod-card-img');if(pci){if(src){pci.src=src;pci.style.display='block';}else pci.style.display='none';}
-  var pcb=document.getElementById('prod-card-brand');if(pcb)pcb.textContent=item.b;
+  var _deal=!!(item&&item._full&&item._full._dealBasicTee);
+  var _bvBadge=_deal?' <span style="display:inline-block;background:#16a34a;color:#fff;font-size:9px;font-weight:800;letter-spacing:0.04em;padding:2px 7px;border-radius:999px;vertical-align:middle;margin-left:6px;">★ BEST VALUE</span>':'';
+  var pcb=document.getElementById('prod-card-brand');if(pcb)pcb.innerHTML=item.b+_bvBadge;
   var pcn=document.getElementById('prod-card-name');if(pcn)pcn.textContent=cleanName;
   var initColorName=(initColor&&initColor.name)?initColor.name:item.c;
   var pcs=document.getElementById('prod-card-style');if(pcs)pcs.textContent='Style #'+item.s+' \u2014 '+initColorName;
@@ -1123,7 +1125,7 @@ function pickItem(s){
   var msw=document.getElementById('mob-sw');if(msw)msw.style.display='none';
   var mpc=document.getElementById('mob-prod-card');if(mpc)mpc.classList.add('show');
   var mpci=document.getElementById('mob-prod-card-img');if(mpci){if(src){mpci.src=src;mpci.style.display='block';}else mpci.style.display='none';}
-  var mpcb=document.getElementById('mob-prod-card-brand');if(mpcb)mpcb.textContent=item.b;
+  var mpcb=document.getElementById('mob-prod-card-brand');if(mpcb)mpcb.innerHTML=item.b+_bvBadge;
   var mpcn=document.getElementById('mob-prod-card-name');if(mpcn)mpcn.textContent=cleanName;
   var mpcs=document.getElementById('mob-prod-card-style');if(mpcs)mpcs.textContent='Style #'+item.s;
   // Hide mobile item step
@@ -1732,6 +1734,31 @@ function normalizeProductUpcharges(p){
   p.size_upcharges=clean;
 }
 
+// === BASIC TEE DEAL ===
+// Gildan adult (5000) + youth (5000B) budget tees. The "program price" is our
+// COST basis; the normal 1.5x markup is applied on top. At 50+ pieces, front
+// and back 1-3 color screen prints bill at the 1-color rate (see getFrElEff).
+var BASIC_TEE_DEAL_STYLES={'5000':1,'5000B':1};
+var BASIC_TEE_DEAL_COST_BASE=2.30;                                    // S-XL + all youth sizes
+var BASIC_TEE_DEAL_COST_BYSIZE={'2XL':3.89,'3XL':5.09,'4XL':5.09,'5XL':5.09};
+function applyBasicTeeDeal(p){
+  if(!p||!p.style)return;
+  if(!BASIC_TEE_DEAL_STYLES[String(p.style).trim().toUpperCase()])return;
+  p._dealBasicTee=true;
+  p.case_price=BASIC_TEE_DEAL_COST_BASE;
+  p.case_sale_price=null;                                             // deal price IS the special price
+  var up={};
+  Object.keys(BASIC_TEE_DEAL_COST_BYSIZE).forEach(function(sz){
+    var d=parseFloat((BASIC_TEE_DEAL_COST_BYSIZE[sz]-BASIC_TEE_DEAL_COST_BASE).toFixed(2));
+    if(d>0)up[sz]=d;                                                  // cost delta; 1.5x applied later
+  });
+  p.size_upcharges=up;                                                // youth has no 2XL+ so these never apply
+}
+function isBasicTeeDeal(){return !!(sel&&sel._full&&sel._full._dealBasicTee);}
+// Effective color index for screen print: deal items at 50+ collapse 1-3 colors to the 1-color rate.
+function getFrElEff(qty){var e=getFrEl();if(isBasicTeeDeal()&&decoMethod==='sp'&&qty>=50&&e>=0&&e<=2)return 0;return e;}
+function getBkElEff(qty){var e=getBkEl();if(isBasicTeeDeal()&&decoMethod==='sp'&&qty>=50&&e>=0&&e<=2)return 0;return e;}
+
 function _upMarkupMult(){
   // Mirror getDiscountedUnitPrice: no promo => 1.5 (50% markup);
   // promo => 1 + 0.5*(1-discount).
@@ -1810,8 +1837,8 @@ function calcPP(qty){
     c+=sleeveCount*HT_SLEEVE;
   }else{
     var qb=getQB(qty);
-    if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrEl()];
-    if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkEl()];
+    if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
+    if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkElEff(qty)];
     c+=sleeveCount*1.50;
   }
   if(addons.neck)c+=0.75;
@@ -1902,8 +1929,8 @@ function calc(){
       c+=sleeveCount*HT_SLEEVE;
     }else{
       var qb=getQB(qty);
-      if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrEl()];
-      if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkEl()];
+      if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
+      if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkElEff(qty)];
       c+=sleeveCount*1.50;
     }
     if(addons.neck)c+=0.75;
@@ -2482,6 +2509,8 @@ async function loadProducts(){
 
       // Correct phantom-base pricing so only 2XL+ carry an upcharge (see fn).
       normalizeProductUpcharges(p);
+      // Basic Tee Deal cost override for 5000 / 5000B (applied last; authoritative).
+      applyBasicTeeDeal(p);
 
       // Pricing: blank_price = case_price * 1.5 (sale price honored when active).
       var basePrice = (p.case_sale_price != null) ? p.case_sale_price : p.case_price;

@@ -58,10 +58,11 @@ a:hover{text-decoration:underline;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
 /* Shop By Industry spotlight banner — slim full-width brand promo inside the grid */
-.industry-spotlight{grid-column:1/-1;justify-self:start;width:100%;max-width:800px;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
+.industry-spotlight{grid-column:1/-1;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
 .industry-spotlight:hover{border-color:var(--blue);box-shadow:0 6px 18px rgba(27,108,206,0.15);}
 .industry-spotlight img{display:block;width:100%;height:auto;}
-.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.card-badge{position:absolute;top:8px;left:8px;z-index:2;background:#16a34a;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:inline-flex;align-items:center;gap:3px;line-height:1;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
 .card-swatches{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);min-height:36px;}
@@ -868,7 +869,9 @@ function renderGrid(){
     var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
+    var dealBadge=(p&&p._dealBasicTee)?'<span class="card-badge">&#9733; Best Value</span>':'';
     return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
+           dealBadge+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
@@ -949,6 +952,9 @@ async function loadProducts(){
       if(p.name&&EXCLUDE_NAME.test(p.name))continue;
       if(EXCLUDE_STYLES[String(p.style).toUpperCase()])continue;
       if(p.name&&EXCLUDE_NAME_EXACT[p.name.toLowerCase().trim()])continue;
+      // Basic Tee Deal: 5000 / 5000B use our $2.30 cost basis (1.5x markup applied below).
+      var _stU=String(p.style).toUpperCase();
+      if(_stU==='5000'||_stU==='5000B'){p.case_price=2.30;p.case_sale_price=null;p._dealBasicTee=true;}
       var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
       if(basePrice==null||isNaN(basePrice))continue;
       var unitPrice=+(basePrice*1.5).toFixed(2);
