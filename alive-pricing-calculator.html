@@ -538,6 +538,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="big-card accent"><div class="big-lbl">Per Unit</div><div class="big-val" id="r-per">&mdash;</div></div>
         <div class="big-card total"><div class="big-lbl">Order Total</div><div class="big-val" id="r-total">&mdash;</div></div>
       </div>
+      <div id="r-upcharge-note" style="display:none;"></div>
       <div id="r-guide" class="empty-msg"><strong>&#9888; Select a product to continue</strong>Pick a product above in Step 2 to see live pricing.</div>
       <div id="r-results" style="display:none;flex-direction:column;">
         <div class="breaks-toggle" onclick="toggleBreaks()"><span id="breaks-lbl">&#9654; See all price breaks</span></div>
@@ -661,6 +662,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="mob-size-total-display">0 pcs</span>
         </div>
         <div style="font-size:11px;color:#dc2626;margin-top:5px;display:none;" id="mob-size-mismatch">&#9888; Size total doesn't match quantity</div>
+        <div id="mob-upcharge-note" style="display:none;"></div>
       </div>
     </div>
 
@@ -1687,6 +1689,71 @@ function getPromoSavingsPerUnit(){
   return parseFloat((sel.p-getDiscountedUnitPrice()).toFixed(2));
 }
 
+// =====================================================================
+// SIZE UPCHARGES (2XL and larger)
+// products.json carries per-style `size_upcharges` (e.g. {"2XL":3.00,"3XL":6.07})
+// as RAW case-price deltas vs the cheapest size. We mark them up by the SAME
+// factor as the garment blank and apply the SAME rush multiplier, so big-size
+// pricing stays consistent with the base per-unit price. Decoration/add-ons are
+// charged per piece regardless of size, so only the garment portion changes.
+// =====================================================================
+function _upMarkupMult(){
+  // Mirror getDiscountedUnitPrice: no promo => 1.5 (50% markup);
+  // promo => 1 + 0.5*(1-discount).
+  return _activePromo?(1+0.5*(1-_activePromo.discount)):1.5;
+}
+function _upRushMult(){return rush==='rush'?1.15:rush==='super'?1.25:1;}
+function sizeUpchargeRaw(sz){
+  var su=(sel&&sel._full&&sel._full.size_upcharges)||{};
+  var v=su[sz];
+  return (v==null||isNaN(v)||v<=0)?0:v;
+}
+// Retail upcharge per piece for one size (marked up + rush), rounded to the cent.
+function sizeUpchargePer(sz){
+  var raw=sizeUpchargeRaw(sz);
+  if(!raw)return 0;
+  return parseFloat((raw*_upMarkupMult()*_upRushMult()).toFixed(2));
+}
+// Total upcharge dollars across the whole order for the current size breakdown.
+function sizeUpchargeTotal(){
+  var t=0;
+  SIZES.forEach(function(s){var per=sizeUpchargePer(s);if(per>0)t+=per*getSizeQty(s);});
+  return parseFloat(t.toFixed(2));
+}
+// Human-readable breakdown, e.g. "2XL: 10 &times; +$4.50 &middot; 3XL: 5 &times; +$9.11".
+function sizeUpchargeBreakdownHtml(){
+  var parts=[];
+  SIZES.forEach(function(s){
+    var per=sizeUpchargePer(s),q=getSizeQty(s);
+    if(per>0&&q>0)parts.push(_sizeLabel(s)+': '+q+' &times; +'+fmt(per));
+  });
+  return parts.join(' &middot; ');
+}
+// Update the small "+$X.XX/pc" hints under each upcharged size input.
+function updateSizeUpchargeHints(){
+  SIZES.forEach(function(s){
+    var key=s.toLowerCase();
+    var per=sizeUpchargePer(s);
+    var txt=per>0?('+'+fmt(per)+'/pc'):'';
+    ['sz-up-'+key,'mob-sz-up-'+key].forEach(function(id){
+      var el=document.getElementById(id);if(el)el.innerHTML=txt;
+    });
+  });
+}
+// Show/clear the order-level upcharge note (desktop + mobile).
+function setUpchargeNote(upTot){
+  var html='';
+  if(upTot>0){
+    html='<div style="margin-top:8px;padding:8px 11px;background:#fff7ed;border:1px solid #fdba74;border-radius:8px;color:#9a3412;font-size:11px;line-height:1.5;">'+
+         '<strong>+ '+fmtK(upTot)+'</strong> in 2XL+ size upcharges &middot; '+sizeUpchargeBreakdownHtml()+
+         '<br><span style="color:#b95900;">Included in your Order Total. Per-unit shown is the base (S&ndash;XL) size price.</span></div>';
+  }
+  ['r-upcharge-note','mob-upcharge-note'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.innerHTML=html;el.style.display=html?'block':'none';}
+  });
+}
+
 function calcPP(qty){
   if(!sel||qty<getMinQty())return null;
   var c=getDiscountedUnitPrice();
@@ -1751,10 +1818,13 @@ function calc(){
     if(guideBot)guideBot.style.display='block';
     if(res)res.style.display='none';
     if(mr)mr.style.display='none';
+    setUpchargeNote(0);updateSizeUpchargeHints();
     return;
   }
+  updateSizeUpchargeHints();
   if(qty<minQ){
     setVals(null,null);
+    setUpchargeNote(0);
     // Keep right panel visible so the MOQ message is in context
     var guide2=document.getElementById('r-guide'),res2=document.getElementById('r-results'),mr2=document.getElementById('mob-results');
     var guideBot2=document.getElementById('r-guide-bottom');
@@ -1774,8 +1844,9 @@ function calc(){
     return;
   }
 
-  var pp=calcPP(qty),tot=pp*qty;
+  var pp=calcPP(qty),upTot=sizeUpchargeTotal(),tot=parseFloat((pp*qty+upTot).toFixed(2));
   setVals(pp,tot);
+  setUpchargeNote(upTot);
 
   // Rush fee display
   var baseNoRush=(function(){
@@ -1999,7 +2070,8 @@ function buildSizeGrid(availableSizes){
     return sizes.map(function(s){
       var key=s.toLowerCase();
       return '<div class="'+boxCls+'"><div class="'+lblCls+'">'+_sizeLabel(s)+'</div>'+
-             '<input class="'+inputCls+'" id="'+prefix+'-'+key+'" type="number" min="0" placeholder="0" oninput="onSizeInput()"></div>';
+             '<input class="'+inputCls+'" id="'+prefix+'-'+key+'" type="number" min="0" placeholder="0" oninput="onSizeInput()">'+
+             '<div class="size-up-hint" id="'+prefix+'-up-'+key+'" style="font-size:9px;font-weight:700;color:#b95900;text-align:center;margin-top:2px;min-height:11px;line-height:11px;"></div></div>';
     }).join('');
   }
   var dHost=document.getElementById('size-grid-host');
@@ -2062,6 +2134,7 @@ function updateOrderSummary(){
   var box=document.getElementById('of-summary'),grid=document.getElementById('of-summary-grid');
   if(!sel||!box||!grid)return;
   var qty=getQty(),pp=calcPP(qty);if(!pp){box.style.display='none';return;}
+  var upTot=sizeUpchargeTotal();
   var szB=getSizeBreakdown();
   var addonList=[];if(addons.neck)addonList.push('Inside Neck Print');if(addons.hem)addonList.push('Custom Hem Tag');if(addons.bag)addonList.push('Fold &amp; Bag');
   var hemBump=addons.hem?' +5 business days':'';
@@ -2073,8 +2146,9 @@ function updateOrderSummary(){
     ['Method',decoMethod==='em'?'Embroidery':(decoMethod==='ht'?'Heat Transfer':'Screen Printing')],
     ['Locations',locsDisplay()],
     addonList.length?['Add-ons',addonList.join(', ')]:null,
-    ['Per unit',fmt(pp)],
-    ['Total',fmtK(pp*qty)],
+    ['Per unit',fmt(pp)+(upTot>0?' <span style="color:var(--text3);">(base S&ndash;XL size)</span>':'')],
+    upTot>0?['2XL+ upcharge','+'+fmtK(upTot)+' <span style="color:var(--text3);">('+sizeUpchargeBreakdownHtml()+')</span>']:null,
+    ['Total',fmtK(pp*qty+upTot)],
     ['Turnaround',taBase+(hemBump?' <span style="color:#b95900;font-weight:600;">'+hemBump+'</span>':'')]
   ].filter(Boolean);
   var h='';rows.forEach(function(r){h+='<div><strong style="color:var(--text);">'+r[0]+':</strong> '+r[1]+'</div>';});
@@ -2100,7 +2174,9 @@ function validateOrderForm(ids){
 
 // Build the full calculator payload that goes to the GHL inbound webhook
 function buildOrderPayload(d,source){
-  var qty=getQty(),pp=sel?calcPP(qty):null,tot=pp?pp*qty:null;
+  var qty=getQty(),pp=sel?calcPP(qty):null;
+  var upTot=sel?sizeUpchargeTotal():0;
+  var tot=pp?parseFloat((pp*qty+upTot).toFixed(2)):null;
   var addonList=[];if(addons.neck)addonList.push('Inside Neck Print');if(addons.hem)addonList.push('Custom Hem Tag (+5 business days)');if(addons.bag)addonList.push('Fold & Bag');
   var baseBD=rush==='super'?5:rush==='rush'?7:10;
   var effBD=baseBD+(addons.hem?5:0);
@@ -2135,6 +2211,8 @@ function buildOrderPayload(d,source){
     turnaround:taLabel,
     pricePerUnit:pp?fmt(pp):'',
     pricePerUnitValue:pp||0,
+    sizeUpchargeTotal:upTot,
+    sizeUpchargeBreakdown:upTot>0?sizeUpchargeBreakdownHtml().replace(/&times;/g,'x').replace(/&middot;/g,';').replace(/&ndash;/g,'-'):'None',
     totalPrice:tot?fmtK(tot):'',
     totalPriceValue:tot||0,
     sizeBreakdown:getSizeBreakdown()||'Not specified',
@@ -2226,7 +2304,8 @@ function captureCartItem(source){
   if(qty<minQ)return{ok:false,msg:'Minimum order is '+minQ+' pieces for '+(decoMethod==='ht'?'heat transfer':'screen printing')+'.'};
   var pp=calcPP(qty);
   if(pp==null)return{ok:false,msg:'Adjust your selections to see a price first.'};
-  var lineTotal=parseFloat((pp*qty).toFixed(2));
+  var upTot=sizeUpchargeTotal();
+  var lineTotal=parseFloat((pp*qty+upTot).toFixed(2));
   // Size breakdown via the shared getSizeQty helper (reads from both desktop and mobile inputs).
   var sizes={};
   SIZES.forEach(function(sz){var n=getSizeQty(sz);if(n>0)sizes[sz]=n;});
@@ -2266,6 +2345,8 @@ function captureCartItem(source){
     artworkLink:artworkLink,
     notes:notes,
     unitPrice:pp,
+    sizeUpchargeTotal:upTot,
+    sizeUpchargePerSize:(function(){var o={};SIZES.forEach(function(s){var per=sizeUpchargePer(s);if(per>0&&getSizeQty(s)>0)o[s]=per;});return o;})(),
     lineTotal:lineTotal,
     promoCodeAtAdd:_activePromo?_activePromo.code:'',
     promoDiscountAtAdd:_activePromo?_activePromo.discount:0,

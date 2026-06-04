@@ -362,7 +362,7 @@ function render(){
         '</div>'+
         (it.notes?'<div style="font-size:12px;color:var(--text2);"><span style="font-family:\'Montserrat\',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);">Notes:</span> '+esc(it.notes)+'</div>':'')+
         '<div class="item-prices">'+
-          '<div class="item-prices-left"><strong>'+fmt(it.unitPrice||0)+'</strong>/pc × '+(it.qty||0)+(it.promoCodeAtAdd?'<br>'+promoTag:'')+'</div>'+
+          '<div class="item-prices-left"><strong>'+fmt(it.unitPrice||0)+'</strong>/pc × '+(it.qty||0)+(parseFloat(it.sizeUpchargeTotal)>0?'<br><span style="color:#b95900;font-weight:600;">+ '+fmt(it.sizeUpchargeTotal)+' 2XL+ upcharge</span>':'')+(it.promoCodeAtAdd?'<br>'+promoTag:'')+'</div>'+
           '<div class="item-line-total">'+fmt(it.lineTotal||0)+'</div>'+
         '</div>'+
       '</div>'+
