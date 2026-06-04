@@ -133,6 +133,9 @@ table.pt td{padding:9px 8px;font-size:13px;color:var(--text2);border-bottom:1px 
 table.pt tr:last-child td{border-bottom:none;}
 table.pt tr.cur td{color:var(--text);font-weight:600;}
 table.pt tr.cur td:first-child{color:var(--blue);}
+table.pt tr.deal-row td{background:#dcfce7;}
+table.pt tr.deal-row td:first-child{color:#15803d;font-weight:800;}
+.deal-tag{display:inline-block;background:#16a34a;color:#fff;font-size:8px;font-weight:800;letter-spacing:0.04em;padding:1px 6px;border-radius:999px;margin-left:5px;vertical-align:middle;text-transform:uppercase;}
 .chip{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:700;}
 .chip.c0{color:var(--text3);}
 .chip.c1{background:#dce9f8;color:#1558a8;}
@@ -255,6 +258,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
   table.mob-pt tr:last-child td{border-bottom:none;}
   table.mob-pt tr.cur td{color:var(--text);font-weight:600;}
   table.mob-pt tr.cur td:first-child{color:var(--blue);}
+  table.mob-pt tr.deal-row td{background:#dcfce7;}
+  table.mob-pt tr.deal-row td:first-child{color:#15803d;font-weight:800;}
   .mob-trust{display:flex;flex-direction:column;gap:5px;margin-top:10px;}
   .mob-trust-item{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);cursor:pointer;}
   .mob-trust-item:hover,.mob-trust-item.open{background:var(--blue-light);border-color:var(--blue-mid);}
@@ -1964,8 +1969,12 @@ function calc(){
     breaksArr.slice(start,end).forEach(function(q){
       var qp=calcPP(q),qt=qp*q,sv=parseFloat((b36-qp).toFixed(2)),pct=Math.round(sv/b36*100);
       var isCur=(q===curBreak);
+      var isDeal=(isBasicTeeDeal()&&q===50);   // Basic Tee Deal kicks in at 50 pcs
       var chip=sv<=0?'<span class="chip c0">base</span>':pct>=25?'<span class="chip c4">Save '+pct+'%</span>':pct>=18?'<span class="chip c3">Save '+pct+'%</span>':pct>=10?'<span class="chip c2">Save '+pct+'%</span>':'<span class="chip c1">Save '+pct+'%</span>';
-      th+='<tr'+(isCur?' class="cur"':'')+'><td>'+(isCur?'&#9654; ':'')+q.toLocaleString()+'</td><td>'+fmt(qp)+'/pc</td><td>'+fmtK(qt)+'</td><td>'+chip+'</td></tr>';
+      var rcls=[];if(isCur)rcls.push('cur');if(isDeal)rcls.push('deal-row');
+      var clsAttr=rcls.length?' class="'+rcls.join(' ')+'"':'';
+      var dealTag=isDeal?' <span class="deal-tag">Deal starts</span>':'';
+      th+='<tr'+clsAttr+'><td>'+(isCur?'&#9654; ':'')+q.toLocaleString()+dealTag+'</td><td>'+fmt(qp)+'/pc</td><td>'+fmtK(qt)+'</td><td>'+chip+'</td></tr>';
     });
     return th+'</tbody></table>';
   }
