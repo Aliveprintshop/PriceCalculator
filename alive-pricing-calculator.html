@@ -1697,6 +1697,41 @@ function getPromoSavingsPerUnit(){
 // pricing stays consistent with the base per-unit price. Decoration/add-ons are
 // charged per piece regardless of size, so only the garment portion changes.
 // =====================================================================
+// Only these sizes may EVER carry an upcharge. XS-XL, OSFA, youth and numeric
+// sizes are the base tier and must always price at the base (0 upcharge).
+var _EXTENDED_SIZES={'2XL':1,'3XL':1,'4XL':1,'5XL':1,'6XL':1,'7XL':1,'8XL':1,
+  'XXL':1,'XXXL':1,'XXXXL':1,'XXXXXL':1};
+function isExtendedSize(sz){return !!_EXTENDED_SIZES[String(sz||'').trim().toUpperCase()];}
+
+// Normalize a product's pricing at load. SanMar's feed sometimes carries a
+// phantom low-priced row (a blank/odd size) that the sync picks as the "base",
+// which (a) under-states case_price and (b) makes XS-XL show a bogus upcharge.
+// We detect that baseline gap (the smallest upcharge sitting on a NON-extended
+// size), lift the base price by it, and rebuild size_upcharges so ONLY 2XL+
+// sizes carry an upcharge — net of the gap. Idempotent.
+function normalizeProductUpcharges(p){
+  if(!p)return;
+  var su=p.size_upcharges;
+  if(!su||typeof su!=='object')return;
+  var stdUp=Infinity;
+  Object.keys(su).forEach(function(sz){
+    if(!isExtendedSize(sz)){var v=parseFloat(su[sz]);if(!isNaN(v)&&v<stdUp)stdUp=v;}
+  });
+  if(!isFinite(stdUp)||stdUp<0)stdUp=0;
+  if(stdUp>0){
+    if(p.case_price!=null&&!isNaN(p.case_price))p.case_price=parseFloat((p.case_price+stdUp).toFixed(2));
+    if(p.case_sale_price!=null&&!isNaN(p.case_sale_price))p.case_sale_price=parseFloat((p.case_sale_price+stdUp).toFixed(2));
+  }
+  var clean={};
+  Object.keys(su).forEach(function(sz){
+    if(!isExtendedSize(sz))return;            // drop XS-XL etc. entirely
+    var v=parseFloat(su[sz]);if(isNaN(v))return;
+    var net=parseFloat((v-stdUp).toFixed(2)); // net of the baseline gap
+    if(net>0)clean[sz]=net;
+  });
+  p.size_upcharges=clean;
+}
+
 function _upMarkupMult(){
   // Mirror getDiscountedUnitPrice: no promo => 1.5 (50% markup);
   // promo => 1 + 0.5*(1-discount).
@@ -1704,6 +1739,7 @@ function _upMarkupMult(){
 }
 function _upRushMult(){return rush==='rush'?1.15:rush==='super'?1.25:1;}
 function sizeUpchargeRaw(sz){
+  if(!isExtendedSize(sz))return 0;            // standard sizes never carry an upcharge
   var su=(sel&&sel._full&&sel._full.size_upcharges)||{};
   var v=su[sz];
   return (v==null||isNaN(v)||v<=0)?0:v;
@@ -2443,6 +2479,9 @@ async function loadProducts(){
       var p = rows[i];
       if(!p || !p.style) continue;
       if(p.discontinued === true) continue; // safety: hide if pipeline missed it
+
+      // Correct phantom-base pricing so only 2XL+ carry an upcharge (see fn).
+      normalizeProductUpcharges(p);
 
       // Pricing: blank_price = case_price * 1.5 (sale price honored when active).
       var basePrice = (p.case_sale_price != null) ? p.case_sale_price : p.case_price;
