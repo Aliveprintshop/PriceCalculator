@@ -877,7 +877,7 @@ function renderGrid(){
            '<div class="card-info">'+
              '<div class="card-brand">'+brand+'</div>'+
              '<div class="card-name">'+displayName+'</div>'+
-             '<div class="card-price">from <strong>$'+(it.p).toFixed(2)+'</strong>/pc</div>'+
+             '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
              '<div class="card-meta">'+
                '<span class="card-meta-rush">Rush Available</span>'+
                '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>'+
@@ -931,6 +931,35 @@ function onPageSearch(){var s=document.getElementById('page-search');_search=s?s
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
+// "FROM" PRICE — decorated starting price shown on each card.
+// Mirrors the calculator at QTY 144:
+//   * Screen-printable apparel  -> garment + 1-color FRONT screen print (144 tier)
+//   * Caps / polos / wovens /
+//     outerwear / bags          -> garment + 1-location FRONT embroidery (144 tier)
+//                                  + the one-time $45 embroidery setup spread over 144 pcs
+// Garment markup is qty-independent (case_price * 1.5), so only decoration is added.
+// Keep these constants in sync with alive-pricing-calculator.html (FRONT, EM_FRONT, EM_SETUP_FEE).
+// =====================================================================
+var FROM_SP_144_1COLOR = 2.60;          // FRONT[144][0] — 1-color front screen print at 144
+var FROM_EM_144_FRONT  = 5.00;          // EM_FRONT[144] — front-location embroidery at 144
+var FROM_EM_SETUP_PER  = 45.00 / 144;   // EM_SETUP_FEE spread across 144 pieces (~$0.3125)
+
+// True when the card's "from" price should use embroidery (item can't be screen printed).
+function fromUsesEmbroidery(p){
+  var cat=String((p&&p.category)||'').toLowerCase();
+  if(cat.indexOf('cap')>-1)return true;                                   // caps, beanies, truckers
+  if(cat.indexOf('polo')>-1||cat.indexOf('knit')>-1||cat.indexOf('woven')>-1)return true; // polos & button-downs
+  if(cat.indexOf('outerwear')>-1)return true;                             // jackets
+  if(cat.indexOf('bag')>-1)return true;                                   // bags
+  return false;
+}
+// Decorated "from" price for the browse card, given the garment unit price (case*1.5).
+function computeFromPrice(p,garmentUnit){
+  if(fromUsesEmbroidery(p))return +(garmentUnit+FROM_EM_144_FRONT+FROM_EM_SETUP_PER).toFixed(2);
+  return +(garmentUnit+FROM_SP_144_1COLOR).toFixed(2);
+}
+
+// =====================================================================
 // Boot
 // =====================================================================
 async function loadProducts(){
@@ -960,7 +989,8 @@ async function loadProducts(){
       var unitPrice=+(basePrice*1.5).toFixed(2);
       var firstColor='';
       if(Array.isArray(p.colors)&&p.colors.length&&p.colors[0].name)firstColor=p.colors[0].name;
-      flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,_full:p});
+      var fromPrice=computeFromPrice(p,unitPrice);
+      flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,fp:fromPrice,_full:p});
     }
     ITEMS=flat;
     buildHexLookup(rows);
