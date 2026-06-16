@@ -61,6 +61,13 @@ a:hover{text-decoration:underline;}
 .industry-spotlight{grid-column:1/-1;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
 .industry-spotlight:hover{border-color:var(--blue);box-shadow:0 6px 18px rgba(27,108,206,0.15);}
 .industry-spotlight img{display:block;width:100%;height:auto;}
+/* Lead thank-you banner — shown on arrival from a landing-page form redirect */
+.thankyou-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#e9f7ee,#f1faf4);border:1.5px solid #b8e0c6;border-radius:var(--r-lg);padding:14px 16px;margin:0 0 16px;}
+.thankyou-banner .ty-check{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#1f9d55;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;}
+.thankyou-banner .ty-text{flex:1 1 auto;line-height:1.4;color:#1a3a26;font-size:14px;}
+.thankyou-banner .ty-text strong{display:block;font-size:15px;margin-bottom:2px;color:#143020;}
+.thankyou-banner .ty-close{flex:0 0 auto;background:transparent;border:0;font-size:22px;line-height:1;color:#5a7a66;cursor:pointer;padding:0 2px;}
+.thankyou-banner .ty-close:hover{color:#143020;}
 .card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .card-badge{position:absolute;top:8px;left:8px;z-index:2;background:#16a34a;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:inline-flex;align-items:center;gap:3px;line-height:1;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
@@ -206,6 +213,17 @@ a:hover{text-decoration:underline;}
   </aside>
 
   <main class="content">
+
+    <!-- LEAD THANK-YOU BANNER — shown when arriving from a landing-page form
+         redirect (slug ending in "-thank-you", e.g. #construction-trades-thank-you). -->
+    <div class="thankyou-banner" id="thankyou-banner" style="display:none;" role="status">
+      <span class="ty-check" aria-hidden="true">&#10003;</span>
+      <div class="ty-text">
+        <strong>Thank you &mdash; your request was received!</strong>
+        <span>A member of our team will reach out shortly. In the meantime, here are popular styles we print for your industry.</span>
+      </div>
+      <button type="button" class="ty-close" aria-label="Dismiss message" onclick="document.getElementById('thankyou-banner').style.display='none'">&times;</button>
+    </div>
 
     <!-- BRAND HERO BANNER — shown when a single brand with a configured banner is selected.
          Add new brands by pasting their image URL into BRAND_BANNERS in JS. -->
@@ -451,6 +469,17 @@ function slugToBucketLabel(slug){
   var t=String(slug).toLowerCase().trim();
   for(var i=0;i<CATEGORY_BUCKETS.length;i++){
     if(labelToSlug(CATEGORY_BUCKETS[i].label)===t)return CATEGORY_BUCKETS[i].label;
+  }
+  return null;
+}
+// Resolve a hash slug to a "Shop By Industry" label (e.g. "construction-trades"
+// -> "Construction / Trades"). Used for shareable industry links that landing
+// pages redirect new leads to, e.g. /products#construction-trades-thank-you.
+function slugToIndustryLabel(slug){
+  if(!slug)return null;
+  var t=String(slug).toLowerCase().trim();
+  for(var i=0;i<INDUSTRY_LISTS.length;i++){
+    if(labelToSlug(INDUSTRY_LISTS[i].label)===t)return INDUSTRY_LISTS[i].label;
   }
   return null;
 }
@@ -994,12 +1023,26 @@ async function loadProducts(){
     }
     ITEMS=flat;
     buildHexLookup(rows);
-    // Apply initial category from ?cat= URL param (set by Hostinger embed from parent hash).
+    // Apply initial filter from ?cat= URL param (set by Hostinger embed from parent hash).
+    // Supports three slug shapes:
+    //   - category slug  (e.g. "bags")                    -> category filter
+    //   - industry slug  (e.g. "construction-trades")     -> Shop By Industry filter
+    //   - "...-thank-you" suffix on either of the above   -> also show lead thank-you banner
     try{
       var initCat=new URLSearchParams(window.location.search).get('cat');
       if(initCat){
-        var label=slugToBucketLabel(initCat);
+        var rawSlug=String(initCat).toLowerCase().trim();
+        if(/-thank-you$/.test(rawSlug)){
+          rawSlug=rawSlug.replace(/-thank-you$/,'');
+          var tyb=document.getElementById('thankyou-banner');
+          if(tyb)tyb.style.display='flex';
+        }
+        var label=slugToBucketLabel(rawSlug);
         if(label){_cats.clear();_cats.add(label);}
+        else{
+          var indLabel=slugToIndustryLabel(rawSlug);
+          if(indLabel){_industry=indLabel;_cats.clear();_brands.clear();}
+        }
       }
     }catch(e){}
     renderTrustBanner();
