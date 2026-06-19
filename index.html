@@ -54,6 +54,17 @@ a:hover{text-decoration:underline;}
 
 .results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
 .results-count{font-size:13px;color:var(--text2);}
+.sort-wrap{display:flex;align-items:center;gap:6px;}
+.sort-label{font-size:13px;color:var(--text3);font-weight:600;}
+.sort-select{font-family:'Open Sans',sans-serif;font-size:13px;padding:7px 28px 7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;outline:none;}
+.sort-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
+.color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px;}
+.color-cell{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:4px 2px;font-family:inherit;}
+.color-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,0.06);transition:outline .1s;}
+.color-cell.active .color-dot{outline:2.5px solid var(--blue);outline-offset:2px;}
+.color-label{font-size:11px;color:var(--text2);line-height:1.15;text-align:center;}
+.color-cell.active .color-label{color:var(--blue);font-weight:600;}
+.color-count{font-size:10px;color:var(--text3);line-height:1;}
 .results-count strong{color:var(--text);font-weight:700;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
@@ -204,6 +215,14 @@ a:hover{text-decoration:underline;}
 
     <div class="filter-section">
       <h2 class="filter-title">
+        Color
+        <button type="button" class="clear-link" id="clear-colors" onclick="clearColors()" style="display:none;">Clear</button>
+      </h2>
+      <div class="color-grid" id="color-list"></div>
+    </div>
+
+    <div class="filter-section">
+      <h2 class="filter-title">
         Shop By Industry
         <button type="button" class="clear-link" id="clear-industry" onclick="clearIndustry()" style="display:none;">Clear</button>
       </h2>
@@ -244,6 +263,15 @@ a:hover{text-decoration:underline;}
 
     <div class="results-bar">
       <div class="results-count" id="results-count"></div>
+      <div class="sort-wrap">
+        <label class="sort-label" for="sort-select">Sort</label>
+        <select id="sort-select" class="sort-select" onchange="changeSort(this.value)">
+          <option value="featured">Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+        </select>
+      </div>
     </div>
 
     <div class="grid" id="page-grid">
@@ -344,7 +372,7 @@ function quickPickCategory(label){
   _cats.clear();
   if(!wasActive)_cats.add(label);
   _industry=null;
-  _page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
+  _page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
   // Scroll up so the product grid is visible after a category tap.
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -356,7 +384,7 @@ function openSidebarFromChip(){
 // Update the "Filters · N" badge with count of active filters.
 function updateFilterBadge(){
   var badge=document.getElementById('filt-badge');if(!badge)return;
-  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0)+(_industry?1:0);
+  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0)+(_colors?_colors.size:0)+(_industry?1:0);
   badge.textContent=n;
   if(n===0)badge.classList.add('zero'); else badge.classList.remove('zero');
 }
@@ -583,10 +611,51 @@ var _cats=new Set();
 var _brands=new Set();
 var _industry=null;   // active "Shop By Industry" label, or null
 var _search='';
+var _colors=new Set();   // active garment-color buckets
+var _sort='featured';   // sort mode: featured|price-asc|price-desc|name-asc
 var _brandsExpanded=false;
 var _page=1;
 var _perPage=48;
 var BRANDS_VISIBLE=8;
+
+// =====================================================================
+// GARMENT COLOR BUCKETS — map the many granular SanMar color names into a
+// small set of standard, shoppable colors. Order matters: the FIRST matching
+// bucket wins per color name, so put specific colors before generic ones
+// (e.g. Navy before Gray so "Heather Navy" -> Navy, "Athletic Heather" -> Gray).
+// =====================================================================
+var COLOR_BUCKETS=[
+  {key:'black', label:'Black',         hex:'#1a1a1a', re:/black|onyx|\bjet\b|\bcoal\b|raven/i},
+  {key:'white', label:'White',         hex:'#ffffff', re:/white|optic|arctic/i},
+  {key:'navy',  label:'Navy',          hex:'#1f2a44', re:/navy|midnight/i},
+  {key:'blue',  label:'Blue',          hex:'#2563cc', re:/blue|royal|carolina|aqua|teal|turquoise|\bsky\b|cobalt|denim|indigo/i},
+  {key:'red',   label:'Red',           hex:'#cc2b2b', re:/red|cardinal|scarlet|crimson|maroon|burgundy|\bwine\b/i},
+  {key:'green', label:'Green',         hex:'#2e8b57', re:/green|olive|forest|kelly|lime|mint|sage|hunter|moss/i},
+  {key:'yellow',label:'Yellow',        hex:'#f2c200', re:/yellow|gold|maize|daisy|lemon/i},
+  {key:'orange',label:'Orange',        hex:'#e8761e', re:/orange|tangerine|coral|peach/i},
+  {key:'purple',label:'Purple',        hex:'#6b3fa0', re:/purple|violet|lavender|plum|orchid/i},
+  {key:'pink',  label:'Pink',          hex:'#e06aa3', re:/pink|fuchsia|\brose\b|berry/i},
+  {key:'brown', label:'Brown',         hex:'#6b4a2b', re:/brown|chocolate|coffee|espresso|mocha/i},
+  {key:'tan',   label:'Tan / Natural', hex:'#d8c4a0', re:/\btan\b|khaki|sand|natural|beige|cream|ivory|stone|bone|oatmeal/i},
+  {key:'gray',  label:'Gray',          hex:'#9aa0a6', re:/gr[ae]y|charcoal|graphite|silver|\bash\b|smoke|granite|steel|heather|slate/i}
+];
+// Set of bucket keys a product offers, cached on the item.
+function getColorBuckets(it){
+  if(it._colorBuckets)return it._colorBuckets;
+  var set=new Set(),p=it._full;
+  if(p&&Array.isArray(p.colors)){
+    p.colors.forEach(function(c){
+      var nm=c&&c.name?c.name:''; if(!nm)return;
+      for(var i=0;i<COLOR_BUCKETS.length;i++){ if(COLOR_BUCKETS[i].re.test(nm)){set.add(COLOR_BUCKETS[i].key);break;} }
+    });
+  }
+  it._colorBuckets=set; return set;
+}
+function _colorText(it){var p=it._full;if(!p||!Array.isArray(p.colors))return '';var s='';for(var i=0;i<p.colors.length;i++){s+=' '+(p.colors[i].name||'');}return s;}
+// Searchable haystack for a product: brand, style, name, subcategory, raw color
+// names, AND mapped color-bucket keys (so "gray" finds a "Charcoal" item).
+function _hay(it){var p=it._full||{};var bl='';getColorBuckets(it).forEach(function(k){bl+=' '+k;});return (it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')+_colorText(it)+bl).toLowerCase();}
+function _colorLabels(){return Array.from(_colors).map(function(k){for(var i=0;i<COLOR_BUCKETS.length;i++)if(COLOR_BUCKETS[i].key===k)return COLOR_BUCKETS[i].label;return k;}).join(', ');}
 
 function escAttr(s){return String(s||'').replace(/"/g,'&quot;');}
 function escJs(s){return String(s||'').replace(/'/g,"\\'");}
@@ -668,7 +737,7 @@ function bucketCounts(){
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_brands.size>0&&!_brands.has(p.brand))return;
-    if(_search){var q=_search.toLowerCase().trim();var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();if(hay.indexOf(q)===-1)return;}
+    if(_search){var q=_search.toLowerCase().trim();if(_hay(it).indexOf(q)===-1)return;}
     var b=bucketForProduct(p);
     if(b)c[b]=(c[b]||0)+1;
   });
@@ -679,7 +748,7 @@ function brandCounts(){
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_cats.size>0){var b=bucketForProduct(p);if(!_cats.has(b))return;}
-    if(_search){var q=_search.toLowerCase().trim();var hay=(it.b+' '+it.s+' '+it.n).toLowerCase();if(hay.indexOf(q)===-1)return;}
+    if(_search){var q=_search.toLowerCase().trim();if(_hay(it).indexOf(q)===-1)return;}
     var name=p.brand||'(Unknown)';
     c[name]=(c[name]||0)+1;
   });
@@ -728,6 +797,32 @@ function renderBrandList(){
   document.getElementById('clear-brands').style.display=_brands.size>0?'inline':'none';
 }
 
+function colorCounts(){
+  var c={};COLOR_BUCKETS.forEach(function(b){c[b.key]=0;});
+  var q=(_search||'').toLowerCase().trim();
+  ITEMS.forEach(function(it){
+    var p=it._full;if(!p)return;
+    if(_cats.size>0){var bk=bucketForProduct(p);if(!_cats.has(bk))return;}
+    if(_brands.size>0&&!_brands.has(p.brand))return;
+    if(q&&_hay(it).indexOf(q)===-1)return;
+    getColorBuckets(it).forEach(function(k){c[k]=(c[k]||0)+1;});
+  });
+  return c;
+}
+function renderColorList(){
+  var host=document.getElementById('color-list');if(!host)return;
+  var counts=colorCounts();
+  host.innerHTML=COLOR_BUCKETS.map(function(b){
+    var active=_colors.has(b.key),cnt=counts[b.key]||0;
+    var dotStyle='background:'+b.hex+';'+(b.key==='white'?'border-color:#d0d0d0;':'');
+    return '<button type="button" class="color-cell'+(active?' active':'')+'" onclick="toggleColor(\''+b.key+'\')" title="'+b.label+'">'+
+           '<span class="color-dot" style="'+dotStyle+'"></span>'+
+           '<span class="color-label">'+b.label+'</span>'+
+           '<span class="color-count">('+cnt+')</span>'+
+           '</button>';
+  }).join('');
+  var clr=document.getElementById('clear-colors');if(clr)clr.style.display=_colors.size>0?'inline':'none';
+}
 function renderIndustryList(){
   var host=document.getElementById('industry-list');if(!host)return;
   host.innerHTML=INDUSTRY_LISTS.map(function(ind){
@@ -757,9 +852,9 @@ function filtered(){
       if(_cats.size>0){var bk=bucketForProduct(p);if(!_cats.has(bk))return false;}
       if(_brands.size>0&&!_brands.has(p.brand))return false;
     }
+    if(_colors.size>0){var _cb=getColorBuckets(it);var _okc=false;_colors.forEach(function(k){if(_cb.has(k))_okc=true;});if(!_okc)return false;}
     if(!q)return true;
-    var hay=(it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')).toLowerCase();
-    return hay.indexOf(q)!==-1;
+    return _hay(it).indexOf(q)!==-1;
   });
 }
 
@@ -896,6 +991,14 @@ function renderGrid(){
     order.forEach(function(it,i){poloAssort.set(it,i);});
   }
 
+  // User-selected sort (price / name) overrides ALL curated ordering.
+  if(_sort==='price-asc'||_sort==='price-desc'||_sort==='name-asc'){
+    rows.sort(function(a,b){
+      if(_sort==='name-asc')return (a.n||'').localeCompare(b.n||'');
+      var ap=(a.fp!=null?a.fp:a.p)||0, bp=(b.fp!=null?b.fp:b.p)||0;
+      return _sort==='price-asc'?(ap-bp):(bp-ap);
+    });
+  } else
   // Industry mode: keep the curated order from INDUSTRY_LISTS.
   if(_industry&&_INDUSTRY_INDEX[_industry]){
     var ord=_INDUSTRY_INDEX[_industry].order;
@@ -929,6 +1032,7 @@ function renderGrid(){
     var bits=[];
     if(_cats.size>0)bits.push(Array.from(_cats).join(', '));
     if(_brands.size>0)bits.push(Array.from(_brands).join(', '));
+    if(_colors.size>0)bits.push(_colorLabels());
     if(_search)bits.push('matching "'+_search+'"');
     var qual=bits.length?' &middot; '+bits.join(' &middot; '):'';
     countEl.innerHTML='<strong>'+rows.length.toLocaleString()+'</strong> '+(rows.length===1?'product':'products')+qual;
@@ -991,28 +1095,31 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){_industry=null;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function toggleBrand(name){_industry=null;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();}
-function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();}
+function toggleCategory(label){_industry=null;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleBrand(name){_industry=null;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();}
+function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();}
 // Shop By Industry: single-select. Selecting one clears category/brand filters and shows only its curated list.
 function toggleIndustry(label){
   if(_industry===label){_industry=null;}
   else{_industry=label;_cats.clear();_brands.clear();}
   _page=1;
-  renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
 }
-function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
+function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
 // Spotlight click: exit industry view and show ALL of the promoted brand.
 function spotlightBrand(brand){
   _industry=null;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
   var sb=document.getElementById('page-search');if(sb)sb.value='';
   _page=1;
-  renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
   var grid=document.getElementById('page-grid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function toggleColor(key){_industry=null;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearColors(){_colors.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();}
+function changeSort(v){_sort=v||'featured';_page=1;renderGrid();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search&&_industry)_industry=null;_page=1;renderCategoryList();renderBrandList();renderIndustryList();renderGrid();}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search&&_industry)_industry=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
@@ -1109,7 +1216,7 @@ async function loadProducts(){
     }catch(e){}
     renderTrustBanner();
     updateBrandBanner();
-    renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
+    renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
     // Catalog fetch failed — still surface manual products (drinkware) so they
@@ -1124,85 +1231,4 @@ async function loadProducts(){
       if(mflat.length){
         ITEMS=mflat;
         renderTrustBanner();updateBrandBanner();
-        renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
-        return;
-      }
-    }catch(e2){}
-    var host=document.getElementById('page-grid');
-    if(host)host.innerHTML='<div class="empty">We couldn&rsquo;t load the catalog. <a href="javascript:location.reload()">Retry</a> or visit our <a href="alive-pricing-calculator.html">price calculator</a> directly.</div>';
-  }
-}
-
-loadProducts();
-
-// Listen for category route changes pushed from the parent (e.g. back/forward button on aliveprintshop.com).
-window.addEventListener('message',function(e){
-  var d=e&&e.data;
-  if(!d||d.type!=='alive-route-set')return;
-  var slug=d.slug||'';
-  var label=slug?slugToBucketLabel(slug):null;
-  _industry=null;
-  _cats.clear();
-  if(label)_cats.add(label);
-  _page=1;
-  renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
-},false);
-
-// Iframe auto-resize: when embedded in aliveprintshop.com, broadcast content height
-// so the parent page can size the iframe to match (eliminates wasted whitespace AND
-// prevents bottom cutoff). Adds a 60px safety buffer so the pagination bar +
-// "Back to Top" button are always fully visible.
-(function(){
-  if(window.self===window.top)return;
-  var BUFFER=40;          // safety pad to keep pagination + back-to-top in view
-  var _lastH=0;
-  var _t=null;
-  function measure(){
-    // IMPORTANT: only measure body content, NOT documentElement. When the parent
-    // listener resizes the iframe element, documentElement.scrollHeight grows to
-    // match — feeding back into the next broadcast and causing runaway growth.
-    // body.scrollHeight reflects true content height regardless of iframe size.
-    return Math.max(document.body.scrollHeight, document.body.offsetHeight)+BUFFER;
-  }
-  function send(){
-    try{
-      var h=measure();
-      if(h===_lastH)return;     // skip identical posts
-      _lastH=h;
-      var msg={type:'alive-resize',height:h,page:'products'};
-      // Broadcast to direct parent (Hostinger embed sandbox iframe — runs my embed listener).
-      window.parent.postMessage(msg,'*');
-      // Also broadcast to top window (aliveprintshop.com) so Hostinger's
-      // fixed-height grid section can be overridden by a parent-page listener.
-      if(window.top && window.top!==window.parent){
-        try{window.top.postMessage(msg,'*');}catch(e){}
-      }
-    }catch(e){}
-  }
-  function broadcastHeight(){
-    // Debounce to ~50ms — avoids spamming the parent on every layout shift.
-    if(_t)clearTimeout(_t);
-    _t=setTimeout(send,50);
-  }
-  // Expose a manual trigger so renderGrid() can re-broadcast immediately after
-  // filter / pagination changes.
-  window.aliveBroadcastHeight=broadcastHeight;
-  window.addEventListener('load',broadcastHeight);
-  window.addEventListener('resize',broadcastHeight);
-  // Trust banner uses short titles on mobile, full titles on desktop — re-render on resize.
-  var _resizeT;window.addEventListener('resize',function(){clearTimeout(_resizeT);_resizeT=setTimeout(renderTrustBanner,150);});
-  document.addEventListener('DOMContentLoaded',broadcastHeight);
-  if(window.ResizeObserver){
-    var ro=new ResizeObserver(broadcastHeight);
-    ro.observe(document.body);
-  }else{
-    setInterval(broadcastHeight,1000);
-  }
-  // Fallback: after every image loads, content height grows — re-broadcast.
-  document.addEventListener('load',function(e){
-    if(e.target && e.target.tagName==='IMG')broadcastHeight();
-  },true);
-})();
-</script>
-</body>
-</html>
+        renderCa
