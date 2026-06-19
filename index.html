@@ -308,7 +308,8 @@ var QUICK_CATEGORIES=[
   {label:'Sweatshirts & Hoodies', chip:'Hoodies'},
   {label:'Outerwear',             chip:'Jackets'},
   {label:'Activewear',            chip:'Activewear'},
-  {label:'Bags',                  chip:'Bags'}
+  {label:'Bags',                  chip:'Bags'},
+  {label:'Drinkware',             chip:'Drinkware'}
 ];
 function renderTrustBanner(){
   var host=document.getElementById('trust-banner');if(!host)return;
@@ -412,6 +413,48 @@ var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products
 var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
 var ITEMS=[];
 
+// =====================================================================
+// MANUAL PRODUCTS — items NOT in the nightly SanMar products.json feed.
+// These live here in the page (and in alive-pricing-calculator.html) so the
+// nightly sync never overwrites them. Drinkware uses ALL-INCLUSIVE pricing
+// (bottle + logo) from a qty-break × color-count matrix instead of the
+// garment+decoration build-up used for apparel.
+//   _drinkware: true            -> triggers the drinkware pricing/UI path
+//   _dwMatrix[qtyBreak][colors] -> all-inclusive price per piece
+//   available_sizes:['Qty']     -> single quantity box (no size grid)
+// To add a drinkware item: copy a block, change name/colors/images and the
+// _dwMatrix numbers. Qty breaks are 24 / 48 / 72 / 144; colors are 1-4.
+// =====================================================================
+var MANUAL_PRODUCTS=[
+  {
+    style:'OWALA-FREESIP',
+    name:'Owala FreeSip 24oz Water Bottle',
+    brand:'Owala',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    _dwMatrix:{
+      24 :{1:52.72,2:56.28,3:59.84,4:63.40},
+      48 :{1:50.74,2:52.95,3:55.15,4:57.35},
+      72 :{1:48.08,2:49.83,3:51.59,4:53.34},
+      144:{1:45.42,2:46.72,3:48.03,4:49.33}
+    },
+    colors:[
+      {name:'Very Very Dark',  hex:'#1c1c1e', sku:'79444', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a3419a0a52c7920d8ddc932.png'}},
+      {name:'Shy Marshmallow', hex:'#efe2da', sku:'79471', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a341a4a04386d4d7642a732.png'}},
+      {name:'90s Kid',         hex:'#2bb3a3', sku:'79437', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a341a95a52c7920d8ddf542.png'}}
+    ]
+  }
+];
+// Lowest all-inclusive price for a drinkware item (144 qty / 1 color) — used as
+// the card "from" price and the calculator's base unit reference.
+function dwFromPrice(p){
+  if(!p||!p._dwMatrix)return null;
+  var lo=null;
+  for(var qb in p._dwMatrix){var row=p._dwMatrix[qb];for(var c in row){var v=row[c];if(lo===null||v<lo)lo=v;}}
+  return lo;
+}
+
 var CATEGORY_BUCKETS=[
   {label:'T-Shirts',              cats:['T-Shirts']},
   {label:'Long Sleeve',           cats:[],                         longSleeveFromName:true},
@@ -422,6 +465,7 @@ var CATEGORY_BUCKETS=[
   {label:'Outerwear',             cats:['Outerwear']},
   {label:'Headwear',              cats:['Caps']},
   {label:'Bags',                  cats:['Bags']},
+  {label:'Drinkware',             cats:['Drinkware']},
   {label:'Workwear & Safety',     cats:['Workwear','Personal Protection']},
   {label:'Bottoms',               cats:['Bottoms']},
   {label:'Women',                 cats:["Women's"]},
@@ -907,6 +951,12 @@ function renderGrid(){
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
     var dealBadge=(p&&p._dealBasicTee)?'<span class="card-badge">&#9733; Best Value</span>':'';
+    var isDw=!!(p&&p._drinkware);
+    var metaHtml=isDw
+      ? '<span class="card-meta-rush">All-Inclusive</span>'+
+        '<span class="card-meta-moq">Min 24 pcs &middot; bottle + logo included</span>'
+      : '<span class="card-meta-rush">Rush Available</span>'+
+        '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
            dealBadge+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
@@ -915,10 +965,7 @@ function renderGrid(){
              '<div class="card-brand">'+brand+'</div>'+
              '<div class="card-name">'+displayName+'</div>'+
              '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
-             '<div class="card-meta">'+
-               '<span class="card-meta-rush">Rush Available</span>'+
-               '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>'+
-             '</div>'+
+             '<div class="card-meta">'+metaHtml+'</div>'+
            '</div></a>';
   });
   // Industry spotlight banner: clickable brand promo after the first 6 items (page 1 only).
@@ -1029,6 +1076,12 @@ async function loadProducts(){
       var fromPrice=computeFromPrice(p,unitPrice);
       flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,fp:fromPrice,_full:p});
     }
+    // Append manual (non-SanMar) products, e.g. drinkware.
+    MANUAL_PRODUCTS.forEach(function(p){
+      var fc=(Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].name)?p.colors[0].name:'';
+      var fp=p._drinkware?dwFromPrice(p):(p.p||null);
+      flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:fc,p:fp,fp:fp,_full:p});
+    });
     ITEMS=flat;
     buildHexLookup(rows);
     // Apply initial filter from ?cat= URL param (set by Hostinger embed from parent hash).
@@ -1058,6 +1111,22 @@ async function loadProducts(){
     renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
+    // Catalog fetch failed — still surface manual products (drinkware) so they
+    // remain shoppable even when the SanMar feed is unreachable.
+    try{
+      var mflat=[];
+      MANUAL_PRODUCTS.forEach(function(p){
+        var fc=(Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].name)?p.colors[0].name:'';
+        var fp=p._drinkware?dwFromPrice(p):(p.p||null);
+        mflat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:fc,p:fp,fp:fp,_full:p});
+      });
+      if(mflat.length){
+        ITEMS=mflat;
+        renderTrustBanner();updateBrandBanner();
+        renderCategoryList();renderBrandList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
+        return;
+      }
+    }catch(e2){}
     var host=document.getElementById('page-grid');
     if(host)host.innerHTML='<div class="empty">We couldn&rsquo;t load the catalog. <a href="javascript:location.reload()">Retry</a> or visit our <a href="alive-pricing-calculator.html">price calculator</a> directly.</div>';
   }
