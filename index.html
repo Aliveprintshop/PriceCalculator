@@ -231,8 +231,9 @@ a:hover{text-decoration:underline;}
       <img alt="" loading="lazy">
     </div>
 
-    <!-- TRUST BANNER (swap content via the BANNER_ITEMS array in JS for promos) -->
-    <div class="trust-banner" id="trust-banner"></div>
+    <!-- TRUST BANNER removed 2026-06-19 (3 trust tiles taken off the product page).
+         BANNER_ITEMS + renderTrustBanner left intact but inert; re-add the
+         trust-banner host div here to restore. -->
 
     <!-- CATEGORY CHIP ROW (mobile only) — horizontal scrolling quick-nav above search -->
     <div class="cat-chip-row" id="cat-chip-row"></div>
@@ -368,7 +369,7 @@ function updateFilterBadge(){
 // Image format: any web-displayable URL. Recommended aspect ratio ~3:1
 // (e.g. 1400×450 or 940×285).
 // =====================================================================
-var DEFAULT_BANNER='https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/alive-print-shop-made-real-dDmCEEKDXwYHZamu.png';
+var DEFAULT_BANNER='https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a357bc76a6dd1b69a3127bf.png';
 // Industry-specific hero banners — override the default when a "Shop By Industry"
 // filter is active (e.g. arriving via #construction-trades-thank-you). Keyed by the
 // exact INDUSTRY_LISTS label. These are short/wide (~940x150) so they take less space.
