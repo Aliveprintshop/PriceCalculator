@@ -418,6 +418,12 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .r-form-field{display:flex;flex-direction:column;}
 
 </style>
+<!-- Uploadcare File Uploader (artwork uploads) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
+<script type="module">
+  import * as UC from "https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js";
+  UC.defineComponents(UC);
+</script>
 </head>
 <body>
 
@@ -578,6 +584,13 @@ textarea.of-input{resize:vertical;min-height:70px;}
         </div>
         <div class="r-form-fields">
           <div class="r-form-field">
+            <label class="r-form-lbl">Upload Artwork (optional)</label>
+            <uc-config ctx-name="art-d" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+            <uc-file-uploader-regular ctx-name="art-d"></uc-file-uploader-regular>
+            <uc-upload-ctx-provider ctx-name="art-d" id="uc-ctx-d"></uc-upload-ctx-provider>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Logos &amp; artwork &mdash; PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP (up to 25MB each). Or paste a link below.</div>
+          </div>
+          <div class="r-form-field">
             <label class="r-form-lbl">Artwork Link (optional)</label>
             <input class="r-form-input" id="of-artwork-link" type="url" placeholder="Paste Dropbox, Drive, or WeTransfer link">
             <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Optional — you can also share artwork later. Each item in your cart can have its own artwork link.</div>
@@ -735,6 +748,13 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="mob-step-head"><div class="mob-step-num">7</div><div><div class="mob-step-title">Add to your cart</div><div class="mob-step-hint">No payment now &mdash; we send a quote</div></div></div>
       <div id="mob-of-form">
         <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px;">
+          <div>
+            <label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Upload Artwork (optional)</label>
+            <uc-config ctx-name="art-m" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+            <uc-file-uploader-regular ctx-name="art-m"></uc-file-uploader-regular>
+            <uc-upload-ctx-provider ctx-name="art-m" id="uc-ctx-m"></uc-upload-ctx-provider>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP &mdash; up to 25MB each.</div>
+          </div>
           <div>
             <label style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;">Artwork Link (optional)</label>
             <input id="mob-of-artwork-link" type="url" placeholder="Paste Dropbox, Drive, or WeTransfer link" style="width:100%;padding:11px 12px;font-size:14px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;box-sizing:border-box;">
@@ -2445,6 +2465,23 @@ function submitMobOrder(){addToCartFromForm('mob');}
 // Cart — snapshot the current calculator config and push to localStorage.
 // Customer info collection is deferred to the /cart page (one form, all items).
 // =====================================================================
+// === ARTWORK UPLOADS (Uploadcare) ===
+var ARTWORK_D=[], ARTWORK_M=[];
+function _ucFiles(state){
+  if(!state)return [];
+  var arr=state.successEntries||state.allEntries||[];
+  return arr.filter(function(x){return x&&x.cdnUrl;}).map(function(x){
+    return {name:(x.name||(x.fileInfo&&x.fileInfo.originalFilename)||'artwork'), url:x.cdnUrl};
+  });
+}
+function initArtworkUploaders(){
+  var d=document.getElementById('uc-ctx-d');
+  if(d&&!d._wired){d._wired=1;d.addEventListener('change',function(e){ARTWORK_D=_ucFiles(e.detail);});}
+  var m=document.getElementById('uc-ctx-m');
+  if(m&&!m._wired){m._wired=1;m.addEventListener('change',function(e){ARTWORK_M=_ucFiles(e.detail);});}
+}
+if(document.readyState!=='loading')initArtworkUploaders();else document.addEventListener('DOMContentLoaded',initArtworkUploaders);
+
 function captureCartItem(source){
   if(!sel)return{ok:false,msg:'Pick a product before adding to cart.'};
   var qty=getQty(),minQ=getMinQty();
@@ -2490,6 +2527,7 @@ function captureCartItem(source){
     rush:rush,
     turnaroundLabel:taLabel,
     artworkLink:artworkLink,
+    artworkFiles:(source==='mob'?ARTWORK_M:ARTWORK_D).slice(),
     notes:notes,
     unitPrice:pp,
     sizeUpchargeTotal:upTot,
@@ -2540,6 +2578,7 @@ function dismissAddedConfirmation(source){
   if(s)s.style.display='none';
   if(f)f.style.display='block';
   // Clear per-item inputs so they don't carry over
+  ARTWORK_D=[];ARTWORK_M=[];
   ['of-artwork-link','of-notes','mob-of-artwork-link','mob-of-notes'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });

@@ -360,6 +360,7 @@ function render(){
           '<div class="item-artwork-label">Artwork link (optional)</div>'+
           '<input class="item-artwork-input" type="url" placeholder="Paste Dropbox / Drive / WeTransfer link" data-id="'+esc(it.id)+'" data-field="artworkLink" value="'+esc(it.artworkLink||'')+'" oninput="updateField(this)">'+
         '</div>'+
+        (Array.isArray(it.artworkFiles)&&it.artworkFiles.length?'<div class="item-artwork"><div class="item-artwork-label">Uploaded artwork ('+it.artworkFiles.length+')</div><div style="display:flex;flex-direction:column;gap:3px;">'+it.artworkFiles.map(function(f){return '<a href="'+esc(f.url)+'" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue);word-break:break-all;">&#128206; '+esc(f.name||'artwork')+'</a>';}).join('')+'</div></div>':'')+
         (it.notes?'<div style="font-size:12px;color:var(--text2);"><span style="font-family:\'Montserrat\',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);">Notes:</span> '+esc(it.notes)+'</div>':'')+
         '<div class="item-prices">'+
           '<div class="item-prices-left"><strong>'+fmt(it.unitPrice||0)+'</strong>/pc × '+(it.qty||0)+(parseFloat(it.sizeUpchargeTotal)>0?'<br><span style="color:#b95900;font-weight:600;">+ '+fmt(it.sizeUpchargeTotal)+' 2XL+ upcharge</span>':'')+(it.promoCodeAtAdd?'<br>'+promoTag:'')+'</div>'+
@@ -462,6 +463,7 @@ function buildPayload(form){
       ' — '+it.turnaroundLabel+
       ' — Unit '+fmt(it.unitPrice)+', Line '+fmt(it.lineTotal)+
       (it.artworkLink?' — Artwork: '+it.artworkLink:'')+
+      (it.artworkFiles&&it.artworkFiles.length?' — Artwork files: '+it.artworkFiles.map(function(f){return f.url;}).join(' | '):'')+
       (it.notes?' — Notes: '+it.notes:'')+
       (it.promoCodeAtAdd?' — Promo: '+it.promoCodeAtAdd:'');
   }).join('\n');
@@ -480,6 +482,7 @@ function buildPayload(form){
     lines.push('  Price: '+fmt(it.unitPrice)+'/unit, '+fmt(it.lineTotal)+' line total');
     if(it.promoCodeAtAdd) lines.push('  Promo: '+it.promoCodeAtAdd);
     if(it.artworkLink) lines.push('  Artwork: '+it.artworkLink);
+    if(it.artworkFiles&&it.artworkFiles.length) lines.push('  Artwork files: '+it.artworkFiles.map(function(f){return f.url;}).join(' | '));
     if(it.notes) lines.push('  Notes: '+it.notes);
     return lines.join('\n');
   }).join('\n\n');
