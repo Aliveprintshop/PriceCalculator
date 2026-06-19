@@ -1181,7 +1181,7 @@ async function loadProducts(){
     var flat=[];
     var EXCLUDE_NAME=/\b(socks?|gloves?|mittens?)\b/i;
     // Per-style blacklist — add SanMar style numbers here to hide them from the browse grid.
-    var EXCLUDE_STYLES={'CTA202':1,'CTA207':1,'CTA267':1,'CT104485':1,'CS820':1,'CS800':1};
+    var EXCLUDE_STYLES={'CTA202':1,'CTA207':1,'CTA267':1,'CT104485':1,'CS820':1,'CS800':1,'LACE':1};
     // Exact-name blacklist (case-insensitive). For custom/local-supplier items where there's no style number to filter on.
     var EXCLUDE_NAME_EXACT={'trucker hat - local supplier':1};
     for(var i=0;i<rows.length;i++){

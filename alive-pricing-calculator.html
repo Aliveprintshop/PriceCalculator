@@ -2586,10 +2586,13 @@ async function loadProducts(){
     var rows = Array.isArray(data) ? data : (data.products || []);
 
     var flat = [];
+    // Styles manually removed from the calculator (search + browse).
+    var CALC_EXCLUDE_STYLES={"LACE":1};
     for(var i=0; i<rows.length; i++){
       var p = rows[i];
       if(!p || !p.style) continue;
       if(p.discontinued === true) continue; // safety: hide if pipeline missed it
+      if(CALC_EXCLUDE_STYLES[String(p.style).toUpperCase()]) continue; // manually removed
 
       // Correct phantom-base pricing so only 2XL+ carry an upcharge (see fn).
       normalizeProductUpcharges(p);
