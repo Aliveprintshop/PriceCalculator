@@ -2750,7 +2750,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
 // match — feeding back into the next broadcast and causing runaway growth.
 (function(){
   if(window.self===window.top)return; // not in iframe
-  var BUFFER=40;
+  var BUFFER=12;
+  // Hysteresis dead-band: ignore height changes smaller than this. A scrollbar
+  // appearing/disappearing (~15-17px) or a sub-pixel reflow must NOT trigger a
+  // rebroadcast, otherwise the parent resize -> reflow -> remeasure cycle can
+  // ratchet the iframe taller and taller on load (the "growing blank" bug).
+  var DEADBAND=24;
   var _lastH=0;
   var _t=null;
   function measure(){
@@ -2759,7 +2764,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
   function send(){
     try{
       var h=measure();
-      if(h===_lastH)return;
+      if(Math.abs(h-_lastH)<=DEADBAND)return;
       _lastH=h;
       var msg={type:'alive-resize',height:h,page:'calculator'};
       // Direct parent (Hostinger embed sandbox iframe).
