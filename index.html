@@ -1231,4 +1231,75 @@ async function loadProducts(){
       if(mflat.length){
         ITEMS=mflat;
         renderTrustBanner();updateBrandBanner();
-        renderCa
+        renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
+        return;
+      }
+    }catch(e2){}
+    var host=document.getElementById('page-grid');
+    if(host)host.innerHTML='<div class="empty">We couldn&rsquo;t load the catalog. <a href="javascript:location.reload()">Retry</a> or visit our <a href="alive-pricing-calculator.html">price calculator</a>.</div>';
+  }
+}
+
+loadProducts();
+
+// Listen for category route changes pushed from the parent (e.g. back/forward
+// button on aliveprintshop.com) as {type:'alive-route-set', slug:'...'}.
+window.addEventListener('message',function(e){
+  var d=e&&e.data;
+  if(!d||d.type!=='alive-route-set')return;
+  var slug=(d.slug||'').toLowerCase().trim();
+  _industry=null;_cats.clear();_brands.clear();_colors.clear();
+  if(slug){
+    var label=slugToBucketLabel(slug);
+    if(label){_cats.add(label);}
+    else{var ind=slugToIndustryLabel(slug);if(ind){_industry=ind;}}
+  }
+  _page=1;
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
+},false);
+
+// Iframe auto-resize: broadcast content height so the parent can size the iframe.
+// IMPORTANT: measure ONLY document.body (never documentElement) — on a child
+// iframe documentElement grows with the iframe the parent sets, causing a
+// runaway height-feedback loop.
+(function(){
+  if(window.self===window.top)return;
+  var BUFFER=40;
+  var _lastH=0;
+  var _t=null;
+  function measure(){
+    return Math.max(document.body.scrollHeight, document.body.offsetHeight)+BUFFER;
+  }
+  function send(){
+    try{
+      var h=measure();
+      if(h===_lastH)return;
+      _lastH=h;
+      var msg={type:'alive-resize',height:h,page:'products'};
+      window.parent.postMessage(msg,'*');
+      if(window.top && window.top!==window.parent){
+        try{window.top.postMessage(msg,'*');}catch(e){}
+      }
+    }catch(e){}
+  }
+  function broadcastHeight(){
+    if(_t)clearTimeout(_t);
+    _t=setTimeout(send,50);
+  }
+  window.aliveBroadcastHeight=broadcastHeight;
+  window.addEventListener('load',broadcastHeight);
+  window.addEventListener('resize',broadcastHeight);
+  document.addEventListener('DOMContentLoaded',broadcastHeight);
+  if(window.ResizeObserver){
+    var ro=new ResizeObserver(broadcastHeight);
+    ro.observe(document.body);
+  }else{
+    setInterval(broadcastHeight,1000);
+  }
+  document.addEventListener('load',function(e){
+    if(e.target && e.target.tagName==='IMG')broadcastHeight();
+  },true);
+})();
+</script>
+</body>
+</html>
