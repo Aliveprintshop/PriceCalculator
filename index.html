@@ -651,6 +651,12 @@ function getColorBuckets(it){
   }
   it._colorBuckets=set; return set;
 }
+// Bucket key for a SINGLE color name (first match), or null.
+function colorBucketOf(name){
+  if(!name)return null;
+  for(var i=0;i<COLOR_BUCKETS.length;i++){ if(COLOR_BUCKETS[i].re.test(name))return COLOR_BUCKETS[i].key; }
+  return null;
+}
 function _colorText(it){var p=it._full;if(!p||!Array.isArray(p.colors))return '';var s='';for(var i=0;i<p.colors.length;i++){s+=' '+(p.colors[i].name||'');}return s;}
 // Searchable haystack for a product: brand, style, name, subcategory, raw color
 // names, AND mapped color-bucket keys (so "gray" finds a "Charcoal" item).
@@ -1049,9 +1055,21 @@ function renderGrid(){
   var pageRows=rows.slice(startIdx,startIdx+_perPage);
   var cards=pageRows.map(function(it){
     var p=it._full;
+    // When color filters are active, show the image for the FIRST color that
+    // matches a selected bucket (e.g. select Black -> show the black garment).
     var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
+    if(_colors.size>0&&Array.isArray(p.colors)){
+      for(var _ci=0;_ci<p.colors.length;_ci++){
+        var _bk=colorBucketOf(p.colors[_ci].name||'');
+        if(_bk&&_colors.has(_bk)){firstColor=p.colors[_ci];break;}
+      }
+    }
     var imgs=firstColor&&firstColor.images?firstColor.images:{};
     var src=imgs.front_model||imgs.front_flat||'';
+    // Fallback: if the matched color has no image, use the product's first color.
+    if(!src&&Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].images){
+      var _fi=p.colors[0].images;src=_fi.front_model||_fi.front_flat||'';
+    }
     var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
