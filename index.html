@@ -439,7 +439,13 @@ function updateBrandBanner(){
 }
 
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
-var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007"];
+var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007","ST350","3001CVC","BC3200"];
+// Default-grid ordering for items NOT in POPULAR (no user sort / no industry mode).
+// Featured brands float up in this order; lower number = higher on the page.
+// Anything not listed sorts alphabetically after these.
+var BRAND_RANK={"Next Level Apparel":1,"Comfort Colors":2,"Sport-Tek":3,"Bella + Canvas":4,"Carhartt":5};
+// Brands forced to the very bottom of the default grid.
+var BRAND_LAST={"A4":1};
 var ITEMS=[];
 
 // =====================================================================
@@ -1051,6 +1057,12 @@ function renderGrid(){
     var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
     if(ap>-1&&bp>-1)return ap-bp;
     if(ap>-1)return -1;if(bp>-1)return 1;
+    // A4 always sinks to the very bottom of the default grid.
+    var aLast=BRAND_LAST[a.b]?1:0,bLast=BRAND_LAST[b.b]?1:0;
+    if(aLast!==bLast)return aLast-bLast;
+    // Featured brands lead the remaining items, then everything else alpha.
+    var ar=BRAND_RANK[a.b]||99,br2=BRAND_RANK[b.b]||99;
+    if(ar!==br2)return ar-br2;
     return (a.b+a.n).localeCompare(b.b+b.n);
   });
   // Update count display
