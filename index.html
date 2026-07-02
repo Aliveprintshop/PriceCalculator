@@ -446,6 +446,21 @@ var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007","
 var BRAND_RANK={"Next Level Apparel":1,"Comfort Colors":2,"Sport-Tek":3,"Bella + Canvas":4,"Carhartt":5};
 // Brands forced to the very bottom of the default grid.
 var BRAND_LAST={"A4":1};
+// ---- Carhartt brand-page ordering ----
+// Applies only when comparing two Carhartt items (i.e. the Carhartt brand view).
+// 1) Explicit best-sellers pin to the top, in exactly this order.
+// 2) Then all apparel (t-shirts, long sleeves, sweatshirts, jackets, pants...).
+// 3) Then hats & accessories (caps, bags, accessories, protection) come last.
+// To reorder the pinned items or add another, edit CARHARTT_PINNED.
+var CARHARTT_PINNED=["CT106923","CT107106","CT106972","CT106577","CT104597","CT106899","CT107107","CT106868"];
+var CARHARTT_LAST_CATS={"Caps":1,"Accessories":1,"Bags":1,"Personal Protection":1};
+function carharttRank(it){
+  var pi=CARHARTT_PINNED.indexOf((it.s||'').toUpperCase());
+  if(pi>-1)return pi;                       // 0..N-1: pinned best-sellers, exact order
+  var cat=(it._full&&it._full.category)||'';
+  if(CARHARTT_LAST_CATS[cat])return 2000;   // hats & accessories last
+  return 1000;                              // apparel in the middle
+}
 var ITEMS=[];
 
 // =====================================================================
@@ -1054,6 +1069,12 @@ function renderGrid(){
     var pa=isPriority(a),pb=isPriority(b);
     if(pa&&!pb)return -1;
     if(pb&&!pa)return 1;
+    // Carhartt brand view: pinned best-sellers, then apparel, then hats/accessories.
+    if(a.b==='Carhartt'&&b.b==='Carhartt'){
+      var cra=carharttRank(a),crb=carharttRank(b);
+      if(cra!==crb)return cra-crb;
+      return (a.n||'').localeCompare(b.n||'');
+    }
     var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
     if(ap>-1&&bp>-1)return ap-bp;
     if(ap>-1)return -1;if(bp>-1)return 1;
