@@ -15,6 +15,20 @@
   --r:8px;--r-lg:14px;--r-xl:20px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+/* ── Product Details (fit / fabric / features) ── */
+.prod-details{margin-top:10px;}
+.pd-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.pd-chip{display:inline-block;background:var(--blue-light);color:var(--blue-dark);border:1px solid var(--blue-mid);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:600;line-height:1.4;}
+.pd-chip strong{font-weight:800;}
+.pd-details{border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);overflow:hidden;}
+.pd-details>summary{list-style:none;cursor:pointer;padding:8px 12px;font-size:12.5px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px;user-select:none;}
+.pd-details>summary::-webkit-details-marker{display:none;}
+.pd-details>summary::before{content:'▸';font-size:10px;color:var(--text3);transition:transform .15s;}
+.pd-details[open]>summary::before{transform:rotate(90deg);}
+.pd-body{padding:2px 14px 12px;}
+.pd-list{margin:0;padding-left:18px;max-height:220px;overflow:auto;}
+.pd-list li{font-size:12px;color:var(--text2);line-height:1.55;margin:2px 0;}
+.pd-text{font-size:12px;color:var(--text2);line-height:1.55;max-height:220px;overflow:auto;}
 body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
 
 /* ── DESKTOP LAYOUT ── */
@@ -465,6 +479,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-name" id="prod-card-name"></div>
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="swatch-row" id="swatch-row"></div>
+          <div class="prod-details" id="prod-details" style="display:none;"></div>
           <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;">&#9998; Browse / Change Item</a>
         </div>
       </div>
@@ -640,6 +655,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="mob-prod-card-brand" id="mob-prod-card-brand"></div>
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
           <div class="mob-prod-card-style" id="mob-prod-card-style"></div>
+          <div class="prod-details" id="mob-prod-details" style="display:none;"></div>
           <a class="mob-prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;">&#9998; Browse / Change Item</a>
         </div>
       </div>
@@ -1152,6 +1168,39 @@ function buildDDFor(inputEl, ddEl2){
 
 function setFi(rows,idx){rows.forEach(function(r,i){r.classList.toggle('focused',i===idx);if(i===idx)r.scrollIntoView({block:'nearest'});});}
 
+// Build the "Product Details" block (fit / fabric chips + feature list) from
+// SanMar's run-on description. The feed concatenates feature bullets with no
+// separators, so we best-effort re-split on capital-letter / fabric-ratio
+// boundaries. Not perfect on every product, but far more readable than raw.
+function formatProductDetails(rawDesc){
+  var desc=String(rawDesc||'').replace(/\s+/g,' ').trim();
+  if(!desc)return '';
+  var esc=function(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var SEP=String.fromCharCode(1);
+  // Split only on GLUED boundaries — a capital letter or a fabric ratio stuck
+  // directly (no space) to a lowercase letter or ')'. This cleanly breaks up
+  // SanMar's mashed-together feature blobs (e.g. "collarTaped", "cotton99/1").
+  // Descriptions that already use spaces stay as one paragraph rather than being
+  // wrongly chopped (avoids fragmenting color lists and prose sentences).
+  var s=desc.replace(/([a-z\)])([A-Z])/g,'$1'+SEP+'$2')
+            .replace(/([a-z\)])(\d{1,3}\/\d{1,3}\b)/g,'$1'+SEP+'$2');
+  var parts=s.split(SEP).map(function(x){return x.trim();}).filter(Boolean);
+  var clean=parts.join(' ');
+  var chips='';
+  var mFit=clean.match(/\b(Classic|Retail|Relaxed|Slim|Modern|Athletic|Tailored|Standard|Semi-fitted|Fitted|Contemporary|Regular|Loose|Boxy)\s+fit\b/i);
+  if(mFit){var ff=mFit[1];ff=ff.charAt(0).toUpperCase()+ff.slice(1).toLowerCase();chips+='<span class="pd-chip"><strong>Fit:</strong> '+ff+'</span>';}
+  var mWt=clean.match(/(\d+(?:\.\d+)?)\s*-?\s*(?:ounce|oz)\b/i);
+  if(mWt)chips+='<span class="pd-chip"><strong>Fabric:</strong> '+mWt[1]+' oz</span>';
+  var body;
+  if(parts.length>1){
+    body='<ul class="pd-list">'+parts.map(function(p){return '<li>'+esc(p)+'</li>';}).join('')+'</ul>';
+  }else{
+    body='<p class="pd-text">'+esc(desc)+'</p>';
+  }
+  return (chips?'<div class="pd-chips">'+chips+'</div>':'')+
+    '<details class="pd-details"><summary>Product details</summary><div class="pd-body">'+body+'</div></details>';
+}
+
 function pickItem(s){
   var item=null;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].s===s){item=ITEMS[i];break;}}
   if(!item)return;sel=item;
@@ -1197,6 +1246,10 @@ function pickItem(s){
   var mpcb=document.getElementById('mob-prod-card-brand');if(mpcb)mpcb.innerHTML=item.b+_bvBadge;
   var mpcn=document.getElementById('mob-prod-card-name');if(mpcn)mpcn.textContent=cleanName;
   var mpcs=document.getElementById('mob-prod-card-style');if(mpcs)mpcs.textContent='Style #'+item.s;
+  // Product Details (fit / fabric / features) from the SanMar description.
+  var _pdHtml=(live&&live.description)?formatProductDetails(live.description):'';
+  var _pdEl=document.getElementById('prod-details');if(_pdEl){_pdEl.innerHTML=_pdHtml;_pdEl.style.display=_pdHtml?'block':'none';}
+  var _mpdEl=document.getElementById('mob-prod-details');if(_mpdEl){_mpdEl.innerHTML=_pdHtml;_mpdEl.style.display=_pdHtml?'block':'none';}
   // Hide mobile item step
   var msn2=document.getElementById('msn2');if(msn2){var ms=msn2.closest('.mob-step');if(ms)ms.style.display='none';}
   // Reset to front view, render swatches and view pills
@@ -2895,85 +2948,4 @@ function _browseFiltered(){
   });
 }
 function renderBrowseGrid(){
-  var host=document.getElementById('browse-grid');if(!host)return;
-  var rows=_browseFiltered();
-  if(!rows.length){
-    host.innerHTML='<div class="browse-empty" style="grid-column:1/-1;">No products match your search in this category.</div>';
-    return;
-  }
-  // Sort by popularity first (POPULAR list), then alpha
-  rows.sort(function(a,b){
-    var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
-    if(ap>-1&&bp>-1)return ap-bp;
-    if(ap>-1)return -1;if(bp>-1)return 1;
-    return (a.b+a.n).localeCompare(b.b+b.n);
-  });
-  host.innerHTML=rows.map(function(it){
-    var p=it._full;
-    var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
-    var imgs=firstColor&&firstColor.images?firstColor.images:{};
-    var src=imgs.front_model||imgs.front_flat||'';
-    var name=(it.n||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
-    var brand=(it.b||'').replace(/"/g,'&quot;');
-    return '<div class="browse-card" onclick="pickFromBrowse(\''+it.s.replace(/'/g,"\\'")+'\')">'+
-           '<img class="browse-card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
-           '<div class="browse-card-info">'+
-             '<div class="browse-card-brand">'+brand+'</div>'+
-             '<div class="browse-card-name">'+name+'</div>'+
-             '<div class="browse-card-price">from <strong>$'+(it.p).toFixed(2)+'</strong>/pc</div>'+
-           '</div></div>';
-  }).join('');
-}
-function setBrowseCategory(cat){
-  _browseCategory=cat;
-  _browseBrand='All Brands';
-  _browseSearch='';
-  var s=document.getElementById('browse-search');if(s)s.value='';
-  renderBrowseChips();
-  renderBrowseBrandChips();
-  renderBrowseGrid();
-  var body=document.querySelector('.browse-body');if(body)body.scrollTop=0;
-}
-function onBrowseSearch(){
-  var s=document.getElementById('browse-search');
-  _browseSearch=s?s.value:'';
-  renderBrowseGrid();
-}
-function openBrowseModal(){
-  // Pick a sensible default category if T-Shirts isn't present (it always is in the SanMar catalog, but be safe)
-  var cats=_browseCatList();
-  if(!cats.some(function(c){return c.name===_browseCategory;})&&cats.length){
-    _browseCategory=cats[0].name;
-  }
-  _browseSearch='';var ss=document.getElementById('browse-search');if(ss)ss.value='';
-  _browseBrand='All Brands';
-  renderBrowseChips();
-  renderBrowseBrandChips();
-  renderBrowseGrid();
-  var ov=document.getElementById('browse-overlay');if(ov)ov.classList.add('show');
-  document.body.style.overflow='hidden';
-  setTimeout(function(){if(ss&&window.innerWidth>820)ss.focus();},50);
-}
-function closeBrowseModal(){
-  var ov=document.getElementById('browse-overlay');if(ov)ov.classList.remove('show');
-  document.body.style.overflow='';
-}
-function pickFromBrowse(style){
-  closeBrowseModal();
-  pickItem(style);
-}
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    var ov=document.getElementById('browse-overlay');
-    if(ov&&ov.classList.contains('show'))closeBrowseModal();
-  }
-});
-</script>
-<!-- Browse modal removed: customers browse from index.html and deep-link with ?style=XXX -->
-<!-- Image lightbox overlay (hidden by default) -->
-<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()" role="dialog" aria-label="Product image enlarged">
-  <button type="button" class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>
-  <img class="lightbox-img" id="lightbox-img" src="" alt="">
-</div>
-</body>
-</html>
+  var ho
