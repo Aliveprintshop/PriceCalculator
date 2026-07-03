@@ -2948,4 +2948,85 @@ function _browseFiltered(){
   });
 }
 function renderBrowseGrid(){
-  var ho
+  var host=document.getElementById('browse-grid');if(!host)return;
+  var rows=_browseFiltered();
+  if(!rows.length){
+    host.innerHTML='<div class="browse-empty" style="grid-column:1/-1;">No products match your search in this category.</div>';
+    return;
+  }
+  // Sort by popularity first (POPULAR list), then alpha
+  rows.sort(function(a,b){
+    var ap=POPULAR.indexOf(a.s.toUpperCase()),bp=POPULAR.indexOf(b.s.toUpperCase());
+    if(ap>-1&&bp>-1)return ap-bp;
+    if(ap>-1)return -1;if(bp>-1)return 1;
+    return (a.b+a.n).localeCompare(b.b+b.n);
+  });
+  host.innerHTML=rows.map(function(it){
+    var p=it._full;
+    var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
+    var imgs=firstColor&&firstColor.images?firstColor.images:{};
+    var src=imgs.front_model||imgs.front_flat||'';
+    var name=(it.n||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+    var brand=(it.b||'').replace(/"/g,'&quot;');
+    return '<div class="browse-card" onclick="pickFromBrowse(\''+it.s.replace(/'/g,"\\'")+'\')">'+
+           '<img class="browse-card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+           '<div class="browse-card-info">'+
+             '<div class="browse-card-brand">'+brand+'</div>'+
+             '<div class="browse-card-name">'+name+'</div>'+
+             '<div class="browse-card-price">from <strong>$'+(it.p).toFixed(2)+'</strong>/pc</div>'+
+           '</div></div>';
+  }).join('');
+}
+function setBrowseCategory(cat){
+  _browseCategory=cat;
+  _browseBrand='All Brands';
+  _browseSearch='';
+  var s=document.getElementById('browse-search');if(s)s.value='';
+  renderBrowseChips();
+  renderBrowseBrandChips();
+  renderBrowseGrid();
+  var body=document.querySelector('.browse-body');if(body)body.scrollTop=0;
+}
+function onBrowseSearch(){
+  var s=document.getElementById('browse-search');
+  _browseSearch=s?s.value:'';
+  renderBrowseGrid();
+}
+function openBrowseModal(){
+  // Pick a sensible default category if T-Shirts isn't present (it always is in the SanMar catalog, but be safe)
+  var cats=_browseCatList();
+  if(!cats.some(function(c){return c.name===_browseCategory;})&&cats.length){
+    _browseCategory=cats[0].name;
+  }
+  _browseSearch='';var ss=document.getElementById('browse-search');if(ss)ss.value='';
+  _browseBrand='All Brands';
+  renderBrowseChips();
+  renderBrowseBrandChips();
+  renderBrowseGrid();
+  var ov=document.getElementById('browse-overlay');if(ov)ov.classList.add('show');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){if(ss&&window.innerWidth>820)ss.focus();},50);
+}
+function closeBrowseModal(){
+  var ov=document.getElementById('browse-overlay');if(ov)ov.classList.remove('show');
+  document.body.style.overflow='';
+}
+function pickFromBrowse(style){
+  closeBrowseModal();
+  pickItem(style);
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    var ov=document.getElementById('browse-overlay');
+    if(ov&&ov.classList.contains('show'))closeBrowseModal();
+  }
+});
+</script>
+<!-- Browse modal removed: customers browse from index.html and deep-link with ?style=XXX -->
+<!-- Image lightbox overlay (hidden by default) -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()" role="dialog" aria-label="Product image enlarged">
+  <button type="button" class="lightbox-close" onclick="closeLightbox(event)" aria-label="Close">&times;</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+</div>
+</body>
+</html>
