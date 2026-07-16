@@ -80,6 +80,7 @@ jobs:
           cp products.json _site/products.json
           cp alive-pricing-calculator.html _site/alive-pricing-calculator.html
           cp cart.html _site/cart.html
+          cp alive-pricing-calculator-v2.html _site/alive-pricing-calculator-v2.html
           cat > _site/index.html <<'EOF'
           <!doctype html>
           <meta charset="utf-8">
