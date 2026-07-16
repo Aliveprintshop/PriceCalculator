@@ -70,6 +70,7 @@ body{margin:0;padding:0;}
 .imprint-loc-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);}
 .imprint-dots{display:flex;gap:3px;min-height:9px;}
 .imp-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);border:1px solid rgba(0,0,0,0.12);}
+.imp-fc-label{font-size:10px;font-weight:700;letter-spacing:0.02em;color:var(--blue);background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e,#3b82f6,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .imprint-select{width:150px;flex-shrink:0;padding:9px 12px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;cursor:pointer;}
 .imprint-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
 .size-section.flash{animation:flashHi 1.1s ease;}
@@ -518,8 +519,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
   <div class="left">
     <div class="steps-grid">
 
-    <!-- Step 1: Decoration -->
-    <div class="step-block full">
+    <!-- Step 1: Decoration (HIDDEN — method is now inferred per imprint location. Buttons kept in DOM so setDeco/renderDecoTabs don't error) -->
+    <div class="step-block full" style="display:none;">
       <div class="step-head"><div class="step-num">1</div><div><div class="step-title">How are you decorating?</div><div class="step-hint">Choose your print method</div></div></div>
       <div class="deco-tabs">
         <button class="deco-tab active" id="deco-sp" onclick="setDeco('sp')"><svg width="13" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:middle;"><path d="M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0c0-5-7-13-7-13z" fill="currentColor" opacity="0.9"/></svg> Screen Printing<span class="deco-badge">24+ pcs</span></button>
@@ -532,7 +533,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
         <!-- Step 2: Item -->
     <div class="step-block full">
-      <div class="step-head"><div class="step-num" id="sn2">2</div><div><div class="step-title">What are you printing on?</div><div class="step-hint">Search or pick from popular styles</div></div></div>
+      <div class="step-head" style="display:none;"><div class="step-num" id="sn2">2</div><div><div class="step-title">What are you printing on?</div><div class="step-hint">Search or pick from popular styles</div></div></div>
       <!-- Product Card (shown after item selected) -->
       <div class="prod-card" id="prod-card">
         <div class="prod-card-imgcol">
@@ -630,7 +631,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="promo-msg" id="promo-msg">Invalid code</div>
         </div>
       </div>
-      <div class="trust-badges">
+      <div class="trust-badges" style="display:none;">
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6l-3 3V7a2 2 0 0 1 1-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 9h8M7 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="trust-title">No Setup Fees</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">No screens, no plates, no hidden setup charges &mdash; the price you see is the price you pay.</div></div>
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="18" r="4" fill="var(--blue)" stroke="white" stroke-width="1.2"/><path d="M16.5 18l1 1 2-2" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="trust-title">Proof Before We Print</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">You sign off before anything goes to print.</div></div>
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 4.8 5.6.8-4 3.9.9 5.5L12 14.4l-4.9 2.6.9-5.5-4-3.9 5.6-.8L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="trust-title">100% Print Guarantee</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">If it&rsquo;s not right, we make it right.</div></div>
@@ -681,8 +682,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
   </div>
   <div class="mob-content">
 
-    <!-- Mob: Decoration -->
-    <div class="mob-step">
+    <!-- Mob: Decoration (HIDDEN — method inferred per imprint location. Buttons kept in DOM) -->
+    <div class="mob-step" style="display:none;">
       <div class="mob-step-head"><div class="mob-step-num">1</div><div><div class="mob-step-title">How are you decorating?</div><div class="mob-step-hint">Choose your print method</div></div></div>
       <div class="mob-deco-tabs">
         <button class="mob-deco-tab active" id="mob-deco-sp" onclick="setDeco('sp')"><svg width="13" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:middle;"><path d="M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0c0-5-7-13-7-13z" fill="currentColor" opacity="0.9"/></svg> Screen Printing</button>
@@ -711,7 +712,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
         <!-- M2: Item -->
     <div class="mob-step">
-      <div class="mob-step-head"><div class="mob-step-num" id="msn2">2</div><div><div class="mob-step-title">What are you printing on?</div><div class="mob-step-hint">Search or tap a popular style</div></div></div>
+      <div class="mob-step-head" style="display:none;"><div class="mob-step-num" id="msn2">2</div><div><div class="mob-step-title">What are you printing on?</div><div class="mob-step-hint">Search or tap a popular style</div></div></div>
       <div class="search-outer" id="mob-ip">
         <div class="sel-pill" id="mob-sel-pill" style="display:none;align-items:center;gap:8px;padding:9px 12px;background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--r);">
           <span style="flex:1;font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="mob-sel-name"></span>
@@ -2182,13 +2183,13 @@ function setUpchargeNote(upTot){
   });
 }
 
-function calcPP(qty){
-  if(!sel||qty<getMinQty())return null;
-  if(isDrinkware())return dwUnitPrice(qty);
-  var c=getDiscountedUnitPrice();
-  var sleeveCount=(locs.has('left-sleeve')?1:0)+(locs.has('right-sleeve')?1:0);
+// Sum the decoration cost PER active location, honoring each location's own method
+// (locMethod[key]: 'sp' N-color screen print, 'ht' Full Color heat transfer, 'em' embroidery).
+// Mixing sp + ht on one order is supported. Garment base, add-ons and rush are added by the caller.
+function decoCostPerUnit(qty){
+  var c=0;
+  // Embroidery-only products keep the legacy per-location embroidery pricing.
   if(decoMethod==='em'){
-    // Embroidery: each selected location adds Front-tier or Side-tier price.
     var eqb=getEMQB(qty);
     locs.forEach(function(key){
       var cls=emLocCls(key);
@@ -2196,17 +2197,33 @@ function calcPP(qty){
     });
     // Distribute the one-time $45 setup fee across the unit price so order total = pp * qty includes it.
     c+=EM_SETUP_FEE/qty;
-  }else if(decoMethod==='ht'){
-    var htp=getHTP(qty);
-    if(locs.has('front'))c+=htp;
-    if(locs.has('back'))c+=htp;
-    c+=sleeveCount*HT_SLEEVE;
-  }else{
-    var qb=getQB(qty);
-    if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
-    if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkElEff(qty)];
-    c+=sleeveCount*1.50;
+    return c;
   }
+  var qb=getQB(qty);
+  var htp=getHTP(qty);
+  locs.forEach(function(key){
+    var m=locMethod[key]||'sp';
+    var isSleeve=(key==='left-sleeve'||key==='right-sleeve');
+    if(m==='ht'){
+      // Heat transfer / Full Color: front & back at the HT per-piece rate, each sleeve at HT_SLEEVE.
+      c+=isSleeve?HT_SLEEVE:htp;
+    }else{
+      // Screen print: front/back read their own stored color count via getFrElEff/getBkElEff.
+      if(key==='front')c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
+      else if(key==='back')c+=(BACK[qb]||BACK[24])[getBkElEff(qty)];
+      else if(isSleeve)c+=1.50;
+      else c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)]; // any other non-sleeve SP location bills at the front rate
+    }
+  });
+  return c;
+}
+
+function calcPP(qty){
+  if(sel)syncDecoMethod();
+  if(!sel||qty<getMinQty())return null;
+  if(isDrinkware())return dwUnitPrice(qty);
+  var c=getDiscountedUnitPrice();
+  c+=decoCostPerUnit(qty);
   if(addons.neck)c+=0.75;
   if(addons.hem)c+=getHem(qty);
   if(addons.bag)c+=0.85;
@@ -2217,6 +2234,7 @@ function calcPP(qty){
 
 function calc(){
   var qty=getQty();
+  if(sel)syncDecoMethod(); // derive decoMethod from each location's method before pricing
   var isMob=false; // unified single layout — always use the primary panel
   var minQ=getMinQty();
   renderPromoUI();
@@ -2304,25 +2322,7 @@ function calc(){
   // Rush fee display
   var baseNoRush=(function(){
     var c=getDiscountedUnitPrice();
-    var sleeveCount=(locs.has('left-sleeve')?1:0)+(locs.has('right-sleeve')?1:0);
-    if(decoMethod==='em'){
-      var eqb=getEMQB(qty);
-      locs.forEach(function(key){
-        var cls=emLocCls(key);
-        c+=(cls==='front')?EM_FRONT[eqb]:EM_SIDE[eqb];
-      });
-      c+=EM_SETUP_FEE/qty;
-    }else if(decoMethod==='ht'){
-      var htp=getHTP(qty);
-      if(locs.has('front'))c+=htp;
-      if(locs.has('back'))c+=htp;
-      c+=sleeveCount*HT_SLEEVE;
-    }else{
-      var qb=getQB(qty);
-      if(locs.has('front'))c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
-      if(locs.has('back'))c+=(BACK[qb]||BACK[24])[getBkElEff(qty)];
-      c+=sleeveCount*1.50;
-    }
+    c+=decoCostPerUnit(qty);
     if(addons.neck)c+=0.75;
     if(addons.hem)c+=getHem(qty);
     if(addons.bag)c+=0.85;
@@ -2399,6 +2399,39 @@ function calc(){
 const HT_BREAKS=[[10,12.75],[20,8.00],[50,5.41],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
 const HT_SLEEVE=3.00;
 var decoMethod='sp';
+// Per-location decoration method map: key -> 'sp' (screen print, N colors) | 'ht' (Full Color / heat transfer) | 'em' (embroidery).
+// Drives per-location pricing in decoCostPerUnit(). decoMethod (above) is DERIVED from this via syncDecoMethod().
+var locMethod={front:'sp'};
+
+// True when the selected product can ONLY be embroidered (e.g. most caps/beanies) — no screen print or heat transfer.
+function isEmbroideryOnly(){
+  if(!sel)return false;
+  if(typeof isDrinkware==='function'&&isDrinkware())return false;
+  var avail=availableDecoMethods(sel);
+  return avail.indexOf('sp')===-1&&avail.indexOf('ht')===-1;
+}
+// Recompute the representative decoMethod from the active locations' methods.
+//  embroidery-only product -> 'em'; else if every active location is Full Color -> 'ht'; else 'sp' (screen print dominates for mixed orders).
+function syncDecoMethod(){
+  if(!sel)return;
+  if(typeof isDrinkware==='function'&&isDrinkware()){decoMethod='sp';return;}
+  if(isEmbroideryOnly()){decoMethod='em';return;}
+  var anySP=false,anyHT=false;
+  locs.forEach(function(k){
+    var m=locMethod[k]||'sp';
+    if(m==='ht')anyHT=true;else if(m==='sp')anySP=true;
+  });
+  decoMethod=(anyHT&&!anySP)?'ht':'sp';
+}
+// Human label for the current order's decoration mix (cart payload + GHL).
+function decoMethodLabel(){
+  if(decoMethod==='em')return 'Embroidery';
+  var anySP=false,anyHT=false;
+  locs.forEach(function(k){var m=locMethod[k]||'sp';if(m==='ht')anyHT=true;else if(m==='sp')anySP=true;});
+  if(anySP&&anyHT)return 'Mixed (Screen Print + Heat Transfer)';
+  if(anyHT)return 'Heat Transfer';
+  return 'Screen Printing';
+}
 
 function getHTP(qty){var r=HT_BREAKS[0][1];for(var i=0;i<HT_BREAKS.length;i++){if(qty>=HT_BREAKS[i][0])r=HT_BREAKS[i][1];}return r;}
 
@@ -2474,32 +2507,66 @@ function renderLocationPills(){
   if(next.size===0)next.add(items[0].key);
   locs=next;
   var cap=imprintColorCap();
+  var emOnly=isEmbroideryOnly();
+  var isDW=(typeof isDrinkware==='function'&&isDrinkware());
+  // Full Color (heat transfer) is offered for garment-print products, but NOT for drinkware
+  // (all-inclusive matrix) and NOT for embroidery-only products (caps/beanies).
+  var offerFullColor=!isDW&&!emOnly;
   if(host){
     host.innerHTML=items.map(function(it){
       var on=locs.has(it.key);
+      // Establish this location's method default so pricing has something to read.
+      if(on&&!locMethod[it.key])locMethod[it.key]=emOnly?'em':'sp';
+      var meth=locMethod[it.key]||(emOnly?'em':'sp');
       var cc=on?(locColorCount[it.key]||1):0;
       if(cc>cap)cc=cap;
-      if(on)locColorCount[it.key]=cc||1;
-      var opts='<option value="0"'+(cc===0?' selected':'')+'>No imprint</option>';
-      for(var n=1;n<=cap;n++){opts+='<option value="'+n+'"'+(cc===n?' selected':'')+'>'+n+(n===1?' color':' colors')+'</option>';}
-      var dots='';for(var d=0;d<cc;d++){dots+='<span class="imp-dot"></span>';}
+      if(on&&meth==='sp')locColorCount[it.key]=cc||1;
+      var opts,dots;
+      if(emOnly){
+        // Embroidery-only: No imprint / Embroidery per location.
+        opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>'
+            +'<option value="em"'+(on?' selected':'')+'>Embroidery</option>';
+        dots=on?'<span class="imp-fc-label">Embroidery</span>':'';
+      }else{
+        // 1..cap colors = screen print; "Full Color" = heat transfer.
+        opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>';
+        for(var n=1;n<=cap;n++){opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+n+(n===1?' color':' colors')+'</option>';}
+        if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color</option>';
+        if(on&&meth==='ht'){dots='<span class="imp-fc-label">Full color</span>';}
+        else{dots='';for(var d=0;d<cc;d++){dots+='<span class="imp-dot"></span>';}}
+      }
       return '<div class="imprint-row'+(on?' on':'')+'" id="imp-row-'+it.key+'">'
         +'<div class="imprint-loc"><span class="imprint-loc-name">'+it.label+'</span><span class="imprint-dots" id="imp-dots-'+it.key+'">'+dots+'</span></div>'
         +'<select class="imprint-select" id="imp-'+it.key+'" data-loc="'+it.key+'" onchange="onImprintChange(\''+it.key+'\')">'+opts+'</select>'
         +'</div>';
     }).join('');
   }
+  syncDecoMethod();
   _slNote();
 }
-// Handle an imprint dropdown change: toggle the location on/off and record its color count.
+// Handle an imprint dropdown change: toggle the location on/off, record its method + color count.
+// value "0" => off; "fc" => Full Color (heat transfer); "em" => embroidery; numeric N => N-color screen print.
 function onImprintChange(key){
   var el=document.getElementById('imp-'+key);
-  var v=el?(parseInt(el.value,10)||0):0;
-  if(v>0){locs.add(key);locColorCount[key]=v;}
-  else{locs.delete(key);}
-  var row=document.getElementById('imp-row-'+key);if(row)row.classList.toggle('on',v>0);
+  var raw=el?String(el.value):'0';
+  var on=true,dotsHtml='';
+  if(raw==='0'||raw===''){
+    on=false;locs.delete(key);delete locMethod[key];
+  }else if(raw==='fc'){
+    locs.add(key);locMethod[key]='ht';
+    dotsHtml='<span class="imp-fc-label">Full color</span>';
+  }else if(raw==='em'){
+    locs.add(key);locMethod[key]='em';
+    dotsHtml='<span class="imp-fc-label">Embroidery</span>';
+  }else{
+    var v=parseInt(raw,10)||0;
+    if(v>0){locs.add(key);locMethod[key]='sp';locColorCount[key]=v;var d='';for(var i=0;i<v;i++)d+='<span class="imp-dot"></span>';dotsHtml=d;}
+    else{on=false;locs.delete(key);delete locMethod[key];}
+  }
+  var row=document.getElementById('imp-row-'+key);if(row)row.classList.toggle('on',on);
   var dotsEl=document.getElementById('imp-dots-'+key);
-  if(dotsEl){var d='';for(var i=0;i<v;i++)d+='<span class="imp-dot"></span>';dotsEl.innerHTML=d;}
+  if(dotsEl)dotsEl.innerHTML=on?dotsHtml:'';
+  syncDecoMethod();
   _slNote();
   calc();
 }
@@ -2639,6 +2706,11 @@ var FALLBACK_EMAIL='austin@aliveprintshop.com';
 
 function updateOrderSummary(){
   var box=document.getElementById('of-summary'),grid=document.getElementById('of-summary-grid');
+  // "Your Configuration" recap box is intentionally hidden (stakeholder request). Keep the
+  // element in the DOM and this function safe, but never display the box.
+  if(box)box.style.display='none';
+  return;
+  /* eslint-disable no-unreachable */
   if(!sel||!box||!grid)return;
   var qty=getQty(),pp=calcPP(qty);if(!pp){box.style.display='none';return;}
   var upTot=sizeUpchargeTotal();
@@ -2712,7 +2784,7 @@ function buildOrderPayload(d,source){
     garment:sel?(sel.s+' \u2014 '+sel.n.replace(/&amp;/g,'&')):'Not selected',
     garmentBrand:sel?sel.b:'',
     garmentStyle:sel?sel.s:'',
-    decoration:decoMethod==='em'?'Embroidery':(decoMethod==='ht'?'Heat Transfer':'Screen Printing'),
+    decoration:decoMethodLabel(),
     locations:locsDisplay(),
     addons:addonList.length?addonList.join(', '):'None',
     turnaround:taLabel,
@@ -2855,11 +2927,12 @@ function captureCartItem(source){
     brand:sel.b||'',
     color:colorName,
     productImage:img,
-    decoMethod:decoMethod, // 'sp' | 'ht' | 'em'
-    decoLabel:decoMethod==='em'?'Embroidery':(decoMethod==='ht'?'Heat Transfer':'Screen Printing'),
+    decoMethod:decoMethod, // 'sp' | 'ht' | 'em' (derived — 'sp' also covers mixed sp+ht orders)
+    decoLabel:decoMethodLabel(),
+    locMethod:Object.assign({},locMethod), // per-location method snapshot
     locations:Array.from(locs),
-    frontColors:decoMethod==='sp'?(getFrEl()+1):null, // 1-based color count (SP only)
-    backColors:decoMethod==='sp'?(getBkEl()+1):null,
+    frontColors:(locMethod['front']==='sp')?(getFrEl()+1):null, // 1-based color count (screen-print front only)
+    backColors:(locMethod['back']==='sp')?(getBkEl()+1):null,
     qty:qty,
     sizes:sizes,
     addons:Object.assign({},addons),
