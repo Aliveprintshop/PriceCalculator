@@ -393,8 +393,10 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;outline:none;transition:transform 0.1s, box-shadow 0.1s;flex-shrink:0;}
 .swatch:hover{transform:scale(1.15);box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 .swatch.active{border-color:var(--blue)!important;box-shadow:0 0 0 2px var(--surface), 0 0 0 4px var(--blue);}
-.prod-card-change{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:var(--surface);border:1.5px solid var(--border2);border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all 0.15s;}
-.prod-card-change:hover{border-color:var(--blue);color:var(--blue);}
+.prod-card-change{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:10px 20px;background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:22px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--blue-dark);cursor:pointer;transition:all 0.18s;box-shadow:0 1px 3px rgba(27,108,206,0.12);}
+.prod-card-change svg{transition:transform 0.18s;}
+.prod-card-change:hover{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(27,108,206,0.30);transform:translateY(-1px);}
+.prod-card-change:hover svg{transform:rotate(180deg);}
 /* MOBILE PRODUCT CARD */
 .mob-prod-card{display:none;}
 .mob-prod-card.show{display:block;}
@@ -406,7 +408,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .mob-prod-card-style{font-size:12px;color:var(--text3);margin-bottom:10px;}
 .mob-prod-card-inner .swatch-row{margin-top:0;width:100%;}
 .mob-prod-card-inner .swatch-grid{justify-content:center;max-width:100%;}
-.mob-prod-card-change{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;margin-top:4px;}
+.mob-prod-card-change{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:22px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--blue-dark);cursor:pointer;margin-top:10px;box-shadow:0 1px 3px rgba(27,108,206,0.12);}
+.mob-prod-card-change:active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.mob-prod-card-change svg{flex-shrink:0;}
 
 
 /* ── RIGHT PANEL ── */
@@ -480,7 +484,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="swatch-row" id="swatch-row"></div>
           <div class="prod-details" id="prod-details" style="display:none;"></div>
-          <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;">&#9998; Browse / Change Item</a>
+          <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Browse / Change Item</a>
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -656,7 +660,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
           <div class="mob-prod-card-style" id="mob-prod-card-style"></div>
           <div class="prod-details" id="mob-prod-details" style="display:none;"></div>
-          <a class="mob-prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;">&#9998; Browse / Change Item</a>
+          <a class="mob-prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Browse / Change Item</a>
         </div>
       </div>
     </div>
@@ -834,11 +838,185 @@ const MANUAL_PRODUCTS=[
       {name:'Shy Marshmallow', hex:'#efe2da', sku:'79471', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a341a4a04386d4d7642a732.png'}},
       {name:'90s Kid',         hex:'#2bb3a3', sku:'79437', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a341a95a52c7920d8ddf542.png'}}
     ]
+  },
+  {
+    style:'C-HANDLE-MUG',
+    name:'C-Handle 11oz Ceramic Mug',
+    brand:'',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'The C-Handle 11 oz ceramic mug is a timeless classic. With a glossy colored exterior and matching glossy interior, it\'s perfect for showcasing your brand or brightening up a daily coffee routine. The comfortable C-shaped handle makes it easy to sip your favorite hot beverage in style—ideal for office use, events, or everyday gifting.',
+    features:['11 oz','Ceramic','Glossy colored exterior','Matching glossy interior','Classic C-shaped handle'],
+    _dwMatrix:{
+      72 :{1:9.26,2:11.01,3:12.76,4:14.52},
+      144:{1:6.60,2:7.90,3:9.20,4:10.50}
+    },
+    colors:[
+      {name:'White', hex:'#ffffff', sku:'101', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358cbe1c5d711b35929c60.png'}},
+      {name:'Black', hex:'#1c1c1e', sku:'114', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358ce372754a77aa653218.png'}},
+      {name:'Almond', hex:'#eaddcf', sku:'118', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358d236a6dd1b69a34f5c2.png'}},
+      {name:'Red', hex:'#c8102e', sku:'103', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358d400a683b64fe11ad7e.png'}},
+      {name:'Orange', hex:'#ff6a13', sku:'105', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358d651c5d711b3592c3f6.png'}},
+      {name:'Yellow', hex:'#ffd200', sku:'109', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358d9df6a1b18cf299a5c5.png'}},
+      {name:'Green', hex:'#2e8b57', sku:'119', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358dbe72754a77aa656055.png'}},
+      {name:'Cobalt Blue', hex:'#0047ab', sku:'112', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358de2f6a1b18cf299cf86.png'}},
+      {name:'Navy Blue', hex:'#1b1f3b', sku:'162', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a358e026a6dd1b69a356f9f.png'}}
+    ]
+  },
+  {
+    style:'BLENDERBOTTLE-CLASSIC',
+    name:'BlenderBottle Sport SS 24oz',
+    brand:'BlenderBottle',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'The BlenderBottle® Sport SS 24 oz shaker is built for smooth shakes and cold drinks that last. Made from durable 18/8 stainless steel with double wall construction and vacuum insulation, it keeps beverages cold for hours. It features a threaded lid with a snap closure, locking mechanism, and carrying handle for secure, on-the-go use. The rounded bottom helps reduce clumps, while the included BlenderBall® wire whisk ensures thorough mixing.',
+    features:['24 oz','18/8 stainless steel','Double wall','Vacuum insulation','Inner rounded bottom','Threaded lid with carrying handle','Snap closure with locking mechanism','Shaker ball included','Powder coated finish','For cold beverages'],
+    _dwMatrix:{
+      48 :{1:20.03,2:22.24,3:24.44,4:26.65},
+      72 :{1:17.03,2:18.78,3:20.53,4:22.29},
+      144:{1:14.37,2:15.67,3:16.97,4:18.27}
+    },
+    colors:[
+      {name:'Black/Clear', hex:'#1c1c1e', sku:'78344', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d27d88e21da97d6294c3a.jpg'}},
+      {name:'Cobalt', hex:'#0047ab', sku:'78312', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d27d89093e02821a397c7.jpg'}},
+      {name:'Nightshade', hex:'#2d2a45', sku:'78384', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d27d891c8d42d98c7289f.jpg'}}
+    ]
+  },
+  {
+    style:'FROST-BOTTLE',
+    name:'Frost 20oz Thermal Tumbler',
+    brand:'',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'The Frost 20 oz thermal tumbler combines sleek style with reliable performance. Made from double wall 18/8 stainless steel with vacuum insulation, it keeps beverages hot or cold for hours. It features a clear push-on lid with a matching swivel closure for easy, spill-resistant sipping. Finished with a glossy exterior, it\'s a polished, practical choice for home, work, or on the go.',
+    features:['20 oz','18/8 stainless steel','Double wall','Vacuum insulation','Clear push-on lid','Matching swivel closure','Glossy finish','Gift box included'],
+    _dwMatrix:{
+      48 :{1:20.58,2:22.79,3:24.99,4:27.20},
+      72 :{1:18.92,2:20.68,3:22.43,4:24.18},
+      144:{1:17.26,2:18.57,3:19.87,4:21.17}
+    },
+    colors:[
+      {name:'Matte Black', hex:'#2b2b2b', sku:'88844', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8ca97402b00b49416e.png'}},
+      {name:'Stainless', hex:'#b8bcc0', sku:'88861', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8da97402b00b494756.png'}},
+      {name:'White', hex:'#ffffff', sku:'88871', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8d8e21da97d634d16f.png'}},
+      {name:'Neon Pink', hex:'#ff3d9a', sku:'88836', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8d91c8d42d98d0fbb3.png'}},
+      {name:'Red', hex:'#c8102e', sku:'88863', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8cc5563e5cbbda92ed.png'}},
+      {name:'Neon Orange', hex:'#ff6a13', sku:'88835', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8cc92eca9eeb0f0c01.png'}},
+      {name:'Blue', hex:'#1f6fd6', sku:'88862', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8cb7dbcd4149a426f4.png'}},
+      {name:'Mint', hex:'#9fe2bf', sku:'88815', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8c9093e02821ad51ae.png'}},
+      {name:'Neon Blue', hex:'#1fb6ff', sku:'88830', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2a8cc92eca9eeb0f0c05.png'}}
+    ]
+  },
+  {
+    style:'LANE-TUMBLER',
+    name:'Lane 16oz Stainless Steel Tumbler',
+    brand:'',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'Lane 16 oz stainless steel tumbler offers versatility for both hot and cold drinks, with a dual-purpose lid that adapts to your needs. The sip opening is ideal for coffee or tea, while the soft straw makes it easy to enjoy iced beverages. With a sleek matte finish and double wall design that minimizes condensation, it offers a modern look that fits any setting.',
+    features:['16 oz','Stainless steel','Double wall','Dual-purpose threaded lid with matching swivel closure','Soft straw (for cold beverages only)','For hot beverages use sip opening','For cold beverages use straw','Fits standard cup holder (3 in. diameter)','Matte finish'],
+    _dwMatrix:{
+      48 :{1:17.02,2:19.23,3:21.43,4:23.64},
+      72 :{1:15.36,2:17.12,3:18.87,4:20.62},
+      144:{1:13.70,2:15.00,3:16.31,4:17.61}
+    },
+    colors:[
+      {name:'Matte Black', hex:'#2b2b2b', sku:'931544', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c05b7dbcd4149a9f0b9.png'}},
+      {name:'Matte White', hex:'#f0f0f0', sku:'931571', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c079093e02821b0f828.png'}},
+      {name:'Matte Hottest Pink', hex:'#e0218a', sku:'931536', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c07b7dbcd4149a9f660.png'}},
+      {name:'Matte Red', hex:'#b31b2c', sku:'931573', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c05a97402b00b4fa46b.png'}},
+      {name:'Matte Tawny', hex:'#a97142', sku:'931589', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c05c5563e5cbbde4a91.png'}},
+      {name:'Matte Badminton', hex:'#6f7d3f', sku:'931515', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c05b7dbcd4149a9f08a.png'}},
+      {name:'Matte Cerulean', hex:'#2a52be', sku:'931582', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c05c5563e5cbbde4a84.png'}},
+      {name:'Matte Constellation', hex:'#2c3e50', sku:'931512', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d2c0591c8d42d98d772d6.png'}}
+    ]
+  },
+  {
+    style:'H2GO-CRUX',
+    name:'h2go Crux 30oz Bottle',
+    brand:'h2go',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'The h2go Crux 30 oz bottle is designed for simple, effective hydration. Made from single-wall 18/8 stainless steel, it\'s lightweight and durable—ideal for cold beverages on the go. The threaded lid with an integrated carrying handle offers convenience, while the powder coated finish adds a pop of color and extra grip. Whether you\'re commuting, at the gym, or out exploring, Crux keeps it easy to stay refreshed.',
+    features:['30 oz','18/8 stainless steel','Single wall','Threaded lid','Carrying handle','Powder coated finish','For cold beverages'],
+    _dwMatrix:{
+      48 :{1:16.55,2:18.76,3:20.96,4:23.16},
+      72 :{1:14.89,2:16.64,3:18.40,4:20.15},
+      144:{1:13.23,2:14.53,3:15.83,4:17.14}
+    },
+    colors:[
+      {name:'Matte Black', hex:'#2b2b2b', sku:'951544', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305ac5563e5cbbebca94.png'}},
+      {name:'Matte White', hex:'#f0f0f0', sku:'951571', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305da97402b00b592dcd.png'}},
+      {name:'Matte Hottest Pink', hex:'#e0218a', sku:'951536', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305dc5563e5cbbebd7f0.png'}},
+      {name:'Matte Red', hex:'#b31b2c', sku:'951573', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305c55edb24b904da6c7.png'}},
+      {name:'Matte Orange', hex:'#d2691e', sku:'951575', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305c9093e02821bf7339.png'}},
+      {name:'Matte Lemon', hex:'#e3d600', sku:'951589', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305a91c8d42d98e6b7e1.png'}},
+      {name:'Matte Lime', hex:'#9acd32', sku:'951587', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305ac5563e5cbbebca8b.png'}},
+      {name:'Matte Aqua', hex:'#4fd0e0', sku:'951570', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305a55edb24b904da695.png'}},
+      {name:'Matte Navy', hex:'#1b2a4a', sku:'951572', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305a55edb24b904da690.png'}},
+      {name:'Matte Storm Gray', hex:'#6b6f74', sku:'951594', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d305ab7dbcd4149baa9a1.png'}}
+    ]
+  },
+  {
+    style:'DUGOUT-TUMBLER',
+    name:'Dugout 25oz Bottle',
+    brand:'',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'The Dugout 25 oz bottle is built for everyday hydration with a lightweight, active-friendly design. Made from BPA-free copolyester, it features a single wall construction, threaded lid with flip-up spout, and a matching inner straw for easy sipping. A built-in carry handle makes it perfect for life on the go. For cold beverages only.',
+    features:['25 oz','BPA-free copolyester','Single wall','Threaded lid','Flip-up spout','Matching inner straw','Built-in carry handle','For cold beverages only'],
+    _dwMatrix:{
+      48 :{1:12.16,2:14.37,3:16.57,4:18.78},
+      72 :{1:10.50,2:12.26,3:14.01,4:15.76},
+      144:{1:8.85,2:10.15,3:11.45,4:12.75}
+    },
+    colors:[
+      {name:'Cardinal', hex:'#8c1d40', sku:'26068', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d340c55edb24b905bd679.png'}},
+      {name:'Orange', hex:'#ff6a13', sku:'26085', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d340ce7f1e523312f5ad2.png'}},
+      {name:'Forest Green', hex:'#228b22', sku:'26067', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d340cc92eca9eeb315a63.png'}},
+      {name:'Blue', hex:'#1f6fd6', sku:'26082', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d340c2d9cf805159b1b03.png'}},
+      {name:'Black', hex:'#1c1c1e', sku:'26084', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d340c2467f0ff083d32ce.png'}}
+    ]
+  },
+  {
+    style:'MIXING-GLASS',
+    name:'Mixing Glass 16oz',
+    brand:'',
+    category:'Drinkware',
+    _drinkware:true,
+    available_sizes:['Qty'],
+    desc:'The 16 oz Mixing Glass is a versatile staple for any bar or beverage service. Ideal for mixing cocktails or serving beer, soda, or iced drinks, this classic pint glass is a go-to for restaurants, events, or custom branding. Durable and functional, it\'s a must-have for any drinkware collection.',
+    features:['16 oz','Glass','Classic mixing pint shape'],
+    _dwMatrix:{
+      72 :{1:9.35,2:11.10,3:12.86,4:14.61},
+      144:{1:5.93,2:7.23,3:8.53,4:9.84}
+    },
+    colors:[
+      {name:'Clear', hex:'#dfe7ea', sku:'392', images:{front_flat:'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a4d350aa97402b00b6b60ef.png'}}
+    ]
   }
 ];
 // Drinkware helpers. dwQB snaps a quantity DOWN to its price break (24/48/72/144).
 function isDrinkware(){return !!(sel&&sel._full&&sel._full._drinkware);}
-function dwBreaks(){return [24,48,72,144];}
+// Price breaks are read from the CURRENT product's _dwMatrix keys, so items
+// that start at 48 or 72 pieces (e.g. C-Handle, Mixing Glass) work correctly
+// instead of assuming every drinkware item offers a 24-piece break.
+function dwBreaks(){
+  var p=sel&&sel._full;
+  if(p&&p._dwMatrix){
+    var ks=Object.keys(p._dwMatrix).map(function(k){return parseInt(k,10);}).filter(function(n){return !isNaN(n);});
+    ks.sort(function(a,b){return a-b;});
+    if(ks.length)return ks;
+  }
+  return [24,48,72,144];
+}
+function dwMinQty(){return dwBreaks()[0];}
 function dwQB(q){var b=dwBreaks(),r=b[0];for(var i=0;i<b.length;i++){if(q>=b[i])r=b[i];}return r;}
 function dwColors(){var c=getFrEl()+1;if(c<1)c=1;if(c>4)c=4;return c;}
 function dwFromPrice(p){
@@ -1201,6 +1379,20 @@ function formatProductDetails(rawDesc){
     '<details class="pd-details"><summary>Product details</summary><div class="pd-body">'+body+'</div></details>';
 }
 
+// Manual (drinkware) products carry a prose `desc` + `features[]` array, rendered
+// as a clean paragraph + bullet list (SanMar's run-on formatter isn't needed).
+function formatManualDetails(prose,features){
+  var esc=function(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var chips='';
+  var mWt=String(prose||'').match(/(\d+(?:\.\d+)?)\s*oz\b/i);
+  if(mWt)chips+='<span class="pd-chip"><strong>Size:</strong> '+mWt[1]+' oz</span>';
+  var body='';
+  if(prose)body+='<p class="pd-text">'+esc(prose)+'</p>';
+  if(features&&features.length)body+='<ul class="pd-list">'+features.map(function(f){return '<li>'+esc(f)+'</li>';}).join('')+'</ul>';
+  return (chips?'<div class="pd-chips">'+chips+'</div>':'')+
+    '<details class="pd-details"><summary>Product details</summary><div class="pd-body">'+body+'</div></details>';
+}
+
 function pickItem(s){
   var item=null;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].s===s){item=ITEMS[i];break;}}
   if(!item)return;sel=item;
@@ -1247,7 +1439,11 @@ function pickItem(s){
   var mpcn=document.getElementById('mob-prod-card-name');if(mpcn)mpcn.textContent=cleanName;
   var mpcs=document.getElementById('mob-prod-card-style');if(mpcs)mpcs.textContent='Style #'+item.s;
   // Product Details (fit / fabric / features) from the SanMar description.
-  var _pdHtml=(live&&live.description)?formatProductDetails(live.description):'';
+  var _pdHtml='';
+  if(live){
+    if(live.desc||live.features)_pdHtml=formatManualDetails(live.desc,live.features);
+    else if(live.description)_pdHtml=formatProductDetails(live.description);
+  }
   var _pdEl=document.getElementById('prod-details');if(_pdEl){_pdEl.innerHTML=_pdHtml;_pdEl.style.display=_pdHtml?'block':'none';}
   var _mpdEl=document.getElementById('mob-prod-details');if(_mpdEl){_mpdEl.innerHTML=_pdHtml;_mpdEl.style.display=_pdHtml?'block':'none';}
   // Hide mobile item step
@@ -1677,7 +1873,7 @@ function selectTA(t){
 
 // -- MOBILE QTY --
 function getQtySteps(){
-  if(typeof isDrinkware==='function'&&isDrinkware())return [24,48,72,144,288];
+  if(typeof isDrinkware==='function'&&isDrinkware()){var b=dwBreaks();return b.concat([b[b.length-1]*2]);}
   return decoMethod==='ht'?[10,20,50,72,144,300,500,1000,2500,5000]:[24,36,50,72,144,300,500,1000,2500,5000];
 }
 function mobAdjQty(d){
@@ -1730,6 +1926,7 @@ updateTADates();
 
 // -- PRICING --
 function getMinQty(){
+  if(isDrinkware())return dwMinQty(); // lowest available price break for this item (24/48/72)
   if(decoMethod==='em')return EM_MIN_QTY; // 12
   if(decoMethod==='ht')return 10;
   return 24;
@@ -1982,7 +2179,7 @@ function calc(){
   var mw=document.getElementById('moq-warn');
   if(mw){
     mw.style.display=(!isMob&&qty<minQ)?'block':'none';
-    var decoLabel=decoMethod==='em'?'embroidery':(decoMethod==='ht'?'heat transfer':'screen printing');
+    var decoLabel=isDrinkware()?'this item':(decoMethod==='em'?'embroidery':(decoMethod==='ht'?'heat transfer':'screen printing'));
     mw.textContent='\u26A0 Minimum order is '+minQ+' pieces for '+decoLabel+'.';
   }
   var qh=document.getElementById('qty-hint');
@@ -1990,7 +2187,7 @@ function calc(){
     var qhHtml='Price breaks at<br><strong>50, 72, 144, 300, 500+</strong>';
     if(decoMethod==='em')qhHtml='Price breaks at<br><strong>12, 24, 36, 72, 144, 300, 500+</strong>';
     else if(decoMethod==='ht')qhHtml='Price breaks at<br><strong>20, 50, 100, 200, 500+</strong>';
-    if(isDrinkware())qhHtml='Price breaks at<br><strong>24, 48, 72, 144</strong>';
+    if(isDrinkware())qhHtml='Price breaks at<br><strong>'+dwBreaks().join(', ')+'</strong>';
     qh.innerHTML=qhHtml;
   }
 
@@ -2318,7 +2515,7 @@ function clearSizes(){
 // Seed a default quantity (36 pcs) into one size slot when a product is loaded.
 // Picks the best available size in this order: M, L, OSFA, S, XL, first-available.
 function applyDefaultQty(){
-  var DEFAULT_QTY=(typeof isDrinkware==='function'&&isDrinkware())?24:36;
+  var DEFAULT_QTY=(typeof isDrinkware==='function'&&isDrinkware())?dwMinQty():36;
   // Don't overwrite if the user has already entered any sizes (e.g. they navigated back from cart).
   if(typeof getSizeTotal==='function'&&getSizeTotal()>0)return;
   var preferred=['M','L','OSFA','S','XL','XS','2XL'];
