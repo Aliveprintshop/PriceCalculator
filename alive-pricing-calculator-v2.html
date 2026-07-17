@@ -388,12 +388,12 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .mob-size-input:focus{border-color:var(--blue);}
 .mob-size-input.has-qty{border-color:var(--blue-mid);background:var(--blue-light);}
 /* PRODUCT CARD / HERO */
-.prod-card{display:none;gap:28px;align-items:flex-start;padding:0;flex-wrap:wrap;}
+.prod-card{display:none;gap:28px;align-items:stretch;padding:0;flex-wrap:wrap;}
 .prod-card.show{display:flex;}
-.prod-card>div:last-child{flex:1;min-width:260px;}
+.prod-card>div:last-child{flex:1;min-width:260px;display:flex;flex-direction:column;}
 .prod-card-imgcol{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0;}
 .prod-card-img{width:340px;max-width:86vw;aspect-ratio:2 / 3;height:auto;object-fit:cover;object-position:center;background:var(--surface2);border-radius:var(--r-lg);border:1px solid var(--border);box-sizing:border-box;flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;padding:10px;}
-.prod-card-from{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--green);margin:2px 0 8px;}
+.prod-card-from{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--green);margin:10px 0 12px;}
 .prod-card-from span{font-size:11px;font-weight:600;color:var(--text3);}
 @media(max-width:620px){
   .prod-card{gap:16px;justify-content:center;}
@@ -451,10 +451,13 @@ textarea.of-input{resize:vertical;min-height:70px;}
   .browse-title{display:none;}
   .browse-card-img{aspect-ratio:1/1.1;}
 }
-.prod-card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px;}
-.prod-card-name{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);line-height:1.25;margin-bottom:2px;}
-.prod-card-style{font-size:12px;color:var(--text3);margin-bottom:8px;}
+.prod-card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
+.prod-card-name{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);line-height:1.25;margin-bottom:7px;}
+.prod-card-style{font-size:12px;color:var(--text3);margin-bottom:10px;}
+.prod-material{font-size:12px;color:var(--text2);line-height:1.45;margin:2px 0 0;}
+.prod-material strong{font-weight:700;color:var(--text3);}
 .swatch-row{margin:6px 0 0;}
+#swatch-row{margin-top:auto;padding-top:14px;}
 .swatch-label{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
 .swatch-label span{color:var(--text);text-transform:none;letter-spacing:normal;font-weight:700;}
 .swatch-grid{display:flex;flex-wrap:wrap;gap:6px;}
@@ -566,6 +569,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="prod-card-from" id="prod-card-from" style="display:none;"></div>
           <div class="prod-details" id="prod-details" style="display:none;"></div>
+          <div class="prod-material" id="prod-material" style="display:none;"></div>
           <div class="swatch-row" id="swatch-row"></div>
         </div>
       </div>
@@ -1453,8 +1457,10 @@ function formatProductDetails(rawDesc){
   }else{
     body='<p class="pd-text">'+esc(desc)+'</p>';
   }
-  return (chips?'<div class="pd-chips">'+chips+'</div>':'')+
-    '<details class="pd-details"><summary>Product details</summary><div class="pd-body">'+body+'</div></details>';
+  // Show only the fit/fabric chips inline; the collapsible "Product details"
+  // panel has been replaced by the concise Material line (see extractMaterial).
+  void body;
+  return chips?'<div class="pd-chips">'+chips+'</div>':'';
 }
 
 // Manual (drinkware) products carry a prose `desc` + `features[]` array, rendered
@@ -1467,8 +1473,45 @@ function formatManualDetails(prose,features){
   var body='';
   if(prose)body+='<p class="pd-text">'+esc(prose)+'</p>';
   if(features&&features.length)body+='<ul class="pd-list">'+features.map(function(f){return '<li>'+esc(f)+'</li>';}).join('')+'</ul>';
-  return (chips?'<div class="pd-chips">'+chips+'</div>':'')+
-    '<details class="pd-details"><summary>Product details</summary><div class="pd-body">'+body+'</div></details>';
+  // Collapsible "Product details" replaced by the concise Material line.
+  void body;
+  return chips?'<div class="pd-chips">'+chips+'</div>':'';
+}
+
+// Extract a short material/fabric phrase for the "Material:" hero line.
+// Manual/drinkware products expose a features[] array (+optional desc);
+// SanMar products expose a run-on `description` string. Returns '' if nothing
+// usable is found (caller hides the line).
+function extractMaterial(live){
+  if(!live)return '';
+  // Strong material keywords (ordered before soft fallbacks like BPA/blend).
+  var matKw=/(cotton|polyester|\bpoly(?:ester)?\b|stainless steel|ceramic|porcelain|tritan|copolyester|aluminum|\bglass\b|silicone|bamboo|tri-?blend|nylon|spandex|rayon|modal|linen|wool|acrylic)/i;
+  // MANUAL products: pick the first feature that names a material, else 1st feature.
+  if(Array.isArray(live.features)&&live.features.length){
+    for(var i=0;i<live.features.length;i++){
+      var f=String(live.features[i]).replace(/\s+/g,' ').trim();
+      if(matKw.test(f)){return f.length>70?f.slice(0,70).replace(/\s+\S*$/,'')+'…':f;}
+    }
+    var f0=String(live.features[0]).replace(/\s+/g,' ').trim();
+    return f0.length>70?f0.slice(0,70).replace(/\s+\S*$/,'')+'…':f0;
+  }
+  // SanMar (or manual prose): parse the run-on description for fiber content.
+  var desc=String(live.description||live.desc||'').replace(/\s+/g,' ').trim();
+  if(!desc)return '';
+  // Un-glue mashed words / fabric ratios the way formatProductDetails does.
+  desc=desc.replace(/([a-z\)])([A-Z])/g,'$1 $2').replace(/([a-z\)])(\d{1,3}\/\d{1,3}\b)/g,'$1 $2');
+  var fiber=desc.match(/\d+\s*%\s*(?:[A-Za-z][A-Za-z\-]*\s*){0,3}(?:cotton|polyester|poly|rayon|nylon|spandex|modal|linen|wool|acrylic)\b/i)
+    || desc.match(/\b\d{1,3}\/\d{1,3}\s*(?:cotton\s*\/?\s*poly|poly\s*\/?\s*cotton|cotton|poly)[A-Za-z\-\/ ]*/i)
+    || desc.match(/\b(?:ring[- ]spun|combed|tri-?blend|jersey)\b[A-Za-z\-\/ ]*?(?:cotton|polyester|poly)\b/i);
+  if(!fiber)return '';
+  var phrase=fiber[0].replace(/\s+/g,' ').trim();
+  // Prepend the fabric weight (e.g. "6.1 oz") if present and not already stated.
+  var wt=desc.match(/(\d+(?:\.\d+)?)\s*-?\s*(?:oz|ounce)\b/i);
+  if(wt&&!/\b(oz|ounce)\b/i.test(phrase))phrase=wt[1]+' oz, '+phrase;
+  // Tidy trailing filler / punctuation.
+  phrase=phrase.replace(/\s+(?:and|with|for|the|a|features?)\s*$/i,'').replace(/[,;:\s]+$/,'');
+  if(phrase.length>72)phrase=phrase.slice(0,72).replace(/\s+\S*$/,'')+'…';
+  return phrase;
 }
 
 function pickItem(s){
@@ -1524,6 +1567,19 @@ function pickItem(s){
   }
   var _pdEl=document.getElementById('prod-details');if(_pdEl){_pdEl.innerHTML=_pdHtml;_pdEl.style.display=_pdHtml?'block':'none';}
   var _mpdEl=document.getElementById('mob-prod-details');if(_mpdEl){_mpdEl.innerHTML=_pdHtml;_mpdEl.style.display=_pdHtml?'block':'none';}
+  // Concise "Material:" line (replaces the old collapsible Product details panel).
+  var _matEl=document.getElementById('prod-material');
+  if(_matEl){
+    var _mat=live?extractMaterial(live):'';
+    if(_mat){
+      _matEl.innerHTML='';
+      var _mLbl=document.createElement('strong');_mLbl.textContent='Material: ';
+      _matEl.appendChild(_mLbl);_matEl.appendChild(document.createTextNode(_mat));
+      _matEl.style.display='block';
+    }else{
+      _matEl.innerHTML='';_matEl.style.display='none';
+    }
+  }
   // Hide mobile item step
   var msn2=document.getElementById('msn2');if(msn2){var ms=msn2.closest('.mob-step');if(ms)ms.style.display='none';}
   // Reset to front view, render swatches and view pills
