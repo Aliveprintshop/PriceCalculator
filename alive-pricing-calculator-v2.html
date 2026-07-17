@@ -93,7 +93,8 @@ body{margin:0;padding:0;}
 #artwork-section uc-file-uploader-regular{display:block;width:100%;--uc-primary-rgb:27,108,206;--uc-size-base:22px;}
 /* Uploadcare renders in LIGHT DOM, so target the real trigger element (not ::part) to stretch it full width like #of-btn */
 #artwork-section uc-file-uploader-regular uc-simple-btn{display:block;width:100%;}
-#artwork-section uc-file-uploader-regular uc-simple-btn>button{width:100%;box-sizing:border-box;justify-content:center;min-height:46px;font-size:14px;}
+#artwork-section uc-file-uploader-regular uc-simple-btn uc-drop-area{display:block;width:100%;}
+#artwork-section uc-file-uploader-regular uc-simple-btn button{width:100%;box-sizing:border-box;justify-content:center;min-height:46px;font-size:14px;}
 /* keep ::part as a harmless fallback in case a future build uses shadow DOM */
 #artwork-section uc-file-uploader-regular::part(button){font-size:14px;width:100%;justify-content:center;min-height:46px;}
 .size-section.flash{animation:flashHi 1.1s ease;}
