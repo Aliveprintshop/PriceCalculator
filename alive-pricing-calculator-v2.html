@@ -67,7 +67,16 @@ body{margin:0;padding:0;}
   .pb-change{padding:5px 9px;font-size:12px;}
 }
 @media(max-width:400px){
+  /* icon-only Change-product control */
   .pb-change .pb-change-txt{display:none;}
+  .pb-change{padding:6px 8px;}
+  /* allow the bar to wrap: prices on row 1, full-width Add-to-cart on row 2 */
+  .price-bar-inner{flex-wrap:wrap;gap:6px 8px;padding:7px 10px;}
+  .pb-val{font-size:16px;}
+  .pb-lbl{font-size:8px;}
+  .pb-divider{height:26px;}
+  .pb-spacer{flex-basis:100%;min-width:0;height:0;}
+  .pb-add{width:100%;justify-content:center;padding:10px 12px;font-size:12px;}
 }
 
 /* ── IMPRINT ROWS (horizontal cards — one per location) ── */
@@ -81,7 +90,8 @@ body{margin:0;padding:0;}
 .imp-fc-label{font-size:10px;font-weight:700;letter-spacing:0.02em;color:var(--blue);background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e,#3b82f6,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .imprint-select{width:100%;flex-shrink:0;padding:9px 12px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;cursor:pointer;}
 .imprint-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
-@media(max-width:600px){.imprint-rows{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}}
+@media(max-width:600px){.imprint-rows{grid-template-columns:1fr 1fr;gap:8px;}}
+@media(max-width:400px){.imprint-rows{grid-template-columns:1fr;}}
 /* ── PER-LOCATION ARTWORK UPLOAD ── */
 .artwork-row{margin-bottom:14px;}
 .artwork-row:last-child{margin-bottom:0;}
@@ -511,6 +521,25 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .r-form-fields{display:flex;flex-direction:column;gap:10px;}
 .r-form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .r-form-field{display:flex;flex-direction:column;}
+
+/* ── MOBILE HARDENING (phones only; additive, placed last so source-order wins) ── */
+@media(max-width:600px){
+  /* Hero image never overflows and stays centered */
+  .prod-card-img{max-width:100%;}
+  /* Size grid: allow more, smaller columns; taller tap targets (>=~40px) */
+  .size-grid{grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;}
+  .size-input{padding:11px 2px;font-size:16px;}
+  /* Comfortable tap targets for selects / inputs / pills on phones */
+  .imprint-select,.of-input,.search-input{min-height:44px;}
+  .loc-pill,.deco-tab,.view-pill{min-height:40px;}
+  /* Trim card padding so content isn't cramped in one column */
+  .of-wrap{padding:16px;}
+  .step-block{padding:14px;}
+}
+@media(max-width:400px){
+  /* Extra-narrow: keep size inputs tappable but fit more per row */
+  .size-grid{grid-template-columns:repeat(auto-fill,minmax(48px,1fr));}
+}
 
 </style>
 <!-- Uploadcare File Uploader (artwork uploads) -->
