@@ -62,17 +62,22 @@ body{margin:0;padding:0;}
   .pb-add{padding:9px 13px;font-size:12px;}
 }
 
-/* ── IMPRINT ROWS (one per location) ── */
-.imprint-rows{display:flex;flex-direction:column;gap:8px;max-width:none;margin-bottom:10px;}
-.imprint-row{display:flex;align-items:center;gap:12px;padding:9px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);transition:all 0.15s;}
+/* ── IMPRINT ROWS (horizontal cards — one per location) ── */
+.imprint-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;max-width:none;margin-bottom:10px;}
+.imprint-row{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:10px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);transition:all 0.15s;}
 .imprint-row.on{border-color:var(--blue-mid);background:var(--blue-light);}
-.imprint-loc{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
+.imprint-loc{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .imprint-loc-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);}
-.imprint-dots{display:flex;gap:3px;min-height:9px;}
+.imprint-dots{display:flex;gap:3px;min-height:9px;flex-wrap:wrap;}
 .imp-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);border:1px solid rgba(0,0,0,0.12);}
 .imp-fc-label{font-size:10px;font-weight:700;letter-spacing:0.02em;color:var(--blue);background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e,#3b82f6,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.imprint-select{width:150px;flex-shrink:0;padding:9px 12px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;cursor:pointer;}
+.imprint-select{width:100%;flex-shrink:0;padding:9px 12px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;cursor:pointer;}
 .imprint-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
+@media(max-width:600px){.imprint-rows{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}}
+/* ── PER-LOCATION ARTWORK UPLOAD ── */
+.artwork-row{margin-bottom:14px;}
+.artwork-row:last-child{margin-bottom:0;}
+.artwork-row .r-form-lbl{display:block;margin-bottom:6px;}
 .size-section.flash{animation:flashHi 1.1s ease;}
 @keyframes flashHi{0%,100%{box-shadow:0 0 0 0 rgba(27,108,206,0);}30%{box-shadow:0 0 0 4px rgba(27,108,206,0.35);border-radius:var(--r-lg);}}
 
@@ -580,6 +585,37 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <div class="sleeve-note" id="sl-note">Sleeve print &mdash; included in pricing</div>
     </div>
 
+    <!-- Step 4b: Per-location artwork upload (full width, shows only active locations) -->
+    <div class="step-block full" id="artwork-section" style="display:none;">
+      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Upload your artwork</div><div class="step-hint">Add files for each print location &mdash; PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP (up to 25MB each)</div></div></div>
+      <div id="artwork-uploaders">
+        <div class="artwork-row" id="art-row-front" style="display:none;">
+          <label class="r-form-lbl">Front artwork</label>
+          <uc-config ctx-name="art-front" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+          <uc-file-uploader-regular ctx-name="art-front"></uc-file-uploader-regular>
+          <uc-upload-ctx-provider ctx-name="art-front" id="uc-ctx-front"></uc-upload-ctx-provider>
+        </div>
+        <div class="artwork-row" id="art-row-back" style="display:none;">
+          <label class="r-form-lbl">Back artwork</label>
+          <uc-config ctx-name="art-back" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+          <uc-file-uploader-regular ctx-name="art-back"></uc-file-uploader-regular>
+          <uc-upload-ctx-provider ctx-name="art-back" id="uc-ctx-back"></uc-upload-ctx-provider>
+        </div>
+        <div class="artwork-row" id="art-row-left-sleeve" style="display:none;">
+          <label class="r-form-lbl">Left Sleeve artwork</label>
+          <uc-config ctx-name="art-lsleeve" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+          <uc-file-uploader-regular ctx-name="art-lsleeve"></uc-file-uploader-regular>
+          <uc-upload-ctx-provider ctx-name="art-lsleeve" id="uc-ctx-lsleeve"></uc-upload-ctx-provider>
+        </div>
+        <div class="artwork-row" id="art-row-right-sleeve" style="display:none;">
+          <label class="r-form-lbl">Right Sleeve artwork</label>
+          <uc-config ctx-name="art-rsleeve" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+          <uc-file-uploader-regular ctx-name="art-rsleeve"></uc-file-uploader-regular>
+          <uc-upload-ctx-provider ctx-name="art-rsleeve" id="uc-ctx-rsleeve"></uc-upload-ctx-provider>
+        </div>
+      </div>
+    </div>
+
     <!-- Step 5: Add-ons -->
     <div class="step-block full" id="step5-addons">
       <div class="step-head"><div class="step-num" id="sn5">5</div><div><div class="step-title">Want to add finishing touches?</div><div class="step-hint">Optional extras that make your order feel premium</div></div></div>
@@ -647,13 +683,6 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div id="of-summary-grid" style="display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--text2);"></div>
         </div>
         <div class="r-form-fields">
-          <div class="r-form-field">
-            <label class="r-form-lbl">Upload Artwork (optional)</label>
-            <uc-config ctx-name="art-d" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
-            <uc-file-uploader-regular ctx-name="art-d"></uc-file-uploader-regular>
-            <uc-upload-ctx-provider ctx-name="art-d" id="uc-ctx-d"></uc-upload-ctx-provider>
-            <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;">Logos &amp; artwork &mdash; PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP (up to 25MB each).</div>
-          </div>
           <div class="r-form-field"><label class="r-form-lbl">Notes for this item (optional)</label><textarea class="r-form-textarea" id="of-notes" placeholder="Garment color, anything specific to this item..."></textarea></div>
         </div>
         <div class="r-err" id="of-err"></div>
@@ -2543,6 +2572,7 @@ function renderLocationPills(){
   }
   syncDecoMethod();
   _slNote();
+  if(typeof renderArtworkUploaders==='function')renderArtworkUploaders();
 }
 // Handle an imprint dropdown change: toggle the location on/off, record its method + color count.
 // value "0" => off; "fc" => Full Color (heat transfer); "em" => embroidery; numeric N => N-color screen print.
@@ -2568,6 +2598,7 @@ function onImprintChange(key){
   if(dotsEl)dotsEl.innerHTML=on?dotsHtml:'';
   syncDecoMethod();
   _slNote();
+  if(typeof renderArtworkUploaders==='function')renderArtworkUploaders();
   calc();
 }
 // Sticky-bar "Add to cart": if nothing is configured, scroll the customer to the right
@@ -2877,8 +2908,17 @@ function submitMobOrder(){addToCartFromForm('mob');}
 // Cart — snapshot the current calculator config and push to localStorage.
 // Customer info collection is deferred to the /cart page (one form, all items).
 // =====================================================================
-// === ARTWORK UPLOADS (Uploadcare) ===
+// === ARTWORK UPLOADS (Uploadcare) — per print location ===
+// Kept ARTWORK_D/ARTWORK_M names for backwards compatibility with any legacy refs.
 var ARTWORK_D=[], ARTWORK_M=[];
+// Config: each active imprint location maps to its own Uploadcare uploader (distinct ctx-name).
+var ART_LOCS=[
+  {key:'front',        ctx:'front',   label:'Front artwork'},
+  {key:'back',         ctx:'back',    label:'Back artwork'},
+  {key:'left-sleeve',  ctx:'lsleeve', label:'Left Sleeve artwork'},
+  {key:'right-sleeve', ctx:'rsleeve', label:'Right Sleeve artwork'}
+];
+var ARTWORK_BY_LOC={front:[],back:[],'left-sleeve':[],'right-sleeve':[]};
 function _ucFiles(state){
   if(!state)return [];
   var arr=state.successEntries||state.allEntries||[];
@@ -2886,12 +2926,25 @@ function _ucFiles(state){
     return {name:(x.name||(x.fileInfo&&x.fileInfo.originalFilename)||'artwork'), url:x.cdnUrl};
   });
 }
-function initArtworkUploaders(){
-  var d=document.getElementById('uc-ctx-d');
-  if(d&&!d._wired){d._wired=1;d.addEventListener('change',function(e){ARTWORK_D=_ucFiles(e.detail);});}
-  var m=document.getElementById('uc-ctx-m');
-  if(m&&!m._wired){m._wired=1;m.addEventListener('change',function(e){ARTWORK_M=_ucFiles(e.detail);});}
+// Wire each per-location uploader's change event once, and toggle rows/section to
+// match the currently active imprint locations. Safe to call repeatedly.
+function renderArtworkUploaders(){
+  var anyOn=false;
+  ART_LOCS.forEach(function(a){
+    var prov=document.getElementById('uc-ctx-'+a.ctx);
+    if(prov&&!prov._wired){
+      prov._wired=1;
+      prov.addEventListener('change',function(e){ARTWORK_BY_LOC[a.key]=_ucFiles(e.detail);});
+    }
+    var on=(typeof locs!=='undefined')&&locs.has&&locs.has(a.key);
+    var row=document.getElementById('art-row-'+a.key);
+    if(row)row.style.display=on?'':'none';
+    if(on)anyOn=true;
+  });
+  var sec=document.getElementById('artwork-section');
+  if(sec)sec.style.display=anyOn?'':'none';
 }
+function initArtworkUploaders(){renderArtworkUploaders();}
 if(document.readyState!=='loading')initArtworkUploaders();else document.addEventListener('DOMContentLoaded',initArtworkUploaders);
 
 function captureCartItem(source){
@@ -2917,6 +2970,20 @@ function captureCartItem(source){
   var notesId=source==='mob'?'mob-of-notes':'of-notes';
   var artworkLink=(document.getElementById(artworkId)||{}).value||'';
   var notes=(document.getElementById(notesId)||{}).value||'';
+  // Collect per-location artwork (only for locations that are actually active), plus a
+  // flattened union (kept in artworkFiles for the cart page) and a labeled note string.
+  var artworkByLoc={};
+  var artworkAll=[];
+  var artworkNoteParts=[];
+  ART_LOCS.forEach(function(a){
+    var files=(ARTWORK_BY_LOC[a.key]||[]);
+    if(locs.has(a.key)&&files.length){
+      artworkByLoc[a.key]=files.slice();
+      files.forEach(function(f){artworkAll.push(f);});
+      artworkNoteParts.push((LOC_LABEL[a.key]||a.key)+': '+files.map(function(f){return f.url;}).join(', '));
+    }
+  });
+  var artworkNote=artworkNoteParts.join('; ');
   var addonList=[];if(addons.neck)addonList.push('Inside Neck Print');if(addons.hem)addonList.push('Custom Hem Tag');if(addons.bag)addonList.push('Fold & Bag');
   var baseBD=rush==='super'?5:rush==='rush'?7:10;
   var effBD=baseBD+(addons.hem?5:0);
@@ -2940,7 +3007,9 @@ function captureCartItem(source){
     rush:rush,
     turnaroundLabel:taLabel,
     artworkLink:artworkLink,
-    artworkFiles:(source==='mob'?ARTWORK_M:ARTWORK_D).slice(),
+    artworkFiles:artworkAll.slice(),
+    artworkByLocation:artworkByLoc,
+    artworkNote:artworkNote,
     notes:notes,
     unitPrice:pp,
     sizeUpchargeTotal:upTot,
@@ -2992,6 +3061,7 @@ function dismissAddedConfirmation(source){
   if(f)f.style.display='block';
   // Clear per-item inputs so they don't carry over
   ARTWORK_D=[];ARTWORK_M=[];
+  ARTWORK_BY_LOC={front:[],back:[],'left-sleeve':[],'right-sleeve':[]};
   ['of-artwork-link','of-notes','mob-of-artwork-link','mob-of-notes'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
