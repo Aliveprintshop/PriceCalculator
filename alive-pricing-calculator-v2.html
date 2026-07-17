@@ -89,8 +89,8 @@ body{margin:0;padding:0;}
 .artwork-dropzone{padding:11px 14px;border:1.5px dashed var(--border2);border-radius:12px;text-align:center;background:var(--surface2);transition:border-color 0.15s,background 0.15s;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;}
 .artwork-dropzone:hover{border-color:var(--blue-mid);background:var(--blue-light);}
 .artwork-dropzone-label{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-bottom:0;}
-#artwork-section uc-file-uploader-regular{display:block;--uc-primary-rgb:27,108,206;--uc-size-base:22px;}
-#artwork-section uc-file-uploader-regular::part(button){font-size:14px;}
+#artwork-section uc-file-uploader-regular{display:block;width:100%;--uc-primary-rgb:27,108,206;--uc-size-base:22px;}
+#artwork-section uc-file-uploader-regular::part(button){font-size:14px;width:100%;justify-content:center;}
 .size-section.flash{animation:flashHi 1.1s ease;}
 @keyframes flashHi{0%,100%{box-shadow:0 0 0 0 rgba(27,108,206,0);}30%{box-shadow:0 0 0 4px rgba(27,108,206,0.35);border-radius:var(--r-lg);}}
 
@@ -392,7 +392,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card.show{display:flex;}
 .prod-card>div:last-child{flex:1;min-width:260px;}
 .prod-card-imgcol{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0;}
-.prod-card-img{width:340px;max-width:86vw;height:300px;object-fit:contain;object-position:center;background:var(--surface2);border-radius:var(--r-lg);border:1px solid var(--border);flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;padding:10px;}
+.prod-card-img{width:400px;max-width:86vw;aspect-ratio:2 / 3;height:auto;object-fit:cover;object-position:center;background:var(--surface2);border-radius:var(--r-lg);border:1px solid var(--border);box-sizing:border-box;flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;padding:10px;}
 .prod-card-from{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--green);margin:2px 0 8px;}
 .prod-card-from span{font-size:11px;font-weight:600;color:var(--text3);}
 @media(max-width:620px){
@@ -589,7 +589,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <input type="hidden" id="qty" value="0">
       <div class="qty-hint" id="qty-hint" style="display:none;"></div>
       <div class="moq-warn" id="moq-warn" style="display:none;">&#9888; Minimum order is 36 pieces.</div>
-      <div class="size-section" style="margin-top:0;"><div class="size-section-lbl">Size breakdown &mdash; qty per size</div><div class="size-grid" id="size-grid-host"></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch" style="display:none;">&#9888; Size total doesn't match quantity</div></div>
+      <div class="size-section" style="margin-top:0;"><div class="size-grid" id="size-grid-host"></div><div class="size-total-row"><span style="color:var(--text3);">Size total</span><span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--blue);" id="size-total-display">0 pcs</span></div><div class="size-mismatch" id="size-mismatch" style="display:none;">&#9888; Size total doesn't match quantity</div></div>
     </div>
 
     <!-- Step 4: Locations -->
@@ -601,9 +601,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 4b: Per-location artwork upload (full width, shows only active locations) -->
     <div class="step-block full" id="artwork-section" style="display:none;">
-      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Artwork</div><div class="step-hint">PDF, AI, SVG &amp; Vector files are best.</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Artwork <span style="font-weight:400;color:var(--text3);font-size:13px;">&middot; Upload all your artwork here</span></div><div class="step-hint">PDF, AI, SVG &amp; Vector files are best.</div></div></div>
       <div class="artwork-dropzone" id="artwork-dropzone">
-        <div class="artwork-dropzone-label">Upload all your artwork here</div>
         <uc-config ctx-name="art-all" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
         <uc-file-uploader-regular ctx-name="art-all"></uc-file-uploader-regular>
         <uc-upload-ctx-provider ctx-name="art-all" id="uc-ctx-all"></uc-upload-ctx-provider>
