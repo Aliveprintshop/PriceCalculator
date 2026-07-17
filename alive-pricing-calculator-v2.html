@@ -652,11 +652,27 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div id="of-summary-grid" style="display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--text2);"></div>
         </div>
         <div class="r-form-fields">
-          <div class="r-form-field"><label class="r-form-lbl">Notes for this item (optional)</label><textarea class="r-form-textarea" id="of-notes" placeholder="Garment color, anything specific to this item..."></textarea></div>
+          <div class="r-form-field"><label class="r-form-lbl">Notes &amp; special requests (optional)</label>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;margin:2px 0 7px;">
+              Helpful to include:
+              <ul style="margin:3px 0 0;padding-left:16px;color:var(--text3);">
+                <li>Pantone (PMS) colors</li>
+                <li>Print size for each location (front / back / sleeve)</li>
+                <li>Specialty prints &mdash; puff, metallic ink, glitter, distressed</li>
+                <li>Custom names &amp; numbers</li>
+                <li>Design edits you'd like us to make</li>
+              </ul>
+            </div>
+            <textarea class="r-form-textarea" id="of-notes" placeholder="e.g. PMS 186 red, 11&quot; wide front print, puff print on back, add player names + numbers, please clean up my logo file"></textarea></div>
         </div>
         <div class="r-err" id="of-err"></div>
         <button class="r-submit" id="of-btn" onclick="addToCartFromForm()">+ Add to Cart</button>
         <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;">Add multiple items — pay nothing now. We send a quote.</div>
+        <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;">
+          <div style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;">What happens next</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.55;">You submit this request &rarr; we build a formal quote and send you professional mockups. Every order includes a <strong>Free Professional Design Review</strong>, and production begins once your order is paid.</div>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.55;margin-top:7px;">We're real people who really care. &mdash; <em style="color:var(--blue);font-weight:600;">The Alive Print Shop Guarantee</em></div>
+        </div>
       </div>
       <div id="of-success" style="display:none;text-align:center;padding:16px 0;">
         <div style="width:48px;height:48px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;color:var(--green);">&#10003;</div>
@@ -682,6 +698,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="big-card total"><div class="big-lbl">Order Total</div><div class="big-val" id="r-total">&mdash;</div></div>
       </div>
       <div id="qty-estimate-note" style="display:none;font-size:12px;color:var(--text3);margin:4px 0 2px;line-height:1.4;">Estimate based on 36 pcs &mdash; enter your sizes to update.</div>
+      <div id="volume-nudge" style="display:none;font-size:12px;color:var(--green);font-weight:600;margin:4px 0 2px;line-height:1.4;"></div>
       <div id="r-upcharge-note" style="display:none;"></div>
       <div id="r-guide" class="empty-msg"><strong>&#9888; Select a product to continue</strong>Pick a product above in Step 2 to see live pricing.</div>
       <div id="r-results" style="display:none;flex-direction:column;">
@@ -2456,6 +2473,9 @@ function calc(){
       qen.style.display='none';
     }
   }
+  // Default-hide the volume-savings nudge; the full-pricing path below re-shows it when applicable.
+  var vnHide=document.getElementById('volume-nudge');
+  if(vnHide)vnHide.style.display='none';
 
   if(!sel){
     setVals(null,null);
@@ -2551,6 +2571,32 @@ function calc(){
   }
   var rb=document.getElementById('r-breaks');if(rb)rb.innerHTML=buildBreaks('pt');
   var mb=document.getElementById('mob-breaks');if(mb)mb.innerHTML=buildBreaks('mob-pt');
+
+  // Volume-savings nudge: only for screen-print / heat-transfer (normal breaks table),
+  // when the customer has entered sizes and is below the next price break.
+  var vn=document.getElementById('volume-nudge');
+  if(vn){
+    var vnShown=false;
+    var curQty=(typeof getSizeTotal==='function')?getSizeTotal():getQty();
+    var nudgeOk=curQty>0&&decoMethod!=='em'&&!(typeof isDrinkware==='function'&&isDrinkware());
+    if(nudgeOk){
+      var nextBreak=null;
+      for(var vi=0;vi<breaksArr.length;vi++){if(breaksArr[vi]>curQty){nextBreak=breaksArr[vi];break;}}
+      if(nextBreak!==null){
+        var unitCur=calcPP(curQty),unitNext=calcPP(nextBreak);
+        if(unitCur&&unitNext){
+          var pctSave=Math.round(100*(unitCur-unitNext)/unitCur);
+          if(pctSave>0){
+            var addN=nextBreak-curQty;
+            vn.innerHTML='&#9650; Add '+addN.toLocaleString()+' more to reach '+nextBreak.toLocaleString()+' and save '+pctSave+'%';
+            vn.style.display='block';
+            vnShown=true;
+          }
+        }
+      }
+    }
+    if(!vnShown)vn.style.display='none';
+  }
 
   // Hem tag sub
   if(addons.hem){
