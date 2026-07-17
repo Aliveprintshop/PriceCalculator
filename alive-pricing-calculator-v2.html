@@ -17,6 +17,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 /* ── Product Details (fit / fabric / features) ── */
 .prod-details{margin-top:10px;}
+.prod-card-imgcol .prod-details{align-self:stretch;text-align:left;width:100%;}
 .pd-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
 .pd-chip{display:inline-block;background:var(--blue-light);color:var(--blue-dark);border:1px solid var(--blue-mid);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:600;line-height:1.4;}
 .pd-chip strong{font-weight:800;}
@@ -78,6 +79,11 @@ body{margin:0;padding:0;}
 .artwork-row{margin-bottom:14px;}
 .artwork-row:last-child{margin-bottom:0;}
 .artwork-row .r-form-lbl{display:block;margin-bottom:6px;}
+.artwork-dropzone{padding:20px;border:1.5px dashed var(--border2);border-radius:12px;text-align:center;background:var(--surface2);transition:border-color 0.15s,background 0.15s;}
+.artwork-dropzone:hover{border-color:var(--blue-mid);background:var(--blue-light);}
+.artwork-dropzone-label{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text2);margin-bottom:14px;}
+#artwork-section uc-file-uploader-regular{display:block;--uc-primary-rgb:27,108,206;--uc-size-base:26px;}
+#artwork-section uc-file-uploader-regular::part(button){font-size:15px;}
 .size-section.flash{animation:flashHi 1.1s ease;}
 @keyframes flashHi{0%,100%{box-shadow:0 0 0 0 rgba(27,108,206,0);}30%{box-shadow:0 0 0 4px rgba(27,108,206,0.35);border-radius:var(--r-lg);}}
 
@@ -544,6 +550,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="prod-card-imgcol">
           <img class="prod-card-img" id="prod-card-img" src="" alt="" onclick="openLightbox()">
           <div class="view-pills" id="view-pills"></div>
+          <div class="prod-details" id="prod-details" style="display:none;"></div>
         </div>
         <div>
           <div class="prod-card-brand" id="prod-card-brand"></div>
@@ -551,8 +558,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="prod-card-from" id="prod-card-from" style="display:none;"></div>
           <div class="swatch-row" id="swatch-row"></div>
-          <div class="prod-details" id="prod-details" style="display:none;"></div>
-          <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Browse / Change Item</a>
+          <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Change product</a>
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -570,7 +576,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 3: Qty (size-grid-driven — total is computed from per-size inputs) -->
     <div class="step-block full">
-      <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">How many pieces do you need?</div><div class="step-hint">Min 24 for screen printing, 10 for heat transfer &mdash; prices drop as quantity goes up</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">Quantity</div><div class="step-hint">Min 24 for screen printing, 10 for heat transfer &mdash; prices drop as quantity goes up</div></div></div>
       <!-- Hidden — qty is derived from the size grid below. Kept for legacy onSizeInput sync. -->
       <input type="hidden" id="qty" value="0">
       <div class="qty-hint" id="qty-hint" style="display:none;"></div>
@@ -580,47 +586,26 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 4: Locations -->
     <div class="step-block full">
-      <div class="step-head"><div class="step-num" id="sn4">4</div><div><div class="step-title">Where does your design go?</div><div class="step-hint">Pick colors per location &mdash; choose &ldquo;No imprint&rdquo; to skip one</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn4">4</div><div><div class="step-title">Print locations</div><div class="step-hint">Pick colors per location &mdash; choose &ldquo;No imprint&rdquo; to skip one</div></div></div>
       <div class="imprint-rows" id="imprint-rows"><span style="color:var(--text3);font-size:12px;">Pick a product above to choose imprint locations &amp; colors.</span></div>
       <div class="sleeve-note" id="sl-note">Sleeve print &mdash; included in pricing</div>
     </div>
 
     <!-- Step 4b: Per-location artwork upload (full width, shows only active locations) -->
     <div class="step-block full" id="artwork-section" style="display:none;">
-      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Upload your artwork</div><div class="step-hint">Add files for each print location &mdash; PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP (up to 25MB each)</div></div></div>
-      <div id="artwork-uploaders">
-        <div class="artwork-row" id="art-row-front" style="display:none;">
-          <label class="r-form-lbl">Front artwork</label>
-          <uc-config ctx-name="art-front" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
-          <uc-file-uploader-regular ctx-name="art-front"></uc-file-uploader-regular>
-          <uc-upload-ctx-provider ctx-name="art-front" id="uc-ctx-front"></uc-upload-ctx-provider>
-        </div>
-        <div class="artwork-row" id="art-row-back" style="display:none;">
-          <label class="r-form-lbl">Back artwork</label>
-          <uc-config ctx-name="art-back" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
-          <uc-file-uploader-regular ctx-name="art-back"></uc-file-uploader-regular>
-          <uc-upload-ctx-provider ctx-name="art-back" id="uc-ctx-back"></uc-upload-ctx-provider>
-        </div>
-        <div class="artwork-row" id="art-row-left-sleeve" style="display:none;">
-          <label class="r-form-lbl">Left Sleeve artwork</label>
-          <uc-config ctx-name="art-lsleeve" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
-          <uc-file-uploader-regular ctx-name="art-lsleeve"></uc-file-uploader-regular>
-          <uc-upload-ctx-provider ctx-name="art-lsleeve" id="uc-ctx-lsleeve"></uc-upload-ctx-provider>
-        </div>
-        <div class="artwork-row" id="art-row-right-sleeve" style="display:none;">
-          <label class="r-form-lbl">Right Sleeve artwork</label>
-          <uc-config ctx-name="art-rsleeve" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
-          <uc-file-uploader-regular ctx-name="art-rsleeve"></uc-file-uploader-regular>
-          <uc-upload-ctx-provider ctx-name="art-rsleeve" id="uc-ctx-rsleeve"></uc-upload-ctx-provider>
-        </div>
+      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Artwork</div><div class="step-hint">Upload all your artwork here &mdash; PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP (up to 25MB each)</div></div></div>
+      <div class="artwork-dropzone" id="artwork-dropzone">
+        <div class="artwork-dropzone-label">Upload all your artwork here</div>
+        <uc-config ctx-name="art-all" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
+        <uc-file-uploader-regular ctx-name="art-all"></uc-file-uploader-regular>
+        <uc-upload-ctx-provider ctx-name="art-all" id="uc-ctx-all"></uc-upload-ctx-provider>
       </div>
     </div>
 
     <!-- Step 5: Add-ons -->
     <div class="step-block full" id="step5-addons">
-      <div class="step-head"><div class="step-num" id="sn5">5</div><div><div class="step-title">Want to add finishing touches?</div><div class="step-hint">Optional extras that make your order feel premium</div></div></div>
-      <div class="addons-toggle" id="addons-toggle" onclick="toggleAddons()"><div class="addons-icon">+</div><div class="addons-toggle-text">Show branding add-ons</div></div>
-      <div class="addons-body" id="addons-body">
+      <div class="step-head"><div class="step-num" id="sn5">5</div><div><div class="step-title">Add-ons</div><div class="step-hint">Optional finishing touches</div></div></div>
+      <div class="addons-body open" id="addons-body">
         <div class="addon-row" id="ar-neck" onclick="toggleAddon('neck',document.getElementById('t-neck'))"><img class="addon-thumb" src="data:image/jpeg;base64,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" alt=""><div style="flex:1;min-width:0;"><div class="addon-name">Inside Neck Print</div><div class="addon-sub">$0.75 / piece</div><span class="addon-preview" onclick="event.stopPropagation();openModal('neck')">View example &rarr;</span></div><button class="toggle" id="t-neck"></button></div>
         <div class="addon-row" id="ar-hem" onclick="toggleAddon('hem',document.getElementById('t-hem'))"><img class="addon-thumb" src="data:image/jpeg;base64,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" alt=""><div style="flex:1;min-width:0;"><div class="addon-name">Custom Hem Tag</div><div class="addon-sub" id="hem-sub">Tiered pricing <span style="color:#b95900;font-weight:600;">&middot; adds 5 business days</span></div><span class="addon-preview" onclick="event.stopPropagation();openModal('hem')">View example &rarr;</span></div><button class="toggle" id="t-hem"></button></div>
         <div class="addon-row" id="ar-bag" onclick="toggleAddon('bag',document.getElementById('t-bag'))"><img class="addon-thumb" src="data:image/jpeg;base64,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" alt=""><div style="flex:1;min-width:0;"><div class="addon-name">Fold &amp; Bag</div><div class="addon-sub">$0.85 / piece</div><span class="addon-preview" onclick="event.stopPropagation();openModal('bag')">View example &rarr;</span></div><button class="toggle" id="t-bag"></button></div>
@@ -629,11 +614,37 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 6: Turnaround -->
     <div class="step-block full">
-      <div class="step-head"><div class="step-num" id="sn6">6</div><div><div class="step-title">When do you need it?</div><div class="step-hint">Standard is free &mdash; rush options add to the total</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn6">6</div><div><div class="step-title">Turnaround</div><div class="step-hint">Standard is free &mdash; rush options add to the total</div></div></div>
       <div class="ta-grid3">
         <div class="ta-card sel-std" id="ta-std" onclick="selectTA('std')"><div class="ta-top-row"><span class="ta-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="7" y="12" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="10.75" y="12" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="14.5" y="12" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="7" y="16" width="2.5" height="2.5" rx="0.5" fill="currentColor"/><rect x="10.75" y="16" width="2.5" height="2.5" rx="0.5" fill="currentColor"/></svg></span><span class="ta-title">2-Week Standard</span></div><div class="ta-date" id="ta-std-date">-</div><div class="ta-detail">10 business days</div><div style="margin-top:3px;font-size:11px;font-weight:600;color:var(--green);" id="fee-std">Free</div></div>
         <div class="ta-card" id="ta-rush" onclick="selectTA('rush')"><div class="ta-top-row"><span class="ta-icon"><svg width="17" height="14" viewBox="0 0 26 18" fill="none"><path d="M2 5h13v8H2V5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="currentColor" fill-opacity="0.12"/><path d="M15 7.5h3.5L21 11v2h-6V7.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="6" cy="14.5" r="1.8" stroke="currentColor" stroke-width="1.5" fill="white"/><circle cx="18.5" cy="14.5" r="1.8" stroke="currentColor" stroke-width="1.5" fill="white"/></svg></span><span class="ta-title">Rush</span></div><div class="ta-date" id="ta-rush-date">-</div><div class="ta-detail">7 business days</div><div class="ta-fee" id="fee-rush">+ $-- to total</div></div>
         <div class="ta-card" id="ta-super" onclick="selectTA('super')"><div class="ta-top-row"><span class="ta-icon"><svg width="13" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="currentColor" fill-opacity="0.15"/></svg></span><span class="ta-title">Super Rush</span></div><div class="ta-date" id="ta-super-date">-</div><div class="ta-detail">5 business days</div><div class="ta-fee" id="fee-super">+ $-- to total</div></div>
+      </div>
+    </div>
+
+    <!-- ORDER FORM (moved here: bottom of left column, full width) -->
+    <div class="r-form-wrap full" id="r-of-wrap" style="display:none;width:100%;">
+      <div id="r-of-form">
+        <div class="r-form-title">Ready to order?</div>
+        <div id="of-summary" style="background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:12px;display:none;">
+          <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">Your Configuration</div>
+          <div id="of-summary-grid" style="display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--text2);"></div>
+        </div>
+        <div class="r-form-fields">
+          <div class="r-form-field"><label class="r-form-lbl">Notes for this item (optional)</label><textarea class="r-form-textarea" id="of-notes" placeholder="Garment color, anything specific to this item..."></textarea></div>
+        </div>
+        <div class="r-err" id="of-err"></div>
+        <button class="r-submit" id="of-btn" onclick="addToCartFromForm()">+ Add to Cart</button>
+        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;">Add multiple items — pay nothing now. We send a quote.</div>
+      </div>
+      <div id="of-success" style="display:none;text-align:center;padding:16px 0;">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;color:var(--green);">&#10003;</div>
+        <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Added to cart!</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:14px;">Cart total: <strong id="of-cart-total">&mdash;</strong> &middot; <span id="of-cart-count">0 items</span></div>
+        <div style="display:flex;gap:8px;flex-direction:column;">
+          <a href="https://aliveprintshop.com/cart" target="_top" style="display:block;padding:11px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;">Go to Cart &rarr;</a>
+          <button type="button" onclick="dismissAddedConfirmation()" style="padding:9px;background:transparent;color:var(--blue);border:1.5px solid var(--blue);border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Add Another Item</button>
+        </div>
       </div>
     </div>
 
@@ -674,31 +685,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
       </div>
     </div>
 
-    <!-- ORDER FORM -->
-    <div class="r-form-wrap" id="r-of-wrap" style="display:none;">
-      <div id="r-of-form">
-        <div class="r-form-title">Ready to order?</div>
-        <div id="of-summary" style="background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:12px;display:none;">
-          <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">Your Configuration</div>
-          <div id="of-summary-grid" style="display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--text2);"></div>
-        </div>
-        <div class="r-form-fields">
-          <div class="r-form-field"><label class="r-form-lbl">Notes for this item (optional)</label><textarea class="r-form-textarea" id="of-notes" placeholder="Garment color, anything specific to this item..."></textarea></div>
-        </div>
-        <div class="r-err" id="of-err"></div>
-        <button class="r-submit" id="of-btn" onclick="addToCartFromForm()">+ Add to Cart</button>
-        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;">Add multiple items — pay nothing now. We send a quote.</div>
-      </div>
-      <div id="of-success" style="display:none;text-align:center;padding:16px 0;">
-        <div style="width:48px;height:48px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:22px;color:var(--green);">&#10003;</div>
-        <div style="font-family:'Montserrat',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Added to cart!</div>
-        <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:14px;">Cart total: <strong id="of-cart-total">&mdash;</strong> &middot; <span id="of-cart-count">0 items</span></div>
-        <div style="display:flex;gap:8px;flex-direction:column;">
-          <a href="https://aliveprintshop.com/cart" target="_top" style="display:block;padding:11px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;">Go to Cart &rarr;</a>
-          <button type="button" onclick="dismissAddedConfirmation()" style="padding:9px;background:transparent;color:var(--blue);border:1.5px solid var(--blue);border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Add Another Item</button>
-        </div>
-      </div>
-    </div>
+    <!-- ORDER FORM moved to bottom of left column (see #r-of-wrap there) -->
 
   </div>
 </div>
@@ -734,7 +721,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="mob-prod-card-name" id="mob-prod-card-name"></div>
           <div class="mob-prod-card-style" id="mob-prod-card-style"></div>
           <div class="prod-details" id="mob-prod-details" style="display:none;"></div>
-          <a class="mob-prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Browse / Change Item</a>
+          <a class="mob-prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Change product</a>
         </div>
       </div>
     </div>
@@ -2559,8 +2546,8 @@ function renderLocationPills(){
       }else{
         // 1..cap colors = screen print; "Full Color" = heat transfer.
         opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>';
-        for(var n=1;n<=cap;n++){opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+n+(n===1?' color':' colors')+'</option>';}
-        if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color</option>';
+        for(var n=1;n<=cap;n++){var _clbl=n+(n===1?' color':' colors')+(isDW?'':' screen print');opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+_clbl+'</option>';}
+        if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color Heat Transfer</option>';
         if(on&&meth==='ht'){dots='<span class="imp-fc-label">Full color</span>';}
         else{dots='';for(var d=0;d<cc;d++){dots+='<span class="imp-dot"></span>';}}
       }
@@ -2918,7 +2905,8 @@ var ART_LOCS=[
   {key:'left-sleeve',  ctx:'lsleeve', label:'Left Sleeve artwork'},
   {key:'right-sleeve', ctx:'rsleeve', label:'Right Sleeve artwork'}
 ];
-var ARTWORK_BY_LOC={front:[],back:[],'left-sleeve':[],'right-sleeve':[]};
+// Single consolidated artwork uploader. All files land in one flat ARTWORK array.
+var ARTWORK=[];
 function _ucFiles(state){
   if(!state)return [];
   var arr=state.successEntries||state.allEntries||[];
@@ -2926,26 +2914,33 @@ function _ucFiles(state){
     return {name:(x.name||(x.fileInfo&&x.fileInfo.originalFilename)||'artwork'), url:x.cdnUrl};
   });
 }
-// Wire each per-location uploader's change event once, and toggle rows/section to
-// match the currently active imprint locations. Safe to call repeatedly.
+// Wire the single uploader's change event once, and show the artwork section
+// whenever at least one imprint location is active. Safe to call repeatedly.
 function renderArtworkUploaders(){
-  var anyOn=false;
-  ART_LOCS.forEach(function(a){
-    var prov=document.getElementById('uc-ctx-'+a.ctx);
-    if(prov&&!prov._wired){
-      prov._wired=1;
-      prov.addEventListener('change',function(e){ARTWORK_BY_LOC[a.key]=_ucFiles(e.detail);});
-    }
-    var on=(typeof locs!=='undefined')&&locs.has&&locs.has(a.key);
-    var row=document.getElementById('art-row-'+a.key);
-    if(row)row.style.display=on?'':'none';
-    if(on)anyOn=true;
-  });
+  var prov=document.getElementById('uc-ctx-all');
+  if(prov&&!prov._wired){
+    prov._wired=1;
+    prov.addEventListener('change',function(e){ARTWORK=_ucFiles(e.detail);});
+  }
+  var anyOn=(typeof locs!=='undefined')&&locs&&locs.size>0;
   var sec=document.getElementById('artwork-section');
   if(sec)sec.style.display=anyOn?'':'none';
 }
 function initArtworkUploaders(){renderArtworkUploaders();}
 if(document.readyState!=='loading')initArtworkUploaders();else document.addEventListener('DOMContentLoaded',initArtworkUploaders);
+
+// Relocate the add-ons block into the right sidebar (just after the estimate card),
+// so it renders as its own card after the promo area. Preserves all IDs/handlers.
+(function relocateAddons(){
+  function go(){
+    var addons=document.getElementById('step5-addons');
+    var estimate=document.getElementById('r-estimate-wrap');
+    if(addons&&estimate&&estimate.parentNode&&addons.parentNode!==estimate.parentNode){
+      estimate.parentNode.insertBefore(addons,estimate.nextSibling);
+    }
+  }
+  if(document.readyState!=='loading')go();else document.addEventListener('DOMContentLoaded',go);
+})();
 
 function captureCartItem(source){
   if(!sel)return{ok:false,msg:'Pick a product before adding to cart.'};
@@ -2970,20 +2965,10 @@ function captureCartItem(source){
   var notesId=source==='mob'?'mob-of-notes':'of-notes';
   var artworkLink=(document.getElementById(artworkId)||{}).value||'';
   var notes=(document.getElementById(notesId)||{}).value||'';
-  // Collect per-location artwork (only for locations that are actually active), plus a
-  // flattened union (kept in artworkFiles for the cart page) and a labeled note string.
+  // Consolidated artwork: one flat list of uploaded files (cdnUrl + filename).
+  var artworkAll=(typeof ARTWORK!=='undefined'&&Array.isArray(ARTWORK))?ARTWORK.slice():[];
   var artworkByLoc={};
-  var artworkAll=[];
-  var artworkNoteParts=[];
-  ART_LOCS.forEach(function(a){
-    var files=(ARTWORK_BY_LOC[a.key]||[]);
-    if(locs.has(a.key)&&files.length){
-      artworkByLoc[a.key]=files.slice();
-      files.forEach(function(f){artworkAll.push(f);});
-      artworkNoteParts.push((LOC_LABEL[a.key]||a.key)+': '+files.map(function(f){return f.url;}).join(', '));
-    }
-  });
-  var artworkNote=artworkNoteParts.join('; ');
+  var artworkNote=artworkAll.length?artworkAll.map(function(f){return f.url;}).join(', '):'';
   var addonList=[];if(addons.neck)addonList.push('Inside Neck Print');if(addons.hem)addonList.push('Custom Hem Tag');if(addons.bag)addonList.push('Fold & Bag');
   var baseBD=rush==='super'?5:rush==='rush'?7:10;
   var effBD=baseBD+(addons.hem?5:0);
@@ -3061,7 +3046,7 @@ function dismissAddedConfirmation(source){
   if(f)f.style.display='block';
   // Clear per-item inputs so they don't carry over
   ARTWORK_D=[];ARTWORK_M=[];
-  ARTWORK_BY_LOC={front:[],back:[],'left-sleeve':[],'right-sleeve':[]};
+  ARTWORK=[];
   ['of-artwork-link','of-notes','mob-of-artwork-link','mob-of-notes'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
