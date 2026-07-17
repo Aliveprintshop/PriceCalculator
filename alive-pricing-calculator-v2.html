@@ -1564,7 +1564,7 @@ function extractFit(live){
   if(live.desc||live.features)return '';      // manual / drinkware -> no fit
   var desc=String(live.description||'').replace(/\s+/g,' ');
   if(!desc)return '';
-  var m=desc.match(/\b(Classic|Retail|Relaxed|Slim|Modern|Athletic|Tailored|Standard|Semi-fitted|Fitted|Contemporary|Regular|Loose|Boxy|Crop|Cropped|Oversized)\b(?:\s+fit)?/i);
+  var m=desc.match(/\b(Classic|Retail|Relaxed|Slim|Modern|Athletic|Tailored|Standard|Semi-fitted|Fitted|Contemporary|Regular|Loose|Boxy|Crop|Cropped|Oversized)\s+fit\b/i);
   if(!m)return '';
   var w=m[1];
   return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();
