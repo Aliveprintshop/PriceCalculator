@@ -394,9 +394,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .mob-size-input:focus{border-color:var(--blue);}
 .mob-size-input.has-qty{border-color:var(--blue-mid);background:var(--blue-light);}
 /* PRODUCT CARD / HERO */
-.prod-card{display:none;gap:28px;align-items:stretch;padding:0;flex-wrap:wrap;}
+.prod-card{display:none;gap:28px;align-items:flex-start;padding:0;flex-wrap:wrap;}
 .prod-card.show{display:flex;}
-.prod-card>div:last-child{flex:1;min-width:260px;display:flex;flex-direction:column;justify-content:space-between;}
+.prod-card>div:last-child{flex:1;min-width:260px;display:flex;flex-direction:column;}
 .prod-card-imgcol{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0;}
 .prod-card-img{width:340px;max-width:86vw;aspect-ratio:2 / 3;height:auto;object-fit:cover;object-position:center;background:var(--surface2);border-radius:var(--r-lg);border:1px solid var(--border);box-sizing:border-box;flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;padding:10px;}
 .prod-card-from{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--green);margin:10px 0 12px;}
@@ -460,7 +460,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
 .prod-card-name{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);line-height:1.25;margin-bottom:7px;}
 .prod-card-style{font-size:12px;color:var(--text3);margin-bottom:10px;}
-.prod-material{font-size:12px;color:var(--text2);line-height:1.45;margin:2px 0 0;}
+.prod-material{font-size:12px;color:var(--text2);line-height:1.45;margin:0 0 7px;}
 .prod-material strong{font-weight:700;color:var(--text3);}
 .swatch-row{margin:6px 0 0;}
 #swatch-row{padding-top:14px;}
@@ -578,6 +578,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-card-from" id="prod-card-from" style="display:none;"></div>
           <div class="prod-details" id="prod-details" style="display:none;"></div>
           <div class="prod-material" id="prod-material" style="display:none;"></div>
+          <div class="prod-material" id="prod-sizes" style="display:none;"></div>
+          <div class="prod-material" id="prod-fit" style="display:none;"></div>
           <div class="swatch-row" id="swatch-row"></div>
         </div>
       </div>
@@ -1441,6 +1443,9 @@ function setFi(rows,idx){rows.forEach(function(r,i){r.classList.toggle('focused'
 // separators, so we best-effort re-split on capital-letter / fabric-ratio
 // boundaries. Not perfect on every product, but far more readable than raw.
 function formatProductDetails(rawDesc){
+  // Fit/Fabric chips removed — that info now lives in the #prod-material,
+  // #prod-sizes and #prod-fit hero lines. Return '' so #prod-details is empty.
+  return '';
   var desc=String(rawDesc||'').replace(/\s+/g,' ').trim();
   if(!desc)return '';
   var esc=function(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
@@ -1474,6 +1479,8 @@ function formatProductDetails(rawDesc){
 // Manual (drinkware) products carry a prose `desc` + `features[]` array, rendered
 // as a clean paragraph + bullet list (SanMar's run-on formatter isn't needed).
 function formatManualDetails(prose,features){
+  // Chips removed — see formatProductDetails note. Return '' (empty #prod-details).
+  return '';
   var esc=function(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
   var chips='';
   var mWt=String(prose||'').match(/(\d+(?:\.\d+)?)\s*oz\b/i);
@@ -1520,6 +1527,47 @@ function extractMaterial(live){
   phrase=phrase.replace(/\s+(?:and|with|for|the|a|features?)\s*$/i,'').replace(/[,;:\s]+$/,'');
   if(phrase.length>72)phrase=phrase.slice(0,72).replace(/\s+\S*$/,'')+'…';
   return phrase;
+}
+
+// Build a "first–last" size range (en dash) from live.available_sizes, ordered by
+// canonical apparel sizing. Returns '' for one-size / drinkware ['OSFA']/['Qty'].
+function sizeRange(live){
+  if(!live||!Array.isArray(live.available_sizes))return '';
+  var arr=live.available_sizes.map(function(x){return String(x).trim();}).filter(Boolean);
+  if(!arr.length)return '';
+  var oneSize=/^(osfa|qty|one\s*size|os)$/i;
+  if(arr.length===1)return '';               // single size -> no range
+  if(arr.every(function(z){return oneSize.test(z);}))return '';
+  var norm=function(z){
+    var u=String(z).toUpperCase().replace(/\s+/g,'');
+    if(u==='XXL')u='2XL';if(u==='XXXL')u='3XL';if(u==='XXXXL')u='4XL';
+    if(u==='XXXXXL')u='5XL';if(u==='XXXXXXL')u='6XL';
+    return u;
+  };
+  var ORDER=['YXS','YS','YM','YL','YXL','Y2XL','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL'];
+  var idx=function(z){return ORDER.indexOf(norm(z));};
+  var mapped=arr.filter(function(z){return idx(z)>=0;});
+  if(mapped.length){
+    var sorted=mapped.slice().sort(function(a,b){return idx(a)-idx(b);});
+    var fn=norm(sorted[0]),ln=norm(sorted[sorted.length-1]);
+    if(fn===ln)return '';
+    return fn+'–'+ln;
+  }
+  // Sizes didn't map cleanly -> fall back to first & last of the raw array.
+  return arr[0]+'–'+arr[arr.length-1];
+}
+
+// Extract the garment fit word for the "Fit:" hero line. SanMar items only
+// (manual/drinkware have no fit). Returns '' when none found (caller hides line).
+function extractFit(live){
+  if(!live)return '';
+  if(live.desc||live.features)return '';      // manual / drinkware -> no fit
+  var desc=String(live.description||'').replace(/\s+/g,' ');
+  if(!desc)return '';
+  var m=desc.match(/\b(Classic|Retail|Relaxed|Slim|Modern|Athletic|Tailored|Standard|Semi-fitted|Fitted|Contemporary|Regular|Loose|Boxy|Crop|Cropped|Oversized)\b(?:\s+fit)?/i);
+  if(!m)return '';
+  var w=m[1];
+  return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();
 }
 
 function pickItem(s){
@@ -1586,6 +1634,32 @@ function pickItem(s){
       _matEl.style.display='block';
     }else{
       _matEl.innerHTML='';_matEl.style.display='none';
+    }
+  }
+  // "Available Sizes:" line (hidden for one-size / drinkware).
+  var _szEl=document.getElementById('prod-sizes');
+  if(_szEl){
+    var _sz=live?sizeRange(live):'';
+    if(_sz){
+      _szEl.innerHTML='';
+      var _sLbl=document.createElement('strong');_sLbl.textContent='Available Sizes: ';
+      _szEl.appendChild(_sLbl);_szEl.appendChild(document.createTextNode(_sz));
+      _szEl.style.display='block';
+    }else{
+      _szEl.innerHTML='';_szEl.style.display='none';
+    }
+  }
+  // "Fit:" line (SanMar only; hidden when no fit word is found).
+  var _ftEl=document.getElementById('prod-fit');
+  if(_ftEl){
+    var _ft=live?extractFit(live):'';
+    if(_ft){
+      _ftEl.innerHTML='';
+      var _fLbl=document.createElement('strong');_fLbl.textContent='Fit: ';
+      _ftEl.appendChild(_fLbl);_ftEl.appendChild(document.createTextNode(_ft));
+      _ftEl.style.display='block';
+    }else{
+      _ftEl.innerHTML='';_ftEl.style.display='none';
     }
   }
   // Hide mobile item step
