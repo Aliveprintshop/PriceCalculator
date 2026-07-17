@@ -660,6 +660,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="big-card accent"><div class="big-lbl">Per Shirt</div><div class="big-val" id="r-per">&mdash;</div></div>
         <div class="big-card total"><div class="big-lbl">Order Total</div><div class="big-val" id="r-total">&mdash;</div></div>
       </div>
+      <div id="qty-estimate-note" style="display:none;font-size:12px;color:var(--text3);margin:4px 0 2px;line-height:1.4;">Estimate based on 36 pcs &mdash; enter your sizes to update.</div>
       <div id="r-upcharge-note" style="display:none;"></div>
       <div id="r-guide" class="empty-msg"><strong>&#9888; Select a product to continue</strong>Pick a product above in Step 2 to see live pricing.</div>
       <div id="r-results" style="display:none;flex-direction:column;">
@@ -1337,6 +1338,15 @@ function getQty(){
   // Fallback to the hidden qty input (legacy code path that syncs into it)
   var el=document.getElementById('qty');
   return el?(parseInt(el.value)||0):0;
+}
+// Quantity used for the PRICING DISPLAY only. When the customer has entered sizes we
+// use their real total; before that, we show a representative estimate (36 pcs for
+// garments, the item's min break for drinkware). This NEVER feeds cart submission or
+// the MOQ warning — those use the true getSizeTotal()/getQty().
+function effectiveQty(){
+  var t=(typeof getSizeTotal==='function')?getSizeTotal():getQty();
+  if(t>0)return t;
+  return (typeof isDrinkware==='function'&&isDrinkware())?dwMinQty():36;
 }
 // Per-location color counts (1..N) come from the imprint dropdowns. Front/Back drive
 // screen-print color pricing via getFrEl/getBkEl (0-based index into FRONT/BACK tables).
@@ -2249,14 +2259,17 @@ function calcPP(qty){
 }
 
 function calc(){
-  var qty=getQty();
+  // sizeTotal = what the customer actually entered (drives MOQ + real order math).
+  // qty = the display quantity (falls back to a 36-pc / drinkware-min estimate when empty).
+  var sizeTotal=(typeof getSizeTotal==='function')?getSizeTotal():getQty();
+  var qty=(typeof effectiveQty==='function')?effectiveQty():getQty();
   if(sel)syncDecoMethod(); // derive decoMethod from each location's method before pricing
   var isMob=false; // unified single layout — always use the primary panel
   var minQ=getMinQty();
   renderPromoUI();
   var mw=document.getElementById('moq-warn');
   if(mw){
-    mw.style.display=(!isMob&&qty<minQ)?'block':'none';
+    mw.style.display=(!isMob&&sizeTotal>0&&sizeTotal<minQ)?'block':'none';
     var decoLabel=isDrinkware()?'this item':(decoMethod==='em'?'embroidery':(decoMethod==='ht'?'heat transfer':'screen printing'));
     mw.textContent='\u26A0 Minimum order is '+minQ+' pieces for '+decoLabel+'.';
   }
@@ -2288,6 +2301,17 @@ function calc(){
     }
   }
 
+  // Estimate note: only when a product is selected AND no sizes entered yet.
+  var qen=document.getElementById('qty-estimate-note');
+  if(qen){
+    if(sel&&sizeTotal===0){
+      qen.textContent='Estimate based on '+qty+' pcs — enter your sizes to update.';
+      qen.style.display='block';
+    }else{
+      qen.style.display='none';
+    }
+  }
+
   if(!sel){
     setVals(null,null);
     var guide=document.getElementById('r-guide'),res=document.getElementById('r-results'),mr=document.getElementById('mob-results');
@@ -2300,7 +2324,7 @@ function calc(){
     return;
   }
   updateSizeUpchargeHints();
-  if(qty<minQ){
+  if(sizeTotal>0&&sizeTotal<minQ){
     setVals(null,null);
     setUpchargeNote(0);
     // Keep right panel visible so the MOQ message is in context
@@ -2548,22 +2572,19 @@ function renderLocationPills(){
       var cc=on?(locColorCount[it.key]||1):0;
       if(cc>cap)cc=cap;
       if(on&&meth==='sp')locColorCount[it.key]=cc||1;
-      var opts,dots;
+      var opts;
       if(emOnly){
         // Embroidery-only: No imprint / Embroidery per location.
         opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>'
             +'<option value="em"'+(on?' selected':'')+'>Embroidery</option>';
-        dots=on?'<span class="imp-fc-label">Embroidery</span>':'';
       }else{
         // 1..cap colors = screen print; "Full Color" = heat transfer.
         opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>';
         for(var n=1;n<=cap;n++){var _clbl=n+' color';opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+_clbl+'</option>';}
         if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color</option>';
-        if(on&&meth==='ht'){dots='<span class="imp-fc-label">Full color</span>';}
-        else{dots='';for(var d=0;d<cc;d++){dots+='<span class="imp-dot"></span>';}}
       }
       return '<div class="imprint-row'+(on?' on':'')+'" id="imp-row-'+it.key+'">'
-        +'<div class="imprint-loc"><span class="imprint-loc-name">'+it.label+'</span><span class="imp-method" id="imp-method-'+it.key+'" style="font-size:11px;color:var(--text3);">'+((!on||isDW)?'':(meth==='sp'?'Screen Printing':(meth==='ht'?'Full Color Transfer':(meth==='em'?'Embroidery':''))))+'</span><span class="imprint-dots" id="imp-dots-'+it.key+'">'+dots+'</span></div>'
+        +'<div class="imprint-loc"><span class="imprint-loc-name">'+it.label+'</span><span class="imp-method" id="imp-method-'+it.key+'" style="font-size:11px;color:var(--text3);">'+((!on||isDW)?'':(meth==='sp'?'Screen Printing':(meth==='ht'?'Full Color Transfer':(meth==='em'?'Embroidery':''))))+'</span></div>'
         +'<select class="imprint-select" id="imp-'+it.key+'" data-loc="'+it.key+'" onchange="onImprintChange(\''+it.key+'\')">'+opts+'</select>'
         +'</div>';
     }).join('');
@@ -2577,23 +2598,19 @@ function renderLocationPills(){
 function onImprintChange(key){
   var el=document.getElementById('imp-'+key);
   var raw=el?String(el.value):'0';
-  var on=true,dotsHtml='';
+  var on=true;
   if(raw==='0'||raw===''){
     on=false;locs.delete(key);delete locMethod[key];
   }else if(raw==='fc'){
     locs.add(key);locMethod[key]='ht';
-    dotsHtml='<span class="imp-fc-label">Full color</span>';
   }else if(raw==='em'){
     locs.add(key);locMethod[key]='em';
-    dotsHtml='<span class="imp-fc-label">Embroidery</span>';
   }else{
     var v=parseInt(raw,10)||0;
-    if(v>0){locs.add(key);locMethod[key]='sp';locColorCount[key]=v;var d='';for(var i=0;i<v;i++)d+='<span class="imp-dot"></span>';dotsHtml=d;}
+    if(v>0){locs.add(key);locMethod[key]='sp';locColorCount[key]=v;}
     else{on=false;locs.delete(key);delete locMethod[key];}
   }
   var row=document.getElementById('imp-row-'+key);if(row)row.classList.toggle('on',on);
-  var dotsEl=document.getElementById('imp-dots-'+key);
-  if(dotsEl)dotsEl.innerHTML=on?dotsHtml:'';
   var methEl=document.getElementById('imp-method-'+key);
   if(methEl)methEl.textContent=impMethodText(key);
   syncDecoMethod();
@@ -2710,24 +2727,12 @@ function clearSizes(){
   ['size-mismatch','mob-size-mismatch'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
 }
 
-// Seed a default quantity (36 pcs) into one size slot when a product is loaded.
-// Picks the best available size in this order: M, L, OSFA, S, XL, first-available.
+// Size inputs now START EMPTY (stakeholder-approved). We no longer pre-seed a default
+// quantity into any size slot; the estimate shows representative pricing (36 pcs for
+// garments, the item's min break for drinkware) via effectiveQty() until the customer
+// enters their own sizes. Kept callable so existing callers stay intact — it simply
+// refreshes the size-total readout and pricing without populating any input.
 function applyDefaultQty(){
-  var DEFAULT_QTY=(typeof isDrinkware==='function'&&isDrinkware())?dwMinQty():36;
-  // Don't overwrite if the user has already entered any sizes (e.g. they navigated back from cart).
-  if(typeof getSizeTotal==='function'&&getSizeTotal()>0)return;
-  var preferred=['M','L','OSFA','S','XL','XS','2XL'];
-  var picked=null;
-  for(var i=0;i<preferred.length;i++){
-    if(SIZES.indexOf(preferred[i])>-1){picked=preferred[i];break;}
-  }
-  if(!picked&&SIZES.length)picked=SIZES[0];
-  if(!picked)return;
-  var key=picked.toLowerCase();
-  var d=document.getElementById('sz-'+key);
-  if(d){d.value=DEFAULT_QTY;d.classList.add('has-qty');}
-  var m=document.getElementById('mob-sz-'+key);
-  if(m){m.value=DEFAULT_QTY;m.classList.add('has-qty');}
   if(typeof onSizeInput==='function')onSizeInput();
 }
 
@@ -2957,6 +2962,12 @@ if(document.readyState!=='loading')initArtworkUploaders();else document.addEvent
 
 function captureCartItem(source){
   if(!sel)return{ok:false,msg:'Pick a product before adding to cart.'};
+  // The 36-pc figure is a DISPLAY-only estimate — never let an empty size grid be added.
+  var sizeTot=(typeof getSizeTotal==='function')?getSizeTotal():getQty();
+  if(sizeTot<=0){
+    if(typeof highlightSizes==='function')highlightSizes();
+    return{ok:false,msg:'Please enter your sizes and quantities before adding to cart.'};
+  }
   var qty=getQty(),minQ=getMinQty();
   if(qty<minQ)return{ok:false,msg:'Minimum order is '+minQ+' pieces for '+(decoMethod==='ht'?'heat transfer':'screen printing')+'.'};
   var pp=calcPP(qty);
