@@ -550,15 +550,15 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="prod-card-imgcol">
           <img class="prod-card-img" id="prod-card-img" src="" alt="" onclick="openLightbox()">
           <div class="view-pills" id="view-pills"></div>
-          <div class="prod-details" id="prod-details" style="display:none;"></div>
+          <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Change product</a>
         </div>
         <div>
           <div class="prod-card-brand" id="prod-card-brand"></div>
           <div class="prod-card-name" id="prod-card-name"></div>
           <div class="prod-card-style" id="prod-card-style"></div>
           <div class="prod-card-from" id="prod-card-from" style="display:none;"></div>
+          <div class="prod-details" id="prod-details" style="display:none;"></div>
           <div class="swatch-row" id="swatch-row"></div>
-          <a class="prod-card-change" href="https://aliveprintshop.com/products" target="_top" style="text-decoration:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h13a5 5 0 0 1 0 10h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Change product</a>
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -576,7 +576,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 3: Qty (size-grid-driven — total is computed from per-size inputs) -->
     <div class="step-block full">
-      <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">Quantity</div><div class="step-hint">Min 24 for screen printing, 10 for heat transfer &mdash; prices drop as quantity goes up</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn3">3</div><div><div class="step-title">Quantity</div></div></div>
       <!-- Hidden — qty is derived from the size grid below. Kept for legacy onSizeInput sync. -->
       <input type="hidden" id="qty" value="0">
       <div class="qty-hint" id="qty-hint" style="display:none;"></div>
@@ -586,20 +586,21 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 4: Locations -->
     <div class="step-block full">
-      <div class="step-head"><div class="step-num" id="sn4">4</div><div><div class="step-title">Print locations</div><div class="step-hint">Pick colors per location &mdash; choose &ldquo;No imprint&rdquo; to skip one</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn4">4</div><div><div class="step-title">Print locations</div></div></div>
       <div class="imprint-rows" id="imprint-rows"><span style="color:var(--text3);font-size:12px;">Pick a product above to choose imprint locations &amp; colors.</span></div>
       <div class="sleeve-note" id="sl-note">Sleeve print &mdash; included in pricing</div>
     </div>
 
     <!-- Step 4b: Per-location artwork upload (full width, shows only active locations) -->
     <div class="step-block full" id="artwork-section" style="display:none;">
-      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Artwork</div><div class="step-hint">Upload all your artwork here &mdash; PNG, JPG, PDF, AI, EPS, SVG, PSD, ZIP (up to 25MB each)</div></div></div>
+      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Artwork</div><div class="step-hint">PDF, AI, SVG &amp; Vector files are best.</div></div></div>
       <div class="artwork-dropzone" id="artwork-dropzone">
         <div class="artwork-dropzone-label">Upload all your artwork here</div>
         <uc-config ctx-name="art-all" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
         <uc-file-uploader-regular ctx-name="art-all"></uc-file-uploader-regular>
         <uc-upload-ctx-provider ctx-name="art-all" id="uc-ctx-all"></uc-upload-ctx-provider>
       </div>
+      <div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:8px;">AI generated artwork or low quality images will require an art fee to recreate the design in a high quality vector format.</div>
     </div>
 
     <!-- Step 5: Add-ons -->
@@ -625,7 +626,6 @@ textarea.of-input{resize:vertical;min-height:70px;}
     <!-- ORDER FORM (moved here: bottom of left column, full width) -->
     <div class="r-form-wrap full" id="r-of-wrap" style="display:none;width:100%;">
       <div id="r-of-form">
-        <div class="r-form-title">Ready to order?</div>
         <div id="of-summary" style="background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:12px;display:none;">
           <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">Your Configuration</div>
           <div id="of-summary-grid" style="display:grid;grid-template-columns:1fr;gap:2px;font-size:11px;color:var(--text2);"></div>
@@ -2506,6 +2506,17 @@ function _slNote(){
 // Render one row per available imprint location, each with a single "No imprint / N colors"
 // dropdown. The dropdown drives the `locs` Set (value>0 => location ON) and locColorCount
 // (used by getFrEl/getBkEl for screen-print color pricing).
+// Sub-line label under each imprint location name reflecting the current method.
+// Blank for drinkware (all-inclusive, not screen printing) and for "No imprint".
+function impMethodText(key){
+  if(typeof isDrinkware==='function'&&isDrinkware())return '';
+  if(!locs.has(key))return '';
+  var m=locMethod[key];
+  if(m==='sp')return 'Screen Printing';
+  if(m==='ht')return 'Full Color Transfer';
+  if(m==='em')return 'Embroidery';
+  return '';
+}
 function renderLocationPills(){
   if(!sel)return;
   var items=availableLocations(sel,decoMethod);
@@ -2546,13 +2557,13 @@ function renderLocationPills(){
       }else{
         // 1..cap colors = screen print; "Full Color" = heat transfer.
         opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>';
-        for(var n=1;n<=cap;n++){var _clbl=n+(n===1?' color':' colors')+(isDW?'':' screen print');opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+_clbl+'</option>';}
-        if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color Heat Transfer</option>';
+        for(var n=1;n<=cap;n++){var _clbl=n+' color';opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+_clbl+'</option>';}
+        if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color</option>';
         if(on&&meth==='ht'){dots='<span class="imp-fc-label">Full color</span>';}
         else{dots='';for(var d=0;d<cc;d++){dots+='<span class="imp-dot"></span>';}}
       }
       return '<div class="imprint-row'+(on?' on':'')+'" id="imp-row-'+it.key+'">'
-        +'<div class="imprint-loc"><span class="imprint-loc-name">'+it.label+'</span><span class="imprint-dots" id="imp-dots-'+it.key+'">'+dots+'</span></div>'
+        +'<div class="imprint-loc"><span class="imprint-loc-name">'+it.label+'</span><span class="imp-method" id="imp-method-'+it.key+'" style="font-size:11px;color:var(--text3);">'+((!on||isDW)?'':(meth==='sp'?'Screen Printing':(meth==='ht'?'Full Color Transfer':(meth==='em'?'Embroidery':''))))+'</span><span class="imprint-dots" id="imp-dots-'+it.key+'">'+dots+'</span></div>'
         +'<select class="imprint-select" id="imp-'+it.key+'" data-loc="'+it.key+'" onchange="onImprintChange(\''+it.key+'\')">'+opts+'</select>'
         +'</div>';
     }).join('');
@@ -2583,6 +2594,8 @@ function onImprintChange(key){
   var row=document.getElementById('imp-row-'+key);if(row)row.classList.toggle('on',on);
   var dotsEl=document.getElementById('imp-dots-'+key);
   if(dotsEl)dotsEl.innerHTML=on?dotsHtml:'';
+  var methEl=document.getElementById('imp-method-'+key);
+  if(methEl)methEl.textContent=impMethodText(key);
   syncDecoMethod();
   _slNote();
   if(typeof renderArtworkUploaders==='function')renderArtworkUploaders();
