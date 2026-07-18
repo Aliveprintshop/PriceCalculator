@@ -60,7 +60,7 @@ body{margin:0;padding:0;}
 .pb-change{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid var(--blue-mid);border-radius:16px;background:var(--blue-light);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--blue-dark);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
 .pb-change:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
 .pb-change svg{flex-shrink:0;}
-/* MOBILE: two-row grid — Row 1: [Change product] · [Add to cart]  |  Row 2: Per Shirt · Order Total */
+/* MOBILE: two-row grid — Row 1: [Change product | Add to cart] equal 50/50  |  Row 2: Per Shirt · Order Total */
 @media(max-width:640px){
   .pb-meta{display:none;}
   .price-bar-inner{
@@ -70,13 +70,25 @@ body{margin:0;padding:0;}
       "change add"
       "per    total";
     align-items:center;
-    gap:6px 12px;
+    gap:8px;
     padding:8px 12px;
     max-width:100%;
   }
-  .pb-change{grid-area:change;justify-self:start;padding:6px 12px;font-size:12px;}
+  /* Row 1 buttons: equal size, each fills its half edge-to-edge, comfortable tap targets */
+  .pb-change,
+  .pb-add{
+    width:100%;
+    box-sizing:border-box;
+    min-height:46px;
+    justify-content:center;
+    padding:0 12px;
+    font-size:13.5px;
+    border-radius:12px;
+    white-space:nowrap;
+  }
+  .pb-change{grid-area:change;}
   .pb-change .pb-change-txt{display:inline;}
-  .pb-add{grid-area:add;justify-self:end;width:auto;padding:9px 14px;font-size:12px;}
+  .pb-add{grid-area:add;}
   .price-bar-inner > .pb-metric:nth-child(3){grid-area:per;justify-self:center;}
   .price-bar-inner > .pb-metric:nth-child(5){grid-area:total;justify-self:center;}
   .pb-divider{display:none;}
@@ -86,8 +98,8 @@ body{margin:0;padding:0;}
 @media(max-width:400px){
   .pb-val{font-size:15px;}
   .pb-lbl{font-size:8px;}
-  .pb-change{padding:5px 10px;font-size:11.5px;}
-  .pb-add{padding:8px 12px;font-size:11.5px;}
+  .pb-change,
+  .pb-add{min-height:44px;font-size:13px;padding:0 8px;}
   .price-bar-inner{gap:6px 8px;padding:8px 10px;}
 }
 
