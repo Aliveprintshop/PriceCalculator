@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --blue:#1B6CCE; --blue-mid:#5294D9; --blue-light:#E8F1FB;
+  --blue:#1B6CCE; --blue-mid:#5294D9; --blue-light:#E8F1FB; --blue-dark:#1558A8;
   --green:#1F8B4C; --green-light:#E5F4EC;
   --surface:#FFFFFF; --surface2:#F7F8FA; --border:#E2E5EC; --border2:#CBD2DB;
   --text:#1A2330; --text2:#3D4A5C; --text3:#7B8696;
@@ -91,7 +91,10 @@ a:hover{text-decoration:underline;}
 .card-star:hover{border-color:var(--blue);color:var(--blue);transform:scale(1.08);}
 .card-star.on{background:var(--blue);border-color:var(--blue);color:#fff;}
 .card-star svg{width:17px;height:17px;pointer-events:none;}
-.proj-bar{position:fixed;left:0;right:0;bottom:0;z-index:400;background:var(--blue);color:#fff;box-shadow:0 -2px 14px rgba(0,0,0,0.22);display:none;}
+/* top:0 + translateY (set by projPositionBar) rather than bottom:0 — inside the
+   embed the bar is slid to the bottom of the visible slice of the iframe. */
+.proj-bar{position:fixed;left:0;right:0;top:0;z-index:400;background:var(--blue);color:#fff;box-shadow:0 -2px 14px rgba(0,0,0,0.22);display:none;will-change:transform;}
+html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .proj-bar.show{display:block;}
 .proj-bar-inner{max-width:1500px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .proj-count{font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;}
@@ -592,8 +595,60 @@ function projSyncBar(){
   bar.classList.toggle('show',n>0);
   var nEl=document.getElementById('proj-n');if(nEl)nEl.textContent=n;
   var wEl=document.getElementById('proj-word');if(wEl)wEl.textContent=(n===1?'item in your project':'items in your project');
-  document.body.style.paddingBottom=n>0?'72px':'';
+  document.body.style.paddingBottom=n>0?'80px':'';
+  projPositionBar();
 }
+
+// ---- Keeping the bar on screen inside the Hostinger embed ----
+// The embed auto-sizes the iframe to the FULL content height, so the iframe
+// itself never scrolls — the parent page does. That means position:fixed pins
+// the bar to the bottom of the content, not the bottom of the screen, and you
+// have to scroll to the very end of 3,000 products to see it.
+// The embed is same-origin, so we can read the parent's scroll position and
+// slide the bar to the bottom of whatever slice of the iframe is on screen.
+// We move it with a TRANSFORM on a still-fixed element: fixed elements are out
+// of flow, so this can never change body.scrollHeight and can never feed back
+// into the iframe height broadcast (see the resize loop warning further down).
+var _projEmbed=null;
+function projEmbedCtx(){
+  if(_projEmbed!==null)return _projEmbed;
+  _projEmbed=false;
+  try{
+    if(window.self!==window.top&&window.frameElement){
+      void window.top.document;   // throws if the parent is cross-origin
+      _projEmbed=true;
+      document.documentElement.classList.add('proj-embedded');
+    }
+  }catch(e){_projEmbed=false;}
+  return _projEmbed;
+}
+function projPositionBar(){
+  var bar=document.getElementById('proj-bar');
+  if(!bar||!PROJ.length)return;
+  if(!projEmbedCtx()){bar.style.transform='';return;}
+  try{
+    var r=window.frameElement.getBoundingClientRect();
+    var vh=window.top.innerHeight||0;
+    var barH=bar.offsetHeight||60;
+    // Bottom edge of the visible slice of this iframe, in our own coordinates.
+    var y=Math.min(vh,r.bottom)-r.top-barH;
+    var maxY=Math.max(0,(document.body.scrollHeight||0)-barH);
+    y=Math.max(0,Math.min(y,maxY));
+    bar.style.transform='translateY('+Math.round(y)+'px)';
+  }catch(e){bar.style.transform='';}
+}
+(function(){
+  function hook(){
+    if(!projEmbedCtx())return;
+    try{
+      window.top.addEventListener('scroll',projPositionBar,{passive:true});
+      window.top.addEventListener('resize',projPositionBar);
+    }catch(e){}
+    setInterval(projPositionBar,400);   // safety net: Hostinger re-renders blocks
+  }
+  if(document.readyState!=='loading')hook();
+  else document.addEventListener('DOMContentLoaded',hook);
+})();
 function projShareUrl(){
   var name=(document.getElementById('proj-name')||{}).value||'';
   var base=location.origin+location.pathname.replace(/[^\/]*$/,'')+'project.html';
