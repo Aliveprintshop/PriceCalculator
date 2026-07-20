@@ -56,7 +56,10 @@ a:hover{text-decoration:underline;}
 .results-count{font-size:13px;color:var(--text2);}
 .sort-wrap{display:flex;align-items:center;gap:6px;}
 .sort-label{font-size:13px;color:var(--text3);font-weight:600;}
-.sort-select{font-family:'Open Sans',sans-serif;font-size:13px;padding:7px 28px 7px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;outline:none;}
+/* line-height MUST be explicit. With the default `normal`, Chrome gives the
+   native select a line box taller than its border-box (Open Sans has tall
+   metrics), and the option text gets clipped along the bottom edge. */
+.sort-select{font-family:'Open Sans',sans-serif;font-size:13.5px;line-height:1.5;padding:9px 30px 9px 12px;height:auto;min-height:40px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;outline:none;}
 .sort-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
 .color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px;}
 .color-cell{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:4px 2px;font-family:inherit;}
@@ -150,7 +153,7 @@ a:hover{text-decoration:underline;}
 .pag-btn:disabled{color:var(--border2);cursor:not-allowed;background:var(--surface);}
 .pag-ellipsis{padding:0 4px;color:var(--text3);user-select:none;}
 .pagination-perpage{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);}
-.pagination-perpage select{padding:6px 28px 6px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%237B8696' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;}
+.pagination-perpage select{padding:8px 28px 8px 12px;line-height:1.5;height:auto;min-height:38px;border:1px solid var(--border);border-radius:var(--r);font-family:'Open Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%237B8696' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;}
 .pagination-perpage select:focus{border-color:var(--blue);}
 .back-to-top-wrap{margin-top:14px;text-align:center;}
 .back-to-top{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;background:none;border:none;padding:6px 12px;font-family:'Open Sans',sans-serif;}
