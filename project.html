@@ -190,10 +190,40 @@ function swatches(p){
   if(extra>0)html+='<span class="sw-more">+'+extra+'</span>';
   return '<div class="card-sw">'+html+'</div>';
 }
+// =====================================================================
+// "FROM" PRICE — must match the products page exactly.
+// The SanMar feed's case_price is our COST. The customer-facing figure is
+// cost x 1.5 (garment markup) PLUS one decoration at the 144-piece rate:
+//   screen print  -> +$2.60   (1-colour front)
+//   embroidery    -> +$5.00 + $45 setup spread over 144 pcs
+// Caps, polos/knits/wovens, outerwear and bags quote embroidery; everything
+// else quotes screen print.
+// KEEP IN SYNC with computeFromPrice()/fromUsesEmbroidery() in index.html.
+// =====================================================================
+var FROM_SP_144_1COLOR = 2.60;
+var FROM_EM_144_FRONT  = 5.00;
+var FROM_EM_SETUP_PER  = 45.00 / 144;
+function fromUsesEmbroidery(p){
+  var cat=String((p&&p.category)||'').toLowerCase();
+  if(cat.indexOf('cap')>-1)return true;
+  if(cat.indexOf('polo')>-1||cat.indexOf('knit')>-1||cat.indexOf('woven')>-1)return true;
+  if(cat.indexOf('outerwear')>-1)return true;
+  if(cat.indexOf('bag')>-1)return true;
+  return false;
+}
 function lowestPrice(p){
-  // Mirror the "from" price shown on the products page: cheapest case price.
-  var v=parseFloat(p.case_sale_price!=null?p.case_sale_price:p.case_price);
-  return isNaN(v)?null:v;
+  if(!p)return null;
+  // Basic Tee Deal: 5000 / 5000B use our $2.30 cost basis (same override as index.html).
+  var st=String(p.style||'').toUpperCase();
+  var base=(st==='5000'||st==='5000B')
+    ? 2.30
+    : (p.case_sale_price!=null?p.case_sale_price:p.case_price);
+  base=parseFloat(base);
+  if(isNaN(base))return null;
+  var garmentUnit=+(base*1.5).toFixed(2);
+  return fromUsesEmbroidery(p)
+    ? +(garmentUnit+FROM_EM_144_FRONT+FROM_EM_SETUP_PER).toFixed(2)
+    : +(garmentUnit+FROM_SP_144_1COLOR).toFixed(2);
 }
 
 function render(){
