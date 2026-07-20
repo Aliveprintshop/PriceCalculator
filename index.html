@@ -81,6 +81,9 @@ a:hover{text-decoration:underline;}
 .thankyou-banner .ty-close:hover{color:#143020;}
 .card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .card-badge{position:absolute;top:8px;left:8px;z-index:2;background:#16a34a;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:inline-flex;align-items:center;gap:3px;line-height:1;}
+/* Best Seller = brand blue (top 3). Most Popular = amber (next tier). */
+.card-badge.seller{background:var(--blue);}
+.card-badge.popular{background:#d97706;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
 .card-swatches{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);min-height:36px;}
@@ -259,7 +262,7 @@ a:hover{text-decoration:underline;}
     <div class="cat-chip-row" id="cat-chip-row"></div>
 
     <div class="toolbar">
-      <input type="text" class="toolbar-search" id="page-search" placeholder="Search by brand, style number, or product name (e.g. Carhartt, DM130, Tritee)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
+      <input type="text" class="toolbar-search" id="page-search" placeholder="Search products, brands, fabrics or features (e.g. Nike polo, moisture wicking, black hoodie)" autocomplete="off" spellcheck="false" oninput="onPageSearch()">
     </div>
 
     <div class="results-bar">
@@ -459,6 +462,19 @@ var BRAND_LAST={"A4":1};
 // 3) Then hats & accessories (caps, bags, accessories, protection) come last.
 // To reorder the pinned items or add another, edit CARHARTT_PINNED.
 var CARHARTT_PINNED=["CT106923","CT107106","CT106972","CT106577","CT104597","CT106899","CT107107","CT106868"];
+
+// =====================================================================
+// TOP PICKS — the 6 styles that lead the default (Featured) grid, in this
+// exact order. Applies to the main grid and to category/brand filters, but
+// NOT to the polo page or Shop-By-Industry views, which keep their own
+// curated ordering. Edit this list to change what leads the page.
+// =====================================================================
+var TOP_PICKS=['NL6210','799802','112','5000','NKDH7709','TM1MU411'];
+// Badges shown on the card. A style listed here gets the badge; the green
+// "Best Value" deal badge (Gildan 5000) takes precedence if both would apply.
+var BADGE_BEST_SELLER=['NL6210','799802','112'];
+var BADGE_MOST_POPULAR=['NKDH7709','TM1MU411'];
+function topPickRank(it){var i=TOP_PICKS.indexOf((it.s||'').toUpperCase());return i<0?999:i;}
 var CARHARTT_LAST_CATS={"Caps":1,"Accessories":1,"Bags":1,"Personal Protection":1};
 function carharttRank(it){
   var pi=CARHARTT_PINNED.indexOf((it.s||'').toUpperCase());
@@ -870,7 +886,91 @@ function colorBucketOf(name){
 function _colorText(it){var p=it._full;if(!p||!Array.isArray(p.colors))return '';var s='';for(var i=0;i<p.colors.length;i++){s+=' '+(p.colors[i].name||'');}return s;}
 // Searchable haystack for a product: brand, style, name, subcategory, raw color
 // names, AND mapped color-bucket keys (so "gray" finds a "Charcoal" item).
-function _hay(it){var p=it._full||{};var bl='';getColorBuckets(it).forEach(function(k){bl+=' '+k;});return (it.b+' '+it.s+' '+it.n+' '+(p.subcategory||'')+_colorText(it)+bl).toLowerCase();}
+// Build once per item and cache — the haystack now includes the full product
+// description (fabric, fit, features), so recomputing it on every keystroke
+// across 3,000+ products would be slow.
+function _hay(it){
+  if(it._hayCache)return it._hayCache;
+  var p=it._full||{};
+  var bl='';getColorBuckets(it).forEach(function(k){bl+=' '+k;});
+  var bucket=bucketForProduct(p)||'';
+  var sizes=Array.isArray(p.available_sizes)?p.available_sizes.join(' '):'';
+  var s=(it.b+' '+it.s+' '+it.n+' '+(p.category||'')+' '+(p.subcategory||'')+' '+
+         bucket+' '+(p.description||'')+' '+sizes+_colorText(it)+bl).toLowerCase();
+  // Normalize punctuation to spaces so "dri-fit", "1/4-zip" and "v-neck" are
+  // reachable however the customer types them.
+  s=s.replace(/[^a-z0-9]+/g,' ');
+  it._hayCache=s;
+  return s;
+}
+
+// Typing the key also matches any of its alternatives. Values are matched as
+// substrings against the normalized haystack, so keep them punctuation-free.
+var SEARCH_SYNONYMS={
+  tee:['t shirt','tshirt'], tshirt:['t shirt','tee'], tshirts:['t shirt','tee'],
+  hat:['cap','headwear'], hats:['cap','headwear'], cap:['hat','headwear'],
+  caps:['hat','headwear'], beanie:['knit cap','headwear'],
+  trucker:['mesh back','trucker'],
+  hoodie:['hooded','sweatshirt'], hoodies:['hooded','sweatshirt'],
+  hoody:['hooded','sweatshirt'], sweatshirt:['fleece','crew'],
+  crewneck:['crew neck','sweatshirt'],
+  quarterzip:['1 4 zip','quarter zip'], halfzip:['1 2 zip','half zip'],
+  jacket:['outerwear','jacket'], jackets:['outerwear','jacket'],
+  coat:['jacket','outerwear'], vest:['vest','bodywarmer'],
+  softshell:['soft shell'], windbreaker:['wind','jacket'],
+  polo:['knit','sport shirt'], polos:['knit','sport shirt'],
+  jogger:['sweatpant','jogger'], joggers:['sweatpant','jogger'],
+  sweatpants:['sweatpant','jogger'], shorts:['short'],
+  longsleeve:['long sleeve'], tank:['tank top','sleeveless'],
+  drifit:['dri fit','moisture','performance'], dryfit:['dri fit','moisture','performance'],
+  wicking:['moisture','performance','dri fit'],
+  performance:['moisture','polyester','dri fit'],
+  waterproof:['water resistant','waterproof'], rain:['water resistant','waterproof'],
+  womens:['women s','ladies','women'], ladies:['women s','ladies','women'],
+  women:['women s','ladies'], mens:['men s','men'],
+  kids:['youth','toddler'], kid:['youth','toddler'], child:['youth','toddler'],
+  bag:['backpack','tote','duffel','pack','bag'], bags:['backpack','tote','duffel','pack','bag'],
+  backpack:['pack','backpack'], duffel:['duffle','duffel'], duffle:['duffel','duffle'],
+  safety:['hi vis','high visibility','ansi','safety'],
+  hivis:['hi vis','high visibility'], reflective:['reflective','hi vis'],
+  fleece:['fleece','sweatshirt'], flannel:['flannel','plaid'],
+  organic:['organic'], recycled:['recycled','sustainable'], sustainable:['recycled','sustainable'],
+  cotton:['cotton'], poly:['polyester'], tri:['triblend','tri blend'],
+  triblend:['tri blend','triblend'], blend:['blend'],
+  vneck:['v neck'], henley:['henley','placket'],
+  apron:['apron'], beanies:['beanie','knit cap','headwear'],
+  workwear:['work','duck','canvas'], scrub:['scrub','medical'],
+  eco:['recycled','organic','sustainable']
+};
+
+// Split the query into tokens, each expanded with its synonyms. ALL tokens must
+// match (AND) — so "nike polo" finds Nike polos even though those two words
+// never sit next to each other in the product name.
+var _tokCache={q:null,toks:[]};
+function _searchTokens(){
+  var q=(_search||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  if(_tokCache.q===q)return _tokCache.toks;
+  var raw=q?q.split(/\s+/):[];
+  var toks=raw.map(function(t){
+    var alts=[t];
+    var syn=SEARCH_SYNONYMS[t];
+    if(syn)syn.forEach(function(s){alts.push(String(s).toLowerCase().replace(/[^a-z0-9]+/g,' '));});
+    return alts;
+  });
+  _tokCache={q:q,toks:toks};
+  return toks;
+}
+function _matchSearch(it){
+  var toks=_searchTokens();
+  if(!toks.length)return true;
+  var h=_hay(it);
+  for(var i=0;i<toks.length;i++){
+    var alts=toks[i],ok=false;
+    for(var j=0;j<alts.length;j++){if(alts[j]&&h.indexOf(alts[j])>-1){ok=true;break;}}
+    if(!ok)return false;
+  }
+  return true;
+}
 function _colorLabels(){return Array.from(_colors).map(function(k){for(var i=0;i<COLOR_BUCKETS.length;i++)if(COLOR_BUCKETS[i].key===k)return COLOR_BUCKETS[i].label;return k;}).join(', ');}
 
 function escAttr(s){return String(s||'').replace(/"/g,'&quot;');}
@@ -953,7 +1053,7 @@ function bucketCounts(){
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_brands.size>0&&!_brands.has(p.brand))return;
-    if(_search){var q=_search.toLowerCase().trim();if(_hay(it).indexOf(q)===-1)return;}
+    if(_search&&!_matchSearch(it))return;
     var b=bucketForProduct(p);
     if(b)c[b]=(c[b]||0)+1;
   });
@@ -964,9 +1064,11 @@ function brandCounts(){
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_cats.size>0){var b=bucketForProduct(p);if(!_cats.has(b))return;}
-    if(_search){var q=_search.toLowerCase().trim();if(_hay(it).indexOf(q)===-1)return;}
-    var name=p.brand||'(Unknown)';
-    c[name]=(c[name]||0)+1;
+    if(_search&&!_matchSearch(it))return;
+    // Unbranded items (house drinkware) are intentionally omitted from the
+    // brand filter rather than bucketed under "(Unknown)".
+    if(!p.brand)return;
+    c[p.brand]=(c[p.brand]||0)+1;
   });
   return c;
 }
@@ -1015,12 +1117,11 @@ function renderBrandList(){
 
 function colorCounts(){
   var c={};COLOR_BUCKETS.forEach(function(b){c[b.key]=0;});
-  var q=(_search||'').toLowerCase().trim();
   ITEMS.forEach(function(it){
     var p=it._full;if(!p)return;
     if(_cats.size>0){var bk=bucketForProduct(p);if(!_cats.has(bk))return;}
     if(_brands.size>0&&!_brands.has(p.brand))return;
-    if(q&&_hay(it).indexOf(q)===-1)return;
+    if(_search&&!_matchSearch(it))return;
     getColorBuckets(it).forEach(function(k){c[k]=(c[k]||0)+1;});
   });
   return c;
@@ -1058,7 +1159,6 @@ function renderIndustryList(){
 }
 
 function filtered(){
-  var q=(_search||'').toLowerCase().trim();
   // Industry mode: show only the curated styles for the active industry.
   var indSet=_industry&&_INDUSTRY_INDEX[_industry]?_INDUSTRY_INDEX[_industry].set:null;
   return ITEMS.filter(function(it){
@@ -1069,8 +1169,8 @@ function filtered(){
       if(_brands.size>0&&!_brands.has(p.brand))return false;
     }
     if(_colors.size>0){var _cb=getColorBuckets(it);var _okc=false;_colors.forEach(function(k){if(_cb.has(k))_okc=true;});if(!_okc)return false;}
-    if(!q)return true;
-    return _hay(it).indexOf(q)!==-1;
+    if(!_search)return true;
+    return _matchSearch(it);
   });
 }
 
@@ -1234,6 +1334,9 @@ function renderGrid(){
       if(ta===1)return (poloAssort.get(a)||0)-(poloAssort.get(b)||0);
       // tier 2 falls through to the standard ordering below
     }
+    // Top picks lead the grid in their listed order.
+    var tpa=topPickRank(a),tpb=topPickRank(b);
+    if(tpa!==tpb)return tpa-tpb;
     var pa=isPriority(a),pb=isPriority(b);
     if(pa&&!pb)return -1;
     if(pb&&!pa)return 1;
@@ -1295,7 +1398,12 @@ function renderGrid(){
     var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
     var brand=(it.b||'').replace(/"/g,'&quot;');
     var safeStyle=encodeURIComponent(it.s);
-    var dealBadge=(p&&p._dealBasicTee)?'<span class="card-badge">&#9733; Best Value</span>':'';
+    // One badge per card. Best Value (the Gildan 5000 deal) wins if both apply.
+    var _st=(it.s||'').toUpperCase();
+    var dealBadge='';
+    if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
+    else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
+    else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
     var isDw=!!(p&&p._drinkware);
     var metaHtml=isDw
       ? '<span class="card-meta-rush">All-Inclusive</span>'+
@@ -1307,7 +1415,7 @@ function renderGrid(){
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
-             '<div class="card-brand">'+brand+'</div>'+
+             (brand?'<div class="card-brand">'+brand+'</div>':'')+
              '<div class="card-name">'+displayName+'</div>'+
              '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
              '<div class="card-meta">'+metaHtml+'</div>'+
