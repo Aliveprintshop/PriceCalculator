@@ -452,6 +452,18 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .lightbox-overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;padding:48px 24px;box-sizing:border-box;}
 .lightbox-overlay.show{display:flex;}
 .lightbox-img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.5);}
+
+/* ── COMPANION / SIMILAR ITEMS (right sidebar) ── */
+.comp-sub{font-size:11.5px;color:var(--text3);margin:-2px 0 10px;line-height:1.35;}
+.comp-list{display:flex;flex-direction:column;gap:8px;}
+.comp-row{display:flex;align-items:center;gap:10px;padding:8px;border:1.5px solid var(--border);border-radius:var(--r-lg);background:var(--surface);cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:all 0.15s;}
+.comp-row:hover{border-color:var(--blue-mid);background:var(--blue-light);}
+.comp-thumb{width:46px;height:56px;object-fit:contain;background:#fff;border-radius:6px;flex-shrink:0;border:1px solid var(--border);}
+.comp-info{min-width:0;flex:1;}
+.comp-tag{display:inline-block;font-family:'Montserrat',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--blue-dark);background:var(--blue-light);border-radius:999px;padding:2px 7px;margin-bottom:3px;}
+.comp-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.comp-price{font-size:11.5px;color:var(--text3);margin-top:2px;}
+.comp-price strong{color:var(--green);font-weight:700;}
 .lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,0.15);color:#fff;border:none;font-size:22px;line-height:1;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;font-family:inherit;}
 .lightbox-close:hover{background:rgba(255,255,255,0.3);}
 /* BROWSE PRODUCTS MODAL */
@@ -779,6 +791,14 @@ textarea.of-input{resize:vertical;min-height:70px;}
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="18" r="4" fill="var(--blue)" stroke="white" stroke-width="1.2"/><path d="M16.5 18l1 1 2-2" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="trust-title">Proof Before We Print</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">You sign off before anything goes to print.</div></div>
         <div class="trust-badge" onclick="this.classList.toggle('open')"><div class="trust-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 4.8 5.6.8-4 3.9.9 5.5L12 14.4l-4.9 2.6.9-5.5-4-3.9 5.6-.8L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><div class="trust-title">100% Print Guarantee</div><div class="trust-chevron">&#9660;</div><div class="trust-detail">If it&rsquo;s not right, we make it right.</div></div>
       </div>
+    </div>
+
+    <!-- COMPANION / SIMILAR ITEMS — populated by renderCompanions() on every
+         product select. Sits after the relocated Add-ons card. -->
+    <div class="r-inner" id="companions-wrap" style="display:none;">
+      <div class="panel-lbl" id="comp-title">Also available in</div>
+      <div class="comp-sub" id="comp-sub">Same style, different fit</div>
+      <div class="comp-list" id="comp-list"></div>
     </div>
 
     <!-- ORDER FORM moved to bottom of left column (see #r-of-wrap there) -->
@@ -1749,6 +1769,7 @@ function pickItem(s){
   if(typeof renderDecoTabs==='function')renderDecoTabs();
   if(typeof renderLocationPills==='function')renderLocationPills();
   if(typeof applyDrinkwareUI==='function')applyDrinkwareUI(isDrinkware());
+  if(typeof renderCompanions==='function')renderCompanions();
   markDone(2);calc();
 }
 
@@ -3201,6 +3222,123 @@ function renderArtworkUploaders(){
 }
 function initArtworkUploaders(){renderArtworkUploaders();}
 if(document.readyState!=='loading')initArtworkUploaders();else document.addEventListener('DOMContentLoaded',initArtworkUploaders);
+
+// =====================================================================
+// COMPANION ITEMS
+// SanMar's feed has no "related styles" field, so the relationship is derived
+// from the product NAME: strip the brand, the style number and the variant
+// words (women's / youth / tall / long sleeve / sleeveless), then group what's
+// left by brand. Gildan 5000 -> 5000B, 5000L, 5400, 5400B. Comfort Colors
+// 1717 -> 6014, 9018. This covers ~44% of the catalog and picks up new SanMar
+// styles automatically on the nightly sync — no manual mapping to maintain.
+//
+// Products with no true variant (most caps and bags) fall back to "similar
+// items": same brand, same category, closest price.
+// =====================================================================
+var COMP_VARIANTS=[
+  {re:/\bwomen'?s\b|\bwomens\b|\bladies'?\b/i, label:"Women's", rank:1},
+  {re:/\byouth\b|\bboys\b|\bgirls\b/i,         label:'Youth',    rank:3},
+  {re:/\btoddler\b/i,                          label:'Toddler',  rank:4},
+  {re:/\binfant\b/i,                           label:'Infant',   rank:5},
+  {re:/\btall\b/i,                             label:'Tall',     rank:6},
+  {re:/\blong[- ]?sleeve\b|\bl\/s\b/i,         label:'Long Sleeve', rank:2},
+  {re:/\bsleeveless\b/i,                       label:'Sleeveless',  rank:7}
+];
+function compVariantLabel(it){
+  var n=it.n||'',hits=[],rank=9;
+  COMP_VARIANTS.forEach(function(v){if(v.re.test(n)){hits.push(v.label);if(v.rank<rank)rank=v.rank;}});
+  return {label:hits.length?hits.join(' · '):'Adult / Unisex', rank:hits.length?rank:0};
+}
+function _compNorm(it){
+  var n=(it.n||'').toLowerCase();
+  var b=(it.b||'').toLowerCase();
+  if(b)n=n.split(b).join(' ');
+  if(it.s)n=n.split(String(it.s).toLowerCase()).join(' ');
+  n=n.replace(/\b(women's|womens|women|ladies'|ladies|men's|mens|men|unisex|adult|youth|toddler|infant|boys|girls|juniors)\b/g,' ')
+     .replace(/\b(long sleeve|long-sleeve|longsleeve|short sleeve|short-sleeve|sleeveless|l\/s|s\/s)\b/g,' ')
+     .replace(/\btall\b/g,' ');
+  return n.replace(/[^a-z0-9]+/g,' ').trim();
+}
+var _compIndex=null;
+function _buildCompIndex(){
+  if(_compIndex)return _compIndex;
+  _compIndex={};
+  for(var i=0;i<ITEMS.length;i++){
+    var it=ITEMS[i],k=(it.b||'?')+'||'+_compNorm(it);
+    (_compIndex[k]=_compIndex[k]||[]).push(it);
+  }
+  return _compIndex;
+}
+function _compPrice(it){return (it.fp!=null?it.fp:it.p)||0;}
+function getCompanions(item){
+  if(!item)return {mode:'',list:[]};
+  var norm=_compNorm(item);
+  if(norm){
+    var grp=(_buildCompIndex()[(item.b||'?')+'||'+norm]||[]).filter(function(x){return x.s!==item.s;});
+    if(grp.length){
+      grp.sort(function(a,b){return compVariantLabel(a).rank-compVariantLabel(b).rank;});
+      return {mode:'variant',list:grp.slice(0,5)};
+    }
+  }
+  var p=item._full||{},base=_compPrice(item),same=[];
+  for(var i=0;i<ITEMS.length;i++){
+    var x=ITEMS[i],xp=x._full;
+    if(!xp||x.s===item.s)continue;
+    if((x.b||'')!==(item.b||''))continue;
+    if((xp.category||'')!==(p.category||''))continue;
+    same.push(x);
+  }
+  same.sort(function(a,b){return Math.abs(_compPrice(a)-base)-Math.abs(_compPrice(b)-base);});
+  return {mode:'similar',list:same.slice(0,4)};
+}
+function _compThumb(it){
+  var p=it._full||{};
+  if(Array.isArray(p.colors)){
+    for(var i=0;i<p.colors.length;i++){
+      var im=p.colors[i].images||{};
+      var s=im.front_model||im.front_flat;
+      if(s)return s;
+    }
+  }
+  return '';
+}
+function renderCompanions(){
+  var wrap=document.getElementById('companions-wrap');
+  var list=document.getElementById('comp-list');
+  if(!wrap||!list)return;
+  if(!sel){wrap.style.display='none';return;}
+  var res=getCompanions(sel);
+  if(!res.list.length){wrap.style.display='none';return;}
+  var isVar=res.mode==='variant';
+  document.getElementById('comp-title').textContent=isVar?'Also available in':'You might also like';
+  document.getElementById('comp-sub').textContent=isVar
+    ?'Same style, different fit — tap to price it out'
+    :'More from '+(sel.b||'this brand')+' — tap to price it out';
+  list.innerHTML=res.list.map(function(it){
+    var v=compVariantLabel(it);
+    var nm=(it.n||'').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+    var thumb=_compThumb(it);
+    var tag=isVar?'<span class="comp-tag">'+v.label+'</span>':'';
+    return '<button type="button" class="comp-row" onclick="selectCompanion(\''+String(it.s).replace(/'/g,"\\'")+'\')">'+
+      (thumb?'<img class="comp-thumb" loading="lazy" src="'+thumb+'" alt="">':'<span class="comp-thumb"></span>')+
+      '<span class="comp-info">'+tag+
+        '<span class="comp-name">'+nm+'</span>'+
+        '<span class="comp-price">from <strong>$'+_compPrice(it).toFixed(2)+'</strong>/pc</span>'+
+      '</span></button>';
+  }).join('');
+  wrap.style.display='';
+}
+// Swap the calculator to the companion product in place, then bring the
+// customer back to the top so they see the product they just switched to.
+function selectCompanion(style){
+  if(typeof pickItem!=='function')return;
+  pickItem(style);
+  try{
+    var t=document.querySelector('.desktop-layout')||document.body;
+    t.scrollIntoView({behavior:'smooth',block:'start'});
+    if(window.parent!==window)window.parent.postMessage({type:'alive-scrolltop'},'*');
+  }catch(e){}
+}
 
 // Relocate the add-ons block into the right sidebar (just after the estimate card),
 // so it renders as its own card after the promo area. Preserves all IDs/handlers.
