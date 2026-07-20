@@ -80,6 +80,43 @@ a:hover{text-decoration:underline;}
 .thankyou-banner .ty-close{flex:0 0 auto;background:transparent;border:0;font-size:22px;line-height:1;color:#5a7a66;cursor:pointer;padding:0 2px;}
 .thankyou-banner .ty-close:hover{color:#143020;}
 .card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+/* ── PROJECTS (build a selection, share a link) ── */
+.card-star{position:absolute;top:6px;right:6px;z-index:3;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:rgba(255,255,255,0.94);color:var(--text3);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;line-height:1;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.10);}
+.card-star:hover{border-color:var(--blue);color:var(--blue);transform:scale(1.08);}
+.card-star.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.card-star svg{width:17px;height:17px;pointer-events:none;}
+.proj-bar{position:fixed;left:0;right:0;bottom:0;z-index:400;background:var(--blue);color:#fff;box-shadow:0 -2px 14px rgba(0,0,0,0.22);display:none;}
+.proj-bar.show{display:block;}
+.proj-bar-inner{max-width:1500px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.proj-count{font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;}
+.proj-count span{opacity:0.85;font-weight:600;}
+.proj-spacer{flex:1;min-width:8px;}
+.proj-btn{padding:9px 16px;border-radius:999px;border:none;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;background:#fff;color:var(--blue-dark);transition:opacity 0.15s;}
+.proj-btn:hover{opacity:0.88;}
+.proj-btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.55);}
+.proj-modal{position:fixed;inset:0;z-index:500;background:rgba(15,17,23,0.55);display:none;align-items:center;justify-content:center;padding:20px;}
+.proj-modal.show{display:flex;}
+.proj-box{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:22px;box-shadow:0 12px 44px rgba(0,0,0,0.3);max-height:88vh;overflow:auto;}
+.proj-box h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;margin:0 0 4px;color:var(--text);}
+.proj-box p.sub{font-size:13px;color:var(--text3);margin:0 0 16px;line-height:1.5;}
+.proj-label{display:block;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin:0 0 5px;}
+.proj-input{width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Open Sans',sans-serif;font-size:14px;outline:none;margin-bottom:14px;}
+.proj-input:focus{border-color:var(--blue);}
+.proj-link-row{display:flex;gap:8px;align-items:stretch;}
+.proj-link{flex:1;min-width:0;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface2);font-family:'Open Sans',sans-serif;font-size:12.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.proj-copy{padding:10px 18px;border-radius:10px;border:none;background:var(--blue);color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.proj-copy.done{background:#16a34a;}
+.proj-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.proj-close{background:transparent;border:none;color:var(--text3);font-size:13px;cursor:pointer;text-decoration:underline;padding:6px 0;}
+.proj-chiplist{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;max-height:150px;overflow:auto;}
+.proj-chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:4px 8px 4px 10px;font-size:12px;color:var(--text2);}
+.proj-chip button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;}
+.proj-chip button:hover{color:#dc2626;}
+@media(max-width:640px){
+  .proj-bar-inner{padding:10px 14px;gap:8px;}
+  .proj-count{width:100%;}
+  .proj-btn{flex:1;text-align:center;}
+}
 .card-badge{position:absolute;top:8px;left:8px;z-index:2;background:#16a34a;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:inline-flex;align-items:center;gap:3px;line-height:1;}
 /* Best Seller = brand blue (top 3). Most Popular = amber (next tier). */
 .card-badge.seller{background:var(--blue);}
@@ -303,6 +340,41 @@ a:hover{text-decoration:underline;}
 
 </div>
 
+<!-- ── PROJECTS: sticky bar + share modal ── -->
+<div class="proj-bar" id="proj-bar">
+  <div class="proj-bar-inner">
+    <div class="proj-count"><strong id="proj-n">0</strong> <span id="proj-word">items in your project</span></div>
+    <div class="proj-spacer"></div>
+    <button type="button" class="proj-btn ghost" onclick="projClear()">Clear</button>
+    <button type="button" class="proj-btn" onclick="projOpenShare()">Share Project &rarr;</button>
+  </div>
+</div>
+
+<div class="proj-modal" id="proj-modal" onclick="if(event.target===this)projCloseShare()">
+  <div class="proj-box">
+    <h3>Share this project</h3>
+    <p class="sub">Name it, copy the link, and send it to your customer. They&rsquo;ll see exactly these products and can request a quote in one click.</p>
+
+    <label class="proj-label" for="proj-name">Project name</label>
+    <input type="text" class="proj-input" id="proj-name" placeholder="e.g. Miller Construction &mdash; Spring Uniforms" maxlength="70" oninput="projBuildLink()">
+
+    <label class="proj-label">Items in this project</label>
+    <div class="proj-chiplist" id="proj-chips"></div>
+
+    <label class="proj-label" for="proj-link">Shareable link</label>
+    <div class="proj-link-row">
+      <div class="proj-link" id="proj-link">&mdash;</div>
+      <button type="button" class="proj-copy" id="proj-copy" onclick="projCopyLink()">Copy</button>
+    </div>
+
+    <div class="proj-actions">
+      <button type="button" class="proj-btn" style="background:var(--blue);color:#fff;" onclick="projPreview()">Preview as customer &rarr;</button>
+      <div class="proj-spacer"></div>
+      <button type="button" class="proj-close" onclick="projCloseShare()">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // =====================================================================
 // Data + state
@@ -475,6 +547,98 @@ var TOP_PICKS=['NL6210','799802','112','5000','NKDH7709','TM1MU411'];
 var BADGE_BEST_SELLER=['NL6210','799802','112'];
 var BADGE_MOST_POPULAR=['NKDH7709','TM1MU411'];
 function topPickRank(it){var i=TOP_PICKS.indexOf((it.s||'').toUpperCase());return i<0?999:i;}
+
+// =====================================================================
+// PROJECTS — build a product selection, then share it as a link.
+// The selection lives in localStorage while you build it, and is encoded
+// INTO the share URL itself (#n=<name>&p=<style,style,...>), so there is no
+// database to run. project.html decodes that hash and renders the lookbook.
+// =====================================================================
+var PROJ_KEY='alive_project_v1';
+var PROJ=[];
+function projLoad(){
+  try{var raw=localStorage.getItem(PROJ_KEY);PROJ=raw?JSON.parse(raw):[];}
+  catch(e){PROJ=[];}
+  if(!Array.isArray(PROJ))PROJ=[];
+}
+function projSave(){
+  try{localStorage.setItem(PROJ_KEY,JSON.stringify(PROJ));}catch(e){}
+}
+function projHas(style){return PROJ.indexOf(String(style).toUpperCase())>-1;}
+function projToggle(style,btn){
+  var s=String(style).toUpperCase(),i=PROJ.indexOf(s);
+  if(i>-1)PROJ.splice(i,1); else PROJ.push(s);
+  projSave();projSyncBar();
+  if(btn){
+    btn.classList.toggle('on',projHas(s));
+    btn.setAttribute('aria-pressed',projHas(s)?'true':'false');
+    btn.setAttribute('title',projHas(s)?'Remove from project':'Add to project');
+  }
+  return false;
+}
+function projClear(){
+  if(PROJ.length&&!confirm('Remove all '+PROJ.length+' items from this project?'))return;
+  PROJ=[];projSave();projSyncBar();renderGrid();
+}
+function projSyncBar(){
+  var bar=document.getElementById('proj-bar');if(!bar)return;
+  var n=PROJ.length;
+  bar.classList.toggle('show',n>0);
+  var nEl=document.getElementById('proj-n');if(nEl)nEl.textContent=n;
+  var wEl=document.getElementById('proj-word');if(wEl)wEl.textContent=(n===1?'item in your project':'items in your project');
+  document.body.style.paddingBottom=n>0?'72px':'';
+}
+function projShareUrl(){
+  var name=(document.getElementById('proj-name')||{}).value||'';
+  var base=location.origin+location.pathname.replace(/[^\/]*$/,'')+'project.html';
+  var hash='#p='+encodeURIComponent(PROJ.join(','));
+  if(name.trim())hash+='&n='+encodeURIComponent(name.trim());
+  return base+hash;
+}
+function projBuildLink(){
+  var el=document.getElementById('proj-link');if(!el)return;
+  el.textContent=PROJ.length?projShareUrl():'Add products to build a link';
+  var c=document.getElementById('proj-copy');if(c){c.classList.remove('done');c.textContent='Copy';}
+}
+function projRenderChips(){
+  var host=document.getElementById('proj-chips');if(!host)return;
+  if(!PROJ.length){host.innerHTML='<span style="font-size:13px;color:var(--text3);">No products yet — tap the + on any product.</span>';return;}
+  host.innerHTML=PROJ.map(function(s){
+    var it=null;for(var i=0;i<ITEMS.length;i++){if((ITEMS[i].s||'').toUpperCase()===s){it=ITEMS[i];break;}}
+    var label=it?cleanName(it.n||'',it.b||''):s;
+    if(label.length>34)label=label.slice(0,33)+'…';
+    return '<span class="proj-chip">'+label.replace(/</g,'&lt;')+
+           '<button type="button" title="Remove" onclick="projToggle(\''+String(s).replace(/'/g,"\\'")+'\');projRenderChips();projBuildLink();renderGrid();">&times;</button></span>';
+  }).join('');
+}
+function projOpenShare(){
+  document.getElementById('proj-modal').classList.add('show');
+  projRenderChips();projBuildLink();
+}
+function projCloseShare(){document.getElementById('proj-modal').classList.remove('show');}
+function projCopyLink(){
+  if(!PROJ.length)return;
+  var url=projShareUrl(),btn=document.getElementById('proj-copy');
+  function ok(){if(btn){btn.textContent='Copied!';btn.classList.add('done');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('done');},2200);}}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(ok,function(){projCopyFallback(url,ok);});
+  }else projCopyFallback(url,ok);
+}
+function projCopyFallback(url,cb){
+  var ta=document.createElement('textarea');ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');cb();}catch(e){prompt('Copy this link:',url);}
+  document.body.removeChild(ta);
+}
+function projPreview(){if(PROJ.length)window.open(projShareUrl(),'_blank');}
+function projStarHtml(style){
+  var on=projHas(style),s=String(style).replace(/'/g,"\\'");
+  return '<button type="button" class="card-star'+(on?' on':'')+'" aria-pressed="'+(on?'true':'false')+'" '+
+    'title="'+(on?'Remove from project':'Add to project')+'" '+
+    'onclick="event.preventDefault();event.stopPropagation();projToggle(\''+s+'\',this);return false;">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'+
+    '</button>';
+}
 var CARHARTT_LAST_CATS={"Caps":1,"Accessories":1,"Bags":1,"Personal Protection":1};
 function carharttRank(it){
   var pi=CARHARTT_PINNED.indexOf((it.s||'').toUpperCase());
@@ -1466,7 +1630,7 @@ function renderGrid(){
       : '<span class="card-meta-rush">Rush Available</span>'+
         '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
-           dealBadge+
+           dealBadge+projStarHtml(it.s)+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
@@ -1667,6 +1831,7 @@ window.addEventListener('message',function(e){
     }
   }
   _page=1;
+  projLoad();projSyncBar();
   renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
 },false);
 

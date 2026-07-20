@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Selection — Alive Print Shop</title>
+<!--
+  ALIVE PRINT SHOP — SHARED PROJECT (LOOKBOOK)
+  ===========================================
+  Renders a curated product selection from the URL hash. There is NO database:
+  the whole list travels inside the link, e.g.
+
+      project.html#p=NL6210,5000,112&n=Miller%20Construction
+
+    p = comma-separated style numbers (order preserved)
+    n = optional project name
+
+  Built by the sales team on the products page ("Share Project"). The recipient
+  can browse, click into the calculator, or request a quote on the whole list —
+  which posts to the same GoHighLevel webhook the cart uses.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4f7;--surface:#fff;--surface2:#f7f8fa;
+  --border:#e2e6eb;--border2:#c8cdd5;
+  --text:#0f1117;--text2:#4b5563;--text3:#9ca3af;
+  --blue:#1b6cce;--blue-light:#eef4fc;--blue-mid:#a8c8f0;--blue-dark:#1558a8;
+  --green:#16a34a;--green-light:#eafaf0;
+  --r:8px;--r-lg:12px;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);font-family:'Open Sans',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 60px;}
+
+/* HEADER */
+.hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.hero-eyebrow{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
+.hero h1{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;margin:0 0 8px;line-height:1.2;}
+.hero p{margin:0;font-size:14.5px;color:var(--text2);line-height:1.6;max-width:65ch;}
+.hero-meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);color:var(--blue-dark);border:1px solid var(--blue-mid);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700;}
+.pill.green{background:var(--green-light);color:var(--green);border-color:#bbf7d0;}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:14px;margin-bottom:22px;}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:all 0.15s;}
+.card:hover{border-color:var(--blue-mid);box-shadow:0 4px 16px rgba(27,108,206,0.12);transform:translateY(-2px);}
+.card-img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
+.card-sw{display:flex;flex-wrap:wrap;gap:3px;padding:8px 12px 0;}
+.sw{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,0.16);}
+.sw-more{font-size:10.5px;color:var(--text3);align-self:center;margin-left:2px;}
+.card-info{padding:9px 12px 13px;}
+.card-brand{font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--blue);margin-bottom:3px;}
+.card-name{font-size:13px;font-weight:600;line-height:1.35;margin-bottom:5px;}
+.card-price{font-size:13px;color:var(--text3);}
+.card-price strong{color:var(--green);font-weight:700;}
+.card-cta{margin-top:7px;font-size:12px;font-weight:700;color:var(--blue);}
+
+/* QUOTE PANEL */
+.quote{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.quote h2{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:800;margin:0 0 4px;}
+.quote .sub{font-size:13.5px;color:var(--text2);margin:0 0 18px;line-height:1.6;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:640px){.frow{grid-template-columns:1fr;}}
+label.lbl{display:block;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.inp{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-family:'Open Sans',sans-serif;font-size:14px;outline:none;background:var(--surface2);}
+.inp:focus{border-color:var(--blue);background:#fff;}
+textarea.inp{min-height:88px;resize:vertical;}
+.btn{width:100%;margin-top:6px;padding:15px;border:none;border-radius:12px;background:var(--blue);color:#fff;font-family:'Montserrat',sans-serif;font-size:15.5px;font-weight:800;cursor:pointer;transition:background 0.15s;}
+.btn:hover{background:var(--blue-dark);}
+.btn:disabled{opacity:0.6;cursor:default;}
+.err{display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:9px;padding:10px 12px;font-size:13px;margin-bottom:12px;}
+.err.show{display:block;}
+.note{font-size:12px;color:var(--text3);text-align:center;margin-top:10px;line-height:1.5;}
+
+/* STATES */
+.done{display:none;background:var(--green-light);border:1.5px solid #bbf7d0;border-radius:var(--r-lg);padding:34px 26px;text-align:center;}
+.done.show{display:block;}
+.done-ic{width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;}
+.done h2{font-family:'Montserrat',sans-serif;font-size:21px;font-weight:800;margin:0 0 8px;}
+.done p{font-size:14.5px;color:var(--text2);margin:0;line-height:1.6;}
+.empty{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:44px 24px;text-align:center;color:var(--text2);}
+.empty h2{font-family:'Montserrat',sans-serif;font-size:19px;margin:0 0 8px;color:var(--text);}
+.empty a{color:var(--blue);font-weight:700;}
+.foot{text-align:center;margin-top:26px;font-size:13px;color:var(--text3);}
+.foot a{color:var(--blue);font-weight:700;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero" id="hero">
+    <div class="hero-eyebrow">A selection from Alive Print Shop</div>
+    <h1 id="proj-title">Your Product Selection</h1>
+    <p id="proj-blurb">Here are the products we picked out for you. Tap any item to see live pricing, or request a quote on the whole list below.</p>
+    <div class="hero-meta">
+      <span class="pill" id="pill-count">&mdash;</span>
+      <span class="pill green">No setup fees</span>
+      <span class="pill green">Proof before we print</span>
+      <span class="pill green">100% print guarantee</span>
+    </div>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+  <div id="empty" class="empty" style="display:none;">
+    <h2>This project link is empty</h2>
+    <p>The link may be incomplete. <a href="https://aliveprintshop.com/products" target="_top">Browse all products &rarr;</a></p>
+  </div>
+
+  <div class="quote" id="quote">
+    <h2>Request a quote on this selection</h2>
+    <p class="sub">Send this list to our team and we&rsquo;ll come back with pricing, mockups and turnaround. No payment now.</p>
+    <div class="err" id="err"></div>
+    <div class="frow">
+      <div><label class="lbl" for="f-name">Your name *</label><input class="inp" id="f-name" autocomplete="name"></div>
+      <div><label class="lbl" for="f-company">Company</label><input class="inp" id="f-company" autocomplete="organization"></div>
+    </div>
+    <div class="frow">
+      <div><label class="lbl" for="f-email">Email *</label><input class="inp" id="f-email" type="email" autocomplete="email"></div>
+      <div><label class="lbl" for="f-phone">Phone *</label><input class="inp" id="f-phone" type="tel" autocomplete="tel"></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="lbl" for="f-qty">Roughly how many pieces?</label>
+      <input class="inp" id="f-qty" placeholder="e.g. 48 shirts, 24 hats">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="lbl" for="f-notes">Anything else we should know?</label>
+      <textarea class="inp" id="f-notes" placeholder="Colors, sizes, in-hands date, which items you like most..."></textarea>
+    </div>
+    <button type="button" class="btn" id="f-btn" onclick="submitQuote()">Request My Quote</button>
+    <div class="note">We reply within one business day. Your info is only used to prepare this quote.</div>
+  </div>
+
+  <div class="done" id="done">
+    <div class="done-ic">&#10003;</div>
+    <h2>Got it &mdash; thank you!</h2>
+    <p>Your selection is on its way to our team. We&rsquo;ll follow up shortly with pricing and mockups.</p>
+  </div>
+
+  <div class="foot">
+    Powered by <a href="https://aliveprintshop.com" target="_top">Alive Print Shop</a> &middot; Las Vegas, NV
+  </div>
+
+</div>
+
+<script>
+var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53';
+var CALC_URL='https://aliveprintshop.com/insta-price';
+var STYLES=[],PROJ_NAME='',FOUND=[];
+
+// ---- Parse the list out of the URL hash ----
+function parseHash(){
+  var h=(location.hash||'').replace(/^#/,'');
+  var out={p:'',n:''};
+  h.split('&').forEach(function(part){
+    var i=part.indexOf('=');if(i<0)return;
+    var k=part.slice(0,i),v=part.slice(i+1);
+    try{v=decodeURIComponent(v);}catch(e){}
+    if(k==='p')out.p=v;
+    if(k==='n')out.n=v;
+  });
+  return out;
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cleanName(name,brand){
+  if(!name)return '';
+  if(!brand)return name;
+  var b=brand.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return name.replace(new RegExp('^\\s*'+b+'\\s*[\\-:\\u2014]?\\s*','i'),'').trim();
+}
+function firstImage(p){
+  if(!Array.isArray(p.colors))return '';
+  for(var i=0;i<p.colors.length;i++){
+    var im=p.colors[i].images||{};
+    var s=im.front_model||im.front_flat;
+    if(s)return s;
+  }
+  return '';
+}
+function swatches(p){
+  if(!Array.isArray(p.colors)||!p.colors.length)return '';
+  var max=7,vis=p.colors.slice(0,max),extra=p.colors.length-vis.length;
+  var html=vis.map(function(c){
+    return '<span class="sw" title="'+esc(c.name||'')+'" style="background:'+(c.hex||'#ccc')+';"></span>';
+  }).join('');
+  if(extra>0)html+='<span class="sw-more">+'+extra+'</span>';
+  return '<div class="card-sw">'+html+'</div>';
+}
+function lowestPrice(p){
+  // Mirror the "from" price shown on the products page: cheapest case price.
+  var v=parseFloat(p.case_sale_price!=null?p.case_sale_price:p.case_price);
+  return isNaN(v)?null:v;
+}
+
+function render(){
+  var grid=document.getElementById('grid');
+  if(!FOUND.length){
+    document.getElementById('empty').style.display='block';
+    document.getElementById('quote').style.display='none';
+    document.getElementById('pill-count').textContent='0 products';
+    return;
+  }
+  document.getElementById('pill-count').textContent=FOUND.length+(FOUND.length===1?' product':' products')+' selected';
+  grid.innerHTML=FOUND.map(function(p){
+    var brand=p.brand||'';
+    var nm=cleanName(p.name||'',brand);
+    var img=firstImage(p);
+    var price=lowestPrice(p);
+    return '<a class="card" target="_top" href="'+CALC_URL+'?style='+encodeURIComponent(p.style)+'">'+
+      (img?'<img class="card-img" loading="lazy" src="'+esc(img)+'" alt="'+esc(nm)+'">':'<div class="card-img"></div>')+
+      swatches(p)+
+      '<div class="card-info">'+
+        (brand?'<div class="card-brand">'+esc(brand)+'</div>':'')+
+        '<div class="card-name">'+esc(nm)+'</div>'+
+        (price!=null?'<div class="card-price">from <strong>$'+price.toFixed(2)+'</strong>/pc</div>':'')+
+        '<div class="card-cta">See live pricing &rarr;</div>'+
+      '</div></a>';
+  }).join('');
+}
+
+// ---- Load catalog and match the requested styles ----
+function load(){
+  var h=parseHash();
+  PROJ_NAME=h.n||'';
+  STYLES=(h.p||'').split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+
+  if(PROJ_NAME){
+    document.getElementById('proj-title').textContent=PROJ_NAME;
+    document.title=PROJ_NAME+' — Alive Print Shop';
+  }
+  if(!STYLES.length){render();return;}
+
+  fetch('products.json',{cache:'no-store'})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var list=Array.isArray(data)?data:(data.products||[]);
+      var byStyle={};
+      list.forEach(function(p){if(p&&p.style)byStyle[String(p.style).toUpperCase()]=p;});
+      // Preserve the order the sales rep chose.
+      STYLES.forEach(function(s){if(byStyle[s])FOUND.push(byStyle[s]);});
+      render();
+    })
+    .catch(function(e){
+      console.error('[Alive] project load failed',e);
+      render();
+    });
+}
+
+// ---- Quote request → same GoHighLevel webhook the cart uses ----
+function submitQuote(){
+  var err=document.getElementById('err');err.classList.remove('show');
+  var name=document.getElementById('f-name').value.trim();
+  var email=document.getElementById('f-email').value.trim();
+  var phone=document.getElementById('f-phone').value.trim();
+  var company=document.getElementById('f-company').value.trim();
+  var qty=document.getElementById('f-qty').value.trim();
+  var notes=document.getElementById('f-notes').value.trim();
+
+  if(!name||!email||!phone){
+    err.textContent='Name, email, and phone are required.';err.classList.add('show');return;
+  }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    err.textContent='Please enter a valid email address.';err.classList.add('show');return;
+  }
+
+  var btn=document.getElementById('f-btn');btn.disabled=true;btn.textContent='Sending...';
+
+  var parts=name.split(/\s+/);
+  var firstName=parts.shift()||name;
+  var lastName=parts.join(' ');
+
+  var itemsBlock=FOUND.map(function(p,i){
+    var pr=lowestPrice(p);
+    return (i+1)+'. '+(p.brand?p.brand+' ':'')+cleanName(p.name||'',p.brand||'')+
+           '\n   Style: '+p.style+(pr!=null?'  |  from $'+pr.toFixed(2)+'/pc':'');
+  }).join('\n');
+
+  var shareUrl=location.href;
+  var noteText=
+    '— SHARED PROJECT QUOTE REQUEST —\n'+
+    (PROJ_NAME?'Project: '+PROJ_NAME+'\n':'')+
+    'Link: '+shareUrl+'\n\n'+
+    '— CONTACT —\n'+
+    'Name: '+name+'\n'+
+    'Email: '+email+'\n'+
+    'Phone: '+phone+'\n'+
+    (company?'Company: '+company+'\n':'')+
+    '\n— PRODUCTS ('+FOUND.length+') —\n'+
+    (itemsBlock||'None')+'\n\n'+
+    '— ESTIMATED QUANTITY —\n'+(qty||'Not specified')+'\n\n'+
+    '— CUSTOMER NOTES —\n'+(notes||'—');
+
+  var payload={
+    firstName:firstName,lastName:lastName,
+    email:email,phone:phone,company:company,
+    projectName:PROJ_NAME,
+    projectLink:shareUrl,
+    itemCount:FOUND.length,
+    estimatedQty:qty,
+    orderNotes:notes,
+    styles:STYLES.join(', '),
+    items:JSON.stringify(FOUND.map(function(p){
+      return {style:p.style,brand:p.brand||'',name:p.name||'',fromPrice:lowestPrice(p)};
+    })),
+    itemsBlock:itemsBlock,
+    noteText:noteText,
+    source:'Shared project quote request',
+    submittedAt:new Date().toLocaleString('en-US',{timeZone:'America/Los_Angeles'})
+  };
+
+  var fd=new FormData();
+  Object.keys(payload).forEach(function(k){
+    var v=payload[k];
+    fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));
+  });
+
+  fetch(GHL_WEBHOOK,{method:'POST',body:fd})
+    .then(function(r){
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      document.getElementById('quote').style.display='none';
+      document.getElementById('done').classList.add('show');
+      window.scrollTo({top:0,behavior:'smooth'});
+    })
+    .catch(function(e){
+      console.error('[Alive] quote submit failed',e);
+      err.textContent='Something went wrong sending your request. Please call us at (702) 685-6270 and we’ll take care of it.';
+      err.classList.add('show');
+      btn.disabled=false;btn.textContent='Request My Quote';
+    });
+}
+
+load();
+window.addEventListener('hashchange',function(){FOUND=[];load();});
+</script>
+</body>
+</html>
