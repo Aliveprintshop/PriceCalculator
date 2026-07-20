@@ -434,6 +434,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card>div:last-child{flex:1;min-width:260px;display:flex;flex-direction:column;}
 .prod-card-imgcol{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0;}
 .prod-card-img{width:340px;max-width:86vw;aspect-ratio:2 / 3;height:auto;object-fit:cover;object-position:center;background:var(--surface2);border-radius:var(--r-lg);border:1px solid var(--border);box-sizing:border-box;flex-shrink:0;cursor:zoom-in;transition:opacity 0.15s;padding:10px;}
+/* Drinkware / manually-uploaded items: photos are square-ish, so a 2:3 "cover"
+   frame crops them. Show the whole image in a shorter frame instead. */
+.prod-card-img.fit-contain{object-fit:contain;aspect-ratio:4 / 5;background:#fff;padding:14px;}
 .prod-card-from{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--green);margin:10px 0 12px;}
 .prod-card-from span{font-size:11px;font-weight:600;color:var(--text3);}
 @media(max-width:620px){
@@ -2891,6 +2894,12 @@ function applyDrinkwareUI(on){
   ['step5-addons','mstep5-addons'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display=on?'none':'';});
   ['ta-rush','ta-super','mob-ta-rush','mob-ta-super'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display=on?'none':'';});
   if(on){addons={neck:false,hem:false,bag:false};if(typeof selectTA==='function')selectTA('std');}
+  // Product photo: drinkware images are square-ish, so switch the frame from
+  // "cover" (crops) to "contain" (shows the whole item) while drinkware is selected.
+  ['prod-card-img','mob-prod-card-img'].forEach(function(id){
+    var im=document.getElementById(id);
+    if(im){ if(on)im.classList.add('fit-contain'); else im.classList.remove('fit-contain'); }
+  });
   // Imprint rows: drinkware caps colors at 4 and offers Front only (handled by
   // availableLocations + imprintColorCap). Re-render so the cap/options are correct.
   if(sel&&typeof renderLocationPills==='function')renderLocationPills();
