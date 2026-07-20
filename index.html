@@ -56,10 +56,13 @@ a:hover{text-decoration:underline;}
 .results-count{font-size:13px;color:var(--text2);}
 .sort-wrap{display:flex;align-items:center;gap:6px;}
 .sort-label{font-size:13px;color:var(--text3);font-weight:600;}
-/* line-height MUST be explicit. With the default `normal`, Chrome gives the
-   native select a line box taller than its border-box (Open Sans has tall
-   metrics), and the option text gets clipped along the bottom edge. */
-.sort-select{font-family:'Open Sans',sans-serif;font-size:13.5px;line-height:1.5;padding:9px 30px 9px 12px;height:auto;min-height:40px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;outline:none;}
+/* The option text used to be clipped along the bottom edge. Cause: a NATIVE
+   select (appearance:auto) ignores line-height and builds its own line box,
+   which Open Sans's tall metrics push past the border-box. Setting
+   appearance:none hands layout back to CSS so line-height applies — the same
+   reason .pagination-perpage select below never had this bug. Removing the
+   native appearance also removes the native arrow, so we draw our own. */
+.sort-select{font-family:'Open Sans',sans-serif;font-size:13.5px;line-height:1.5;padding:9px 32px 9px 12px;height:auto;min-height:40px;border:1.5px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%237B8696' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 12px center;}
 .sort-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
 .color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px;}
 .color-cell{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:4px 2px;font-family:inherit;}
