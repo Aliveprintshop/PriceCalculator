@@ -81,6 +81,7 @@ jobs:
           cp alive-pricing-calculator.html _site/alive-pricing-calculator.html
           cp cart.html _site/cart.html
           cp alive-pricing-calculator-v2.html _site/alive-pricing-calculator-v2.html
+          cp project.html _site/project.html
           cat > _site/index.html <<'EOF'
           <!doctype html>
           <meta charset="utf-8">
