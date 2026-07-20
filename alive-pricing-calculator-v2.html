@@ -2572,14 +2572,15 @@ function calc(){
   setVals(pp,tot);
   setUpchargeNote(upTot);
 
-  // Hero "From $X /shirt" — cheapest per-shirt price at the top volume break.
+  // Hero "From $X /shirt" — REMOVED 2026-07-20. It showed the cheapest price at
+  // the top volume break, which contradicted the real "Per Shirt" estimate above
+  // it and confused customers. One price only. Restore by un-commenting below.
   var fromEl=document.getElementById('prod-card-from');
-  if(fromEl){
-    var fromQ=(typeof isDrinkware==='function'&&isDrinkware())?Math.max(minQ,144):500;
-    var fp=calcPP(fromQ);
-    if(fp){fromEl.innerHTML='From '+fmt(fp)+' <span>/shirt</span>';fromEl.style.display='block';}
-    else fromEl.style.display='none';
-  }
+  if(fromEl)fromEl.style.display='none';
+  /* var fromQ=(typeof isDrinkware==='function'&&isDrinkware())?Math.max(minQ,144):500;
+     var fp=calcPP(fromQ);
+     if(fp){fromEl.innerHTML='From '+fmt(fp)+' <span>/shirt</span>';fromEl.style.display='block';}
+     else fromEl.style.display='none'; */
 
   // Rush fee display
   var baseNoRush=(function(){
