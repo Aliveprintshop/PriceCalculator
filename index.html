@@ -609,46 +609,49 @@ function projSyncBar(){
 // We move it with a TRANSFORM on a still-fixed element: fixed elements are out
 // of flow, so this can never change body.scrollHeight and can never feed back
 // into the iframe height broadcast (see the resize loop warning further down).
-var _projEmbed=null;
-function projEmbedCtx(){
-  if(_projEmbed!==null)return _projEmbed;
-  _projEmbed=false;
-  try{
-    if(window.self!==window.top&&window.frameElement){
-      void window.top.document;   // throws if the parent is cross-origin
-      _projEmbed=true;
-      document.documentElement.classList.add('proj-embedded');
-    }
-  }catch(e){_projEmbed=false;}
-  return _projEmbed;
-}
+// IMPORTANT: this page is served from aliveprintshop.github.io while the site
+// is aliveprintshop.com — CROSS-ORIGIN. We cannot read the parent's scroll
+// position ourselves. The embed snippet (same-origin with the top page) walks
+// up the frame chain, works out which slice of this iframe is actually on
+// screen, and posts it down as an 'alive-viewport' message. Everything below
+// is driven by that message; without it we fall back to a plain bottom bar.
+var _vp=null;                      // {visTop, visBottom} in OUR coordinates
+window.addEventListener('message',function(e){
+  var d=e&&e.data;
+  if(!d||typeof d!=='object'||d.type!=='alive-viewport')return;
+  var t=parseFloat(d.visTop),b=parseFloat(d.visBottom);
+  if(isNaN(t)||isNaN(b)||b<=t)return;
+  _vp={visTop:t,visBottom:b};
+  document.documentElement.classList.add('proj-embedded');
+  projPositionBar();
+  projPositionModal();
+},false);
+
 function projPositionBar(){
   var bar=document.getElementById('proj-bar');
   if(!bar||!PROJ.length)return;
-  if(!projEmbedCtx()){bar.style.transform='';return;}
-  try{
-    var r=window.frameElement.getBoundingClientRect();
-    var vh=window.top.innerHeight||0;
-    var barH=bar.offsetHeight||60;
-    // Bottom edge of the visible slice of this iframe, in our own coordinates.
-    var y=Math.min(vh,r.bottom)-r.top-barH;
-    var maxY=Math.max(0,(document.body.scrollHeight||0)-barH);
-    y=Math.max(0,Math.min(y,maxY));
-    bar.style.transform='translateY('+Math.round(y)+'px)';
-  }catch(e){bar.style.transform='';}
+  if(!_vp){bar.style.transform='';return;}
+  var barH=bar.offsetHeight||60;
+  var y=_vp.visBottom-barH;
+  var maxY=Math.max(0,(document.body.scrollHeight||0)-barH);
+  y=Math.max(0,Math.min(y,maxY));
+  bar.style.transform='translateY('+Math.round(y)+'px)';
 }
-(function(){
-  function hook(){
-    if(!projEmbedCtx())return;
-    try{
-      window.top.addEventListener('scroll',projPositionBar,{passive:true});
-      window.top.addEventListener('resize',projPositionBar);
-    }catch(e){}
-    setInterval(projPositionBar,400);   // safety net: Hostinger re-renders blocks
-  }
-  if(document.readyState!=='loading')hook();
-  else document.addEventListener('DOMContentLoaded',hook);
-})();
+
+// The share dialog is position:fixed, which inside an auto-sized iframe centres
+// it in ~9,000px of content rather than on screen. Pin it into the visible slice.
+function projPositionModal(){
+  var m=document.getElementById('proj-modal');
+  if(!m||!m.classList.contains('show'))return;
+  var box=m.querySelector('.proj-box');
+  if(!box)return;
+  if(!_vp){m.style.alignItems='';box.style.marginTop='';box.style.maxHeight='';return;}
+  var visH=Math.max(120,_vp.visBottom-_vp.visTop);
+  m.style.alignItems='flex-start';
+  box.style.maxHeight=Math.round(visH-24)+'px';
+  var y=_vp.visTop+Math.max(12,(visH-box.offsetHeight)/2);
+  box.style.marginTop=Math.round(y)+'px';
+}
 function projShareUrl(){
   var name=(document.getElementById('proj-name')||{}).value||'';
   var base=location.origin+location.pathname.replace(/[^\/]*$/,'')+'project.html';
@@ -675,6 +678,9 @@ function projRenderChips(){
 function projOpenShare(){
   document.getElementById('proj-modal').classList.add('show');
   projRenderChips();projBuildLink();
+  projPositionModal();
+  // Box height isn't final until the chips render, so re-place on the next frame.
+  setTimeout(projPositionModal,30);
 }
 function projCloseShare(){document.getElementById('proj-modal').classList.remove('show');}
 function projCopyLink(){
