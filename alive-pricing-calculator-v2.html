@@ -121,15 +121,35 @@ body{margin:0;padding:0;}
 .artwork-row{margin-bottom:14px;}
 .artwork-row:last-child{margin-bottom:0;}
 .artwork-row .r-form-lbl{display:block;margin-bottom:6px;}
-.artwork-dropzone{padding:11px 14px;border:1.5px dashed var(--border2);border-radius:12px;text-align:center;background:var(--surface2);transition:border-color 0.15s,background 0.15s;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;}
-.artwork-dropzone:hover{border-color:var(--blue-mid);background:var(--blue-light);}
+/* Drop zone reads as an active target: blue dashed border on a light blue wash.
+   Distinct from the neutral gray cards around it, but clearly NOT the primary
+   CTA — Add to Cart keeps the solid blue fill. */
+.artwork-dropzone{padding:13px 14px;border:2px dashed var(--blue-mid);border-radius:12px;text-align:center;background:var(--blue-light);transition:border-color 0.15s,background 0.15s;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;}
+.artwork-dropzone:hover{border-color:var(--blue);background:#e4eefb;}
 .artwork-dropzone-label{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-bottom:0;}
 #artwork-dropzone{width:100%;}
 #artwork-section uc-file-uploader-regular{display:block;width:100%;--uc-primary-rgb:27,108,206;--uc-size-base:22px;}
 /* Uploadcare renders in LIGHT DOM, so target the real trigger element (not ::part) to stretch it full width like #of-btn */
 #artwork-section uc-file-uploader-regular uc-simple-btn{display:block;width:100%;}
 #artwork-section uc-file-uploader-regular uc-simple-btn uc-drop-area{display:block;width:100%;}
-#artwork-section uc-file-uploader-regular uc-simple-btn button{width:100%;box-sizing:border-box;justify-content:center;min-height:46px;font-size:14px;}
+/* SECONDARY button style: white fill + bold blue outline and blue label.
+   Deliberately an OUTLINED button so it never competes with the solid-blue
+   "+ Add to Cart" primary CTA — outline = supporting action, fill = commit. */
+#artwork-section uc-file-uploader-regular uc-simple-btn button{
+  width:100%;box-sizing:border-box;justify-content:center;min-height:50px;
+  font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;
+  background:#fff !important;
+  color:var(--blue-dark) !important;
+  border:2px solid var(--blue) !important;
+  border-radius:10px !important;
+  box-shadow:0 1px 3px rgba(27,108,206,0.12);
+  transition:background 0.15s,box-shadow 0.15s;
+}
+#artwork-section uc-file-uploader-regular uc-simple-btn button:hover{
+  background:var(--blue-light) !important;
+  box-shadow:0 2px 8px rgba(27,108,206,0.2);
+}
+#artwork-section uc-file-uploader-regular uc-simple-btn button svg{color:var(--blue) !important;}
 /* keep ::part as a harmless fallback in case a future build uses shadow DOM */
 #artwork-section uc-file-uploader-regular::part(button){font-size:14px;width:100%;justify-content:center;min-height:46px;}
 .size-section.flash{animation:flashHi 1.1s ease;}
