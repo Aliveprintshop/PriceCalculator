@@ -909,10 +909,10 @@ function _hay(it){
 var SEARCH_SYNONYMS={
   tee:['t shirt','tshirt'], tshirt:['t shirt','tee'], tshirts:['t shirt','tee'],
   hat:['cap','headwear'], hats:['cap','headwear'], cap:['hat','headwear'],
-  caps:['hat','headwear'], beanie:['knit cap','headwear'],
+  caps:['hat','headwear'], beanie:['beanie','knit cap'], beanies:['beanie','knit cap'],
   trucker:['mesh back','trucker'],
-  hoodie:['hooded','sweatshirt'], hoodies:['hooded','sweatshirt'],
-  hoody:['hooded','sweatshirt'], sweatshirt:['fleece','crew'],
+  hoodie:['hooded','hoodie'], hoodies:['hooded','hoodie'],
+  hoody:['hooded','hoodie'], sweatshirt:['sweatshirt','fleece'],
   crewneck:['crew neck','sweatshirt'],
   quarterzip:['1 4 zip','quarter zip'], halfzip:['1 2 zip','half zip'],
   jacket:['outerwear','jacket'], jackets:['outerwear','jacket'],
@@ -933,12 +933,12 @@ var SEARCH_SYNONYMS={
   backpack:['pack','backpack'], duffel:['duffle','duffel'], duffle:['duffel','duffle'],
   safety:['hi vis','high visibility','ansi','safety'],
   hivis:['hi vis','high visibility'], reflective:['reflective','hi vis'],
-  fleece:['fleece','sweatshirt'], flannel:['flannel','plaid'],
+  fleece:['fleece'], flannel:['flannel','plaid'],
   organic:['organic'], recycled:['recycled','sustainable'], sustainable:['recycled','sustainable'],
   cotton:['cotton'], poly:['polyester'], tri:['triblend','tri blend'],
   triblend:['tri blend','triblend'], blend:['blend'],
   vneck:['v neck'], henley:['henley','placket'],
-  apron:['apron'], beanies:['beanie','knit cap','headwear'],
+  apron:['apron'],
   workwear:['work','duck','canvas'], scrub:['scrub','medical'],
   eco:['recycled','organic','sustainable']
 };
@@ -950,7 +950,10 @@ var _tokCache={q:null,toks:[]};
 function _searchTokens(){
   var q=(_search||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   if(_tokCache.q===q)return _tokCache.toks;
+  // Single characters ("1" and "4" from "1/4 zip") match almost everything and
+  // only add noise — drop them, unless the whole query is one character.
   var raw=q?q.split(/\s+/):[];
+  if(raw.length>1)raw=raw.filter(function(t){return t.length>1;});
   var toks=raw.map(function(t){
     var alts=[t];
     var syn=SEARCH_SYNONYMS[t];
@@ -970,6 +973,52 @@ function _matchSearch(it){
     if(!ok)return false;
   }
   return true;
+}
+
+// ---- RELEVANCE RANKING ----
+// Matching on the description is what makes "moisture wicking" work, but it
+// also means a crewneck whose description mentions "hoodie" matches a search
+// for "hoodie". Scoring fixes the ORDER: a hit in the product name counts far
+// more than a hit buried in the description, so the real hoodies come first.
+function _fields(it){
+  if(it._fCache)return it._fCache;
+  var p=it._full||{};
+  var norm=function(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ');};
+  it._fCache={
+    style:norm(it.s), brand:norm(it.b), name:norm(it.n),
+    cat:norm((p.category||'')+' '+(p.subcategory||'')+' '+(bucketForProduct(p)||'')),
+    desc:norm(p.description||''),
+    colors:norm(_colorText(it))
+  };
+  return it._fCache;
+}
+function _searchScore(it){
+  var toks=_searchTokens();
+  if(!toks.length)return 0;
+  var f=_fields(it), score=0;
+  var phrase=(_search||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  // Whole query matches the style number, or appears verbatim in the name.
+  if(f.style===phrase)score+=1000;
+  else if(f.style.indexOf(phrase)>-1)score+=400;
+  if(phrase&&f.name.indexOf(phrase)>-1)score+=250;
+  if(phrase&&f.brand.indexOf(phrase)>-1)score+=150;
+  toks.forEach(function(alts){
+    var hitName=false,hitBrand=false,hitCat=false,hitColor=false,hitDesc=false;
+    alts.forEach(function(a){
+      if(!a)return;
+      if(f.name.indexOf(a)>-1)hitName=true;
+      if(f.brand.indexOf(a)>-1)hitBrand=true;
+      if(f.cat.indexOf(a)>-1)hitCat=true;
+      if(f.colors.indexOf(a)>-1)hitColor=true;
+      if(f.desc.indexOf(a)>-1)hitDesc=true;
+    });
+    if(hitName)score+=60;
+    if(hitBrand)score+=40;
+    if(hitCat)score+=25;
+    if(hitColor)score+=12;
+    if(hitDesc)score+=3;
+  });
+  return score;
 }
 function _colorLabels(){return Array.from(_colors).map(function(k){for(var i=0;i<COLOR_BUCKETS.length;i++)if(COLOR_BUCKETS[i].key===k)return COLOR_BUCKETS[i].label;return k;}).join(', ');}
 
@@ -1333,6 +1382,12 @@ function renderGrid(){
       if(ta===0)return POLO_PINNED.indexOf((a.s||'').toUpperCase())-POLO_PINNED.indexOf((b.s||'').toUpperCase());
       if(ta===1)return (poloAssort.get(a)||0)-(poloAssort.get(b)||0);
       // tier 2 falls through to the standard ordering below
+    }
+    // When the customer is searching, relevance wins over curated ordering —
+    // otherwise a top pick would sit above a far better match for their query.
+    if(_search){
+      var sa=_searchScore(a),sb=_searchScore(b);
+      if(sa!==sb)return sb-sa;
     }
     // Top picks lead the grid in their listed order.
     var tpa=topPickRank(a),tpb=topPickRank(b);
