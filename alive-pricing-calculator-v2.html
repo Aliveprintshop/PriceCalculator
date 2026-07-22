@@ -1250,9 +1250,9 @@ const EM_FRONT={12:12.50,24:7.50,36:6.00,72:5.25,144:5.00,300:4.85,500:4.65};
 const EM_SIDE ={12: 6.95,24:5.95,36:4.45,72:4.25,144:3.95,300:3.45,500:3.25};
 const EM_SETUP_FEE=45.00; // one-time per order, distributed across pieces in unit price.
 const EM_MIN_QTY=12;
-// Hats that ARE foam truckers and therefore CAN be heat-transferred.
-// Everything else in the Caps category gets embroidery only.
-const FOAM_TRUCKER_STYLES={'OG605':1,'C936':1};
+// Foam / snapback trucker caps: FRONT imprint only (no back or side), Embroidery + Full Color.
+// (All other hats offer Front/Back/Left Side/Right Side per availableLocations.)
+const FOAM_TRUCKER_STYLES={'C936':1,'C993':1,'OG605':1,'NE410':1,'C950':1,'DT624':1,'NE212':1};
 function getEMQB(q){var r=EM_QB[0];for(var i=0;i<EM_QB.length;i++){if(q>=EM_QB[i])r=EM_QB[i];}return r;}
 
 // =====================================================================
@@ -1316,6 +1316,8 @@ function availableLocations(s,method){
   if(!s)return [];
   var pt=getProductType(s);
   if(pt==='drinkware')return [{key:'front',label:'Front'}];
+  // Foam / snapback trucker caps: FRONT location only (structured front panel; no back/side).
+  if(pt==='hat'&&isFoamTrucker(s))return [{key:'front',label:'Front',cls:'front'}];
   if(method==='em'){
     switch(pt){
       case 'hat':
