@@ -1294,11 +1294,11 @@ function availableDecoMethods(s){
   switch(pt){
     case 'tshirt':     return ['sp','ht'];
     case 'sweatshirt': return ['sp','ht','em'];
-    case 'polo':       return ['ht','em'];
-    case 'jacket':     return ['ht','em'];
-    case 'hat':        return isFoamTrucker(s)?['ht','em']:['em'];
+    case 'polo':       return ['em','ht'];
+    case 'jacket':     return ['em','ht'];
+    case 'hat':        return ['em','ht'];
     case 'beanie':     return ['em'];
-    case 'bag':        return ['ht','em'];
+    case 'bag':        return ['em','ht'];
     case 'bottom':     return ['sp','ht'];
     case 'drinkware':  return ['sp'];
     default:           return ['sp','ht'];
@@ -2474,26 +2474,26 @@ function setUpchargeNote(upTot){
 // (locMethod[key]: 'sp' N-color screen print, 'ht' Full Color heat transfer, 'em' embroidery).
 // Mixing sp + ht on one order is supported. Garment base, add-ons and rush are added by the caller.
 function decoCostPerUnit(qty){
-  var c=0;
-  // Embroidery-only products keep the legacy per-location embroidery pricing.
-  if(decoMethod==='em'){
-    var eqb=getEMQB(qty);
-    locs.forEach(function(key){
-      var cls=emLocCls(key);
-      c+=(cls==='front')?EM_FRONT[eqb]:EM_SIDE[eqb];
-    });
-    // Distribute the one-time $45 setup fee across the unit price so order total = pp * qty includes it.
-    c+=EM_SETUP_FEE/qty;
-    return c;
-  }
+  // Per-location decoration cost. Each active location is priced by its OWN method
+  // (locMethod[key]): 'em' embroidery, 'ht' Full Color heat transfer, 'sp' N-color screen print.
+  // Mixing methods across locations on one order is supported (e.g. embroidered left chest +
+  // Full Color back). The one-time $45 embroidery setup fee is added once if any location is embroidered.
+  var c=0, anyEM=false;
   var qb=getQB(qty);
   var htp=getHTP(qty);
+  var eqb=getEMQB(qty);
   locs.forEach(function(key){
     var m=locMethod[key]||'sp';
     var isSleeve=(key==='left-sleeve'||key==='right-sleeve');
-    if(m==='ht'){
-      // Heat transfer / Full Color: front & back at the HT per-piece rate, each sleeve at HT_SLEEVE.
-      c+=isSleeve?HT_SLEEVE:htp;
+    // Small/side placements for Full Color: sleeves + hat sides bill at the sleeve rate.
+    var isSide=(isSleeve||key==='left-side'||key==='right-side');
+    if(m==='em'){
+      anyEM=true;
+      var cls=emLocCls(key);
+      c+=(cls==='front')?EM_FRONT[eqb]:EM_SIDE[eqb];
+    }else if(m==='ht'){
+      // Heat transfer / Full Color: full placements at the HT per-piece rate, sides at HT_SLEEVE.
+      c+=isSide?HT_SLEEVE:htp;
     }else{
       // Screen print: front/back read their own stored color count via getFrElEff/getBkElEff.
       if(key==='front')c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
@@ -2502,6 +2502,8 @@ function decoCostPerUnit(qty){
       else c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)]; // any other non-sleeve SP location bills at the front rate
     }
   });
+  // Distribute the one-time $45 embroidery setup fee across the unit price so total = pp*qty includes it.
+  if(anyEM)c+=EM_SETUP_FEE/qty;
   return c;
 }
 
@@ -2747,21 +2749,26 @@ function syncDecoMethod(){
   if(!sel)return;
   if(typeof isDrinkware==='function'&&isDrinkware()){decoMethod='sp';return;}
   if(isEmbroideryOnly()){decoMethod='em';return;}
-  var anySP=false,anyHT=false;
+  var anySP=false,anyHT=false,anyEM=false;
   locs.forEach(function(k){
     var m=locMethod[k]||'sp';
-    if(m==='ht')anyHT=true;else if(m==='sp')anySP=true;
+    if(m==='ht')anyHT=true;else if(m==='em')anyEM=true;else anySP=true;
   });
+  // All-embroidery order -> 'em' (min qty 12, EM pricing); all Full Color -> 'ht'; otherwise 'sp'.
+  if(anyEM&&!anySP&&!anyHT){decoMethod='em';return;}
   decoMethod=(anyHT&&!anySP)?'ht':'sp';
 }
 // Human label for the current order's decoration mix (cart payload + GHL).
 function decoMethodLabel(){
-  if(decoMethod==='em')return 'Embroidery';
-  var anySP=false,anyHT=false;
-  locs.forEach(function(k){var m=locMethod[k]||'sp';if(m==='ht')anyHT=true;else if(m==='sp')anySP=true;});
-  if(anySP&&anyHT)return 'Mixed (Screen Print + Heat Transfer)';
-  if(anyHT)return 'Heat Transfer';
-  return 'Screen Printing';
+  var anySP=false,anyHT=false,anyEM=false;
+  locs.forEach(function(k){var m=locMethod[k]||'sp';if(m==='ht')anyHT=true;else if(m==='em')anyEM=true;else anySP=true;});
+  var parts=[];
+  if(anySP)parts.push('Screen Printing');
+  if(anyHT)parts.push('Heat Transfer');
+  if(anyEM)parts.push('Embroidery');
+  if(parts.length===0)return isEmbroideryOnly()?'Embroidery':'Screen Printing';
+  if(parts.length===1)return parts[0];
+  return 'Mixed ('+parts.join(' + ')+')';
 }
 
 function getHTP(qty){var r=HT_BREAKS[0][1];for(var i=0;i<HT_BREAKS.length;i++){if(qty>=HT_BREAKS[i][0])r=HT_BREAKS[i][1];}return r;}
@@ -2834,7 +2841,14 @@ function impMethodText(key){
 }
 function renderLocationPills(){
   if(!sel)return;
-  var items=availableLocations(sel,decoMethod);
+  // Location layout: screen-print-capable products (tees, sweatshirts, bottoms, drinkware) use the
+  // method-specific layout; embroidery-primary products (polos, jackets, bags, hats) ALWAYS use the
+  // embroidery layout (left chest, sleeves, hat sides, etc.) so labels stay correct even when a
+  // location is switched to Full Color.
+  var _availM=availableDecoMethods(sel);
+  var _isDWlayout=(typeof isDrinkware==='function'&&isDrinkware());
+  var _layoutMethod=(_isDWlayout||_availM.indexOf('sp')>-1)?decoMethod:'em';
+  var items=availableLocations(sel,_layoutMethod);
   var host=document.getElementById('imprint-rows');
   if(!items.length){
     if(host)host.innerHTML='<span style="color:var(--text3);font-size:12px;">No imprint locations available for this product / decoration combination.</span>';
@@ -2849,31 +2863,31 @@ function renderLocationPills(){
   if(next.size===0)next.add(items[0].key);
   locs=next;
   var cap=imprintColorCap();
-  var emOnly=isEmbroideryOnly();
   var isDW=(typeof isDrinkware==='function'&&isDrinkware());
-  // Full Color (heat transfer) is offered for garment-print products, but NOT for drinkware
-  // (all-inclusive matrix) and NOT for embroidery-only products (caps/beanies).
-  var offerFullColor=!isDW&&!emOnly;
+  // Which decoration methods this product offers drives the per-location dropdown options.
+  var _avail=availableDecoMethods(sel);
+  var hasSP=isDW||_avail.indexOf('sp')>-1;   // drinkware uses the color-count matrix like screen print
+  var hasEM=!isDW&&_avail.indexOf('em')>-1;
+  var hasHT=!isDW&&_avail.indexOf('ht')>-1;
+  // Default method when a location is turned on: screen print if available, else embroidery, else Full Color.
+  var defMethod=hasSP?'sp':(hasEM?'em':'ht');
   if(host){
     host.innerHTML=items.map(function(it){
       var on=locs.has(it.key);
-      // Establish this location's method default so pricing has something to read.
-      if(on&&!locMethod[it.key])locMethod[it.key]=emOnly?'em':'sp';
-      var meth=locMethod[it.key]||(emOnly?'em':'sp');
+      // Establish/repair this location's method so the dropdown selection and sub-line agree.
+      // A stale method carried over from a previous product (e.g. 'sp' on a polo) is reset to the default.
+      var meth=locMethod[it.key];
+      if(!meth||_avail.indexOf(meth)===-1)meth=defMethod;
+      if(on)locMethod[it.key]=meth;
       var cc=on?(locColorCount[it.key]||1):0;
       if(cc>cap)cc=cap;
       if(on&&meth==='sp')locColorCount[it.key]=cc||1;
-      var opts;
-      if(emOnly){
-        // Embroidery-only: No imprint / Embroidery per location.
-        opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>'
-            +'<option value="em"'+(on?' selected':'')+'>Embroidery</option>';
-      }else{
-        // 1..cap colors = screen print; "Full Color" = heat transfer.
-        opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>';
-        for(var n=1;n<=cap;n++){var _clbl=n+' color';opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+_clbl+'</option>';}
-        if(offerFullColor)opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color</option>';
-      }
+      // Build options from the methods this product supports:
+      //   N color = screen print, Embroidery = em, Full Color = heat transfer.
+      var opts='<option value="0"'+(!on?' selected':'')+'>No imprint</option>';
+      if(hasSP){for(var n=1;n<=cap;n++){opts+='<option value="'+n+'"'+((on&&meth==='sp'&&cc===n)?' selected':'')+'>'+n+' color</option>';}}
+      if(hasEM){opts+='<option value="em"'+((on&&meth==='em')?' selected':'')+'>Embroidery</option>';}
+      if(hasHT){opts+='<option value="fc"'+((on&&meth==='ht')?' selected':'')+'>Full Color</option>';}
       return '<div class="imprint-row'+(on?' on':'')+'" id="imp-row-'+it.key+'">'
         +'<div class="imprint-loc"><span class="imprint-loc-name">'+it.label+'</span><span class="imp-method" id="imp-method-'+it.key+'" style="font-size:11px;color:var(--text3);">'+((!on||isDW)?'':(meth==='sp'?'Screen Printing':(meth==='ht'?'Full Color Transfer':(meth==='em'?'Embroidery':''))))+'</span></div>'
         +'<select class="imprint-select" id="imp-'+it.key+'" data-loc="'+it.key+'" onchange="onImprintChange(\''+it.key+'\')">'+opts+'</select>'

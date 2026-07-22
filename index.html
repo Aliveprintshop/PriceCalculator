@@ -74,6 +74,20 @@ a:hover{text-decoration:underline;}
 .results-count strong{color:var(--text);font-weight:700;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+/* ── Good · Better · Best guide ── */
+.gbb-wrap{grid-column:1/-1;}
+.gbb-intro{margin:0 0 6px;font-size:14px;color:#555;line-height:1.45;}
+.gbb-tier{margin:0 0 6px;}
+.gbb-tier-head{display:flex;align-items:baseline;gap:10px;margin:16px 0 12px;padding:9px 14px;border-radius:var(--r-lg);border:1.5px solid var(--border);border-left-width:5px;background:var(--surface);}
+.gbb-tier-head .gbb-tier-name{font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;}
+.gbb-tier-head .gbb-tier-sub{font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+.gbb-tier-head.good{border-left-color:#1f9d55;}
+.gbb-tier-head.good .gbb-tier-name{color:#1a7d44;}
+.gbb-tier-head.better{border-left-color:#1b6cce;}
+.gbb-tier-head.better .gbb-tier-name{color:#1b6cce;}
+.gbb-tier-head.best{border-left-color:#c69214;}
+.gbb-tier-head.best .gbb-tier-name{color:#a9781a;}
+.gbb-empty{color:#888;font-size:13px;padding:2px 4px 12px;}
 /* Shop By Industry spotlight banner — slim full-width brand promo inside the grid */
 .industry-spotlight{grid-column:1/-1;display:block;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.03);cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-decoration:none;}
 .industry-spotlight:hover{border-color:var(--blue);box-shadow:0 6px 18px rgba(27,108,206,0.15);}
@@ -279,6 +293,14 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
       <ul class="filter-list" id="industry-list"></ul>
     </div>
 
+    <div class="filter-section">
+      <h2 class="filter-title">
+        Good &middot; Better &middot; Best
+        <button type="button" class="clear-link" id="clear-gbb" onclick="clearGbb()" style="display:none;">Clear</button>
+      </h2>
+      <ul class="filter-list" id="gbb-list"></ul>
+    </div>
+
   </aside>
 
   <main class="content">
@@ -457,7 +479,7 @@ function quickPickCategory(label){
   _cats.clear();
   if(!wasActive)_cats.add(label);
   _industry=null;
-  _page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
+  _page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
   // Scroll up so the product grid is visible after a category tap.
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -469,7 +491,7 @@ function openSidebarFromChip(){
 // Update the "Filters · N" badge with count of active filters.
 function updateFilterBadge(){
   var badge=document.getElementById('filt-badge');if(!badge)return;
-  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0)+(_colors?_colors.size:0)+(_industry?1:0);
+  var n=(_cats?_cats.size:0)+(_brands?_brands.size:0)+(_colors?_colors.size:0)+(_industry?1:0)+(_gbb?1:0);
   badge.textContent=n;
   if(n===0)badge.classList.add('zero'); else badge.classList.remove('zero');
 }
@@ -967,6 +989,28 @@ INDUSTRY_LISTS.forEach(function(ind){
 function industryByLabel(label){for(var i=0;i<INDUSTRY_LISTS.length;i++){if(INDUSTRY_LISTS[i].label===label)return INDUSTRY_LISTS[i];}return null;}
 
 // =====================================================================
+// GOOD / BETTER / BEST — curated tiers per product category.
+// Each tier is a list of catalog style numbers (matched case-insensitively
+// against the live catalog; styles not found are simply skipped, so the
+// sidebar count shows how many resolved). To edit a tier, change the arrays.
+// =====================================================================
+var GBB_LISTS=[
+  {label:'T-Shirts',    good:['5000'],                              better:['64000'],                                   best:['NL6210']},
+  {label:'Polos',       good:['ST550','ST520','K864','K500'],       better:['OG101','CS410','OG146','OG154'],           best:['799802','TM1MU411','883681','NKGC1963']},
+  {label:'Hats',        good:['C112'],                              better:['STC26'],                                   best:['NE1000']},
+  {label:'Hoody',       good:['18500','PC78H','DT6100','996M'],     better:['DT1101','DT6150','DT6700','NL9307','DT7800'], best:['BC3729','ST264','SXU009','ST580','BC4719','SXU038']},
+  {label:'Jacket',      good:['CSJT22','CSJ60','CS625'],            better:['JZ63H','J763','CSJ41','CS620'],            best:['CT103828','CT107082','CT104670','CT106678','CT104050']},
+  {label:'Performance', good:['ST350','A4N3531'],                   better:['ST460','CS440'],                           best:['DV7299','NKDX8730','OE320']},
+  {label:'Tote',        good:['8801'],                              better:['BG408'],                                   best:['CT89241804']},
+  {label:'Backpack',    good:['BG204'],                             better:['411053'],                                  best:['NF0A3KX6']}
+];
+// Optional style aliases: if the left style isn't found, try the right one.
+var GBB_ALIAS={};
+// Tier render order + display copy.
+var GBB_TIERS=[['good','Good','Best value'],['better','Better','Most popular'],['best','Best','Premium']];
+function gbbByLabel(label){for(var i=0;i<GBB_LISTS.length;i++){if(GBB_LISTS[i].label===label)return GBB_LISTS[i];}return null;}
+
+// =====================================================================
 // URL routing for shareable category links.
 // Slug format: lowercase, "&" dropped, non-alphanumeric -> hyphens.
 //   "Headwear"             -> "headwear"
@@ -1067,6 +1111,7 @@ function bucketForProduct(p){
 var _cats=new Set();
 var _brands=new Set();
 var _industry=null;   // active "Shop By Industry" label, or null
+var _gbb=null;   // active "Good / Better / Best" category label, or null
 var _search='';
 var _colors=new Set();   // active garment-color buckets
 var _sort='featured';   // sort mode: featured|price-asc|price-desc|name-asc
@@ -1439,6 +1484,12 @@ function renderIndustryList(){
 }
 
 function filtered(){
+  // Good/Better/Best mode: show only the curated styles for the active category (union of all tiers).
+  if(_gbb){
+    var gdef=gbbByLabel(_gbb),gset={};
+    if(gdef){['good','better','best'].forEach(function(k){(gdef[k]||[]).forEach(function(t){var u=String(t).toUpperCase();gset[u]=1;if(GBB_ALIAS[u])gset[String(GBB_ALIAS[u]).toUpperCase()]=1;});});}
+    return ITEMS.filter(function(it){return it._full&&gset[(it.s||'').toUpperCase()];});
+  }
   // Industry mode: show only the curated styles for the active industry.
   var indSet=_industry&&_INDUSTRY_INDEX[_industry]?_INDUSTRY_INDEX[_industry].set:null;
   return ITEMS.filter(function(it){
@@ -1525,6 +1576,7 @@ function setPerPage(v){
 // =====================================================================
 function renderGrid(){
   var host=document.getElementById('page-grid');if(!host)return;
+  if(_gbb&&gbbByLabel(_gbb)){renderGbbView(host);return;}
   var rows=filtered();
 
   // Category-aware priority boost — when exactly one of these categories is
@@ -1729,31 +1781,109 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){_industry=null;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function toggleBrand(name){_industry=null;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
-function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
+function toggleCategory(label){_industry=null;_gbb=null;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleBrand(name){_industry=null;_gbb=null;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
+function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 // Shop By Industry: single-select. Selecting one clears category/brand filters and shows only its curated list.
 function toggleIndustry(label){
   if(_industry===label){_industry=null;}
-  else{_industry=label;_cats.clear();_brands.clear();}
+  else{_industry=label;_gbb=null;_cats.clear();_brands.clear();}
   _page=1;
-  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
 }
-function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
+function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
+
+// ── Good / Better / Best: sidebar list, grid view, single-select toggle ──
+function _gbbStyleIndex(){var m={};for(var i=0;i<ITEMS.length;i++)m[(ITEMS[i].s||'').toUpperCase()]=ITEMS[i];return m;}
+function _gbbResolveTok(tok,idx){var u=String(tok).toUpperCase();return idx[u]||(GBB_ALIAS[u]?idx[String(GBB_ALIAS[u]).toUpperCase()]:null)||null;}
+function renderGbbList(){
+  var host=document.getElementById('gbb-list');if(!host)return;
+  var idx=(ITEMS&&ITEMS.length)?_gbbStyleIndex():null;
+  host.innerHTML=GBB_LISTS.map(function(def){
+    var active=_gbb===def.label;
+    var safeLabel=escJs(def.label);
+    var cntHtml='';
+    if(idx){var n=0;['good','better','best'].forEach(function(k){(def[k]||[]).forEach(function(t){if(_gbbResolveTok(t,idx))n++;});});cntHtml='<span class="filter-count">('+n+')</span>';}
+    return '<li><label class="filter-row'+(active?' checked':'')+'">'+
+           '<input type="checkbox" class="cbox" '+(active?'checked':'')+' onchange="toggleGbb(\''+safeLabel+'\')">'+
+           '<span class="filter-name">'+def.label+'</span>'+cntHtml+
+           '</label></li>';
+  }).join('');
+  var clr=document.getElementById('clear-gbb');
+  if(clr)clr.style.display=_gbb?'inline':'none';
+}
+// Card markup for a GBB tile (mirrors renderGrid's card, minus color-filter logic).
+function gbbCardHtml(it){
+  var p=it._full;if(!p)return '';
+  var firstColor=Array.isArray(p.colors)&&p.colors[0]?p.colors[0]:null;
+  var imgs=firstColor&&firstColor.images?firstColor.images:{};
+  var src=imgs.front_model||imgs.front_flat||'';
+  var displayName=cleanName(it.n||'',it.b||'').replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+  var brand=(it.b||'').replace(/"/g,'&quot;');
+  var safeStyle=encodeURIComponent(it.s);
+  var _st=(it.s||'').toUpperCase();
+  var dealBadge='';
+  if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
+  else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
+  else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
+  var isDw=!!(p&&p._drinkware);
+  var metaHtml=isDw
+    ? '<span class="card-meta-rush">All-Inclusive</span><span class="card-meta-moq">Min 24 pcs &middot; bottle + logo included</span>'
+    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>';
+  return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
+         dealBadge+projStarHtml(it.s)+
+         '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+         '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
+         '<div class="card-info">'+
+           (brand?'<div class="card-brand">'+brand+'</div>':'')+
+           '<div class="card-name">'+displayName+'</div>'+
+           '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
+           '<div class="card-meta">'+metaHtml+'</div>'+
+         '</div></a>';
+}
+function renderGbbView(host){
+  var def=gbbByLabel(_gbb);if(!def){host.innerHTML='';return;}
+  var idx=_gbbStyleIndex();
+  var html='<div class="gbb-wrap">';
+  html+='<div class="gbb-intro"><strong>Good &middot; Better &middot; Best &mdash; '+def.label+'.</strong> Our recommended '+def.label.toLowerCase()+' at three levels &mdash; tap any style for instant pricing.</div>';
+  GBB_TIERS.forEach(function(t){
+    var key=t[0],name=t[1],sub=t[2];
+    var items=(def[key]||[]).map(function(tok){return _gbbResolveTok(tok,idx);}).filter(Boolean);
+    html+='<div class="gbb-tier"><div class="gbb-tier-head '+key+'"><span class="gbb-tier-name">'+name+'</span><span class="gbb-tier-sub">'+sub+'</span></div>';
+    if(items.length)html+='<div class="grid">'+items.map(gbbCardHtml).join('')+'</div>';
+    else html+='<div class="gbb-empty">Ask our team for '+name.toLowerCase()+'-tier options.</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  host.innerHTML=html;
+  var countEl=document.getElementById('results-count');
+  if(countEl)countEl.innerHTML='<strong>Good &middot; Better &middot; Best</strong> &middot; '+def.label;
+  var pag=document.getElementById('pagination');if(pag)pag.style.display='none';
+  if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
+}
+// Good/Better/Best: single-select. Selecting one clears all other filters and shows the tiered view.
+function toggleGbb(label){
+  if(_gbb===label){_gbb=null;}
+  else{_gbb=label;_cats.clear();_brands.clear();_colors.clear();_industry=null;_search='';var sb=document.getElementById('page-search');if(sb)sb.value='';}
+  _page=1;
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
+  var grid=document.getElementById('page-grid');if(grid&&_gbb)grid.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function clearGbb(){_gbb=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
 // Spotlight click: exit industry view and show ALL of the promoted brand.
 function spotlightBrand(brand){
-  _industry=null;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
+  _industry=null;_gbb=null;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
   var sb=document.getElementById('page-search');if(sb)sb.value='';
   _page=1;
-  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
   var grid=document.getElementById('page-grid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function toggleColor(key){_industry=null;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearColors(){_colors.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();}
+function toggleColor(key){_industry=null;_gbb=null;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearColors(){_colors.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();}
 function changeSort(v){_sort=v||'featured';_page=1;renderGrid();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search&&_industry)_industry=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search){_industry=null;_gbb=null;}_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
@@ -1855,7 +1985,7 @@ async function loadProducts(){
     }catch(e){}
     renderTrustBanner();
     updateBrandBanner();
-    renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
+    renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();
   }catch(err){
     console.error('[Alive] loadProducts failed:',err);
     // Catalog fetch failed — still surface manual products (drinkware) so they
@@ -1870,7 +2000,7 @@ async function loadProducts(){
       if(mflat.length){
         ITEMS=mflat;
         renderTrustBanner();updateBrandBanner();
-        renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();
+        renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();
         return;
       }
     }catch(e2){}
@@ -1887,7 +2017,7 @@ window.addEventListener('message',function(e){
   var d=e&&e.data;
   if(!d||d.type!=='alive-route-set')return;
   var slug=(d.slug||'').toLowerCase().trim();
-  _industry=null;_cats.clear();_brands.clear();_colors.clear();
+  _industry=null;_gbb=null;_cats.clear();_brands.clear();_colors.clear();
   if(slug){
     var label=slugToBucketLabel(slug);
     if(label){_cats.add(label);}
@@ -1899,7 +2029,7 @@ window.addEventListener('message',function(e){
   }
   _page=1;
   projLoad();projSyncBar();
-  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
+  renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
 },false);
 
 // Iframe auto-resize: broadcast content height so the parent can size the iframe.
