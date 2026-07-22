@@ -2483,19 +2483,22 @@ function decoCostPerUnit(qty){
   var c=0, anyEM=false;
   var qb=getQB(qty);
   var htp=getHTP(qty);
+  var htSmall=getHTsmall(qty);
   var eqb=getEMQB(qty);
+  var _isHat=(sel&&getProductType(sel)==='hat');
   locs.forEach(function(key){
     var m=locMethod[key]||'sp';
     var isSleeve=(key==='left-sleeve'||key==='right-sleeve');
-    // Small/side placements for Full Color: sleeves + hat sides bill at the sleeve rate.
-    var isSide=(isSleeve||key==='left-side'||key==='right-side');
+    // Small Full Color placements (smaller print, lower rate): left/right chest, sleeves, and ALL
+    // hat locations. Full-size placements (front, back, bag/sweatshirt front-center) bill at the full HT rate.
+    var smallHT=(_isHat||key==='left-chest'||key==='right-chest'||key==='left-sleeve'||key==='right-sleeve');
     if(m==='em'){
       anyEM=true;
       var cls=emLocCls(key);
       c+=(cls==='front')?EM_FRONT[eqb]:EM_SIDE[eqb];
     }else if(m==='ht'){
-      // Heat transfer / Full Color: full placements at the HT per-piece rate, sides at HT_SLEEVE.
-      c+=isSide?HT_SLEEVE:htp;
+      // Heat transfer / Full Color: small placements at the small-transfer rate, full placements at the full HT rate.
+      c+=smallHT?htSmall:htp;
     }else{
       // Screen print: front/back read their own stored color count via getFrElEff/getBkElEff.
       if(key==='front')c+=(FRONT[qb]||FRONT[24])[getFrElEff(qty)];
@@ -2733,6 +2736,10 @@ function calc(){
 // -- DECORATION METHOD --
 const HT_BREAKS=[[10,12.75],[20,8.00],[50,5.41],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
 const HT_SLEEVE=3.00;
+// SMALL Full Color transfers (left chest, sleeves, hats) — smaller print, lower price than a full front.
+// Same schedule as HT_BREAKS except the 20-49 and 50-99 tiers (per Austin 2026-07-22).
+const HT_SMALL_BREAKS=[[10,12.75],[20,6.00],[50,5.00],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
+function getHTsmall(qty){var r=HT_SMALL_BREAKS[0][1];for(var i=0;i<HT_SMALL_BREAKS.length;i++){if(qty>=HT_SMALL_BREAKS[i][0])r=HT_SMALL_BREAKS[i][1];}return r;}
 var decoMethod='sp';
 // Per-location decoration method map: key -> 'sp' (screen print, N colors) | 'ht' (Full Color / heat transfer) | 'em' (embroidery).
 // Drives per-location pricing in decoCostPerUnit(). decoMethod (above) is DERIVED from this via syncDecoMethod().
