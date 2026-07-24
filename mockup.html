@@ -396,14 +396,16 @@ function setSaved(html,ok){
   broadcastHeight();
 }
 // Upload the finished mockup PNG to Uploadcare (same account the calculator uses for artwork).
+// NOTE: this account delivers via a CUSTOM CDN domain (5q43ox5caw.ucarecd.net). The default
+// ucarecdn.com domain is disabled for this project and returns 404. STORE=1 = permanent.
 function uploadToUploadcare(blob){
   var fd=new FormData();
   fd.append('UPLOADCARE_PUB_KEY','7861e880db07f9de6779');
-  fd.append('UPLOADCARE_STORE','auto');
+  fd.append('UPLOADCARE_STORE','1');
   fd.append('file',blob,'mockup.png');
   return fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
     .then(function(r){return r.json();})
-    .then(function(j){if(j&&j.file)return 'https://ucarecdn.com/'+j.file+'/';throw new Error('upload');});
+    .then(function(j){if(j&&j.file)return 'https://5q43ox5caw.ucarecd.net/'+j.file+'/';throw new Error('upload');});
 }
 function addToCart(){
   if(!garmentLoaded||!L){setSaved('Add your logo to the garment first.',false);return;}
