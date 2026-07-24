@@ -545,6 +545,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card-change svg{transition:transform 0.18s;}
 .prod-card-change:hover{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(27,108,206,0.30);transform:translateY(-1px);}
 .prod-card-change:hover svg{transform:rotate(180deg);}
+.prod-card-mockup{display:inline-flex;align-items:center;gap:7px;margin-top:12px;margin-left:8px;padding:10px 18px;background:#fff;border:1.5px solid var(--blue);border-radius:22px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer;text-decoration:none;transition:all 0.18s;box-shadow:0 1px 3px rgba(27,108,206,0.10);}
+.prod-card-mockup:hover{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(27,108,206,0.28);transform:translateY(-1px);}
+@media(max-width:600px){.prod-card-mockup{margin-left:0;}}
 /* MOBILE PRODUCT CARD */
 .mob-prod-card{display:none;}
 .mob-prod-card.show{display:block;}
@@ -671,6 +674,7 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-material" id="prod-sizes" style="display:none;"></div>
           <div class="prod-material" id="prod-fit" style="display:none;"></div>
           <div class="swatch-row" id="swatch-row"></div>
+          <a class="prod-card-mockup" id="prod-card-mockup" href="javascript:void(0)" onclick="openMockup();return false;" title="Preview your logo on this product"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5h18v14H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 16l5-5 4 4 3-3 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/></svg>Create a mockup</a>
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -1794,6 +1798,20 @@ function pickItem(s){
   if(typeof applyDrinkwareUI==='function')applyDrinkwareUI(isDrinkware());
   if(typeof renderCompanions==='function')renderCompanions();
   markDone(2);calc();
+}
+
+// Open the standalone Mockup Tool in a new tab, preloaded with the selected garment image + color.
+function openMockup(){
+  if(!sel){return;}
+  var col=sel._activeColor||(sel._full&&Array.isArray(sel._full.colors)?sel._full.colors[0]:null);
+  var img='';
+  if(col&&col.images)img=col.images.front_model||col.images.front_flat||col.images.back_model||'';
+  var url='https://aliveprintshop.github.io/PriceCalculator/mockup.html';
+  var qs=[];
+  if(img)qs.push('garment='+encodeURIComponent(img));
+  qs.push('name='+encodeURIComponent(((sel.b?sel.b+' ':'')+(sel.n||'')).trim()));
+  if(col&&col.name)qs.push('color='+encodeURIComponent(col.name));
+  try{window.open(url+'?'+qs.join('&'),'_blank','noopener');}catch(e){window.top.location.href=url+'?'+qs.join('&');}
 }
 
 // =====================================================================
