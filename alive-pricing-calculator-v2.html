@@ -1811,8 +1811,18 @@ function openMockup(){
   if(img)qs.push('garment='+encodeURIComponent(img));
   qs.push('name='+encodeURIComponent(((sel.b?sel.b+' ':'')+(sel.n||'')).trim()));
   if(col&&col.name)qs.push('color='+encodeURIComponent(col.name));
-  try{window.open(url+'?'+qs.join('&'),'_blank','noopener');}catch(e){window.top.location.href=url+'?'+qs.join('&');}
+  try{var w=window.open(url+'?'+qs.join('&'),'alive_mockup');if(!w)window.top.location.href=url+'?'+qs.join('&');}catch(e){window.top.location.href=url+'?'+qs.join('&');}
 }
+
+// Called by the Mockup tool (same-origin, via window.opener) once it has uploaded a mockup.
+// Stashes the mockup URL, then runs the normal Add-to-Cart so the proof rides into the cart + GHL.
+window.aliveMockupAddToCart=function(url){
+  try{localStorage.setItem('alive_pending_mockup_v1',JSON.stringify({url:url,name:'Mockup proof',ts:Date.now()}));}catch(e){}
+  var cap=(typeof captureCartItem==='function')?captureCartItem('r'):{ok:false};
+  if(!cap.ok)return {ok:false,msg:(cap.msg||'Please finish your order details, then click Add to cart.')};
+  addToCartFromForm('r');
+  return {ok:true};
+};
 
 // =====================================================================
 // Color hex resolver: products.json has placeholder #888888 for ~38% of
@@ -3484,6 +3494,8 @@ function captureCartItem(source){
     promoSavingsPerUnit:getPromoSavingsPerUnit(),
     promoSavingsTotal:parseFloat((getPromoSavingsPerUnit()*qty).toFixed(2))
   };
+  // Attach a pending mockup (from the Mockup tool via same-origin localStorage) as the approved proof.
+  try{var _pm=localStorage.getItem('alive_pending_mockup_v1');if(_pm){var _pmo=JSON.parse(_pm);if(_pmo&&_pmo.url){item.mockupUrl=_pmo.url;item.artworkFiles=(item.artworkFiles||[]).concat([{name:(_pmo.name||'Mockup proof'),url:_pmo.url}]);}}}catch(e){}
   return{ok:true,item:item};
 }
 
@@ -3505,6 +3517,7 @@ function addToCartFromForm(source){
     return;
   }
   CART.addItem(cap.item);
+  try{localStorage.removeItem('alive_pending_mockup_v1');}catch(e){}
   updateMiniCart();
 
   // Briefly flash the button label as feedback, then take the customer straight to the cart.

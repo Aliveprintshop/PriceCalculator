@@ -92,6 +92,10 @@ input[type=file]{display:none;}
 .color-swatch{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;}
 .color-swatch.active{outline:2px solid var(--blue);outline-offset:1px;}
 
+.save-result{margin-top:6px;font-size:12px;line-height:1.5;padding:9px 11px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);word-break:break-word;}
+.save-result a{color:var(--blue);font-weight:600;}
+.save-result.ok{background:var(--green-light);border-color:var(--green);color:#155e34;}
+.save-result.err{background:#fff1f1;border-color:#f3b4b4;color:#a12020;}
 @media(max-width:820px){
   .wrap{grid-template-columns:1fr;padding:0;gap:0;}
   .page-header{padding:14px 16px;}
@@ -103,7 +107,7 @@ input[type=file]{display:none;}
 <body>
 <div class="wrap">
   <div class="page-header">
-    <div class="page-title">Mockup Tool<small id="garment-name">Place your logo on the garment, then download or share for approval.</small></div>
+    <div class="page-title">Remove Background Tool<small id="garment-name">Upload your logo, position it, and remove its background.</small></div>
     <a class="hdr-link" href="https://aliveprintshop.com/insta-price" target="_top">&larr; Back to pricing</a>
   </div>
 
@@ -126,12 +130,11 @@ input[type=file]{display:none;}
 
       <!-- START OVERLAY -->
       <div class="start" id="start">
-        <div style="font-size:40px;">👕</div>
-        <h2>Start a mockup</h2>
-        <p>Pick a product from our catalog or upload a garment photo, then drop your logo on it.</p>
+        <div style="font-size:40px;">🧢</div>
+        <h2>No product loaded</h2>
+        <p>Open this tool from a product on the price calculator &mdash; click <strong>&ldquo;Create a mockup&rdquo;</strong> &mdash; and your garment loads here automatically.</p>
         <div class="start-actions">
-          <button class="btn primary" style="width:auto;padding:11px 18px;" onclick="openCatalog()">Choose from catalog</button>
-          <button class="btn outline" style="width:auto;padding:11px 18px;" onclick="document.getElementById('garment-file').click()">Upload garment photo</button>
+          <a class="btn primary" style="width:auto;padding:11px 18px;text-decoration:none;" href="https://aliveprintshop.com/insta-price" target="_top">Go to pricing</a>
         </div>
       </div>
     </div>
@@ -161,40 +164,16 @@ input[type=file]{display:none;}
     </div>
 
     <div class="tool-group">
-      <h3>Garment</h3>
-      <div class="btn-row">
-        <button class="btn outline" onclick="openCatalog()">Catalog</button>
-        <button class="btn outline" onclick="document.getElementById('garment-file').click()">Upload</button>
-      </div>
-    </div>
-
-    <div class="tool-group">
       <h3>Finish</h3>
-      <button class="btn primary" id="download-btn" onclick="downloadMockup()" disabled>⬇ Download mockup (PNG)</button>
-      <button class="btn outline" id="copy-btn" onclick="copyMockup()" disabled>Copy image</button>
-      <div class="hint">Download the finished mockup to send to your customer for approval before checkout.</div>
-    </div>
-  </div>
-</div>
-
-<!-- CATALOG MODAL -->
-<div class="modal" id="cat-modal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3>Choose a product</h3>
-      <button class="modal-close" onclick="closeCatalog()">&times;</button>
-    </div>
-    <div class="modal-search">
-      <input type="text" id="cat-search" placeholder="Search by product name, brand or style (e.g. Gildan hoodie, ST550)" autocomplete="off">
-    </div>
-    <div class="modal-body" id="cat-body">
-      <div class="cat-loading">Type to search our 2,900+ products.</div>
+      <button class="btn primary" id="addcart-btn" onclick="addToCart()" disabled>🛒 Add to cart</button>
+      <button class="btn outline" id="download-btn" onclick="downloadMockup()" disabled>⬇ Download PNG</button>
+      <div class="save-result" id="addcart-result" style="display:none;"></div>
+      <div class="hint">&ldquo;Add to cart&rdquo; attaches this mockup to your order so our team prints exactly what you approved.</div>
     </div>
   </div>
 </div>
 
 <input type="file" id="logo-file" accept="image/*,.svg,.png,.jpg,.jpeg,.webp,.gif,.bmp">
-<input type="file" id="garment-file" accept="image/*,.png,.jpg,.jpeg,.webp">
 
 <script>
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
@@ -234,11 +213,6 @@ function garmentFromDataUrl(dataUrl,label){
 }
 function setGarmentName(t){document.getElementById('garment-name').textContent=t;}
 
-document.getElementById('garment-file').addEventListener('change',function(e){
-  var f=e.target.files[0];if(!f)return;
-  var rd=new FileReader();rd.onload=function(){garmentFromDataUrl(rd.result, f.name);};rd.readAsDataURL(f);
-  e.target.value='';
-});
 
 // ---------- Logo loading ----------
 document.getElementById('logo-file').addEventListener('change',function(e){
@@ -377,8 +351,8 @@ function resetImage(){
 // ---------- Export ----------
 function refreshButtons(){
   var ready=garmentLoaded&&!!L;
-  document.getElementById('download-btn').disabled=!ready;
-  document.getElementById('copy-btn').disabled=!ready;
+  var d=document.getElementById('download-btn');if(d)d.disabled=!ready;
+  var a=document.getElementById('addcart-btn');if(a)a.disabled=!ready;
 }
 function renderCanvas(){
   var natW=garmentEl.naturalWidth||garmentEl.clientWidth;
@@ -409,92 +383,55 @@ function downloadMockup(){
     },'image/png');
   }catch(err){exportFail();}
 }
-function copyMockup(){
-  var c=renderCanvas();
-  try{
-    c.toBlob(function(blob){
-      if(!blob){exportFail();return;}
-      if(navigator.clipboard&&window.ClipboardItem){
-        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){
-          flashCopy();
-        },function(){exportFail();});
-      }else{exportFail();}
-    },'image/png');
-  }catch(err){exportFail();}
-}
-function flashCopy(){var b=document.getElementById('copy-btn');var t=b.textContent;b.textContent='✓ Copied!';setTimeout(function(){b.textContent=t;},1500);}
 function exportFail(){
-  if(garmentTainted)alert('This catalog image blocked the download. Please upload the garment photo instead (Garment → Upload), then download again.');
-  else alert('Sorry — the download failed. Try again, or upload the garment photo.');
+  if(garmentTainted)alert('This catalog image blocked the export. Please try again in a moment.');
+  else alert('Sorry — that failed. Please try again.');
 }
 
-// ---------- Catalog picker ----------
-var PRODUCTS=null;
-function openCatalog(){
-  document.getElementById('cat-modal').classList.add('show');
-  var s=document.getElementById('cat-search');s.value='';setTimeout(function(){s.focus();},50);
-  if(!PRODUCTS){
-    document.getElementById('cat-body').innerHTML='<div class="cat-loading">Loading catalog…</div>';
-    fetch(PRODUCTS_JSON_URL,{cache:'force-cache'}).then(function(r){return r.json();}).then(function(data){
-      var rows=Array.isArray(data)?data:(data.products||[]);
-      PRODUCTS=rows.filter(function(p){return p&&p.style&&!p.discontinued&&Array.isArray(p.colors)&&p.colors.length;});
-      document.getElementById('cat-body').innerHTML='<div class="cat-loading">Type to search our '+PRODUCTS.length.toLocaleString()+' products.</div>';
-    }).catch(function(){document.getElementById('cat-body').innerHTML='<div class="cat-loading">Couldn\'t load the catalog. Please upload a garment photo instead.</div>';});
-  }
+// ---------- Add to cart (upload the finished mockup, attach it to the order) ----------
+function setSaved(html,ok){
+  var el=document.getElementById('addcart-result');if(!el)return;
+  el.innerHTML=html;el.style.display='block';el.classList.remove('ok','err');
+  if(ok===true)el.classList.add('ok');else if(ok===false)el.classList.add('err');
+  broadcastHeight();
 }
-function closeCatalog(){document.getElementById('cat-modal').classList.remove('show');}
-document.getElementById('cat-modal').addEventListener('click',function(e){if(e.target===this)closeCatalog();});
-document.getElementById('cat-search').addEventListener('input',function(){renderCatalog(this.value);});
-function colorImg(col){var im=col&&col.images;return im?(im.front_model||im.front_flat||im.back_model||''):'';}
-function renderCatalog(q){
-  if(!PRODUCTS)return;
-  q=(q||'').trim().toLowerCase();
-  var body=document.getElementById('cat-body');
-  if(!q){body.innerHTML='<div class="cat-loading">Type to search our '+PRODUCTS.length.toLocaleString()+' products.</div>';return;}
-  var toks=q.split(/\s+/);
-  var hits=[];
-  for(var i=0;i<PRODUCTS.length&&hits.length<48;i++){
-    var p=PRODUCTS[i];
-    var hay=((p.brand||'')+' '+(p.name||'')+' '+(p.style||'')).toLowerCase();
-    var ok=true;for(var t=0;t<toks.length;t++){if(hay.indexOf(toks[t])<0){ok=false;break;}}
-    if(ok)hits.push(p);
-  }
-  if(!hits.length){body.innerHTML='<div class="cat-loading">No matches for “'+q.replace(/</g,'&lt;')+'”.</div>';return;}
-  body.innerHTML='<div class="cat-grid">'+hits.map(function(p,idx){
-    var img=colorImg(p.colors[0]);
-    return '<div class="cat-item" onclick="pickProduct('+idx+')">'+
-      (img?'<img loading="lazy" src="'+img+'" alt="">':'<div style="height:110px;"></div>')+
-      '<div class="nm">'+((p.brand?p.brand+' ':'')+(p.name||p.style)).replace(/</g,'&lt;')+'</div>'+
-    '</div>';
-  }).join('')+'</div>';
-  window._catHits=hits;
+// Upload the finished mockup PNG to Uploadcare (same account the calculator uses for artwork).
+function uploadToUploadcare(blob){
+  var fd=new FormData();
+  fd.append('UPLOADCARE_PUB_KEY','7861e880db07f9de6779');
+  fd.append('UPLOADCARE_STORE','auto');
+  fd.append('file',blob,'mockup.png');
+  return fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
+    .then(function(r){return r.json();})
+    .then(function(j){if(j&&j.file)return 'https://ucarecdn.com/'+j.file+'/';throw new Error('upload');});
 }
-function pickProduct(idx){
-  var p=(window._catHits||[])[idx];if(!p)return;
-  var img=colorImg(p.colors[0]);
-  if(!img){alert('That product has no image available.');return;}
-  garmentFromUrl(img,(p.brand?p.brand+' ':'')+(p.name||p.style));
-  closeCatalog();
-  showColorStrip(p);
-}
-function showColorStrip(p){
-  // Reuse the "Garment" tool group: append a color strip under it once, per product.
-  var host=document.getElementById('color-strip-host');
-  if(!host){
-    host=document.createElement('div');host.id='color-strip-host';host.className='color-strip';
-    // insert into the Garment tool-group (3rd group)
-    var groups=document.querySelectorAll('#panel .tool-group');
-    (groups[2]||document.getElementById('panel')).appendChild(host);
-  }
-  host.innerHTML='';
-  p.colors.slice(0,24).forEach(function(col){
-    var im=colorImg(col);if(!im)return;
-    var sw=document.createElement('div');sw.className='color-swatch';
-    sw.style.background=col.hex||'#ccc';sw.title=col.name||'';
-    sw.onclick=function(){garmentFromUrl(im,(p.brand?p.brand+' ':'')+(p.name||p.style)+' — '+(col.name||''));
-      host.querySelectorAll('.color-swatch').forEach(function(s){s.classList.remove('active');});sw.classList.add('active');};
-    host.appendChild(sw);
-  });
+function addToCart(){
+  if(!garmentLoaded||!L){setSaved('Add your logo to the garment first.',false);return;}
+  var btn=document.getElementById('addcart-btn');btn.disabled=true;btn.textContent='Uploading\u2026';
+  var c;try{c=renderCanvas();}catch(e){btn.disabled=false;btn.textContent='\uD83D\uDED2 Add to cart';exportFail();return;}
+  c.toBlob(function(blob){
+    if(!blob){btn.disabled=false;btn.textContent='\uD83D\uDED2 Add to cart';exportFail();return;}
+    uploadToUploadcare(blob).then(function(url){
+      var op=null;try{op=window.opener;}catch(e){op=null;}
+      if(op&&typeof op.aliveMockupAddToCart==='function'){
+        var res=null;try{res=op.aliveMockupAddToCart(url);}catch(e){res=null;}
+        if(res&&res.ok){
+          setSaved('\u2713 Mockup added to your order \u2014 taking you to the cart\u2026',true);
+          setTimeout(function(){try{window.close();}catch(e){}},1400);
+        }else{
+          btn.disabled=false;btn.textContent='\uD83D\uDED2 Add to cart';
+          setSaved((res&&res.msg)?res.msg:'Please set your sizes/quantities on the pricing tab, then click Add to cart again.',false);
+        }
+      }else{
+        try{localStorage.setItem('alive_pending_mockup_v1',JSON.stringify({url:url,name:'Mockup proof',ts:Date.now()}));}catch(e){}
+        btn.disabled=false;btn.textContent='\uD83D\uDED2 Add to cart';
+        setSaved('\u2713 Mockup saved! It attaches to your order when you add the product to your cart. <a href="https://aliveprintshop.com/cart" target="_top">Go to cart</a>',true);
+      }
+    }).catch(function(){
+      btn.disabled=false;btn.textContent='\uD83D\uDED2 Add to cart';
+      setSaved('Upload failed \u2014 please try again, or use Download PNG and email it to us.',false);
+    });
+  },'image/png');
 }
 
 // ---------- Deep-link from the calculator ----------
