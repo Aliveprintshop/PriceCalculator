@@ -139,6 +139,27 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 .ty-btn.secondary{background:transparent;color:var(--blue);border:1.5px solid var(--blue);}
 .ty-btn.secondary:hover{background:var(--blue-light);}
 
+/* SAVE FOR LATER */
+.save-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+.save-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.save-sub{font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:12px;}
+.save-btn-outline{width:100%;padding:11px;background:var(--blue-light);color:var(--blue-dark);border:1.5px solid var(--blue-mid);border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.save-btn-outline:hover{background:#dbeafe;}
+.save-or{text-align:center;font-size:11px;color:var(--text3);margin:12px 0 10px;}
+.save-email-row{display:flex;gap:8px;}
+.save-email-row .cf-input{flex:1;}
+.save-btn{padding:9px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
+.save-btn:hover{background:var(--blue-dark);}
+.save-btn:disabled,.save-btn-outline:disabled{opacity:0.6;cursor:not-allowed;}
+.save-result{margin-top:12px;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;line-height:1.5;word-break:break-word;}
+.save-result.ok{background:var(--green-light);border-color:var(--green);color:#155e34;}
+.save-result a{color:var(--blue);font-weight:600;}
+.save-link-box{display:flex;gap:6px;margin-top:8px;}
+.save-link-box input{flex:1;min-width:0;padding:7px 9px;font-size:11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--text2);}
+.save-link-copy{padding:7px 12px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+/* RESTORED BANNER */
+.restored-banner{grid-column:1/-1;background:var(--green-light);border:1px solid var(--green);border-radius:var(--r-lg);padding:12px 16px;font-size:13px;font-weight:600;color:#155e34;display:flex;align-items:center;gap:8px;}
+
 /* MOBILE */
 @media(max-width:820px){
   body{background:var(--surface);}
@@ -152,7 +173,8 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
   .item-img img{max-height:200px;}
   .item-body{padding:14px 16px;}
   .summary-panel{position:static;}
-  .summary,.checkout-form,.success-box{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;border-bottom:6px solid #F2F4F8;}
+  .summary,.checkout-form,.success-box,.save-card{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;border-bottom:6px solid #F2F4F8;}
+  .restored-banner{border-radius:0;border-left:none;border-right:none;border-top:none;margin:0;}
   .checkout-form{border:none;border-bottom:6px solid #F2F4F8;border-top:3px solid var(--blue-mid);}
   .empty-state{margin:0;border-radius:0;border:none;border-bottom:6px solid #F2F4F8;box-shadow:none;padding:48px 24px;}
   .thankyou{padding:32px 18px 48px;}
@@ -196,6 +218,8 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 
 <div class="wrap" id="cart-wrap">
 
+  <div class="restored-banner" id="restored-banner" style="display:none;">&#10003; Welcome back &mdash; we restored your saved cart. Review it below and finish whenever you&rsquo;re ready.</div>
+
   <div class="page-header">
     <div class="page-title" id="cart-title">Your Cart</div>
     <a class="continue-link" href="https://aliveprintshop.com/insta-price" target="_top">&larr; Continue shopping</a>
@@ -230,6 +254,18 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
       <div class="summary-row"><span id="sum-items-lbl">Subtotal (0 items)</span><span id="sum-subtotal">$0.00</span></div>
       <div class="summary-row savings" id="sum-savings-row" style="display:none;"><span>Promo savings</span><span id="sum-savings">-$0.00</span></div>
       <div class="summary-row total"><span>Total</span><span id="sum-total">$0.00</span></div>
+    </div>
+
+    <div class="save-card" id="save-card">
+      <h3>&#128190; Save your cart for later</h3>
+      <p class="save-sub">No account needed. Your cart is auto-saved on this device &mdash; or grab a link to reopen it on another device or come back later.</p>
+      <button type="button" class="save-btn-outline" id="save-link-btn" onclick="copySaveLink()">&#128279; Copy my cart link</button>
+      <div class="save-or">&mdash; or have us email it to you &mdash;</div>
+      <div class="save-email-row">
+        <input type="email" class="cf-input" id="save-email" placeholder="you@email.com" autocomplete="email">
+        <button type="button" class="save-btn" id="save-email-btn" onclick="emailMyCart()">Email me</button>
+      </div>
+      <div class="save-result" id="save-result" style="display:none;"></div>
     </div>
 
     <form class="checkout-form" id="checkout-form" onsubmit="submitOrder(event)">
@@ -291,6 +327,101 @@ var FALLBACK_EMAIL='austin@aliveprintshop.com';
 
 function fmt(n){return'$'+(parseFloat(n)||0).toFixed(2);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// =====================================================================
+// SAVE FOR LATER — no login required.
+//  1) Auto-save: the cart already lives in localStorage (see CART), so a
+//     returning visitor on the same device keeps their cart automatically.
+//  2) Save & get link: encode the whole cart into a ?cart= URL the customer
+//     can bookmark / open anywhere. loadFromLink() restores it on open.
+//  3) Email me my cart: POST the cart + restore link to GHL (lead capture),
+//     and show the link on-screen immediately.
+// =====================================================================
+function _b64urlEncode(str){var b=btoa(unescape(encodeURIComponent(str)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function _b64urlDecode(s){try{var b=String(s).replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return decodeURIComponent(escape(atob(b)));}catch(e){return null;}}
+function encodeCart(){return _b64urlEncode(JSON.stringify({v:1,i:CART.getItems(),p:CART.getPromo()}));}
+function buildSaveLink(){return location.origin+location.pathname+'?cart='+encodeCart();}
+function loadFromLink(){
+  var raw;try{raw=new URLSearchParams(location.search).get('cart');}catch(e){raw=null;}
+  if(!raw)return false;
+  var json=_b64urlDecode(raw);if(!json)return false;
+  var data;try{data=JSON.parse(json);}catch(e){return false;}
+  if(!data||!Array.isArray(data.i)||!data.i.length)return false;
+  CART.setItems(data.i);
+  if(data.p&&data.p.code)CART.setPromo(data.p);else CART.clearPromo();
+  return true;
+}
+function _copyText(text,cb){
+  cb=cb||function(){};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){cb(true);},function(){cb(false);});
+  }else{
+    try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);cb(ok);}catch(e){cb(false);}
+  }
+}
+function _linkBox(link){
+  return '<div class="save-link-box"><input type="text" readonly value="'+esc(link)+'" onclick="this.select();"><button type="button" class="save-link-copy" onclick="_copyText(this.previousElementSibling.value)">Copy</button></div>';
+}
+function _showSaveResult(html,ok){
+  var el=document.getElementById('save-result');if(!el)return;
+  el.innerHTML=html;el.style.display='block';el.classList.toggle('ok',!!ok);
+  broadcastHeight();
+}
+function copySaveLink(){
+  if(!CART.getCount()){_showSaveResult('Your cart is empty &mdash; add an item first.',false);return;}
+  var link=buildSaveLink();
+  _copyText(link,function(ok){
+    _showSaveResult((ok?'&#10003; Link copied! ':'Here&rsquo;s your cart link &mdash; ')+'Bookmark it or paste it anywhere to reopen this exact cart:'+_linkBox(link),ok);
+  });
+}
+function emailMyCart(){
+  if(!CART.getCount()){_showSaveResult('Your cart is empty &mdash; add an item first.',false);return;}
+  var email=(document.getElementById('save-email').value||'').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){_showSaveResult('Please enter a valid email address.',false);return;}
+  var btn=document.getElementById('save-email-btn');btn.disabled=true;btn.textContent='Sending...';
+  var link=buildSaveLink();
+  var payload=buildSavePayload(email,link);
+  var fd=new FormData();Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
+  fetch(GHL_WEBHOOK,{method:'POST',body:fd}).then(function(r){
+    btn.disabled=false;btn.textContent='Email me';
+    _showSaveResult('&#10003; Saved! We&rsquo;ll email your cart link to <strong>'+esc(email)+'</strong> shortly. Here it is right now, too:'+_linkBox(link),true);
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='Email me';
+    _showSaveResult('We couldn&rsquo;t reach our server, but your link still works &mdash; copy it and keep it safe:'+_linkBox(link),false);
+  });
+}
+function buildSavePayload(email,link){
+  var items=CART.getItems();var promo=CART.getPromo();var subtotal=CART.getDollarTotal();
+  var itemsBlock=items.map(function(it,i){
+    var sizes=it.sizes?Object.entries(it.sizes).map(function(e){return e[0]+':'+e[1];}).join(', '):'';
+    var locs=Array.isArray(it.locations)?it.locations.join(', '):'';
+    return 'Item #'+(i+1)+': '+it.brand+' '+it.style+' '+it.productName+' ('+it.color+') — '+it.qty+' pcs ('+sizes+') — '+it.decoLabel+(locs?' on '+locs:'')+' — '+fmt(it.unitPrice)+'/unit, '+fmt(it.lineTotal)+' line';
+  }).join('\n');
+  var ts=new Date().toISOString();
+  var noteText='💾 SAVE CART / EMAIL ME MY CART\n'+
+    'Requested: '+ts+'\n'+
+    'Email: '+email+'\n'+
+    'Restore link: '+link+'\n\n'+
+    '— CART ('+items.length+' '+(items.length===1?'item':'items')+', '+CART.getPiecesTotal()+' pcs) —\n'+
+    itemsBlock+'\n\n'+
+    'Total: '+fmt(subtotal);
+  return {
+    email:email,
+    savedCartLink:link,
+    itemCount:items.length,
+    pieceCount:CART.getPiecesTotal(),
+    cartTotal:fmt(subtotal),
+    cartTotalValue:subtotal,
+    totalPrice:fmt(subtotal),
+    totalPriceValue:subtotal,
+    promoCode:promo?promo.code:'',
+    items:JSON.stringify(items),
+    itemsBlock:itemsBlock,
+    noteText:noteText,
+    source:'Saved cart (email me my cart)',
+    submittedAt:ts
+  };
+}
 
 // ---- Rendering ----
 function render(){
@@ -623,6 +754,12 @@ function showSendFailure(err,btn,payload){
 function broadcastHeight(){if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();}
 
 // ---- Boot ----
+// If arriving from a saved-cart link (?cart=...), restore it BEFORE the first
+// render, show a welcome banner, and clean the URL so a refresh doesn't re-apply.
+if(loadFromLink()){
+  var _rb=document.getElementById('restored-banner');if(_rb)_rb.style.display='flex';
+  try{history.replaceState(null,'',location.origin+location.pathname);}catch(e){}
+}
 render();
 </script>
 
