@@ -17,7 +17,7 @@ on:
 permissions:
   contents: write   # needed to commit products.json
   pages: write      # needed to deploy to GitHub Pages
-  id-token: write   # needed for the Pages deploy actionF
+  id-token: write   # needed for the Pages deploy action
 
 # Only one sync can run at a time
 concurrency:
@@ -59,54 +59,78 @@ jobs:
           echo "product count: $(python -c 'import json; print(json.load(open("products.json"))["product_count"])')"
           echo "generated at: $(python -c 'import json; print(json.load(open("products.json"))["generated_at"])')"
 
+      # products.json is a fully regenerated artifact, not hand-edited source. Rebasing it onto
+      # a moved main is guaranteed to conflict (the whole file differs), which is what broke
+      # run #220: `git pull --rebase` conflicted, `|| true` swallowed the error, and the push
+      # then failed from a detached HEAD with exit 128 — skipping the Pages steps entirely.
+      # Instead: rewind the branch pointer onto the latest origin/main while KEEPING the file
+      # we just generated, then commit and push. Newest sync always wins. No merge, ever.
       - name: Commit products.json if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add products.json
-          if git diff --staged --quiet; then
-            echo "No changes to products.json — skipping commit"
-          else
-            git commit -m "chore: nightly SanMar sync $(date -u +%Y-%m-%d)"
-            git pull --rebase origin main || true
-            git push
-          fi
 
-      # Prepare a folder to publish. We publish products.json, the calculator,
-      # the cart page, and our index.html (the product browse page).
+          for attempt in 1 2 3; do
+            git fetch origin main
+
+            # Point HEAD *and the index* at the newest origin/main, leaving the working tree
+            # alone. --mixed (not --soft) is load-bearing: with --soft the index would still
+            # hold our stale checkout, and committing it would silently DELETE any file a
+            # human pushed while the sync was running. With --mixed the commit is exactly
+            # "origin/main, plus the products.json we just generated".
+            git checkout -B main
+            git reset origin/main
+
+            git add products.json
+            if git diff --staged --quiet; then
+              echo "No changes to products.json — skipping commit"
+              git checkout -- .
+              exit 0
+            fi
+
+            git commit -m "chore: nightly SanMar sync $(date -u +%Y-%m-%d)"
+
+            if git push origin main; then
+              # Re-sync the working tree to what we just pushed, so the Pages staging step
+              # below publishes the current files and not our pre-fetch copies.
+              git checkout -- .
+              echo "Pushed products.json (attempt $attempt)"
+              exit 0
+            fi
+
+            echo "Push rejected — origin/main moved underneath us. Retrying ($attempt/3)."
+            sleep 5
+          done
+
+          echo "::error::Could not push products.json after 3 attempts"
+          exit 1
+
+      # Prepare the folder to publish. A missing OPTIONAL file now warns instead of aborting:
+      # previously a single bad filename here killed the publish for every other file too.
       - name: Stage Pages artifact
         run: |
           mkdir -p _site
-          cp products.json _site/products.json
-          cp alive-pricing-calculator.html _site/alive-pricing-calculator.html
-          cp cart.html _site/cart.html
-          cp mockup.html _site/mockup.html
-          cp design-studio.html _site/design-studio.html
-          cp alive-pricing-calculator-v2.html _site/alive-pricing-calculator-v2.html
-          cp project.html _site/project.html
-          cat > _site/index.html <<'EOF'
-          <!doctype html>
-          <meta charset="utf-8">
-          <title>SanMar Live Pricing Data</title>
-          <style>
-            body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #222; }
-            code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
-            a { color: #1b6cce; }
-          </style>
-          <h1>SanMar Live Pricing Data</h1>
-          <p>This page hosts the generated <code>products.json</code> for the pricing calculator.</p>
-          <p><a href="./products.json">→ products.json</a> (raw feed)</p>
-          <p>Updated nightly by GitHub Actions. Last deploy: <span id="ts"></span></p>
-          <script>
-            fetch('./products.json').then(r => r.json()).then(d => {
-              document.getElementById('ts').textContent =
-                new Date(d.generated_at).toLocaleString() +
-                ' — ' + d.product_count + ' products';
-            });
-          </script>
-          EOF
-          # Override the placeholder index above with our real product browse page.
-          cp -f index.html _site/index.html
+
+          REQUIRED="products.json index.html"
+          OPTIONAL="alive-pricing-calculator.html alive-pricing-calculator-v2.html cart.html mockup.html design-studio.html project.html"
+
+          for f in $REQUIRED; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required file $f is missing — refusing to publish an incomplete site"
+              exit 1
+            fi
+            cp "$f" "_site/$f"
+          done
+
+          for f in $OPTIONAL; do
+            if [ -f "$f" ]; then
+              cp "$f" "_site/$f"
+            else
+              echo "::warning::$f not found — skipping it; the rest of the site still publishes"
+            fi
+          done
+
+          echo "Staged for Pages: $(ls _site | tr '\n' ' ')"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
