@@ -17,7 +17,7 @@ on:
 permissions:
   contents: write   # needed to commit products.json
   pages: write      # needed to deploy to GitHub Pages
-  id-token: write   # needed for the Pages deploy action
+  id-token: write   # needed for the Pages deploy actionF
 
 # Only one sync can run at a time
 concurrency:
@@ -81,6 +81,7 @@ jobs:
           cp alive-pricing-calculator.html _site/alive-pricing-calculator.html
           cp cart.html _site/cart.html
           cp mockup.html _site/mockup.html
+          cp design-studio.html _site/design-studio.html
           cp alive-pricing-calculator-v2.html _site/alive-pricing-calculator-v2.html
           cp project.html _site/project.html
           cat > _site/index.html <<'EOF'
