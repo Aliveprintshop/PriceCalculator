@@ -293,7 +293,7 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
       <div class="cf-row"><label class="cf-lbl">Order notes (optional)</label><textarea class="cf-textarea" id="cf-notes" placeholder="In-hands date, special requests, etc."></textarea></div>
       <div class="cf-err" id="cf-err"></div>
       <button type="submit" class="checkout-btn" id="cf-btn">Submit Order Request &rarr;</button>
-      <div class="checkout-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
+      <div class="checkout-fineprint" id="cf-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
     </form>
 
     <div class="success-box" id="success-box">
@@ -334,6 +334,14 @@ var CART={
   setPromo:function(promo){try{if(promo&&promo.code)localStorage.setItem(this.K_PROMO,JSON.stringify(promo));else localStorage.removeItem(this.K_PROMO);}catch(e){}},
   clearPromo:function(){try{localStorage.removeItem(this.K_PROMO);}catch(e){}}
 };
+
+// ── STRIPE CHECKOUT ───────────────────────────────────────────────────────
+// Paste your deployed Cloudflare Worker URL here (no trailing slash), e.g.
+//   var PAY_ENDPOINT='https://alive-stripe.yourname.workers.dev';
+// Leave it EMPTY to keep the old "Submit Order Request" behaviour — the page
+// falls back cleanly, so this file is safe to ship before the Worker exists.
+var PAY_ENDPOINT='';
+function payEnabled(){return !!PAY_ENDPOINT;}
 
 var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53';
 var FALLBACK_EMAIL='austin@aliveprintshop.com';
@@ -724,6 +732,22 @@ function buildPayload(form){
     submittedAt:submittedAt
   };
 }
+// Switch the button and small print to payment wording once a Worker is set,
+// and catch the return trip from Stripe.
+function initCheckoutMode(){
+  if(payEnabled()){
+    var b=document.getElementById('cf-btn');
+    if(b)b.textContent='Pay & Place Order →';
+    var f=document.getElementById('cf-fineprint');
+    if(f)f.textContent='Secure payment by Stripe. No setup fees · Proof before we print · 100% Print Guarantee.';
+    var h=document.querySelector('#checkout-form h3');
+    if(h)h.textContent='Complete Your Order';
+  }
+  handleReturnFromStripe();
+}
+if(document.readyState!=='loading')initCheckoutMode();
+else document.addEventListener('DOMContentLoaded',initCheckoutMode);
+
 function submitOrder(ev){
   ev.preventDefault();
   var err=document.getElementById('cf-err');err.classList.remove('show');
@@ -739,8 +763,10 @@ function submitOrder(ev){
     err.textContent='Name, email, and phone are required.';err.classList.add('show');return;
   }
   if(!CART.getCount()){err.textContent='Your cart is empty.';err.classList.add('show');return;}
-  var btn=document.getElementById('cf-btn');btn.disabled=true;btn.textContent='Sending...';
+  var btn=document.getElementById('cf-btn');btn.disabled=true;
+  btn.textContent=payEnabled()?'Starting secure checkout...':'Sending...';
   var payload=buildPayload(data);
+  if(payEnabled()){startStripeCheckout(data,payload,btn,err);return;}
   var fd=new FormData();
   Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
   // Snapshot the order summary BEFORE we clear the cart — used on the thank-you page.
@@ -768,8 +794,97 @@ function submitOrder(ev){
     .catch(function(){showSendFailure(err,btn,payload);});
 }
 
+// ── Stripe checkout ───────────────────────────────────────────────────────
+// The cart is deliberately NOT cleared here. It is cleared only when the
+// customer comes back from a completed Stripe session, so abandoning payment
+// or closing the tab leaves the order intact.
+function _orderRef(){
+  return 'AP-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
+}
+function startStripeCheckout(data,payload,btn,err){
+  var ref=_orderRef();
+  try{sessionStorage.setItem('alive_order_ref',ref);}catch(e){}
+
+  // Send the full order to GHL FIRST, marked awaiting payment. If the customer
+  // bails on the Stripe page we still have the order and can follow up; the
+  // webhook later flips it to paid.
+  var fd=new FormData();
+  Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
+  fd.append('paymentStatus','awaiting_payment');
+  fd.append('orderRef',ref);
+  // Must survive the imminent navigation to Stripe. A plain fetch() gets
+  // cancelled the moment we redirect, which silently loses the order record.
+  // sendBeacon is queued by the browser and delivered regardless; keepalive
+  // fetch is the fallback for anything that lacks it.
+  var sent=false;
+  try{if(navigator.sendBeacon)sent=navigator.sendBeacon(GHL_WEBHOOK,fd);}catch(e){}
+  if(!sent){
+    // A rejected promise here is expected offline; swallow it so it never
+    // surfaces as an unhandled rejection in the customer's console.
+    try{fetch(GHL_WEBHOOK,{method:'POST',body:fd,keepalive:true}).catch(function(){});}catch(e){}
+  }
+
+  var body={
+    items:CART.getItems(),
+    total:CART.getDollarTotal(),
+    orderRef:ref,
+    customer:{name:data.name,email:data.email,phone:data.phone,company:data.company}
+  };
+  fetch(PAY_ENDPOINT.replace(/\/$/,'')+'/create-session',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  }).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(res){
+      if(res.ok&&res.j&&res.j.url){
+        // Stripe refuses to render inside an iframe, so navigate the TOP window.
+        try{window.top.location.href=res.j.url;}
+        catch(e){window.location.href=res.j.url;}
+        return;
+      }
+      btn.disabled=false;btn.textContent='Pay & Place Order →';
+      err.textContent=(res.j&&res.j.error)||'We couldn’t start checkout. Please try again.';
+      err.classList.add('show');
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='Pay & Place Order →';
+      err.innerHTML='We couldn’t reach our payment service. Your order details were saved — <a href="mailto:'+FALLBACK_EMAIL+'" style="color:var(--blue);text-decoration:underline;font-weight:600;">email us</a> and we’ll finish it by phone.';
+      err.classList.add('show');
+    });
+}
+
+// Returning from Stripe. ?paid=<session id> means payment completed.
+function handleReturnFromStripe(){
+  var q;try{q=new URLSearchParams(location.search);}catch(e){return false;}
+  if(q.get('canceled')){
+    var e1=document.getElementById('cf-err');
+    if(e1){e1.textContent='Payment was cancelled — your cart is still here whenever you’re ready.';e1.classList.add('show');}
+    return false;
+  }
+  var paid=q.get('paid');
+  if(!paid)return false;
+  var snap={
+    itemCount:CART.getCount(),
+    pieceCount:CART.getPiecesTotal(),
+    subtotalWithSavings:CART.getDollarTotal()+CART.getItems().reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0),
+    savings:CART.getItems().reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0),
+    total:CART.getDollarTotal(),
+    promoCode:(CART.getPromo()||{}).code||'',
+    customerEmail:'',customerName:'',paid:true
+  };
+  CART.clear();CART.clearPromo();
+  showThankYou(snap);
+  return true;
+}
+
 // Hide the cart UI and show a full-page thank-you with the order snapshot.
 function showThankYou(snap){
+  try{
+    if(snap&&snap.paid){
+      var t=document.querySelector('#thankyou h1');
+      if(t)t.textContent='Payment received — thank you!';
+      var sub=document.querySelector('#thankyou .ty-sub');
+      if(sub)sub.innerHTML='Your payment went through and your order is in. A receipt is on its way to your inbox.';
+    }
+  }catch(e){}
   var cartWrap=document.getElementById('cart-wrap');if(cartWrap)cartWrap.style.display='none';
   var ty=document.getElementById('thankyou');if(ty)ty.classList.add('show');
   var sumHost=document.getElementById('ty-summary');
