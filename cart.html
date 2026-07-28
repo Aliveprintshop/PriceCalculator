@@ -753,6 +753,7 @@ function buildPayload(form){
         return p.length?' — *** ARTWORK NOT RECEIVED: '+p.map(function(f){return f.location||'artwork';}).join(', ')+' ***':'';})()+
       (function(){var u=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
         return u.length?' — Artwork files: '+u.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '):'';})()+
+      (it.mockupUrl?' — Approved mockup: '+it.mockupUrl:'')+
       (it.notes?' — Notes: '+it.notes:'')+
       (it.promoCodeAtAdd?' — Promo: '+it.promoCodeAtAdd:'');
   }).join('\n');
@@ -775,13 +776,26 @@ function buildPayload(form){
     if(_up.length) lines.push('  Artwork files: '+_up.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '));
     var _pend=(it.artworkFiles||[]).filter(function(f){return f&&f.pending&&!f.url;});
     if(_pend.length) lines.push('  *** ARTWORK NOT RECEIVED: '+_pend.map(function(f){return f.location||'artwork';}).join(', ')+' ***');
+    // The design-placement image the customer approved. Production needs this to
+    // see WHERE the art goes, not just what it is.
+    if(it.mockupUrl) lines.push('  Approved mockup: '+it.mockupUrl);
     if(it.notes) lines.push('  Notes: '+it.notes);
     return lines.join('\n');
   }).join('\n\n');
 
+  var allMockups=[];
+  items.forEach(function(it){ if(it && it.mockupUrl) allMockups.push(it.mockupUrl); });
   var allArtwork=[];
   items.forEach(function(it){(it.artworkFiles||[]).forEach(function(f){if(f&&f.url)allArtwork.push(f.url);});});
-  var artworkHtml=items.map(function(it){return (it.artworkFiles||[]).map(function(f){var isImg=/\.(png|jpe?g|gif|webp|bmp|tiff?)$/i.test(f.name||'');return isImg?'<a href="'+f.url+'" target="_blank"><img src="'+previewUrl(f.url,'400x400')+'" alt="'+(f.name||'')+'" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>':'<div style="margin:6px;">&#128206; <a href="'+f.url+'" target="_blank">'+(f.name||'artwork')+'</a></div>';}).join('');}).join('');
+  var artworkHtml=items.map(function(it,i){
+    // Lead with the approved mockup so whoever opens the email sees the layout
+    // before the loose art files.
+    var head = it.mockupUrl
+      ? '<div style="margin:10px 6px 4px;font:700 13px sans-serif;">Item #'+(i+1)+' — approved mockup</div>'
+        +'<a href="'+it.mockupUrl+'" target="_blank"><img src="'+previewUrl(it.mockupUrl,'400x400')+'" alt="Approved mockup" style="max-width:280px;max-height:280px;margin:6px;border:2px solid #16a34a;border-radius:6px;background:#fff;"></a>'
+      : '';
+    return head + (it.artworkFiles||[]).map(function(f){var isImg=/\.(png|jpe?g|gif|webp|bmp|tiff?)$/i.test(f.name||'');return isImg?'<a href="'+f.url+'" target="_blank"><img src="'+previewUrl(f.url,'400x400')+'" alt="'+(f.name||'')+'" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>':'<div style="margin:6px;">&#128206; <a href="'+f.url+'" target="_blank">'+(f.name||'artwork')+'</a></div>';}).join('');
+  }).join('');
   var submittedAt=new Date().toISOString();
 
   // One fully-formatted note for GHL — drop this single field into the workflow's
@@ -803,6 +817,8 @@ function buildPayload(form){
     'Shipping: '+(form.shipping||'—')+'\n\n'+
     '— ORDER ('+items.length+' '+(items.length===1?'item':'items')+', '+CART.getPiecesTotal()+' pcs) —\n'+
     itemsBlock+'\n\n'+
+    '— APPROVED MOCKUPS ('+allMockups.length+') —\n'+
+    (allMockups.length?allMockups.join('\n'):'None')+'\n\n'+
     '— ARTWORK FILES ('+allArtwork.length+') —\n'+
     (allArtwork.length?allArtwork.join('\n'):'None uploaded')+'\n\n'+
     '— PRICING —\n'+
@@ -831,6 +847,8 @@ function buildPayload(form){
     itemsSummary:itemsText,         // readable one-line-per-item (legacy)
     itemsBlock:itemsBlock,          // readable multi-line-per-item
     artworkLinks:allArtwork.join('\n'),   // all uploaded artwork URLs (map to a GHL custom field)
+    mockupLinks:allMockups.join('\n'),    // approved design-placement images (map to its own GHL field)
+    mockupCount:allMockups.length,
     artworkHtml:artworkHtml,                // ready-to-paste HTML (image thumbnails + links) for a GHL email
     noteText:noteText,              // ONE pre-formatted block for the GHL note — use this
     source:'Multi-item cart checkout',
