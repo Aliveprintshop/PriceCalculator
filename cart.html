@@ -8,172 +8,239 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
+
+/* The wrapper: `initial`, not `revert`. Inherited properties — line-height,
+   font, colour, letter-spacing — reach the calculator by INHERITANCE from the
+   page's body element, which no amount of specificity inside the wrapper
+   prevents.
+   `revert` here rolls back to the UA sheet, which says nothing about
+   line-height on a div, so the theme's 1.5 flowed straight in and every text
+   block in the calculator grew. `initial` cuts the inheritance chain.
+   display must be restored because `all:initial` makes a div inline. */
+#alive-cart{all:initial;display:block;}
+/* Descendants: `revert`, so the browser's own button/input/table styling comes
+   back rather than being flattened. Inherited values now come from a clean
+   wrapper.
+
+   SVG is excluded. Presentation attributes — stroke="currentColor",
+   fill="none", stroke-width — count as author-origin, so `all:revert`
+   discards them: every stroke-only icon in the calculator reverted to
+   stroke:none and rendered as blank space. The turnaround calendar icon
+   disappearing is what caught this.
+
+   :where() is used rather than a bare :not() because it contributes no
+   specificity — this stays at (1,0,0) and can never outrank a calculator
+   rule, which a plain :not(svg):not(svg *) would have lifted to (1,0,2). */
+#alive-cart *:where(:not(svg, svg *)),
+#alive-cart *::before,#alive-cart *::after{all:revert;}
+
+
+:root,#alive-cart{
   --blue:#1B6CCE; --blue-mid:#5294D9; --blue-light:#E8F1FB; --blue-dark:#1857a8;
   --green:#1F8B4C; --green-light:#E5F4EC;
   --surface:#FFFFFF; --surface2:#F7F8FA; --border:#E2E5EC; --border2:#CBD2DB;
   --text:#1A2330; --text2:#3D4A5C; --text3:#7B8696;
   --r:8px; --r-lg:12px; --r-xl:16px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text);font-size:14px;}
+#alive-cart,#alive-cart *{box-sizing:border-box;margin:0;padding:0;}
+#alive-cart, #alive-cart{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text);font-size:14px;}
 
-.wrap{max-width:1100px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
+#alive-cart .wrap{max-width:1100px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
 
-/* HEADER */
+#alive-cart /* HEADER */
 .page-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.page-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:var(--text);}
-.continue-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;text-decoration:none;}
-.continue-link:hover{text-decoration:underline;}
+#alive-cart .page-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:var(--text);}
+#alive-cart .continue-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;text-decoration:none;}
+#alive-cart .continue-link:hover{text-decoration:underline;}
 
-/* LEFT: ITEM LIST */
+#alive-cart /* LEFT: ITEM LIST */
 .items{display:flex;flex-direction:column;gap:14px;}
 
-/* PROMO BAR */
+#alive-cart /* PROMO BAR */
 .promo-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.promo-bar.active{background:var(--green-light);border-color:var(--green);}
-.promo-bar-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
-.promo-bar.active .promo-bar-lbl{color:var(--green);}
-.promo-input-row{display:flex;gap:8px;}
-.promo-input{flex:1;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;min-width:0;}
-.promo-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
-.promo-input::placeholder{color:var(--text3);text-transform:none;letter-spacing:0;font-weight:400;font-family:'Open Sans',sans-serif;}
-.promo-btn{padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s;}
-.promo-btn:hover{background:var(--blue-dark);}
-.promo-applied-row{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--green);font-weight:700;}
-.promo-clear-btn{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;line-height:1;padding:4px 8px;border-radius:4px;}
-.promo-clear-btn:hover{background:var(--surface);color:var(--text);}
-.promo-msg{font-size:12px;color:#dc2626;display:none;margin-top:6px;}
-.promo-msg.show{display:block;}
+#alive-cart .promo-bar.active{background:var(--green-light);border-color:var(--green);}
+#alive-cart .promo-bar-lbl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+#alive-cart .promo-bar.active .promo-bar-lbl{color:var(--green);}
+#alive-cart .promo-input-row{display:flex;gap:8px;}
+#alive-cart .promo-input{flex:1;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;min-width:0;}
+#alive-cart .promo-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.1);}
+#alive-cart .promo-input::placeholder{color:var(--text3);text-transform:none;letter-spacing:0;font-weight:400;font-family:'Open Sans',sans-serif;}
+#alive-cart .promo-btn{padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s;}
+#alive-cart .promo-btn:hover{background:var(--blue-dark);}
+#alive-cart .promo-applied-row{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--green);font-weight:700;}
+#alive-cart .promo-clear-btn{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;line-height:1;padding:4px 8px;border-radius:4px;}
+#alive-cart .promo-clear-btn:hover{background:var(--surface);color:var(--text);}
+#alive-cart .promo-msg{font-size:12px;color:#dc2626;display:none;margin-top:6px;}
+#alive-cart .promo-msg.show{display:block;}
 
-/* ITEM CARD */
+#alive-cart /* ITEM CARD */
 .item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;gap:0;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.item-img{width:120px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);padding:10px;display:flex;align-items:center;justify-content:center;}
-.item-img img{max-width:100%;max-height:140px;object-fit:contain;}
-.item-body{flex:1;padding:14px 16px;min-width:0;display:flex;flex-direction:column;gap:10px;}
-.item-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-.item-title-block{flex:1;min-width:0;}
-.item-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:2px;}
-.item-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3;}
-.item-meta{font-size:12px;color:var(--text3);margin-top:3px;}
-.item-actions{display:flex;gap:6px;flex-shrink:0;}
-.item-action-btn{background:transparent;border:1.5px solid var(--border2);color:var(--text2);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--r);cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;}
-.item-action-btn:hover{border-color:var(--blue);color:var(--blue);}
-.item-action-btn.danger:hover{border-color:#dc2626;color:#dc2626;}
+#alive-cart .item-img{width:120px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);padding:10px;display:flex;align-items:center;justify-content:center;}
+#alive-cart .item-img img{max-width:100%;max-height:140px;object-fit:contain;}
+#alive-cart .item-body{flex:1;padding:14px 16px;min-width:0;display:flex;flex-direction:column;gap:10px;}
+#alive-cart .item-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+#alive-cart .item-title-block{flex:1;min-width:0;}
+#alive-cart .item-brand{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:2px;}
+#alive-cart .item-name{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.3;}
+#alive-cart .item-meta{font-size:12px;color:var(--text3);margin-top:3px;}
+#alive-cart .item-actions{display:flex;gap:6px;flex-shrink:0;}
+#alive-cart .item-action-btn{background:transparent;border:1.5px solid var(--border2);color:var(--text2);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--r);cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center;}
+#alive-cart .item-action-btn:hover{border-color:var(--blue);color:var(--blue);}
+#alive-cart .item-action-btn.danger:hover{border-color:#dc2626;color:#dc2626;}
 
-.item-spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:12px;color:var(--text2);}
-.item-spec-grid b{color:var(--text);}
-.item-spec-grid .label{color:var(--text3);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+#alive-cart .item-spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:12px;color:var(--text2);}
+#alive-cart .item-spec-grid b{color:var(--text);}
+#alive-cart .item-spec-grid .label{color:var(--text3);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
 
-.item-artwork{display:flex;flex-direction:column;gap:4px;font-size:12px;}
-.item-artwork-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);}
-.art-tiles{display:flex;flex-wrap:wrap;gap:10px;}
-.art-tile-link{text-decoration:none;color:inherit;}
-.art-tile{width:104px;display:flex;flex-direction:column;gap:4px;padding:7px;border:1px solid var(--border);
+#alive-cart .item-artwork{display:flex;flex-direction:column;gap:4px;font-size:12px;}
+#alive-cart .item-artwork-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);}
+#alive-cart .art-tiles{display:flex;flex-wrap:wrap;gap:10px;}
+#alive-cart .art-tile-link{text-decoration:none;color:inherit;}
+#alive-cart .art-tile{width:104px;display:flex;flex-direction:column;gap:4px;padding:7px;border:1px solid var(--border);
   border-radius:var(--r);background:var(--surface2);box-sizing:border-box;}
-.art-tile-loc{font-family:'Montserrat',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;
+#alive-cart .art-tile-loc{font-family:'Montserrat',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;
   text-transform:uppercase;color:var(--blue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.art-tile-img{width:100%;height:74px;object-fit:contain;background:#fff;border:1px solid var(--border);
+#alive-cart .art-tile-img{width:100%;height:74px;object-fit:contain;background:#fff;border:1px solid var(--border);
   border-radius:6px;padding:3px;box-sizing:border-box;display:block;}
-.art-tile-doc{width:100%;height:74px;display:flex;align-items:center;justify-content:center;font-size:26px;
+#alive-cart .art-tile-doc{width:100%;height:74px;display:flex;align-items:center;justify-content:center;font-size:26px;
   background:#fff;border:1px solid var(--border);border-radius:6px;}
-.art-tile-name{font-size:10.5px;color:var(--text2);line-height:1.3;word-break:break-word;
+#alive-cart .art-tile-name{font-size:10.5px;color:var(--text2);line-height:1.3;word-break:break-word;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.art-tile-warn{font-size:9.5px;font-weight:700;color:#b95900;}
-.item-artwork-input{width:100%;padding:7px 10px;font-size:12px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;}
-.item-artwork-input:focus{border-color:var(--blue);background:var(--surface);}
+#alive-cart .art-tile-warn{font-size:9.5px;font-weight:700;color:#b95900;}
+#alive-cart .item-artwork-input{width:100%;padding:7px 10px;font-size:12px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;}
+#alive-cart .item-artwork-input:focus{border-color:var(--blue);background:var(--surface);}
 
-.item-prices{display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border);}
-.item-prices-left{font-size:12px;color:var(--text3);}
-.item-prices-left strong{color:var(--text);font-weight:700;}
-.item-line-total{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--text);}
-.item-promo-tag{display:inline-block;margin-top:2px;font-size:11px;font-weight:700;color:var(--green);background:var(--green-light);padding:2px 7px;border-radius:11px;}
+#alive-cart .item-prices{display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border);}
+#alive-cart .item-prices-left{font-size:12px;color:var(--text3);}
+#alive-cart .item-prices-left strong{color:var(--text);font-weight:700;}
+#alive-cart .item-line-total{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--text);}
+#alive-cart .item-promo-tag{display:inline-block;margin-top:2px;font-size:11px;font-weight:700;color:var(--green);background:var(--green-light);padding:2px 7px;border-radius:11px;}
 
-/* EMPTY STATE */
+#alive-cart /* EMPTY STATE */
 .empty-state{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:64px 24px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.empty-state .icon{font-size:48px;color:var(--text3);margin-bottom:14px;}
-.empty-state h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;}
-.empty-state p{font-size:13px;color:var(--text3);margin-bottom:18px;}
-.empty-state a{display:inline-block;padding:11px 22px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;}
-.empty-state a:hover{background:var(--blue-dark);}
+#alive-cart .empty-state .icon{font-size:48px;color:var(--text3);margin-bottom:14px;}
+#alive-cart .empty-state h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;}
+#alive-cart .empty-state p{font-size:13px;color:var(--text3);margin-bottom:18px;}
+#alive-cart .empty-state a{display:inline-block;padding:11px 22px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;}
+#alive-cart .empty-state a:hover{background:var(--blue-dark);}
 
-/* RIGHT: ORDER SUMMARY + CUSTOMER FORM */
+#alive-cart /* RIGHT: ORDER SUMMARY + CUSTOMER FORM */
 .summary-panel{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;}
-.summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.summary h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
-.summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2);}
-.summary-row.savings{color:var(--green);font-weight:700;}
-.summary-row.total{padding-top:12px;border-top:1.5px solid var(--border);margin-top:8px;font-size:16px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;}
+#alive-cart .summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+#alive-cart .summary h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+#alive-cart .summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2);}
+#alive-cart .summary-row.savings{color:var(--green);font-weight:700;}
+#alive-cart .summary-row.total{padding-top:12px;border-top:1.5px solid var(--border);margin-top:8px;font-size:16px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;}
 
-.checkout-form{background:var(--surface);border:2px solid var(--blue-mid);border-radius:var(--r-lg);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.checkout-form h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
-.cf-row{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
-.cf-row.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.cf-row.two > div{display:flex;flex-direction:column;gap:5px;}
-.cf-lbl{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
-.cf-input{width:100%;min-width:0;padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;transition:border-color 0.15s;}
-.cf-input:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
-.cf-textarea{width:100%;min-width:0;padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:60px;}
-.cf-textarea:focus{border-color:var(--blue);background:var(--surface);}
-.cf-err{font-size:12px;color:#dc2626;margin-bottom:8px;display:none;}
-.cf-err.show{display:block;}
-.checkout-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:background 0.15s;margin-top:6px;}
-.checkout-btn:hover{background:var(--blue-dark);}
-.checkout-btn:disabled{opacity:0.6;cursor:not-allowed;}
-.checkout-fineprint{font-size:10px;color:var(--text3);text-align:center;margin-top:8px;line-height:1.5;}
+#alive-cart .checkout-form{background:var(--surface);border:2px solid var(--blue-mid);border-radius:var(--r-lg);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+#alive-cart .checkout-form h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+#alive-cart .cf-row{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
+#alive-cart .cf-row.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+#alive-cart .cf-row.two > div{display:flex;flex-direction:column;gap:5px;}
+#alive-cart .cf-lbl{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
+#alive-cart .cf-input{width:100%;min-width:0;padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;transition:border-color 0.15s;}
+#alive-cart .cf-input:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
+#alive-cart .cf-textarea{width:100%;min-width:0;padding:9px 11px;font-size:13px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;resize:vertical;min-height:60px;}
+#alive-cart .cf-textarea:focus{border-color:var(--blue);background:var(--surface);}
+#alive-cart .cf-err{font-size:12px;color:#dc2626;margin-bottom:8px;display:none;}
+#alive-cart .cf-err.show{display:block;}
+#alive-cart .checkout-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:background 0.15s;margin-top:6px;}
+#alive-cart .checkout-btn:hover{background:var(--blue-dark);}
+#alive-cart .checkout-btn:disabled{opacity:0.6;cursor:not-allowed;}
+#alive-cart .checkout-fineprint{font-size:10px;color:var(--text3);text-align:center;margin-top:8px;line-height:1.5;}
 
-.success-box{display:none;background:var(--surface);border:2px solid var(--green);border-radius:var(--r-lg);padding:32px 18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.success-box.show{display:block;}
-.success-box .check{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;color:var(--green);}
-.success-box h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
-.success-box p{font-size:13px;color:var(--text2);line-height:1.5;}
+#alive-cart .success-box{display:none;background:var(--surface);border:2px solid var(--green);border-radius:var(--r-lg);padding:32px 18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+#alive-cart .success-box.show{display:block;}
+#alive-cart .success-box .check{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;color:var(--green);}
+#alive-cart .success-box h3{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+#alive-cart .success-box p{font-size:13px;color:var(--text2);line-height:1.5;}
 
-/* THANK YOU PAGE (full-width takeover after a successful submit) */
+#alive-cart /* THANK YOU PAGE (full-width takeover after a successful submit) */
 .thankyou{display:none;max-width:680px;margin:0 auto;padding:48px 24px 64px;text-align:center;}
-.thankyou.show{display:block;}
-.thankyou .ty-check{width:88px;height:88px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:44px;color:var(--green);box-shadow:0 4px 18px rgba(31,139,76,0.18);}
-.thankyou h1{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:10px;letter-spacing:-0.01em;}
-.thankyou .ty-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:28px;}
-.thankyou .ty-sub strong{color:var(--text);}
-.ty-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;margin:0 auto 24px;text-align:left;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
-.ty-summary-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
-.ty-summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2);}
-.ty-summary-row.total{padding-top:12px;border-top:1.5px solid var(--border);margin-top:8px;font-size:16px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;}
-.ty-steps{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--r-lg);padding:18px 22px;margin:0 auto 22px;text-align:left;}
-.ty-steps-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
-.ty-steps ol{margin:0;padding-left:22px;font-size:13px;color:var(--text2);line-height:1.7;}
-.ty-steps ol li{margin-bottom:4px;}
-.ty-steps ol li strong{color:var(--text);}
-.ty-contact{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:24px;}
-.ty-contact strong{color:var(--text);font-family:'Montserrat',sans-serif;}
-.ty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.ty-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;transition:background 0.15s;}
-.ty-btn:hover{background:var(--blue-dark);}
-.ty-btn.secondary{background:transparent;color:var(--blue);border:1.5px solid var(--blue);}
-.ty-btn.secondary:hover{background:var(--blue-light);}
+#alive-cart .thankyou.show{display:block;}
+#alive-cart .thankyou .ty-check{width:88px;height:88px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:44px;color:var(--green);box-shadow:0 4px 18px rgba(31,139,76,0.18);}
+#alive-cart .thankyou h1{font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:10px;letter-spacing:-0.01em;}
+#alive-cart .thankyou .ty-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:28px;}
+#alive-cart .thankyou .ty-sub strong{color:var(--text);}
+#alive-cart .ty-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;margin:0 auto 24px;text-align:left;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+#alive-cart .ty-summary-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+#alive-cart .ty-summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--text2);}
+#alive-cart .ty-summary-row.total{padding-top:12px;border-top:1.5px solid var(--border);margin-top:8px;font-size:16px;font-weight:800;color:var(--text);font-family:'Montserrat',sans-serif;}
+#alive-cart .ty-steps{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--r-lg);padding:18px 22px;margin:0 auto 22px;text-align:left;}
+#alive-cart .ty-steps-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
+#alive-cart .ty-steps ol{margin:0;padding-left:22px;font-size:13px;color:var(--text2);line-height:1.7;}
+#alive-cart .ty-steps ol li{margin-bottom:4px;}
+#alive-cart .ty-steps ol li strong{color:var(--text);}
+#alive-cart .ty-contact{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:24px;}
+#alive-cart .ty-contact strong{color:var(--text);font-family:'Montserrat',sans-serif;}
+#alive-cart .ty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+#alive-cart .ty-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r-lg);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;transition:background 0.15s;}
+#alive-cart .ty-btn:hover{background:var(--blue-dark);}
+#alive-cart .ty-btn.secondary{background:transparent;color:var(--blue);border:1.5px solid var(--blue);}
+#alive-cart .ty-btn.secondary:hover{background:var(--blue-light);}
 
-/* SAVE FOR LATER */
-.save-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-.save-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.save-sub{font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:12px;}
-.save-btn-outline{width:100%;padding:11px;background:var(--blue-light);color:var(--blue-dark);border:1.5px solid var(--blue-mid);border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;}
-.save-btn-outline:hover{background:#dbeafe;}
-.save-or{text-align:center;font-size:11px;color:var(--text3);margin:12px 0 10px;}
-.save-email-row{display:flex;gap:8px;}
-.save-email-row .cf-input{flex:1;}
-.save-btn{padding:9px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
-.save-btn:hover{background:var(--blue-dark);}
-.save-btn:disabled,.save-btn-outline:disabled{opacity:0.6;cursor:not-allowed;}
-.save-result{margin-top:12px;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;line-height:1.5;word-break:break-word;}
-.save-result.ok{background:var(--green-light);border-color:var(--green);color:#155e34;}
-.save-result a{color:var(--blue);font-weight:600;}
-.save-link-box{display:flex;gap:6px;margin-top:8px;}
-.save-link-box input{flex:1;min-width:0;padding:7px 9px;font-size:11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--text2);}
-.save-link-copy{padding:7px 12px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
-/* RESTORED BANNER */
+#alive-cart /* SAVE FOR LATER */
+
+/* ── THE ALIVE PRINT SHOP GUARANTEE ───────────────────────────────────────
+   Sits directly above the checkout form, #alive-cart which is where a first-time
+   customer hesitates: they are about to pay for something they have only
+   seen as a rough on-screen mockup. */
+
+/* ── MISSING ARTWORK GATE ─────────────────────────────────────────────────
+   Storage can fail. When it does the order must not reach production looking
+   complete — the shop would schedule a print with no file. */
+.miss{background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:var(--r-lg);
+  padding:14px 16px;margin-bottom:14px;}
+#alive-cart .miss-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+#alive-cart .miss-ico{width:22px;height:22px;flex-shrink:0;border-radius:50%;background:#DC2626;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;line-height:1;}
+#alive-cart .miss-ttl{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#991B1B;}
+#alive-cart .miss-body{font-size:12.5px;line-height:1.55;color:#7F1D1D;}
+#alive-cart .miss-body b{font-weight:800;}
+#alive-cart .miss-list{margin:7px 0 0;padding-left:18px;font-size:12.5px;color:#7F1D1D;line-height:1.6;}
+#alive-cart .miss-ref{display:inline-block;margin-top:9px;padding:6px 10px;border-radius:6px;background:#fff;
+  border:1px dashed #FCA5A5;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
+  font-weight:700;color:#991B1B;letter-spacing:.04em;}
+#alive-cart .miss-ack{display:flex;gap:9px;align-items:flex-start;margin-top:12px;padding-top:11px;
+  border-top:1px solid #FCA5A5;font-size:12.5px;line-height:1.5;color:#7F1D1D;cursor:pointer;}
+#alive-cart .miss-ack input{width:16px;height:16px;margin-top:1px;flex-shrink:0;accent-color:#DC2626;cursor:pointer;}
+#alive-cart .miss a{color:#991B1B;text-decoration:underline;font-weight:700;}
+#alive-cart .gtee{background:linear-gradient(180deg,var(--green-light) 0%,#fff 78%);
+  border:1.5px solid #BFE3CE;border-radius:var(--r-lg);padding:16px 18px 14px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+#alive-cart .gtee-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+#alive-cart .gtee-seal{width:26px;height:26px;flex-shrink:0;border-radius:50%;background:var(--green);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1;}
+#alive-cart .gtee-ttl{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:var(--text);letter-spacing:.01em;}
+#alive-cart .gtee-lead{font-size:13.5px;line-height:1.5;color:var(--text2);margin:0 0 11px;}
+#alive-cart .gtee-lead b{color:var(--text);font-weight:800;}
+#alive-cart .gtee-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+#alive-cart .gtee-list li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text2);}
+#alive-cart .gtee-list .tick{color:var(--green);font-weight:800;flex-shrink:0;line-height:1.35;}
+#alive-cart .gtee-list b{color:var(--text);font-weight:700;}
+#alive-cart .gtee-foot{margin-top:11px;padding-top:10px;border-top:1px dashed #C9E3D5;
+  font-size:11.5px;color:var(--text3);line-height:1.45;}
+#alive-cart .save-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+#alive-cart .save-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+#alive-cart .save-sub{font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:12px;}
+#alive-cart .save-btn-outline{width:100%;padding:11px;background:var(--blue-light);color:var(--blue-dark);border:1.5px solid var(--blue-mid);border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+#alive-cart .save-btn-outline:hover{background:#dbeafe;}
+#alive-cart .save-or{text-align:center;font-size:11px;color:var(--text3);margin:12px 0 10px;}
+#alive-cart .save-email-row{display:flex;gap:8px;}
+#alive-cart .save-email-row .cf-input{flex:1;}
+#alive-cart .save-btn{padding:9px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
+#alive-cart .save-btn:hover{background:var(--blue-dark);}
+#alive-cart .save-btn:disabled, #alive-cart .save-btn-outline:disabled{opacity:0.6;cursor:not-allowed;}
+#alive-cart .save-result{margin-top:12px;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;line-height:1.5;word-break:break-word;}
+#alive-cart .save-result.ok{background:var(--green-light);border-color:var(--green);color:#155e34;}
+#alive-cart .save-result a{color:var(--blue);font-weight:600;}
+#alive-cart .save-link-box{display:flex;gap:6px;margin-top:8px;}
+#alive-cart .save-link-box input{flex:1;min-width:0;padding:7px 9px;font-size:11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--text2);}
+#alive-cart .save-link-copy{padding:7px 12px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+#alive-cart /* RESTORED BANNER */
 .restored-banner{grid-column:1/-1;background:var(--green-light);border:1px solid var(--green);border-radius:var(--r-lg);padding:12px 16px;font-size:13px;font-weight:600;color:#155e34;display:flex;align-items:center;gap:8px;}
 
-/* MOBILE */
+#alive-cart /* MOBILE */
 @media(max-width:820px){
   body{background:var(--surface);}
   .wrap{grid-template-columns:1fr;gap:0;padding:0;max-width:100%;}
@@ -200,6 +267,8 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 </style>
 </head>
 <body>
+<div id="alive-cart">
+
 
 <!-- THANK YOU PAGE — full-width takeover after successful submission. -->
 <div class="thankyou" id="thankyou">
@@ -269,6 +338,20 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
       <div class="summary-row total"><span>Total</span><span id="sum-total">$0.00</span></div>
     </div>
 
+    <div class="gtee" id="gtee">
+      <div class="gtee-hd">
+        <div class="gtee-seal">&#10003;</div>
+        <div class="gtee-ttl">The Alive Print Shop Guarantee</div>
+      </div>
+      <p class="gtee-lead"><b>We email you a final mockup before we print &mdash; in 24 hours or less.</b> Nothing goes on a shirt until you have seen it and said yes.</p>
+      <ul class="gtee-list">
+        <li><span class="tick">&#10003;</span><span><b>Free professional design review on every order.</b> A real person on our team checks your artwork &mdash; sizing, placement, print quality &mdash; before anything goes to print.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>No setup fees.</b> Screens and setup are included, however many colors you print.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>100% print guarantee.</b> If your order is not right, we make it right.</span></li>
+      </ul>
+      <div class="gtee-foot">The mockup in your cart is a rough placement guide. Your approved proof is what we print from.</div>
+    </div>
+
     <div class="save-card" id="save-card">
       <h3>&#128190; Save your cart for later</h3>
       <p class="save-sub">No account needed. Your cart is auto-saved on this device &mdash; or grab a link to reopen it on another device or come back later.</p>
@@ -291,9 +374,10 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
       <div class="cf-row"><label class="cf-lbl">Phone *</label><input class="cf-input" id="cf-phone" type="tel" placeholder="(702) 555-0100" required></div>
       <div class="cf-row"><label class="cf-lbl">Shipping address (optional)</label><textarea class="cf-textarea" id="cf-shipping" placeholder="Street, city, state, ZIP" style="min-height:46px;"></textarea></div>
       <div class="cf-row"><label class="cf-lbl">Order notes (optional)</label><textarea class="cf-textarea" id="cf-notes" placeholder="In-hands date, special requests, etc."></textarea></div>
+      <div id="miss-host"></div>
       <div class="cf-err" id="cf-err"></div>
       <button type="submit" class="checkout-btn" id="cf-btn">Submit Order Request &rarr;</button>
-      <div class="checkout-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
+      <div class="checkout-fineprint" id="cf-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
     </form>
 
     <div class="success-box" id="success-box">
@@ -335,10 +419,28 @@ var CART={
   clearPromo:function(){try{localStorage.removeItem(this.K_PROMO);}catch(e){}}
 };
 
+// ── STRIPE CHECKOUT ───────────────────────────────────────────────────────
+// Paste your deployed Cloudflare Worker URL here (no trailing slash), e.g.
+//   var PAY_ENDPOINT='https://alive-stripe.yourname.workers.dev';
+// Leave it EMPTY to keep the old "Submit Order Request" behaviour — the page
+// falls back cleanly, so this file is safe to ship before the Worker exists.
+var PAY_ENDPOINT='';
+function payEnabled(){return !!PAY_ENDPOINT;}
+
 var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53';
 var FALLBACK_EMAIL='austin@aliveprintshop.com';
 
 function fmt(n){return'$'+(parseFloat(n)||0).toFixed(2);}
+
+/* Uploadcare serves a resized copy when you append -/preview/NxN/ to the file
+   URL. Artwork now lives on our own Cloudflare Worker, which has no such
+   transform endpoint, so that suffix has to be added ONLY for ucarecdn links.
+   Appending it to a worker URL produced ".../logo.png-/preview/240x240/",
+   which 404s — every thumbnail in the cart would have been a broken image. */
+function previewUrl(u,size){
+  if(!u)return '';
+  return /^https?:\/\/ucarecdn\.com\//.test(u) ? (u+'-/preview/'+size+'/') : u;
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // =====================================================================
@@ -514,7 +616,7 @@ function render(){
           (addonLine!=='None'?'<div style="grid-column:1/-1;"><div class="label">Add-ons</div><b>'+esc(addonLine)+'</b></div>':'')+
           '<div style="grid-column:1/-1;"><div class="label">Turnaround</div><b>'+esc(it.turnaroundLabel||'')+'</b></div>'+
         '</div>'+
-        (it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(it.mockupUrl)+'-/preview/240x240/" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'')+
+        (it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(previewUrl(it.mockupUrl,'240x240'))+'" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'')+
         (function(){
           // Show the customer their actual designs, one tile per print location,
           // so it is obvious the upload landed. Older cart entries have no thumb
@@ -530,7 +632,7 @@ function render(){
           var tiles=af.map(function(f){
             var name=f.name||'artwork';
             var isImg=/\.(png|jpe?g|gif|webp|bmp|svg|tiff?)$/i.test(name);
-            var src=f.thumb||(f.url&&isImg?f.url+'-/preview/240x240/':'');
+            var src=f.thumb||(f.url&&isImg?previewUrl(f.url,'240x240'):'');
             var visual=src?'<img class="art-tile-img" src="'+esc(src)+'" alt="'+esc(name)+'" loading="lazy">'
                           :'<div class="art-tile-doc">&#128196;</div>';
             var body='<div class="art-tile">'+
@@ -567,6 +669,7 @@ function render(){
   else srow.style.display='none';
 
   renderPromoUI();
+  try{renderMissingArtwork();}catch(e){}
   broadcastHeight();
 }
 
@@ -628,6 +731,7 @@ function clearPromoCode(){
 // ---- GHL submission ----
 function buildPayload(form){
   var items=CART.getItems();
+  var _miss=missingArtwork();
   var promo=CART.getPromo();
   var nameParts=(form.name||'').trim().split(/\s+/);
   var firstName=nameParts[0]||'';
@@ -645,6 +749,8 @@ function buildPayload(form){
       ' — '+it.turnaroundLabel+
       ' — Unit '+fmt(it.unitPrice)+', Line '+fmt(it.lineTotal)+
       (it.artworkLink?' — Artwork: '+it.artworkLink:'')+
+      (function(){var p=(it.artworkFiles||[]).filter(function(f){return f&&f.pending&&!f.url;});
+        return p.length?' — *** ARTWORK NOT RECEIVED: '+p.map(function(f){return f.location||'artwork';}).join(', ')+' ***':'';})()+
       (function(){var u=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
         return u.length?' — Artwork files: '+u.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '):'';})()+
       (it.notes?' — Notes: '+it.notes:'')+
@@ -667,18 +773,25 @@ function buildPayload(form){
     if(it.artworkLink) lines.push('  Artwork: '+it.artworkLink);
     var _up=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
     if(_up.length) lines.push('  Artwork files: '+_up.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '));
+    var _pend=(it.artworkFiles||[]).filter(function(f){return f&&f.pending&&!f.url;});
+    if(_pend.length) lines.push('  *** ARTWORK NOT RECEIVED: '+_pend.map(function(f){return f.location||'artwork';}).join(', ')+' ***');
     if(it.notes) lines.push('  Notes: '+it.notes);
     return lines.join('\n');
   }).join('\n\n');
 
   var allArtwork=[];
   items.forEach(function(it){(it.artworkFiles||[]).forEach(function(f){if(f&&f.url)allArtwork.push(f.url);});});
-  var artworkHtml=items.map(function(it){return (it.artworkFiles||[]).map(function(f){var isImg=/\.(png|jpe?g|gif|webp|bmp|tiff?)$/i.test(f.name||'');return isImg?'<a href="'+f.url+'" target="_blank"><img src="'+f.url+'-/preview/400x400/" alt="'+(f.name||'')+'" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>':'<div style="margin:6px;">&#128206; <a href="'+f.url+'" target="_blank">'+(f.name||'artwork')+'</a></div>';}).join('');}).join('');
+  var artworkHtml=items.map(function(it){return (it.artworkFiles||[]).map(function(f){var isImg=/\.(png|jpe?g|gif|webp|bmp|tiff?)$/i.test(f.name||'');return isImg?'<a href="'+f.url+'" target="_blank"><img src="'+previewUrl(f.url,'400x400')+'" alt="'+(f.name||'')+'" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>':'<div style="margin:6px;">&#128206; <a href="'+f.url+'" target="_blank">'+(f.name||'artwork')+'</a></div>';}).join('');}).join('');
   var submittedAt=new Date().toISOString();
 
   // One fully-formatted note for GHL — drop this single field into the workflow's
   // "Add Note" / internal notification and every order detail shows, any # of items.
   var noteText=
+    (_miss.length?('\u26A0\uFE0F ARTWORK MISSING \u2014 DO NOT SCHEDULE FOR PRINT\n'+
+      'The customer was asked to email '+_miss.length+' file'+(_miss.length===1?'':'s')+
+      ' quoting reference '+missingRef()+'\n'+
+      'Missing: '+_miss.map(function(m){return m.location;}).join(', ')+'\n'+
+      '--------------------------------------------\n\n'):'')+
     '🛍 NEW QUOTE REQUEST\n'+
     'Submitted: '+submittedAt+'\n'+
     'Source: Multi-item cart checkout\n\n'+
@@ -724,6 +837,97 @@ function buildPayload(form){
     submittedAt:submittedAt
   };
 }
+// Switch the button and small print to payment wording once a Worker is set,
+// and catch the return trip from Stripe.
+function initCheckoutMode(){
+  if(payEnabled()){
+    var b=document.getElementById('cf-btn');
+    if(b)b.textContent='Pay & Place Order →';
+    var f=document.getElementById('cf-fineprint');
+    if(f)f.textContent='Secure payment by Stripe. No setup fees · Proof before we print · 100% Print Guarantee.';
+    var h=document.querySelector('#checkout-form h3');
+    if(h)h.textContent='Complete Your Order';
+  }
+  handleReturnFromStripe();
+}
+if(document.readyState!=='loading')initCheckoutMode();
+else document.addEventListener('DOMContentLoaded',initCheckoutMode);
+
+
+/* ---- missing artwork ------------------------------------------------------
+   `pending` is set by the calculator when a file never reached storage. The
+   design still previews from a local thumbnail, so without this the order
+   looks complete right up until someone goes to print it.
+
+   This does not block the sale — a storage outage turning into a lost order
+   helps nobody. It makes the gap impossible to miss: the customer is told
+   plainly, given one reference to quote, and has to acknowledge it; and the
+   order that reaches the team is flagged at the top rather than in a field
+   nobody reads. */
+function missingArtwork(){
+  var out=[];
+  CART.getItems().forEach(function(it){
+    (it.artworkFiles||[]).forEach(function(f){
+      if(f&&f.pending&&!f.url){
+        out.push({item:(it.productName||it.style||'item'),
+                  location:(f.location||'artwork'),
+                  name:(f.name||'')});
+      }
+    });
+  });
+  return out;
+}
+
+// One reference for the whole visit, so what the customer is told to quote is
+// what arrives on the order.
+function missingRef(){
+  var r=null;
+  try{r=sessionStorage.getItem('alive_order_ref');}catch(e){}
+  if(!r){
+    r=_orderRef();
+    try{sessionStorage.setItem('alive_order_ref',r);}catch(e){}
+  }
+  return r;
+}
+
+function renderMissingArtwork(){
+  var host=document.getElementById('miss-host');
+  if(!host)return;
+  var miss=missingArtwork();
+  if(!miss.length){host.innerHTML='';return;}
+  var ref=missingRef();
+  var was=!!(document.getElementById('miss-ack')||{}).checked;
+  host.innerHTML='<div class="miss">'
+    +'<div class="miss-hd"><div class="miss-ico">!</div>'
+    +'<div class="miss-ttl">'+(miss.length===1?'We didn’t receive your artwork file':'We didn’t receive '+miss.length+' of your artwork files')+'</div></div>'
+    +'<div class="miss-body">Your design shows in the cart, but the file itself never reached our servers, so we don’t have anything to print from yet.'
+    +'<ul class="miss-list">'+miss.map(function(m){
+        return '<li>'+esc(m.location)+(m.name?' — '+esc(m.name):'')+'</li>';
+      }).join('')+'</ul>'
+    +'<div>Email the '+(miss.length===1?'file':'files')+' to <a href="mailto:'+FALLBACK_EMAIL
+    +'?subject='+encodeURIComponent('Artwork for order '+ref)+'">'+esc(FALLBACK_EMAIL)+'</a> and quote:</div>'
+    +'<div class="miss-ref">'+esc(ref)+'</div>'
+    +'</div>'
+    +'<label class="miss-ack"><input type="checkbox" id="miss-ack"'+(was?' checked':'')
+    +' onchange="document.getElementById(\'cf-err\').classList.remove(\'show\')">'
+    +'<span>I’ll email my artwork with that reference. I understand nothing goes to print until you have it.</span></label>'
+    +'</div>';
+}
+
+// Called by submitOrder before anything is sent.
+function missingArtworkBlocks(err){
+  var miss=missingArtwork();
+  if(!miss.length)return false;
+  var ack=document.getElementById('miss-ack');
+  if(ack&&ack.checked)return false;
+  renderMissingArtwork();
+  err.textContent='Please confirm you’ll email the artwork we’re missing, then submit again.';
+  err.classList.add('show');
+  var host=document.getElementById('miss-host');
+  if(host&&host.scrollIntoView)host.scrollIntoView({block:'center',behavior:'smooth'});
+  return true;
+}
+
 function submitOrder(ev){
   ev.preventDefault();
   var err=document.getElementById('cf-err');err.classList.remove('show');
@@ -739,8 +943,11 @@ function submitOrder(ev){
     err.textContent='Name, email, and phone are required.';err.classList.add('show');return;
   }
   if(!CART.getCount()){err.textContent='Your cart is empty.';err.classList.add('show');return;}
-  var btn=document.getElementById('cf-btn');btn.disabled=true;btn.textContent='Sending...';
+  if(missingArtworkBlocks(err))return;
+  var btn=document.getElementById('cf-btn');btn.disabled=true;
+  btn.textContent=payEnabled()?'Starting secure checkout...':'Sending...';
   var payload=buildPayload(data);
+  if(payEnabled()){startStripeCheckout(data,payload,btn,err);return;}
   var fd=new FormData();
   Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
   // Snapshot the order summary BEFORE we clear the cart — used on the thank-you page.
@@ -768,8 +975,97 @@ function submitOrder(ev){
     .catch(function(){showSendFailure(err,btn,payload);});
 }
 
+// ── Stripe checkout ───────────────────────────────────────────────────────
+// The cart is deliberately NOT cleared here. It is cleared only when the
+// customer comes back from a completed Stripe session, so abandoning payment
+// or closing the tab leaves the order intact.
+function _orderRef(){
+  return 'AP-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();
+}
+function startStripeCheckout(data,payload,btn,err){
+  var ref=_orderRef();
+  try{sessionStorage.setItem('alive_order_ref',ref);}catch(e){}
+
+  // Send the full order to GHL FIRST, marked awaiting payment. If the customer
+  // bails on the Stripe page we still have the order and can follow up; the
+  // webhook later flips it to paid.
+  var fd=new FormData();
+  Object.keys(payload).forEach(function(k){var v=payload[k];fd.append(k,v==null?'':(typeof v==='object'?JSON.stringify(v):String(v)));});
+  fd.append('paymentStatus','awaiting_payment');
+  fd.append('orderRef',ref);
+  // Must survive the imminent navigation to Stripe. A plain fetch() gets
+  // cancelled the moment we redirect, which silently loses the order record.
+  // sendBeacon is queued by the browser and delivered regardless; keepalive
+  // fetch is the fallback for anything that lacks it.
+  var sent=false;
+  try{if(navigator.sendBeacon)sent=navigator.sendBeacon(GHL_WEBHOOK,fd);}catch(e){}
+  if(!sent){
+    // A rejected promise here is expected offline; swallow it so it never
+    // surfaces as an unhandled rejection in the customer's console.
+    try{fetch(GHL_WEBHOOK,{method:'POST',body:fd,keepalive:true}).catch(function(){});}catch(e){}
+  }
+
+  var body={
+    items:CART.getItems(),
+    total:CART.getDollarTotal(),
+    orderRef:ref,
+    customer:{name:data.name,email:data.email,phone:data.phone,company:data.company}
+  };
+  fetch(PAY_ENDPOINT.replace(/\/$/,'')+'/create-session',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  }).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(res){
+      if(res.ok&&res.j&&res.j.url){
+        // Stripe refuses to render inside an iframe, so navigate the TOP window.
+        try{window.top.location.href=res.j.url;}
+        catch(e){window.location.href=res.j.url;}
+        return;
+      }
+      btn.disabled=false;btn.textContent='Pay & Place Order →';
+      err.textContent=(res.j&&res.j.error)||'We couldn’t start checkout. Please try again.';
+      err.classList.add('show');
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='Pay & Place Order →';
+      err.innerHTML='We couldn’t reach our payment service. Your order details were saved — <a href="mailto:'+FALLBACK_EMAIL+'" style="color:var(--blue);text-decoration:underline;font-weight:600;">email us</a> and we’ll finish it by phone.';
+      err.classList.add('show');
+    });
+}
+
+// Returning from Stripe. ?paid=<session id> means payment completed.
+function handleReturnFromStripe(){
+  var q;try{q=new URLSearchParams(location.search);}catch(e){return false;}
+  if(q.get('canceled')){
+    var e1=document.getElementById('cf-err');
+    if(e1){e1.textContent='Payment was cancelled — your cart is still here whenever you’re ready.';e1.classList.add('show');}
+    return false;
+  }
+  var paid=q.get('paid');
+  if(!paid)return false;
+  var snap={
+    itemCount:CART.getCount(),
+    pieceCount:CART.getPiecesTotal(),
+    subtotalWithSavings:CART.getDollarTotal()+CART.getItems().reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0),
+    savings:CART.getItems().reduce(function(s,it){return s+(parseFloat(it.promoSavingsTotal)||0);},0),
+    total:CART.getDollarTotal(),
+    promoCode:(CART.getPromo()||{}).code||'',
+    customerEmail:'',customerName:'',paid:true
+  };
+  CART.clear();CART.clearPromo();
+  showThankYou(snap);
+  return true;
+}
+
 // Hide the cart UI and show a full-page thank-you with the order snapshot.
 function showThankYou(snap){
+  try{
+    if(snap&&snap.paid){
+      var t=document.querySelector('#thankyou h1');
+      if(t)t.textContent='Payment received — thank you!';
+      var sub=document.querySelector('#thankyou .ty-sub');
+      if(sub)sub.innerHTML='Your payment went through and your order is in. A receipt is on its way to your inbox.';
+    }
+  }catch(e){}
   var cartWrap=document.getElementById('cart-wrap');if(cartWrap)cartWrap.style.display='none';
   var ty=document.getElementById('thankyou');if(ty)ty.classList.add('show');
   var sumHost=document.getElementById('ty-summary');
@@ -820,5 +1116,7 @@ if(loadFromLink()){
 render();
 </script>
 
+
+</div><!-- /#alive-cart -->
 </body>
 </html>
