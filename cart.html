@@ -185,7 +185,27 @@
    Sits directly above the checkout form, #alive-cart which is where a first-time
    customer hesitates: they are about to pay for something they have only
    seen as a rough on-screen mockup. */
-.gtee{background:linear-gradient(180deg,var(--green-light) 0%,#fff 78%);
+
+/* ── MISSING ARTWORK GATE ─────────────────────────────────────────────────
+   Storage can fail. When it does the order must not reach production looking
+   complete — the shop would schedule a print with no file. */
+.miss{background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:var(--r-lg);
+  padding:14px 16px;margin-bottom:14px;}
+#alive-cart .miss-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+#alive-cart .miss-ico{width:22px;height:22px;flex-shrink:0;border-radius:50%;background:#DC2626;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;line-height:1;}
+#alive-cart .miss-ttl{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#991B1B;}
+#alive-cart .miss-body{font-size:12.5px;line-height:1.55;color:#7F1D1D;}
+#alive-cart .miss-body b{font-weight:800;}
+#alive-cart .miss-list{margin:7px 0 0;padding-left:18px;font-size:12.5px;color:#7F1D1D;line-height:1.6;}
+#alive-cart .miss-ref{display:inline-block;margin-top:9px;padding:6px 10px;border-radius:6px;background:#fff;
+  border:1px dashed #FCA5A5;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
+  font-weight:700;color:#991B1B;letter-spacing:.04em;}
+#alive-cart .miss-ack{display:flex;gap:9px;align-items:flex-start;margin-top:12px;padding-top:11px;
+  border-top:1px solid #FCA5A5;font-size:12.5px;line-height:1.5;color:#7F1D1D;cursor:pointer;}
+#alive-cart .miss-ack input{width:16px;height:16px;margin-top:1px;flex-shrink:0;accent-color:#DC2626;cursor:pointer;}
+#alive-cart .miss a{color:#991B1B;text-decoration:underline;font-weight:700;}
+#alive-cart .gtee{background:linear-gradient(180deg,var(--green-light) 0%,#fff 78%);
   border:1.5px solid #BFE3CE;border-radius:var(--r-lg);padding:16px 18px 14px;
   box-shadow:0 1px 3px rgba(0,0,0,0.04);}
 #alive-cart .gtee-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -354,6 +374,7 @@
       <div class="cf-row"><label class="cf-lbl">Phone *</label><input class="cf-input" id="cf-phone" type="tel" placeholder="(702) 555-0100" required></div>
       <div class="cf-row"><label class="cf-lbl">Shipping address (optional)</label><textarea class="cf-textarea" id="cf-shipping" placeholder="Street, city, state, ZIP" style="min-height:46px;"></textarea></div>
       <div class="cf-row"><label class="cf-lbl">Order notes (optional)</label><textarea class="cf-textarea" id="cf-notes" placeholder="In-hands date, special requests, etc."></textarea></div>
+      <div id="miss-host"></div>
       <div class="cf-err" id="cf-err"></div>
       <button type="submit" class="checkout-btn" id="cf-btn">Submit Order Request &rarr;</button>
       <div class="checkout-fineprint" id="cf-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
@@ -648,6 +669,7 @@ function render(){
   else srow.style.display='none';
 
   renderPromoUI();
+  try{renderMissingArtwork();}catch(e){}
   broadcastHeight();
 }
 
@@ -709,6 +731,7 @@ function clearPromoCode(){
 // ---- GHL submission ----
 function buildPayload(form){
   var items=CART.getItems();
+  var _miss=missingArtwork();
   var promo=CART.getPromo();
   var nameParts=(form.name||'').trim().split(/\s+/);
   var firstName=nameParts[0]||'';
@@ -726,6 +749,8 @@ function buildPayload(form){
       ' — '+it.turnaroundLabel+
       ' — Unit '+fmt(it.unitPrice)+', Line '+fmt(it.lineTotal)+
       (it.artworkLink?' — Artwork: '+it.artworkLink:'')+
+      (function(){var p=(it.artworkFiles||[]).filter(function(f){return f&&f.pending&&!f.url;});
+        return p.length?' — *** ARTWORK NOT RECEIVED: '+p.map(function(f){return f.location||'artwork';}).join(', ')+' ***':'';})()+
       (function(){var u=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
         return u.length?' — Artwork files: '+u.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '):'';})()+
       (it.notes?' — Notes: '+it.notes:'')+
@@ -748,6 +773,8 @@ function buildPayload(form){
     if(it.artworkLink) lines.push('  Artwork: '+it.artworkLink);
     var _up=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
     if(_up.length) lines.push('  Artwork files: '+_up.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '));
+    var _pend=(it.artworkFiles||[]).filter(function(f){return f&&f.pending&&!f.url;});
+    if(_pend.length) lines.push('  *** ARTWORK NOT RECEIVED: '+_pend.map(function(f){return f.location||'artwork';}).join(', ')+' ***');
     if(it.notes) lines.push('  Notes: '+it.notes);
     return lines.join('\n');
   }).join('\n\n');
@@ -760,6 +787,11 @@ function buildPayload(form){
   // One fully-formatted note for GHL — drop this single field into the workflow's
   // "Add Note" / internal notification and every order detail shows, any # of items.
   var noteText=
+    (_miss.length?('\u26A0\uFE0F ARTWORK MISSING \u2014 DO NOT SCHEDULE FOR PRINT\n'+
+      'The customer was asked to email '+_miss.length+' file'+(_miss.length===1?'':'s')+
+      ' quoting reference '+missingRef()+'\n'+
+      'Missing: '+_miss.map(function(m){return m.location;}).join(', ')+'\n'+
+      '--------------------------------------------\n\n'):'')+
     '🛍 NEW QUOTE REQUEST\n'+
     'Submitted: '+submittedAt+'\n'+
     'Source: Multi-item cart checkout\n\n'+
@@ -821,6 +853,81 @@ function initCheckoutMode(){
 if(document.readyState!=='loading')initCheckoutMode();
 else document.addEventListener('DOMContentLoaded',initCheckoutMode);
 
+
+/* ---- missing artwork ------------------------------------------------------
+   `pending` is set by the calculator when a file never reached storage. The
+   design still previews from a local thumbnail, so without this the order
+   looks complete right up until someone goes to print it.
+
+   This does not block the sale — a storage outage turning into a lost order
+   helps nobody. It makes the gap impossible to miss: the customer is told
+   plainly, given one reference to quote, and has to acknowledge it; and the
+   order that reaches the team is flagged at the top rather than in a field
+   nobody reads. */
+function missingArtwork(){
+  var out=[];
+  CART.getItems().forEach(function(it){
+    (it.artworkFiles||[]).forEach(function(f){
+      if(f&&f.pending&&!f.url){
+        out.push({item:(it.productName||it.style||'item'),
+                  location:(f.location||'artwork'),
+                  name:(f.name||'')});
+      }
+    });
+  });
+  return out;
+}
+
+// One reference for the whole visit, so what the customer is told to quote is
+// what arrives on the order.
+function missingRef(){
+  var r=null;
+  try{r=sessionStorage.getItem('alive_order_ref');}catch(e){}
+  if(!r){
+    r=_orderRef();
+    try{sessionStorage.setItem('alive_order_ref',r);}catch(e){}
+  }
+  return r;
+}
+
+function renderMissingArtwork(){
+  var host=document.getElementById('miss-host');
+  if(!host)return;
+  var miss=missingArtwork();
+  if(!miss.length){host.innerHTML='';return;}
+  var ref=missingRef();
+  var was=!!(document.getElementById('miss-ack')||{}).checked;
+  host.innerHTML='<div class="miss">'
+    +'<div class="miss-hd"><div class="miss-ico">!</div>'
+    +'<div class="miss-ttl">'+(miss.length===1?'We didn’t receive your artwork file':'We didn’t receive '+miss.length+' of your artwork files')+'</div></div>'
+    +'<div class="miss-body">Your design shows in the cart, but the file itself never reached our servers, so we don’t have anything to print from yet.'
+    +'<ul class="miss-list">'+miss.map(function(m){
+        return '<li>'+esc(m.location)+(m.name?' — '+esc(m.name):'')+'</li>';
+      }).join('')+'</ul>'
+    +'<div>Email the '+(miss.length===1?'file':'files')+' to <a href="mailto:'+FALLBACK_EMAIL
+    +'?subject='+encodeURIComponent('Artwork for order '+ref)+'">'+esc(FALLBACK_EMAIL)+'</a> and quote:</div>'
+    +'<div class="miss-ref">'+esc(ref)+'</div>'
+    +'</div>'
+    +'<label class="miss-ack"><input type="checkbox" id="miss-ack"'+(was?' checked':'')
+    +' onchange="document.getElementById(\'cf-err\').classList.remove(\'show\')">'
+    +'<span>I’ll email my artwork with that reference. I understand nothing goes to print until you have it.</span></label>'
+    +'</div>';
+}
+
+// Called by submitOrder before anything is sent.
+function missingArtworkBlocks(err){
+  var miss=missingArtwork();
+  if(!miss.length)return false;
+  var ack=document.getElementById('miss-ack');
+  if(ack&&ack.checked)return false;
+  renderMissingArtwork();
+  err.textContent='Please confirm you’ll email the artwork we’re missing, then submit again.';
+  err.classList.add('show');
+  var host=document.getElementById('miss-host');
+  if(host&&host.scrollIntoView)host.scrollIntoView({block:'center',behavior:'smooth'});
+  return true;
+}
+
 function submitOrder(ev){
   ev.preventDefault();
   var err=document.getElementById('cf-err');err.classList.remove('show');
@@ -836,6 +943,7 @@ function submitOrder(ev){
     err.textContent='Name, email, and phone are required.';err.classList.add('show');return;
   }
   if(!CART.getCount()){err.textContent='Your cart is empty.';err.classList.add('show');return;}
+  if(missingArtworkBlocks(err))return;
   var btn=document.getElementById('cf-btn');btn.disabled=true;
   btn.textContent=payEnabled()?'Starting secure checkout...':'Sending...';
   var payload=buildPayload(data);
