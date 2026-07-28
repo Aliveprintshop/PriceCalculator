@@ -1,0 +1,31 @@
+# Cloudflare Worker config for the artwork storage service.
+#
+# This exists so the Worker can be deployed by pushing to this repo
+# (Cloudflare "Workers Builds") instead of pasting code into the dashboard
+# editor by hand. Everything the Worker needs is declared here, so the
+# deployed state always matches what is in git.
+#
+# The bucket must already exist in R2 (it does: alive-artwork, private).
+
+name = "alive-artwork"
+main = "artworkworker.js"
+compatibility_date = "2026-07-28"
+
+# Serving files through the Worker is deliberate — it keeps the bucket
+# private and lets the Worker set the response headers. See the comment
+# block at the top of artworkworker.js.
+[[r2_buckets]]
+binding = "ART"
+bucket_name = "alive-artwork"
+
+[vars]
+# The ORIGIN THE BROWSER SENDS. The calculator is embedded in WordPress via
+# an iframe served from GitHub Pages, so uploads originate from the iframe's
+# origin — NOT from aliveprintshop.com. Setting this to the main domain
+# would reject every upload.
+ALLOWED_ORIGINS = "https://aliveprintshop.github.io"
+
+# Baked into the artwork URL stored on every order, so it must not change.
+# If a custom domain is added later, change this and re-deploy — old links
+# keep pointing at the old host, so plan it rather than drift into it.
+PUBLIC_BASE = "https://alive-artwork.austin-662.workers.dev"
