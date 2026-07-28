@@ -67,6 +67,19 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 
 .item-artwork{display:flex;flex-direction:column;gap:4px;font-size:12px;}
 .item-artwork-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);}
+.art-tiles{display:flex;flex-wrap:wrap;gap:10px;}
+.art-tile-link{text-decoration:none;color:inherit;}
+.art-tile{width:104px;display:flex;flex-direction:column;gap:4px;padding:7px;border:1px solid var(--border);
+  border-radius:var(--r);background:var(--surface2);box-sizing:border-box;}
+.art-tile-loc{font-family:'Montserrat',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--blue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.art-tile-img{width:100%;height:74px;object-fit:contain;background:#fff;border:1px solid var(--border);
+  border-radius:6px;padding:3px;box-sizing:border-box;display:block;}
+.art-tile-doc{width:100%;height:74px;display:flex;align-items:center;justify-content:center;font-size:26px;
+  background:#fff;border:1px solid var(--border);border-radius:6px;}
+.art-tile-name{font-size:10.5px;color:var(--text2);line-height:1.3;word-break:break-word;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.art-tile-warn{font-size:9.5px;font-weight:700;color:#b95900;}
 .item-artwork-input{width:100%;padding:7px 10px;font-size:12px;font-family:'Open Sans',sans-serif;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--text);outline:none;}
 .item-artwork-input:focus{border-color:var(--blue);background:var(--surface);}
 
@@ -339,7 +352,18 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 // =====================================================================
 function _b64urlEncode(str){var b=btoa(unescape(encodeURIComponent(str)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function _b64urlDecode(s){try{var b=String(s).replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return decodeURIComponent(escape(atob(b)));}catch(e){return null;}}
-function encodeCart(){return _b64urlEncode(JSON.stringify({v:1,i:CART.getItems(),p:CART.getPromo()}));}
+function _slimForLink(items){
+  return (items||[]).map(function(it){
+    var c={};for(var k in it)c[k]=it[k];
+    if(Array.isArray(it.artworkFiles)){
+      c.artworkFiles=it.artworkFiles.map(function(f){
+        return {name:f.name,url:f.url,location:f.location,pending:f.pending};
+      });
+    }
+    return c;
+  });
+}
+function encodeCart(){return _b64urlEncode(JSON.stringify({v:1,i:_slimForLink(CART.getItems()),p:CART.getPromo()}));}
 function buildSaveLink(){return location.origin+location.pathname+'?cart='+encodeCart();}
 function loadFromLink(){
   var raw;try{raw=new URLSearchParams(location.search).get('cart');}catch(e){raw=null;}
@@ -370,8 +394,11 @@ function _showSaveResult(html,ok){
 function copySaveLink(){
   if(!CART.getCount()){_showSaveResult('Your cart is empty &mdash; add an item first.',false);return;}
   var link=buildSaveLink();
+  var tooLong=link.length>7000;
   _copyText(link,function(ok){
-    _showSaveResult((ok?'&#10003; Link copied! ':'Here&rsquo;s your cart link &mdash; ')+'Bookmark it or paste it anywhere to reopen this exact cart:'+_linkBox(link),ok);
+    _showSaveResult((ok?'&#10003; Link copied! ':'Here&rsquo;s your cart link &mdash; ')+
+      'Bookmark it or paste it anywhere to reopen this exact cart:'+_linkBox(link)+
+      (tooLong?'<div style="margin-top:8px;color:#b95900;font-size:12px;">This cart is large, so the link is long and some email or chat apps may cut it short. Use &ldquo;Email me my cart&rdquo; below to be safe.</div>':''),ok);
   });
 }
 function emailMyCart(){
@@ -488,7 +515,34 @@ function render(){
           '<div style="grid-column:1/-1;"><div class="label">Turnaround</div><b>'+esc(it.turnaroundLabel||'')+'</b></div>'+
         '</div>'+
         (it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(it.mockupUrl)+'-/preview/240x240/" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'')+
-        (function(){var af=(Array.isArray(it.artworkFiles)?it.artworkFiles:[]).filter(function(f){return f&&f.url&&f.url!==it.mockupUrl;});return af.length?'<div class="item-artwork"><div class="item-artwork-label">Uploaded artwork ('+af.length+')</div><div style="display:flex;flex-direction:column;gap:3px;">'+af.map(function(f){return '<a href="'+esc(f.url)+'" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue);word-break:break-all;">&#128206; '+esc(f.name||'artwork')+'</a>';}).join('')+'</div></div>':'';})()+
+        (function(){
+          // Show the customer their actual designs, one tile per print location,
+          // so it is obvious the upload landed. Older cart entries have no thumb
+          // or location, so fall back to an Uploadcare preview then a file chip.
+          // Keep designs that never uploaded, too. They have no url and lose
+          // their thumbnail when the cart travels through a share link, but the
+          // customer must still see that a location has artwork outstanding
+          // rather than have it quietly disappear.
+          var af=(Array.isArray(it.artworkFiles)?it.artworkFiles:[]).filter(function(f){
+            return f&&(f.url||f.thumb||f.pending)&&f.url!==it.mockupUrl;
+          });
+          if(!af.length)return '';
+          var tiles=af.map(function(f){
+            var name=f.name||'artwork';
+            var isImg=/\.(png|jpe?g|gif|webp|bmp|svg|tiff?)$/i.test(name);
+            var src=f.thumb||(f.url&&isImg?f.url+'-/preview/240x240/':'');
+            var visual=src?'<img class="art-tile-img" src="'+esc(src)+'" alt="'+esc(name)+'" loading="lazy">'
+                          :'<div class="art-tile-doc">&#128196;</div>';
+            var body='<div class="art-tile">'+
+              (f.location?'<div class="art-tile-loc">'+esc(f.location)+'</div>':'')+
+              visual+
+              '<div class="art-tile-name" title="'+esc(name)+'">'+esc(name)+'</div>'+
+              (f.pending?'<div class="art-tile-warn">not uploaded</div>':'')+
+            '</div>';
+            return f.url?'<a class="art-tile-link" href="'+esc(f.url)+'" target="_blank" rel="noopener">'+body+'</a>':body;
+          }).join('');
+          return '<div class="item-artwork"><div class="item-artwork-label">Your designs ('+af.length+')</div><div class="art-tiles">'+tiles+'</div></div>';
+        })()+
         (it.notes?'<div style="font-size:12px;color:var(--text2);"><span style="font-family:\'Montserrat\',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);">Notes:</span> '+esc(it.notes)+'</div>':'')+
         '<div class="item-prices">'+
           '<div class="item-prices-left"><strong>'+fmt(it.unitPrice||0)+'</strong>/pc × '+(it.qty||0)+(parseFloat(it.sizeUpchargeTotal)>0?'<br><span style="color:#b95900;font-weight:600;">+ '+fmt(it.sizeUpchargeTotal)+' 2XL+ upcharge</span>':'')+(it.promoCodeAtAdd?'<br>'+promoTag:'')+'</div>'+
@@ -591,7 +645,8 @@ function buildPayload(form){
       ' — '+it.turnaroundLabel+
       ' — Unit '+fmt(it.unitPrice)+', Line '+fmt(it.lineTotal)+
       (it.artworkLink?' — Artwork: '+it.artworkLink:'')+
-      (it.artworkFiles&&it.artworkFiles.length?' — Artwork files: '+it.artworkFiles.map(function(f){return f.url;}).join(' | '):'')+
+      (function(){var u=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
+        return u.length?' — Artwork files: '+u.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '):'';})()+
       (it.notes?' — Notes: '+it.notes:'')+
       (it.promoCodeAtAdd?' — Promo: '+it.promoCodeAtAdd:'');
   }).join('\n');
@@ -610,7 +665,8 @@ function buildPayload(form){
     lines.push('  Price: '+fmt(it.unitPrice)+'/unit, '+fmt(it.lineTotal)+' line total');
     if(it.promoCodeAtAdd) lines.push('  Promo: '+it.promoCodeAtAdd);
     if(it.artworkLink) lines.push('  Artwork: '+it.artworkLink);
-    if(it.artworkFiles&&it.artworkFiles.length) lines.push('  Artwork files: '+it.artworkFiles.map(function(f){return f.url;}).join(' | '));
+    var _up=(it.artworkFiles||[]).filter(function(f){return f&&f.url;});
+    if(_up.length) lines.push('  Artwork files: '+_up.map(function(f){return (f.location?f.location+': ':'')+f.url;}).join(' | '));
     if(it.notes) lines.push('  Notes: '+it.notes);
     return lines.join('\n');
   }).join('\n\n');

@@ -548,6 +548,51 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .prod-card-mockup{display:inline-flex;align-items:center;gap:7px;margin-top:12px;margin-left:8px;padding:10px 18px;background:#fff;border:1.5px solid var(--blue);border-radius:22px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer;text-decoration:none;transition:all 0.18s;box-shadow:0 1px 3px rgba(27,108,206,0.10);}
 .prod-card-mockup:hover{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(27,108,206,0.28);transform:translateY(-1px);}
 @media(max-width:600px){.prod-card-mockup{margin-left:0;}}
+
+/* ── INLINE MOCKUP + PER-LOCATION LOGO UPLOAD ─────────────────────────── */
+.mock-stage{position:relative;display:block;width:340px;max-width:86vw;}
+.mock-stage .prod-card-img{display:block;width:100%;}
+.mock-layers{position:absolute;left:10px;top:10px;right:10px;bottom:10px;pointer-events:none;overflow:hidden;border-radius:calc(var(--r-lg) - 4px);}
+.mock-layer{position:absolute;pointer-events:auto;cursor:move;touch-action:none;}
+.mock-layer img{display:block;width:100%;height:auto;pointer-events:none;-webkit-user-drag:none;user-select:none;}
+.mock-layer.sel{outline:1.5px dashed var(--blue);outline-offset:3px;}
+.mock-h{position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;border:1.5px solid var(--blue);
+  display:none;align-items:center;justify-content:center;font-size:12px;line-height:1;color:var(--blue);
+  box-shadow:0 1px 4px rgba(0,0,0,.22);cursor:pointer;touch-action:none;}
+.mock-layer.sel .mock-h{display:flex;}
+.mock-h-del{top:-11px;left:-11px;color:var(--red);border-color:var(--red);}
+.mock-h-size{bottom:-11px;right:-11px;cursor:nwse-resize;}
+.mock-h-rot{top:-11px;right:-11px;cursor:grab;}
+.mock-hint{font-size:11px;color:var(--text3);text-align:center;max-width:340px;line-height:1.45;}
+.mock-hint b{color:var(--text2);font-weight:700;}
+
+.logo-uploads{display:flex;flex-direction:column;gap:8px;margin-top:14px;margin-left:8px;max-width:420px;}
+.logo-uploads-title{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+.lu-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);}
+.lu-row.has{border-color:var(--blue-light);background:var(--blue-light);}
+.lu-thumb{width:38px;height:38px;flex-shrink:0;border-radius:6px;border:1px solid var(--border);background:#fff
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23B8B8B8' stroke-width='2'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><path d='M21 15l-5-5L5 21'/></svg>") center/16px no-repeat;
+  object-fit:contain;padding:2px;box-sizing:border-box;}
+.lu-meta{flex:1;min-width:0;}
+.lu-name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lu-sub{font-size:11px;color:var(--text3);margin-top:1px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.lu-dot{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.18);flex-shrink:0;}
+.lu-btn{flex-shrink:0;padding:7px 13px;border-radius:999px;border:1.5px solid var(--blue);background:transparent;color:var(--blue);
+  font-family:'Montserrat',sans-serif;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.lu-btn:hover{background:var(--blue);color:#fff;}
+.lu-x{flex-shrink:0;background:none;border:none;color:var(--text3);font-size:15px;cursor:pointer;padding:2px 5px;line-height:1;}
+.lu-x:hover{color:var(--red);}
+.lu-warn{font-size:11px;color:#8a5a00;background:var(--amber-light);border-radius:6px;padding:5px 8px;margin-top:2px;line-height:1.4;}
+
+.art-cards{display:flex;flex-direction:column;gap:10px;}
+.art-card{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);}
+.art-card img.art-thumb{width:64px;height:64px;object-fit:contain;border:1px solid var(--border);border-radius:6px;background:#fff;padding:3px;box-sizing:border-box;flex-shrink:0;}
+.art-loc{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:var(--text);}
+.art-line{font-size:11.5px;color:var(--text3);margin-top:3px;line-height:1.5;}
+.art-chips{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:5px;}
+.art-empty{font-size:12px;color:var(--text3);}
+@media(max-width:600px){.logo-uploads{margin-left:0;}.mock-stage{width:100%;}}
+
 /* MOBILE PRODUCT CARD */
 .mob-prod-card{display:none;}
 .mob-prod-card.show{display:block;}
@@ -659,8 +704,12 @@ textarea.of-input{resize:vertical;min-height:70px;}
       <!-- Product Card (shown after item selected) -->
       <div class="prod-card" id="prod-card">
         <div class="prod-card-imgcol">
-          <img class="prod-card-img" id="prod-card-img" src="" alt="" onclick="openLightbox()">
+          <div class="mock-stage" id="mock-stage">
+            <img class="prod-card-img" id="prod-card-img" src="" alt="" onclick="onStageClick(event)">
+            <div class="mock-layers" id="mock-layers"></div>
+          </div>
           <div class="view-pills" id="view-pills"></div>
+          <div class="mock-hint" id="mock-hint"></div>
         </div>
         <div>
           <div class="prod-id-group">
@@ -674,7 +723,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
           <div class="prod-material" id="prod-sizes" style="display:none;"></div>
           <div class="prod-material" id="prod-fit" style="display:none;"></div>
           <div class="swatch-row" id="swatch-row"></div>
-          <a class="prod-card-mockup" id="prod-card-mockup" href="javascript:void(0)" onclick="openMockup();return false;" title="Preview your logo on this product"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5h18v14H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 16l5-5 4 4 3-3 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/></svg>Create a mockup</a>
+          <div class="logo-uploads" id="logo-uploads"></div>
+          <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,.png,.jpg,.jpeg,.webp,.gif,.svg" style="display:none;" onchange="onLogoInput(event)">
         </div>
       </div>
       <div class="search-outer" id="ip">
@@ -709,13 +759,9 @@ textarea.of-input{resize:vertical;min-height:70px;}
 
     <!-- Step 4b: Per-location artwork upload (full width, shows only active locations) -->
     <div class="step-block full" id="artwork-section" style="display:none;">
-      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Artwork <span style="font-weight:400;color:var(--text3);font-size:13px;">&middot; Upload all your artwork here</span></div><div class="step-hint">PDF, AI, SVG &amp; Vector files are best.</div></div></div>
-      <div class="artwork-dropzone" id="artwork-dropzone">
-        <uc-config ctx-name="art-all" pubkey="7861e880db07f9de6779" multiple="true" multipleMax="25" maxLocalFileSizeBytes="26214400" imgOnly="false" sourceList="local, url, dropbox, gdrive" accept="image/*,.pdf,.ai,.eps,.svg,.psd,.zip,.tif,.tiff,application/pdf,application/postscript,application/zip"></uc-config>
-        <uc-file-uploader-regular ctx-name="art-all"></uc-file-uploader-regular>
-        <uc-upload-ctx-provider ctx-name="art-all" id="uc-ctx-all"></uc-upload-ctx-provider>
-      </div>
-      <div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:6px;">AI generated artwork or low quality images will require an art fee to recreate the design in a high quality vector format.</div>
+      <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Your artwork <span style="font-weight:400;color:var(--text3);font-size:13px;">&middot; uploaded per print location</span></div></div></div>
+      <div class="art-cards" id="art-cards"></div>
+      <div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:8px;">Colour counts are an estimate from your file &mdash; change the dropdown above if it&rsquo;s not right. AI generated artwork or low quality images will require an art fee to recreate the design in a high quality vector format.</div>
     </div>
 
     <!-- Step 5: Add-ons -->
@@ -3283,12 +3329,14 @@ function _ucFiles(state){
 // Wire the single uploader's change event once, and show the artwork section
 // whenever at least one imprint location is active. Safe to call repeatedly.
 function renderArtworkUploaders(){
-  var prov=document.getElementById('uc-ctx-all');
-  if(prov&&!prov._wired){
-    prov._wired=1;
-    prov.addEventListener('change',function(e){ARTWORK=_ucFiles(e.detail);});
-  }
-  var anyOn=(typeof locs!=='undefined')&&locs&&locs.size>0;
+  // The single global Uploadcare box has been replaced by per-location uploads
+  // (see the INLINE MOCKUP block near the end of this file). This function is
+  // still called from renderLocationPills/onImprintChange, so it now just keeps
+  // the per-location UI in sync.
+  if(typeof renderLogoUploads==='function')renderLogoUploads();
+  if(typeof renderArtCards==='function')renderArtCards();
+  if(typeof renderMockLayers==='function')renderMockLayers();
+  var anyOn=(typeof DESIGNS!=='undefined')&&Object.keys(DESIGNS).length>0;
   var sec=document.getElementById('artwork-section');
   if(sec)sec.style.display=anyOn?'':'none';
 }
@@ -3456,8 +3504,10 @@ function captureCartItem(source){
   var notes=(document.getElementById(notesId)||{}).value||'';
   // Consolidated artwork: one flat list of uploaded files (cdnUrl + filename).
   var artworkAll=(typeof ARTWORK!=='undefined'&&Array.isArray(ARTWORK))?ARTWORK.slice():[];
-  var artworkByLoc={};
-  var artworkNote=artworkAll.length?artworkAll.map(function(f){return f.url;}).join(', '):'';
+  var artworkByLoc=(typeof designsByLoc==='function')?designsByLoc():{};
+  var artworkNote=artworkAll.filter(function(f){return f&&f.url;}).map(function(f){
+    return (f.location?f.location+': ':'')+f.url;
+  }).join(', ');
   var addonList=[];if(addons.neck)addonList.push('Inside Neck Print');if(addons.hem)addonList.push('Custom Hem Tag');if(addons.bag)addonList.push('Fold & Bag');
   var baseBD=rush==='super'?5:rush==='rush'?7:10;
   var effBD=baseBD+(addons.hem?5:0);
@@ -3937,6 +3987,571 @@ document.addEventListener('keydown',function(e){
     if(ov&&ov.classList.contains('show'))closeBrowseModal();
   }
 });
+
+// =====================================================================
+// INLINE MOCKUP + PER-LOCATION ARTWORK
+// Replaces the old "Create a mockup" link (which opened mockup.html in a
+// new tab) and the single global Uploadcare box. The customer now uploads
+// one design per print location, sees it composited on the product photo,
+// and the upload drives the imprint dropdown for that location.
+//
+// The number of inks is estimated from the file (see AliveArtColors) and
+// used as an editable default: 1..cap => N-color screen print, anything
+// beyond that (or a photo / gradient) => Full Color transfer.
+// =====================================================================
+
+/* ---- artwork color estimator ---- */
+var AliveArtColors=(function(){
+  var DEF={sample:180,quantBits:5,mergeDist:44,minShare:0.012,blendDist:30,
+           blendMaxRatio:0.45,fineBits:2,toneSpread:45,alphaMin:128,dropBackground:true};
+  function d2(a,b){var r=a[0]-b[0],g=a[1]-b[1],bb=a[2]-b[2];return r*r+g*g+bb*bb;}
+  function seg(p,a,b){
+    var x=b[0]-a[0],y=b[1]-a[1],z=b[2]-a[2];
+    var px=p[0]-a[0],py=p[1]-a[1],pz=p[2]-a[2];
+    var L=x*x+y*y+z*z; if(L===0)return Math.sqrt(d2(p,a));
+    var t=(px*x+py*y+pz*z)/L; if(t<0)t=0; else if(t>1)t=1;
+    return Math.sqrt(d2(p,[a[0]+x*t,a[1]+y*t,a[2]+z*t]));
+  }
+  function bgOf(data,w,h,am){
+    var c={},tot=0;
+    function s(x,y){var i=(y*w+x)*4;if(data[i+3]<am)return;
+      var k=(data[i]>>3)+','+(data[i+1]>>3)+','+(data[i+2]>>3);c[k]=(c[k]||0)+1;tot++;}
+    for(var x=0;x<w;x++){s(x,0);s(x,h-1);} for(var y=0;y<h;y++){s(0,y);s(w-1,y);}
+    if(!tot)return null;
+    var bk=null,bn=0; for(var k in c) if(c[k]>bn){bn=c[k];bk=k;}
+    if(!bk||bn/tot<0.7)return null;
+    var p=bk.split(',');return [(+p[0]<<3)+4,(+p[1]<<3)+4,(+p[2]<<3)+4];
+  }
+  function hex(v){return '#'+v.map(function(x){return ('0'+Math.round(x).toString(16)).slice(-2);}).join('');}
+  function detect(img,opt){
+    var o={},k;for(k in DEF)o[k]=DEF[k];if(opt)for(k in opt)o[k]=opt[k];
+    var W=img.naturalWidth||img.width,H=img.naturalHeight||img.height;
+    if(!W||!H)return {ok:false,reason:'no-image'};
+    var sc=Math.min(1,o.sample/Math.max(W,H));
+    var cw=Math.max(1,Math.round(W*sc)),ch=Math.max(1,Math.round(H*sc));
+    var cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
+    var ctx=cv.getContext('2d',{willReadFrequently:true});
+    ctx.clearRect(0,0,cw,ch);
+    try{ctx.drawImage(img,0,0,cw,ch);}catch(e){return {ok:false,reason:'draw'};}
+    var dat;try{dat=ctx.getImageData(0,0,cw,ch).data;}catch(e){return {ok:false,reason:'tainted'};}
+    var bg=o.dropBackground?bgOf(dat,cw,ch,o.alphaMin):null;
+    var sh=8-o.quantBits,bu={},fine={},art=0,tr=0;
+    for(var i=0;i<dat.length;i+=4){
+      if(dat[i+3]<o.alphaMin){tr++;continue;}
+      var r=dat[i],g=dat[i+1],b=dat[i+2];
+      if(bg&&d2([r,g,b],bg)<324)continue;
+      var key=(r>>sh)+'_'+(g>>sh)+'_'+(b>>sh),e=bu[key];
+      if(e){e.n++;e.r+=r;e.g+=g;e.b+=b;}else bu[key]={n:1,r:r,g:g,b:b};
+      var fb=o.fineBits,fk=(r>>fb)+'_'+(g>>fb)+'_'+(b>>fb);
+      fine[fk]=(fine[fk]||0)+1; art++;
+    }
+    if(!art)return {ok:false,reason:'empty'};
+    var list=[];for(var q in bu){var E=bu[q];list.push({n:E.n,rgb:[E.r/E.n,E.g/E.n,E.b/E.n]});}
+    var raw=list.length; list.sort(function(a,b){return b.n-a.n;});
+    var cl=[],md=o.mergeDist*o.mergeDist;
+    for(var li=0;li<list.length;li++){
+      var it=list[li],hit=null;
+      for(var ci=0;ci<cl.length;ci++)if(d2(it.rgb,cl[ci].rgb)<md){hit=cl[ci];break;}
+      if(hit){var t=hit.n+it.n;
+        hit.rgb=[(hit.rgb[0]*hit.n+it.rgb[0]*it.n)/t,(hit.rgb[1]*hit.n+it.rgb[1]*it.n)/t,(hit.rgb[2]*hit.n+it.rgb[2]*it.n)/t];
+        hit.n=t;}
+      else cl.push({n:it.n,rgb:it.rgb.slice()});
+    }
+    cl.sort(function(a,b){return b.n-a.n;});
+    var kept=[];
+    for(var z=0;z<cl.length;z++){
+      var c=cl[z],blend=false;
+      for(var a1=0;a1<kept.length&&!blend;a1++)for(var a2=a1+1;a2<kept.length;a2++){
+        if(c.n>Math.min(kept[a1].n,kept[a2].n)*o.blendMaxRatio)continue;
+        if(seg(c.rgb,kept[a1].rgb,kept[a2].rgb)<o.blendDist){blend=true;break;}
+      }
+      if(!blend&&bg)for(var a3=0;a3<kept.length;a3++){
+        if(c.n>kept[a3].n*o.blendMaxRatio)continue;
+        if(seg(c.rgb,kept[a3].rgb,bg)<o.blendDist){blend=true;break;}
+      }
+      if(blend){var nr=null,nd=Infinity;
+        for(var kk=0;kk<kept.length;kk++){var dd=d2(c.rgb,kept[kk].rgb);if(dd<nd){nd=dd;nr=kept[kk];}}
+        if(nr)nr.n+=c.n;
+      } else kept.push(c);
+    }
+    var solid=kept.filter(function(c){return c.n/art>=o.minShare;});
+    if(!solid.length&&kept.length)solid=[kept[0]];
+    solid.sort(function(a,b){return b.n-a.n;});
+    var fc=[];for(var f2 in fine)fc.push(fine[f2]);
+    fc.sort(function(a,b){return b-a;});
+    var acc=0,t90=0,need=art*0.9;
+    for(var fi=0;fi<fc.length;fi++){acc+=fc[fi];t90++;if(acc>=need)break;}
+    var photo=(t90>o.toneSpread&&solid.length>=3)||solid.length>16;
+    return {ok:true,count:photo?null:solid.length,photoish:photo,tones90:t90,
+      colors:solid.slice(0,12).map(function(c){return {hex:hex(c.rgb),share:c.n/art};}),
+      backgroundDropped:!!bg,hasTransparency:tr>0};
+  }
+  return {detect:detect};
+})();
+
+/* ---- state ---- */
+var DESIGNS={};              // locKey -> design record
+var _selLayer=null;          // locKey of the selected layer
+var UC_PUBKEY='7861e880db07f9de6779';
+
+var LOC_VIEW={'front':'front','front-center':'front','left-chest':'front','right-chest':'front',
+              'back':'back','left-sleeve':'side','right-sleeve':'side','left-side':'side','right-side':'side'};
+function locView(k){return LOC_VIEW[k]||'front';}
+
+function viewSrcFor(view){
+  if(!sel||!sel._activeColor)return null;
+  return _resolveViewSrc(sel._activeColor.images||{},view);
+}
+// A location can only be previewed if the product actually has a photo of that side.
+function locPreviewable(k){return !!viewSrcFor(locView(k));}
+
+// Default placement, as fractions of the photo box. Note that a wearer's LEFT
+// chest appears on the RIGHT of a front-facing photo, hence the mirrored x.
+function defaultPlace(k){
+  switch(k){
+    case 'left-chest':   return {cx:0.635,cy:0.325,w:0.145,rot:0};
+    case 'right-chest':  return {cx:0.365,cy:0.325,w:0.145,rot:0};
+    case 'front-center': return {cx:0.5,  cy:0.46, w:0.34, rot:0};
+    case 'back':         return {cx:0.5,  cy:0.40, w:0.34, rot:0};
+    default:             return {cx:0.5,  cy:0.44, w:0.30, rot:0};
+  }
+}
+
+function currentLocations(){
+  if(!sel||typeof availableLocations!=='function')return [];
+  var av=availableDecoMethods(sel);
+  var dw=(typeof isDrinkware==='function'&&isDrinkware());
+  var layout=(dw||av.indexOf('sp')>-1)?decoMethod:'em';
+  return availableLocations(sel,layout)||[];
+}
+
+/* ---- upload ---- */
+function pickLogo(locKey){
+  var inp=document.getElementById('logo-file-input');
+  if(!inp)return;
+  inp.setAttribute('data-loc',locKey);
+  inp.value='';
+  inp.click();
+}
+function onLogoInput(ev){
+  var inp=ev&&ev.target;if(!inp||!inp.files||!inp.files.length)return;
+  var loc=inp.getAttribute('data-loc')||'front';
+  applyLogoFile(loc,inp.files[0]);
+}
+function applyLogoFile(locKey,file){
+  if(!file)return;
+  if(file.size>26214400){alert('That file is larger than 25 MB. Please upload a smaller version.');return;}
+  var rd=new FileReader();
+  rd.onload=function(){
+    var src=String(rd.result||'');
+    var im=new Image();
+    im.onload=function(){
+      var det={ok:false};
+      try{det=AliveArtColors.detect(im);}catch(e){}
+      // Small thumbnail carried into the cart. The full-size dataURL would blow
+      // the localStorage quota once a few items are in the cart, so the cart
+      // gets this downscaled copy and links out to the real file on Uploadcare.
+      var thumb='';
+      try{
+        var TS=96,iw=im.naturalWidth||TS,ih=im.naturalHeight||TS;
+        var rr=Math.min(TS/iw,TS/ih,1);
+        var tc=document.createElement('canvas');
+        tc.width=Math.max(1,Math.round(iw*rr));
+        tc.height=Math.max(1,Math.round(ih*rr));
+        tc.getContext('2d').drawImage(im,0,0,tc.width,tc.height);
+        thumb=tc.toDataURL('image/png');
+      }catch(e){}
+      DESIGNS[locKey]={
+        name:file.name||'artwork',
+        src:src,
+        thumb:thumb,
+        nw:im.naturalWidth||300, nh:im.naturalHeight||300,
+        count:det.ok?det.count:null,
+        photoish:det.ok?!!det.photoish:false,
+        colors:det.ok?(det.colors||[]):[],
+        bgDropped:det.ok?!!det.backgroundDropped:false,
+        detected:det.ok,
+        place:defaultPlace(locKey),
+        ucUrl:null, uploading:true, note:''
+      };
+      _selLayer=locKey;
+      autoApplyImprint(locKey);
+      refreshMockUI();
+      if(typeof calc==='function')calc();
+      uploadDesign(locKey,file);
+    };
+    im.onerror=function(){alert('That file could not be read as an image. PNG, JPG, SVG, WEBP and GIF are supported.');};
+    im.src=src;
+  };
+  rd.onerror=function(){alert('That file could not be read.');};
+  rd.readAsDataURL(file);
+}
+
+// Push the original file to Uploadcare so production receives the real artwork.
+// Best-effort: if it fails the design still previews and the customer is told.
+function uploadDesign(locKey,file){
+  var fd=new FormData();
+  fd.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
+  fd.append('UPLOADCARE_STORE','1');
+  fd.append('file',file,file.name||'artwork');
+  fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
+    .then(function(r){if(!r.ok)throw new Error('upload '+r.status);return r.json();})
+    .then(function(j){
+      var d=DESIGNS[locKey];if(!d)return;
+      if(j&&j.file){
+        d.ucUrl='https://ucarecdn.com/'+j.file+'/'+encodeURIComponent(d.name);
+        d.ucUuid=j.file;
+      }
+      d.uploading=false;d.uploadFailed=!d.ucUrl;
+      syncArtworkPayload();renderArtCards();renderLogoUploads();
+    })
+    .catch(function(){
+      var d=DESIGNS[locKey];if(!d)return;
+      d.uploading=false;d.uploadFailed=true;
+      syncArtworkPayload();renderArtCards();renderLogoUploads();
+    });
+}
+
+function removeDesign(locKey){
+  delete DESIGNS[locKey];
+  if(_selLayer===locKey)_selLayer=null;
+  syncArtworkPayload();
+  refreshMockUI();
+  if(typeof calc==='function')calc();
+}
+
+/* ---- drive the imprint dropdown from the detected color count ---- */
+function autoApplyImprint(locKey){
+  var d=DESIGNS[locKey];if(!d||!sel)return;
+  var av=availableDecoMethods(sel);
+  var dw=(typeof isDrinkware==='function'&&isDrinkware());
+  var hasSP=dw||av.indexOf('sp')>-1;
+  var hasEM=!dw&&av.indexOf('em')>-1;
+  var hasHT=!dw&&av.indexOf('ht')>-1;
+  var cap=imprintColorCap();
+  var n=d.count;
+  var note='';
+
+  // Analysis failed (an SVG with no intrinsic size, an exotic encoding, a
+  // cross-origin source). Fall back to whatever this product normally uses
+  // rather than silently charging for Full Color, and say so.
+  if(!d.detected){
+    if(hasSP){locMethod[locKey]='sp';locColorCount[locKey]=1;}
+    else if(hasEM){locMethod[locKey]='em';}
+    else if(hasHT){locMethod[locKey]='ht';}
+    else return;
+    locs.add(locKey);
+    d.note='We couldn’t read the colors in this file automatically — please check the dropdown above.';
+    if(typeof renderLocationPills==='function')renderLocationPills();
+    if(typeof syncDecoMethod==='function')syncDecoMethod();
+    return;
+  }
+
+  if(hasSP&&!d.photoish&&n&&n<=cap){
+    locMethod[locKey]='sp';locColorCount[locKey]=n;
+    note=n+(n===1?' color':' colors')+' detected';
+  }else if(!hasSP&&hasEM&&!d.photoish){
+    // Polos, jackets, caps and bags aren't screen printed — embroidery is the
+    // house default there, so simple artwork should land on Embroidery rather
+    // than being pushed to Full Color just because it isn't screen printable.
+    locMethod[locKey]='em';
+    note='Set to Embroidery — the standard for this product';
+  }else if(hasHT){
+    locMethod[locKey]='ht';
+    note=d.photoish?'Photographic / gradient artwork — set to Full Color'
+                   :(n?n+' colors detected — over the '+cap+'-color screen print limit, set to Full Color'
+                      :'Set to Full Color');
+  }else if(hasEM){
+    locMethod[locKey]='em';
+    note='Set to Embroidery (this product is embroidery only)';
+  }else if(hasSP){
+    locMethod[locKey]='sp';locColorCount[locKey]=Math.min(n||1,cap);
+    note='This product tops out at '+cap+' colors — please simplify the artwork or contact us';
+  }else{
+    return;
+  }
+  locs.add(locKey);
+  d.note=note;
+  if(typeof renderLocationPills==='function')renderLocationPills();
+  if(typeof syncDecoMethod==='function')syncDecoMethod();
+}
+
+/* ---- product-card upload rows ---- */
+function renderLogoUploads(){
+  var host=document.getElementById('logo-uploads');
+  if(!host)return;
+  var items=currentLocations();
+  if(!sel||!items.length){host.innerHTML='';return;}
+  var rows=items.map(function(it){
+    var d=DESIGNS[it.key];
+    var prevOK=locPreviewable(it.key);
+    var thumb=d?'<img class="lu-thumb" src="'+d.src+'" alt="">':'<div class="lu-thumb"></div>';
+    var sub;
+    if(d){
+      var chips=(d.colors||[]).slice(0,8).map(function(c){
+        return '<span class="lu-dot" style="background:'+c.hex+'"></span>';
+      }).join('');
+      var state=d.uploading?'uploading…':(d.uploadFailed?'upload failed — see below':'uploaded');
+      sub='<span>'+(d.photoish?'full color':(d.count?d.count+(d.count===1?' color':' colors'):'—'))+'</span>'+chips+'<span>· '+state+'</span>';
+    }else{
+      sub='<span>'+(prevOK?'PNG, JPG or SVG':'no preview for this location')+'</span>';
+    }
+    return '<div class="lu-row'+(d?' has':'')+'">'
+      +thumb
+      +'<div class="lu-meta"><div class="lu-name">'+it.label+' logo</div><div class="lu-sub">'+sub+'</div></div>'
+      +'<button type="button" class="lu-btn" onclick="pickLogo(\''+it.key+'\')">'+(d?'Change':'Upload')+'</button>'
+      +(d?'<button type="button" class="lu-x" title="Remove" onclick="removeDesign(\''+it.key+'\')">&#x2715;</button>':'')
+      +'</div>';
+  }).join('');
+  host.innerHTML='<div class="logo-uploads-title">Add your design</div>'+rows;
+}
+
+/* ---- the composited preview ---- */
+function renderMockLayers(){
+  var host=document.getElementById('mock-layers');
+  var hint=document.getElementById('mock-hint');
+  if(!host)return;
+  if(!sel){host.innerHTML='';if(hint)hint.textContent='';return;}
+  var view=(typeof currentView!=='undefined')?currentView:'front';
+  var keys=Object.keys(DESIGNS).filter(function(k){return locView(k)===view;});
+  host.innerHTML=keys.map(function(k){
+    var d=DESIGNS[k],p=d.place;
+    return '<div class="mock-layer'+(_selLayer===k?' sel':'')+'" data-loc="'+k+'" '
+      +'style="left:'+(p.cx*100)+'%;top:'+(p.cy*100)+'%;width:'+(p.w*100)+'%;'
+      +'transform:translate(-50%,-50%) rotate('+p.rot+'deg);">'
+      +'<img src="'+d.src+'" alt="">'
+      +'<div class="mock-h mock-h-del" data-h="del">&#x2715;</div>'
+      +'<div class="mock-h mock-h-rot" data-h="rot">&#8635;</div>'
+      +'<div class="mock-h mock-h-size" data-h="size">&#8690;</div>'
+      +'</div>';
+  }).join('');
+  wireLayers();
+  if(hint){
+    var pending=Object.keys(DESIGNS).filter(function(k){return !locPreviewable(k);});
+    if(keys.length)hint.innerHTML='<b>Drag to move.</b> Corner handles resize and rotate.';
+    else if(pending.length)hint.textContent='';
+    else hint.textContent='';
+  }
+}
+
+function wireLayers(){
+  var host=document.getElementById('mock-layers');
+  if(!host)return;
+  var layers=host.querySelectorAll('.mock-layer');
+  for(var i=0;i<layers.length;i++){
+    (function(el){
+      el.addEventListener('pointerdown',function(e){
+        var h=e.target&&e.target.getAttribute?e.target.getAttribute('data-h'):null;
+        var loc=el.getAttribute('data-loc');
+        _selLayer=loc;
+        if(h==='del'){e.preventDefault();e.stopPropagation();removeDesign(loc);return;}
+        startLayerDrag(e,el,loc,h||'move');
+      });
+    })(layers[i]);
+  }
+}
+
+function startLayerDrag(e,el,loc,mode){
+  e.preventDefault();e.stopPropagation();
+  var host=document.getElementById('mock-layers');
+  var d=DESIGNS[loc];if(!d||!host)return;
+  var box=host.getBoundingClientRect();
+  var start={x:e.clientX,y:e.clientY};
+  var p0={cx:d.place.cx,cy:d.place.cy,w:d.place.w,rot:d.place.rot};
+  var cx0=box.left+p0.cx*box.width, cy0=box.top+p0.cy*box.height;
+  var r0=Math.sqrt(Math.pow(e.clientX-cx0,2)+Math.pow(e.clientY-cy0,2));
+  var a0=Math.atan2(e.clientY-cy0,e.clientX-cx0);
+  renderMockLayers();
+
+  function move(ev){
+    var d2=DESIGNS[loc];if(!d2)return;
+    if(mode==='move'){
+      d2.place.cx=Math.min(1.1,Math.max(-0.1,p0.cx+(ev.clientX-start.x)/box.width));
+      d2.place.cy=Math.min(1.1,Math.max(-0.1,p0.cy+(ev.clientY-start.y)/box.height));
+    }else if(mode==='size'){
+      var r=Math.sqrt(Math.pow(ev.clientX-cx0,2)+Math.pow(ev.clientY-cy0,2));
+      var f=r0>4?(r/r0):1;
+      d2.place.w=Math.min(1.6,Math.max(0.03,p0.w*f));
+    }else if(mode==='rot'){
+      var a=Math.atan2(ev.clientY-cy0,ev.clientX-cx0);
+      d2.place.rot=p0.rot+(a-a0)*180/Math.PI;
+    }
+    applyLayerStyle(loc);
+  }
+  function up(){
+    window.removeEventListener('pointermove',move);
+    window.removeEventListener('pointerup',up);
+    scheduleProof();
+  }
+  window.addEventListener('pointermove',move);
+  window.addEventListener('pointerup',up);
+}
+
+// Update just the moving layer's style — re-rendering the whole list mid-drag
+// would rebuild the node under the pointer and drop the gesture.
+function applyLayerStyle(loc){
+  var host=document.getElementById('mock-layers');if(!host)return;
+  var el=host.querySelector('.mock-layer[data-loc="'+loc+'"]');
+  var d=DESIGNS[loc];if(!el||!d)return;
+  el.style.left=(d.place.cx*100)+'%';
+  el.style.top=(d.place.cy*100)+'%';
+  el.style.width=(d.place.w*100)+'%';
+  el.style.transform='translate(-50%,-50%) rotate('+d.place.rot+'deg)';
+}
+
+function onStageClick(ev){
+  if(_selLayer){_selLayer=null;renderMockLayers();return;}
+  if(typeof openLightbox==='function')openLightbox();
+}
+
+/* ---- artwork detail cards (step 4b) ---- */
+function renderArtCards(){
+  var host=document.getElementById('art-cards');
+  if(!host)return;
+  var keys=Object.keys(DESIGNS);
+  if(!keys.length){host.innerHTML='<div class="art-empty">No artwork uploaded yet — use the upload buttons next to the product photo.</div>';return;}
+  host.innerHTML=keys.map(function(k){
+    var d=DESIGNS[k];
+    var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[k])?LOC_LABEL[k]:k;
+    var chips=(d.colors||[]).slice(0,10).map(function(c){
+      return '<span class="lu-dot" style="background:'+c.hex+'" title="'+c.hex+'"></span>';
+    }).join('');
+    var lines=[];
+    lines.push('<div class="art-line">'+d.name+'</div>');
+    if(d.note)lines.push('<div class="art-line">'+d.note+'</div>');
+    if(d.bgDropped)lines.push('<div class="art-line">Solid background ignored when counting colors.</div>');
+    if(!locPreviewable(k))lines.push('<div class="art-line">No product photo of this location, so there’s no on-garment preview — the file is still attached to your order.</div>');
+    if(d.uploadFailed)lines.push('<div class="lu-warn">We couldn’t send this file to our servers. It still shows here, but please mention it when you submit so we can collect the artwork.</div>');
+    return '<div class="art-card"><img class="art-thumb" src="'+d.src+'" alt="">'
+      +'<div><div class="art-loc">'+label+'</div>'+lines.join('')
+      +'<div class="art-chips">'+chips+'</div></div></div>';
+  }).join('');
+}
+
+/* ---- cart payload ---- */
+function designsByLoc(){
+  var out={};
+  Object.keys(DESIGNS).forEach(function(k){
+    var d=DESIGNS[k];
+    var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[k])?LOC_LABEL[k]:k;
+    out[label]=[{name:d.name,url:d.ucUrl||''}];
+  });
+  return out;
+}
+// The cart reads item.artworkFiles, so each design goes across with its
+// location, a thumbnail to display, and a flag for anything that never made it
+// to our servers — better the customer sees "not uploaded" than silence.
+function syncArtworkPayload(){
+  if(typeof ARTWORK==='undefined')return;
+  ARTWORK=Object.keys(DESIGNS).map(function(k){
+    var d=DESIGNS[k];
+    var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[k])?LOC_LABEL[k]:k;
+    return {name:d.name,url:d.ucUrl||'',location:label,thumb:d.thumb||'',pending:!d.ucUrl};
+  });
+}
+
+/* ---- rendered proof for the cart (best effort) ---- */
+var _proofT=null;
+function scheduleProof(){
+  if(_proofT)clearTimeout(_proofT);
+  _proofT=setTimeout(buildProof,900);
+}
+function proxied(u){return 'https://wsrv.nl/?url='+encodeURIComponent(u)+'&output=png';}
+function buildProof(){
+  try{
+    var view=(typeof currentView!=='undefined')?currentView:'front';
+    var keys=Object.keys(DESIGNS).filter(function(k){return locView(k)===view;});
+    if(!keys.length)return;
+    var gsrc=viewSrcFor(view);if(!gsrc)return;
+    var g=new Image();g.crossOrigin='anonymous';
+    g.onload=function(){
+      var W=900,H=Math.round(W*(g.naturalHeight/g.naturalWidth||1.5));
+      var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+      var cx=cv.getContext('2d');
+      cx.fillStyle='#fff';cx.fillRect(0,0,W,H);
+      cx.drawImage(g,0,0,W,H);
+      var pend=keys.length;
+      keys.forEach(function(k){
+        var d=DESIGNS[k],im=new Image();
+        im.onload=function(){
+          var w=d.place.w*W,h=w*(im.naturalHeight/im.naturalWidth||1);
+          cx.save();
+          cx.translate(d.place.cx*W,d.place.cy*H);
+          cx.rotate(d.place.rot*Math.PI/180);
+          cx.drawImage(im,-w/2,-h/2,w,h);
+          cx.restore();
+          if(--pend===0)exportProof(cv);
+        };
+        im.onerror=function(){if(--pend===0)exportProof(cv);};
+        im.src=d.src;
+      });
+    };
+    g.onerror=function(){};
+    g.src=proxied(gsrc);
+  }catch(e){}
+}
+function exportProof(cv){
+  try{
+    cv.toBlob(function(b){
+      if(!b)return;
+      var fd=new FormData();
+      fd.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
+      fd.append('UPLOADCARE_STORE','1');
+      fd.append('file',b,'mockup-proof.png');
+      fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
+        .then(function(r){return r.json();})
+        .then(function(j){
+          if(j&&j.file){
+            var url='https://ucarecdn.com/'+j.file+'/mockup-proof.png';
+            try{localStorage.setItem('alive_pending_mockup_v1',JSON.stringify({url:url,name:'Mockup proof',ts:Date.now()}));}catch(e){}
+          }
+        }).catch(function(){});
+    },'image/png');
+  }catch(e){}
+}
+
+/* ---- refresh everything ---- */
+function refreshMockUI(){
+  renderLogoUploads();
+  renderMockLayers();
+  renderArtCards();
+  syncArtworkPayload();
+  var sec=document.getElementById('artwork-section');
+  if(sec)sec.style.display=Object.keys(DESIGNS).length?'':'none';
+  scheduleProof();
+}
+
+/* ---- hook into the existing lifecycle ---- */
+(function(){
+  if(typeof setView==='function'){
+    var _sv=setView;
+    window.setView=function(v){_sv(v);_selLayer=null;renderMockLayers();};
+  }
+  if(typeof pickItem==='function'){
+    var _pi=pickItem;
+    window.pickItem=function(){
+      var r=_pi.apply(this,arguments);
+      // Keep only designs whose location still exists on the new product.
+      try{
+        var valid={};currentLocations().forEach(function(it){valid[it.key]=1;});
+        Object.keys(DESIGNS).forEach(function(k){if(!valid[k])delete DESIGNS[k];});
+      }catch(e){}
+      refreshMockUI();
+      return r;
+    };
+  }
+  if(typeof clearItem==='function'){
+    var _ci=clearItem;
+    window.clearItem=function(){DESIGNS={};_selLayer=null;refreshMockUI();return _ci.apply(this,arguments);};
+  }
+  if(typeof selectColor==='function'){
+    var _sc=selectColor;
+    window.selectColor=function(){var r=_sc.apply(this,arguments);renderMockLayers();return r;};
+  }
+  if(document.readyState!=='loading')refreshMockUI();
+  else document.addEventListener('DOMContentLoaded',refreshMockUI);
+})();
+
 </script>
 <!-- Browse modal removed: customers browse from index.html and deep-link with ?style=XXX -->
 <!-- Image lightbox overlay (hidden by default) -->
