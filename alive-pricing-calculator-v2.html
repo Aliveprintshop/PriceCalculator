@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alive Print Shop &mdash; Insta-Price</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@600&family=Playfair+Display:wght@700&family=Alfa+Slab+One&family=Pacifico&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#f2f4f7;--surface:#fff;--surface2:#f7f8fa;
@@ -593,6 +594,52 @@ textarea.of-input{resize:vertical;min-height:70px;}
 .art-empty{font-size:12px;color:var(--text3);}
 @media(max-width:600px){.logo-uploads{margin-left:0;}.mock-stage{width:100%;}}
 
+/* ── BACKGROUND REMOVAL + TEXT TOOL ───────────────────────────────────── */
+.bg-row{display:flex;align-items:center;gap:8px;margin:-2px 0 2px 48px;flex-wrap:wrap;}
+.bg-btn{padding:5px 11px;border-radius:999px;border:1.5px solid var(--border2);background:var(--surface);
+  color:var(--text2);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:all .15s;}
+.bg-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue);}
+.bg-btn:disabled{opacity:.55;cursor:default;}
+.bg-done{font-size:11px;color:var(--green,#1a7f37);font-weight:700;display:inline-flex;align-items:center;gap:4px;}
+.bg-undo{font-size:11px;color:var(--text3);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;font-family:inherit;}
+.bg-undo:hover{color:var(--red);}
+.bg-note{font-size:11px;color:#8a5a00;background:var(--amber-light);border-radius:6px;padding:5px 8px;
+  margin:2px 0 4px 48px;line-height:1.45;max-width:360px;}
+.bg-spin{width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--blue);
+  border-radius:50%;display:inline-block;animation:bgspin .7s linear infinite;}
+@keyframes bgspin{to{transform:rotate(360deg);}}
+
+.tx-add{margin-top:2px;padding:8px 14px;border-radius:999px;border:1.5px dashed var(--blue-mid);
+  background:var(--blue-light);color:var(--blue-dark);font-family:'Montserrat',sans-serif;
+  font-size:12px;font-weight:800;cursor:pointer;transition:all .15s;}
+.tx-add:hover{background:var(--blue);color:#fff;border-style:solid;}
+
+.tx-cards{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+.tx-card{border:1px solid var(--border);border-radius:var(--r);background:var(--surface);padding:11px 12px;cursor:pointer;}
+.tx-card.sel{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-light);}
+.tx-top{display:flex;align-items:center;gap:8px;}
+.tx-input{flex:1;min-width:0;padding:8px 11px;font-size:14px;font-family:'Open Sans',sans-serif;
+  background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--r);color:var(--text);outline:none;}
+.tx-input:focus{border-color:var(--blue);}
+.tx-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;align-items:end;}
+.tx-f{display:flex;flex-direction:column;gap:3px;min-width:0;}
+.tx-f>span{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);}
+.tx-sel{width:100%;padding:6px 8px;font-size:12px;font-family:'Open Sans',sans-serif;background:var(--surface);
+  border:1.5px solid var(--border2);border-radius:6px;color:var(--text);outline:none;cursor:pointer;}
+.tx-col{width:100%;height:30px;padding:2px;border:1.5px solid var(--border2);border-radius:6px;
+  background:var(--surface);cursor:pointer;}
+.tx-rng{width:100%;accent-color:var(--blue);cursor:pointer;}
+.tx-chk{flex-direction:row;align-items:center;gap:6px;padding-bottom:6px;}
+.tx-chk input{width:15px;height:15px;accent-color:var(--blue);cursor:pointer;}
+.tx-chk>span{text-transform:none;letter-spacing:0;font-size:12px;font-weight:600;color:var(--text2);}
+.tx-cost{font-size:11px;color:var(--text3);margin-top:7px;line-height:1.45;}
+.tx-cost b{color:var(--text2);}
+.tx-cost .lu-dot{margin-left:4px;vertical-align:-1px;}
+.art-undo{color:var(--blue);text-decoration:underline;cursor:pointer;}
+@media(max-width:600px){.tx-grid{grid-template-columns:1fr 1fr;}.bg-row,.bg-note{margin-left:0;}}
+
+
 /* MOBILE PRODUCT CARD */
 .mob-prod-card{display:none;}
 .mob-prod-card.show{display:block;}
@@ -761,7 +808,8 @@ textarea.of-input{resize:vertical;min-height:70px;}
     <div class="step-block full" id="artwork-section" style="display:none;">
       <div class="step-head"><div class="step-num" id="sn4b" style="font-size:15px;">&#128206;</div><div><div class="step-title">Your artwork <span style="font-weight:400;color:var(--text3);font-size:13px;">&middot; uploaded per print location</span></div></div></div>
       <div class="art-cards" id="art-cards"></div>
-      <div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:8px;">Colour counts are an estimate from your file &mdash; change the dropdown above if it&rsquo;s not right. AI generated artwork or low quality images will require an art fee to recreate the design in a high quality vector format.</div>
+      <div class="tx-cards" id="text-cards"></div>
+      <div style="font-size:11px;color:var(--text3);font-style:italic;margin-top:8px;">Color counts are an estimate from your file &mdash; change the dropdown above if it&rsquo;s not right. AI generated artwork or low quality images will require an art fee to recreate the design in a high quality vector format.</div>
     </div>
 
     <!-- Step 5: Add-ons -->
@@ -3987,6 +4035,599 @@ document.addEventListener('keydown',function(e){
     if(ov&&ov.classList.contains('show'))closeBrowseModal();
   }
 });
+/* ============================================================================
+   AliveBgRemove — in-browser background knockout.
+
+   Built for the common case in print: a logo sitting on a flat white (or other
+   solid) background, often saved as a JPEG so the "white" is actually a cloud
+   of near-white noise.
+
+   The important design choice is that this floods IN FROM THE BORDER rather
+   than deleting every pixel that happens to match the background colour. A
+   naive colour-key punches holes through the middle of artwork — the white of
+   an eye, the counter of a letter "O", a white star inside a dark badge. Only
+   background that is actually connected to the edge of the canvas is removed.
+
+   Returns a PNG data URL. Never mutates the input.
+   ========================================================================== */
+var AliveBgRemove=(function(){
+
+  var MAXDIM=2600;      // cap the working canvas; 25 MB uploads can be enormous
+  var BORDER_RING=2;    // px of border sampled to identify the background
+  var DOMINANCE=0.62;   // border must be this uniform before we call it a background
+  var SECOND_MIN=0.05;  // a second border colour must hold this much to count
+  var FEATHER=2;        // px band re-alpha'd to kill the halo
+  var LOCAL_STEP=10;    // max per-pixel colour change the flood may walk across
+
+  function dist(r,g,b,c){
+    var x=r-c[0],y=g-c[1],z=b-c[2];
+    return Math.sqrt(x*x+y*y+z*z);
+  }
+  function hex(c){
+    return '#'+[c[0],c[1],c[2]].map(function(v){
+      return ('0'+Math.round(v).toString(16)).slice(-2);
+    }).join('');
+  }
+
+  /* Colour clusters found in a ring of border pixels `inset` rows in. */
+  function ringClusters(data,w,h,inset,thickness){
+    var counts={},order=[],tot=0;
+    function take(x,y){
+      var i=(y*w+x)*4;
+      if(data[i+3]<128)return;              // transparent border = no solid bg
+      var k=(data[i]>>4)+','+(data[i+1]>>4)+','+(data[i+2]>>4);
+      if(!counts[k]){counts[k]={n:0,r:0,g:0,b:0};order.push(k);}
+      var e=counts[k];e.n++;e.r+=data[i];e.g+=data[i+1];e.b+=data[i+2];
+      tot++;
+    }
+    for(var d=inset;d<inset+thickness;d++){
+      if(d*2>=Math.min(w,h))break;
+      for(var x=d;x<w-d;x++){take(x,d);take(x,h-1-d);}
+      for(var y=d;y<h-d;y++){take(d,y);take(w-1-d,y);}
+    }
+    if(tot<8)return null;
+    // Merge buckets — a 4-bit quantise can split a noisy white across two
+    // adjacent buckets and halve its apparent share.
+    var buckets=order.map(function(k){
+      var e=counts[k];return {n:e.n,rgb:[e.r/e.n,e.g/e.n,e.b/e.n]};
+    }).sort(function(a,b){return b.n-a.n;});
+    var cl=[];
+    for(var i=0;i<buckets.length;i++){
+      var bkt=buckets[i],hit=null;
+      for(var ci=0;ci<cl.length;ci++){
+        if(dist(bkt.rgb[0],bkt.rgb[1],bkt.rgb[2],cl[ci].rgb)<34){hit=cl[ci];break;}
+      }
+      if(hit){
+        var t=hit.n+bkt.n;
+        hit.rgb=[(hit.rgb[0]*hit.n+bkt.rgb[0]*bkt.n)/t,
+                 (hit.rgb[1]*hit.n+bkt.rgb[1]*bkt.n)/t,
+                 (hit.rgb[2]*hit.n+bkt.rgb[2]*bkt.n)/t];
+        hit.n=t;
+      }else cl.push({n:bkt.n,rgb:bkt.rgb.slice()});
+    }
+    cl.sort(function(a,b){return b.n-a.n;});
+    return {cl:cl,tot:tot};
+  }
+
+  /* Identify the background from the border.
+
+     Normally one colour has to dominate the outer ring. The one exception is a
+     cropped screenshot, which arrives with a thin frame line round the edge:
+     the frame takes roughly half a 2px ring, so nothing clears the dominance
+     test and an ordinary logo-on-white came back as "no solid background".
+
+     That is handled by stepping the ring INWARD past the frame and requiring
+     dominance there — not by simply allowing a second colour. An earlier
+     version did allow any strong second colour, and a photograph whose border
+     happened to be part sky and part foliage then qualified as a two-colour
+     background and had 97% of itself deleted.
+
+     `sd` is the spread of the agreeing pixels — what tells JPEG mush from a
+     clean PNG, and lets the tolerance adapt rather than be a guessed constant. */
+  function findBg(data,w,h){
+    var ring=Math.min(BORDER_RING,Math.max(1,Math.floor(Math.min(w,h)/2)));
+    var outer=ringClusters(data,w,h,0,ring);
+    if(!outer||!outer.cl.length)return null;
+
+    var cols=null,share=0;
+    if(outer.cl[0].n/outer.tot>=DOMINANCE){
+      cols=[outer.cl[0].rgb];
+      share=outer.cl[0].n/outer.tot;
+    }else{
+      // Maybe a frame. Step past it and demand dominance on the inside.
+      var inner=ringClusters(data,w,h,1,ring);
+      if(!inner||!inner.cl.length)return null;
+      var iShare=inner.cl[0].n/inner.tot;
+      if(iShare<DOMINANCE)return null;
+      // The outermost line has to be a genuinely different, near-uniform
+      // colour, i.e. an actual frame rather than more picture.
+      var edge=ringClusters(data,w,h,0,1);
+      if(!edge||!edge.cl.length)return null;
+      var eTop=edge.cl[0];
+      if(eTop.n/edge.tot<0.75)return null;
+      if(dist(eTop.rgb[0],eTop.rgb[1],eTop.rgb[2],inner.cl[0].rgb)<34)return null;
+      cols=[inner.cl[0].rgb,eTop.rgb];
+      share=iShare;
+    }
+
+    // Spread of the pixels that agree with those colours.
+    var sq=0,n2=0;
+    function meas(x,y){
+      var i=(y*w+x)*4;
+      if(data[i+3]<128)return;
+      var dd=Infinity;
+      for(var c=0;c<cols.length;c++){
+        var v=dist(data[i],data[i+1],data[i+2],cols[c]);
+        if(v<dd)dd=v;
+      }
+      if(dd<40){sq+=dd*dd;n2++;}
+    }
+    for(var d2=0;d2<ring;d2++){
+      for(var x2=0;x2<w;x2++){meas(x2,d2);meas(x2,h-1-d2);}
+      for(var y2=0;y2<h;y2++){meas(d2,y2);meas(w-1-d2,y2);}
+    }
+    return {cols:cols,rgb:cols[0],share:share,sd:n2?Math.sqrt(sq/n2):0};
+  }
+
+  function bgDist(data,idx,cols){
+    var i=idx*4,best=Infinity;
+    for(var c=0;c<cols.length;c++){
+      var v=dist(data[i],data[i+1],data[i+2],cols[c]);
+      if(v<best)best=v;
+    }
+    return best;
+  }
+
+  /* Scanline flood from every qualifying border pixel.
+
+     Two acceptance rules, not one. The plain rule is "close to the background
+     colour". The second lets the flood walk a slow gradient — a scan or phone
+     photo whose white shades off toward the corners — by also accepting a
+     pixel that barely differs from the one it was reached FROM, as long as it
+     hasn't drifted implausibly far overall.
+
+     Without that, a gentle vignette stopped the flood partway and returned an
+     image with a white blob still sitting round the logo, reported as success.
+     The per-pixel step limit is what keeps it from strolling onto the artwork:
+     background shades gradually, an artwork edge is a cliff. */
+  function flood(data,w,h,bg,tol){
+    var cols=bg.cols;
+    // A fixed allowance on top of the tolerance, not a multiple of it. Tying
+    // this to tol meant a noisy border widened the tolerance AND more than
+    // doubled the drift budget on top, which is how a photograph ended up
+    // being walked end to end.
+    var globalMax=tol+38;
+    var mask=new Uint8Array(w*h);
+    var stack=[];
+    function ok(idx,from){
+      var i=idx*4;
+      if(data[i+3]<128)return true;                       // already transparent
+      var d=bgDist(data,idx,cols);
+      if(d<=tol)return true;
+      if(d>globalMax)return false;
+      if(from<0)return false;
+      var j=from*4;
+      return dist(data[i],data[i+1],data[i+2],
+                  [data[j],data[j+1],data[j+2]])<=LOCAL_STEP;
+    }
+    for(var x=0;x<w;x++){
+      if(ok(x,-1))stack.push(x,-1);
+      var b=(h-1)*w+x;
+      if(ok(b,-1))stack.push(b,-1);
+    }
+    for(var y=0;y<h;y++){
+      var l=y*w,r=y*w+w-1;
+      if(ok(l,-1))stack.push(l,-1);
+      if(ok(r,-1))stack.push(r,-1);
+    }
+    var removed=0;
+    while(stack.length){
+      var from=stack.pop(), idx=stack.pop();
+      if(mask[idx])continue;
+      if(!ok(idx,from))continue;
+      var yy=(idx/w)|0, xx=idx-yy*w;
+      var x1=xx;
+      while(x1>0&&!mask[yy*w+x1-1]&&ok(yy*w+x1-1,yy*w+x1))x1--;
+      var x2=xx;
+      while(x2<w-1&&!mask[yy*w+x2+1]&&ok(yy*w+x2+1,yy*w+x2))x2++;
+      for(var sx=x1;sx<=x2;sx++){
+        var si=yy*w+sx;
+        if(mask[si])continue;
+        mask[si]=1;removed++;
+        if(yy>0){var up=si-w;if(!mask[up]&&ok(up,si))stack.push(up,si);}
+        if(yy<h-1){var dn=si+w;if(!mask[dn]&&ok(dn,si))stack.push(dn,si);}
+      }
+    }
+    return {mask:mask,removed:removed,globalMax:globalMax};
+  }
+
+  /* Did the flood stop somewhere visible?
+
+     Walk the coastline — pixels kept, but touching a removed one — and measure
+     how different each is from the neighbour that was removed. At a real
+     artwork edge that difference is large: the fill ran into the design and
+     stopped, which is exactly right. Where it is near zero the fill stopped in
+     the middle of a smooth ramp, which happens with drop shadows and outer
+     glows, and leaves a hard-edged grey crescent that looks broken.
+
+     Measuring the *edge contrast* rather than "is the leftover still
+     background-coloured" matters: artwork legitimately contains background
+     colour — the white star inside a badge, the counter of a letter O — so
+     leftover-colour counting condemned perfectly good cuts. An earlier version
+     did exactly that and failed six of them. */
+  function softStop(data,w,h,mask){
+    var coast=0,soft=0;
+    for(var idx=0;idx<mask.length;idx++){
+      if(mask[idx])continue;
+      var i=idx*4;
+      if(data[i+3]<128)continue;
+      var y=(idx/w)|0,x=idx-y*w;
+      var nb=-1;
+      if(x>0&&mask[idx-1])nb=idx-1;
+      else if(x<w-1&&mask[idx+1])nb=idx+1;
+      else if(y>0&&mask[idx-w])nb=idx-w;
+      else if(y<h-1&&mask[idx+w])nb=idx+w;
+      if(nb<0)continue;
+      coast++;
+      var j=nb*4;
+      if(dist(data[i],data[i+1],data[i+2],[data[j],data[j+1],data[j+2]])<8)soft++;
+    }
+    if(coast<40)return 0;
+    return soft/coast;
+  }
+
+  /* Re-alpha a thin band at the edge of the removed region.
+
+     An anti-aliased edge pixel is a blend of the artwork colour C and the
+     background BG. Its distance from BG is proportional to how much of C is in
+     it, so alpha = d(P,BG) / d(C,BG). C is estimated as the most BG-unlike
+     pixel in a small window, then the background's contribution is divided
+     back out — without that step a black logo cut from white keeps a grey
+     fringe that prints as a visible outline. */
+  function nearestBg(data,idx,cols){
+    var i=idx*4,best=cols[0],bd=Infinity;
+    for(var c=0;c<cols.length;c++){
+      var v=dist(data[i],data[i+1],data[i+2],cols[c]);
+      if(v<bd){bd=v;best=cols[c];}
+    }
+    return best;
+  }
+
+  function feather(data,w,h,mask,cols,tol){
+    var band=new Int32Array(w*h);
+    var cur=[],nxt=[],i,idx;
+    for(idx=0;idx<mask.length;idx++)if(mask[idx])band[idx]=1;
+    for(idx=0;idx<mask.length;idx++){
+      if(!mask[idx])continue;
+      var y=(idx/w)|0,x=idx-y*w;
+      for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){
+        var nx=x+dx,ny=y+dy;
+        if(nx<0||ny<0||nx>=w||ny>=h)continue;
+        var ni=ny*w+nx;
+        if(!band[ni]){band[ni]=2;cur.push(ni);}
+      }
+    }
+    for(var step=2;step<=FEATHER+1;step++){
+      for(i=0;i<cur.length;i++){
+        idx=cur[i];
+        var yy=(idx/w)|0,xx=idx-yy*w,pi=idx*4;
+        if(data[pi+3]<8)continue;
+        var bg=nearestBg(data,idx,cols);
+        var d=dist(data[pi],data[pi+1],data[pi+2],bg);
+
+        // Reference artwork colour: furthest-from-background pixel nearby that
+        // survived the flood.
+        var ref=0;
+        for(var wy=-2;wy<=2;wy++)for(var wx=-2;wx<=2;wx++){
+          var rx=xx+wx,ry=yy+wy;
+          if(rx<0||ry<0||rx>=w||ry>=h)continue;
+          var ri=ry*w+rx;
+          if(mask[ri])continue;
+          var rp=ri*4;
+          if(data[rp+3]<128)continue;
+          var rd=dist(data[rp],data[rp+1],data[rp+2],bg);
+          if(rd>ref)ref=rd;
+        }
+        if(ref<8)continue;                       // nothing solid nearby
+        var a=d/ref;
+        if(a>=0.97)continue;                     // already solid artwork
+        if(a<0.02){                              // indistinguishable from bg
+          data[pi+3]=0;
+        }else{
+          data[pi]  =Math.max(0,Math.min(255,(data[pi]  -(1-a)*bg[0])/a));
+          data[pi+1]=Math.max(0,Math.min(255,(data[pi+1]-(1-a)*bg[1])/a));
+          data[pi+2]=Math.max(0,Math.min(255,(data[pi+2]-(1-a)*bg[2])/a));
+          data[pi+3]=Math.round(a*data[pi+3]);
+        }
+        if(step<=FEATHER){
+          for(var ey=-1;ey<=1;ey++)for(var ex=-1;ex<=1;ex++){
+            var fx=xx+ex,fy=yy+ey;
+            if(fx<0||fy<0||fx>=w||fy>=h)continue;
+            var fi=fy*w+fx;
+            if(!band[fi]){band[fi]=step+1;nxt.push(fi);}
+          }
+        }
+      }
+      cur=nxt;nxt=[];
+      if(!cur.length)break;
+    }
+  }
+
+  function run(img,opt){
+    opt=opt||{};
+    var W=img.naturalWidth||img.width, H=img.naturalHeight||img.height;
+    if(!W||!H)return {ok:false,reason:'no-image'};
+
+    var sc=Math.min(1,MAXDIM/Math.max(W,H));
+    var w=Math.max(1,Math.round(W*sc)), h=Math.max(1,Math.round(H*sc));
+    var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    var ctx=cv.getContext('2d',{willReadFrequently:true});
+    ctx.clearRect(0,0,w,h);
+    try{ctx.drawImage(img,0,0,w,h);}catch(e){return {ok:false,reason:'draw'};}
+    var imgData;
+    try{imgData=ctx.getImageData(0,0,w,h);}catch(e){return {ok:false,reason:'tainted'};}
+    var data=imgData.data, total=w*h;
+
+    // Already cut out? Leave it alone rather than second-guessing the designer.
+    var clear=0;
+    for(var i=3;i<data.length;i+=4)if(data[i]<250)clear++;
+    if(clear/total>0.12)return {ok:false,reason:'already-transparent'};
+
+    var bg=findBg(data,w,h);
+    if(!bg)return {ok:false,reason:'no-solid-bg'};
+
+    // Tolerance tracks the measured noise: a clean PNG white gets a tight
+    // threshold, a JPEG's mottled white gets a wide one. Fixed constants
+    // either leave JPEG crud behind or eat into light artwork.
+    var tol=Math.max(18,Math.min(96,16+bg.sd*3.2));
+    if(opt.tolerance)tol=opt.tolerance;
+
+    var f=flood(data,w,h,bg,tol);
+    var pct=f.removed/total;
+
+    if(pct<0.015)return {ok:false,reason:'nothing-removed',bgHex:hex(bg.rgb)};
+    // Almost everything went. Either the artwork is the same colour as its
+    // background, or the flood leaked through a gap in a thin outline. Either
+    // way the result would be an empty canvas, so refuse rather than hand back
+    // a blank file.
+    if(pct>0.965)return {ok:false,reason:'removed-everything',bgHex:hex(bg.rgb)};
+
+    // Was what we removed actually a background? A real one is close to its
+    // own colour nearly everywhere — measured mean drift is a fraction of a
+    // level on a flat white, and in the tens on a scan. Picture content that
+    // slipped through the border test drifts by ~100, so this separates the
+    // two by an order of magnitude rather than a hair.
+    var drift=0,dn=0;
+    for(var q=0;q<f.mask.length;q++){
+      if(!f.mask[q])continue;
+      if(data[q*4+3]<128)continue;
+      drift+=bgDist(data,q,bg.cols);dn++;
+    }
+    drift=dn?drift/dn:0;
+    if(drift>Math.max(tol,26))
+      return {ok:false,reason:'not-a-background',bgHex:hex(bg.rgb),drift:drift};
+
+    var soft=softStop(data,w,h,f.mask);
+    if(soft>0.35)return {ok:false,reason:'soft-edges',bgHex:hex(bg.rgb),soft:soft};
+
+    for(var m=0;m<f.mask.length;m++)if(f.mask[m])data[m*4+3]=0;
+    feather(data,w,h,f.mask,bg.cols,tol);
+    ctx.putImageData(imgData,0,0);
+
+    return {
+      ok:true,
+      dataUrl:cv.toDataURL('image/png'),
+      width:w,height:h,
+      removedPct:pct,
+      bgHex:hex(bg.rgb),
+      bgCount:bg.cols.length,
+      tolerance:tol,
+      downscaled:sc<1
+    };
+  }
+
+  return {run:run,_findBg:findBg,_flood:flood};
+})();
+
+/* ============================================================================
+   AliveText — turns a text spec into a transparent PNG.
+
+   Text becomes a raster layer so it reuses everything the artwork layers
+   already have: drag, resize, rotate, the proof export, the cart thumbnail.
+   The raster is for PREVIEW ONLY. The spec (string, font, colours, arc) also
+   travels with the order so the shop sets the type properly in vector — a
+   raster must never be the print file for text.
+   ========================================================================== */
+var AliveText=(function(){
+
+  // Every face has a real system fallback, so a customer whose browser can't
+  // reach Google Fonts still gets something in the right spirit rather than
+  // defaulting everything to Times.
+  var FONTS=[
+    {id:'athletic', label:'Athletic Block', stack:"'Anton','Haettenschweiler','Arial Narrow Bold',Impact,sans-serif", weight:'400', web:'Anton'},
+    {id:'bold',     label:'Bold Sans',      stack:"'Montserrat','Helvetica Neue',Arial,sans-serif",                  weight:'800', web:'Montserrat'},
+    {id:'condensed',label:'Condensed',      stack:"'Oswald','Arial Narrow',Impact,sans-serif",                       weight:'600', web:'Oswald'},
+    {id:'serif',    label:'Classic Serif',  stack:"'Playfair Display',Georgia,'Times New Roman',serif",              weight:'700', web:'Playfair Display'},
+    {id:'slab',     label:'Slab',           stack:"'Alfa Slab One',Georgia,serif",                                   weight:'400', web:'Alfa Slab One'},
+    {id:'script',   label:'Script',         stack:"'Pacifico','Brush Script MT',cursive",                            weight:'400', web:'Pacifico'},
+    {id:'marker',   label:'Marker',         stack:"'Permanent Marker','Comic Sans MS',cursive",                      weight:'400', web:'Permanent Marker'},
+    {id:'mono',     label:'Typewriter',     stack:"'Courier New',Courier,monospace",                                 weight:'700', web:null}
+  ];
+  function fontById(id){
+    for(var i=0;i<FONTS.length;i++)if(FONTS[i].id===id)return FONTS[i];
+    return FONTS[0];
+  }
+
+  var BASE=200;      // px the glyphs are rasterised at, before on-stage scaling
+  var MAXW=2200;     // never produce a canvas wider than this
+  var LINE=1.12;
+
+  /* Ask the browser to fetch the webfont before drawing. Canvas will silently
+     render the fallback if the face has not loaded yet, which produced the
+     wrong shapes with no error at all. Times out rather than hanging. */
+  function ensureFont(f,cb){
+    if(!f.web||!document.fonts||!document.fonts.load){cb();return;}
+    var done=false;
+    var t=setTimeout(function(){if(!done){done=true;cb();}},2500);
+    try{
+      document.fonts.load(f.weight+' 100px "'+f.web+'"').then(function(){
+        if(done)return;done=true;clearTimeout(t);cb();
+      },function(){
+        if(done)return;done=true;clearTimeout(t);cb();
+      });
+    }catch(e){ if(!done){done=true;clearTimeout(t);cb();} }
+  }
+
+  function lines(spec){
+    return String(spec.text==null?'':spec.text).split(/\r?\n/).slice(0,6);
+  }
+
+  /* Straight (unarced) text. */
+  function drawFlat(spec,f){
+    var ls=lines(spec);
+    var pad=Math.ceil(BASE*0.22)+Math.ceil((spec.outline?spec.outlineWidth||0.08:0)*BASE);
+    var m=document.createElement('canvas').getContext('2d');
+    m.font=f.weight+' '+BASE+'px '+f.stack;
+    var wid=0,i;
+    for(i=0;i<ls.length;i++)wid=Math.max(wid,m.measureText(ls[i]).width);
+    if(wid<1)return null;
+    var W=Math.ceil(wid)+pad*2;
+    var H=Math.ceil(ls.length*BASE*LINE)+pad*2;
+    var sc=Math.min(1,MAXW/W);
+    var cv=document.createElement('canvas');
+    cv.width=Math.max(1,Math.round(W*sc));cv.height=Math.max(1,Math.round(H*sc));
+    var c=cv.getContext('2d');
+    c.scale(sc,sc);
+    c.textAlign='center';c.textBaseline='middle';
+    c.font=f.weight+' '+BASE+'px '+f.stack;
+    c.lineJoin='round';c.miterLimit=2;
+    for(i=0;i<ls.length;i++){
+      var y=pad+BASE*LINE*(i+0.5);
+      if(spec.outline){
+        c.strokeStyle=spec.outlineColor||'#ffffff';
+        c.lineWidth=(spec.outlineWidth||0.08)*BASE*2;   // half sits outside the glyph
+        c.strokeText(ls[i],W/2,y);
+      }
+      c.fillStyle=spec.color||'#111111';
+      c.fillText(ls[i],W/2,y);
+    }
+    return cv;
+  }
+
+  /* Arced text — one line bent around a circle, the shape almost every team
+     name on a garment uses. `arc` is the total sweep in degrees; negative
+     bends the other way (a smile rather than an arch). */
+  function drawArc(spec,f){
+    var txt=lines(spec).join(' ');
+    if(!txt)return null;
+    var chars=txt.split('');
+    var m=document.createElement('canvas').getContext('2d');
+    m.font=f.weight+' '+BASE+'px '+f.stack;
+    var widths=chars.map(function(ch){return m.measureText(ch).width;});
+    var total=widths.reduce(function(a,b){return a+b;},0);
+    if(total<1)return null;
+
+    var sweep=Math.max(-330,Math.min(330,spec.arc))*Math.PI/180;
+    var half=Math.abs(sweep)/2;
+    var R=total/Math.abs(sweep);          // so the arc length equals the text width
+    var down=sweep<0;                     // negative bends into a smile
+    var ow=(spec.outline?(spec.outlineWidth||0.08):0)*BASE;
+    var pad=Math.ceil(BASE*0.22+ow);
+
+    // The glyphs sweep a band between these radii; size the canvas to the band
+    // rather than the whole circle, which for a shallow arc would be enormous.
+    var rIn=Math.max(1,R-BASE*0.72), rOut=R+BASE*0.72;
+    var xExt=(half>=Math.PI/2)?rOut:rOut*Math.sin(half);
+    var depth=rOut-rIn*Math.cos(Math.min(half,Math.PI));
+    var W=Math.ceil(2*xExt)+pad*2;
+    var H=Math.ceil(depth)+pad*2;
+
+    var sc=Math.min(1,MAXW/W);
+    var cv=document.createElement('canvas');
+    cv.width=Math.max(1,Math.round(W*sc));cv.height=Math.max(1,Math.round(H*sc));
+    var c=cv.getContext('2d');
+    c.scale(sc,sc);
+    c.textAlign='center';c.textBaseline='middle';
+    c.font=f.weight+' '+BASE+'px '+f.stack;
+    c.lineJoin='round';c.miterLimit=2;
+
+    // Circle centre. For an arch it sits above the canvas so the middle of the
+    // word rides highest; for a smile it sits below and the middle dips.
+    var cx=W/2;
+    var cy=down?(H-pad-rOut):(pad+rOut);
+
+    var run=0;
+    for(var i=0;i<chars.length;i++){
+      // Angle of this glyph's centre, measured from the top of the arc.
+      var t=-half+((run+widths[i]/2)/total)*2*half;
+      var px=cx+R*Math.sin(t);
+      var py=down?(cy+R*Math.cos(t)):(cy-R*Math.cos(t));
+      c.save();
+      c.translate(px,py);
+      // Rotating the glyph by t stands it on the arc for an arch; -t keeps a
+      // smile the right way up instead of upside down under the curve.
+      c.rotate(down?-t:t);
+      if(spec.outline){
+        c.strokeStyle=spec.outlineColor||'#ffffff';
+        c.lineWidth=(spec.outlineWidth||0.08)*BASE*2;
+        c.strokeText(chars[i],0,0);
+      }
+      c.fillStyle=spec.color||'#111111';
+      c.fillText(chars[i],0,0);
+      c.restore();
+      run+=widths[i];
+    }
+    return cv;
+  }
+
+  /* Crop away the transparent margin so the layer's box hugs the glyphs —
+     otherwise the padding counts as part of the design and the artwork sits
+     visibly off-centre on the garment. */
+  function trim(cv){
+    var c=cv.getContext('2d',{willReadFrequently:true});
+    var d;
+    try{d=c.getImageData(0,0,cv.width,cv.height).data;}catch(e){return cv;}
+    var minX=cv.width,minY=cv.height,maxX=-1,maxY=-1;
+    for(var y=0;y<cv.height;y++)for(var x=0;x<cv.width;x++){
+      if(d[(y*cv.width+x)*4+3]>4){
+        if(x<minX)minX=x; if(x>maxX)maxX=x;
+        if(y<minY)minY=y; if(y>maxY)maxY=y;
+      }
+    }
+    if(maxX<0)return null;
+    var w=maxX-minX+1,h=maxY-minY+1;
+    if(w===cv.width&&h===cv.height)return cv;
+    var out=document.createElement('canvas');
+    out.width=w;out.height=h;
+    out.getContext('2d').drawImage(cv,minX,minY,w,h,0,0,w,h);
+    return out;
+  }
+
+  function render(spec,cb){
+    var f=fontById(spec.font);
+    ensureFont(f,function(){
+      var cv;
+      try{
+        cv=(spec.arc&&Math.abs(spec.arc)>=4)?drawArc(spec,f):drawFlat(spec,f);
+      }catch(e){cv=null;}
+      if(!cv){cb(null);return;}
+      cv=trim(cv);
+      if(!cv){cb(null);return;}
+      cb({dataUrl:cv.toDataURL('image/png'),w:cv.width,h:cv.height,fontLabel:f.label});
+    });
+  }
+
+  // The inks this text needs. Exact, unlike the image detector's estimate —
+  // we chose these colours, so there is nothing to guess.
+  function inks(spec){
+    var out=[spec.color||'#111111'];
+    if(spec.outline&&spec.outlineColor)out.push(spec.outlineColor);
+    return out;
+  }
+
+  return {render:render,inks:inks,FONTS:FONTS,fontById:fontById};
+})();
+
 
 // =====================================================================
 // INLINE MOCKUP + PER-LOCATION ARTWORK
@@ -4162,6 +4803,7 @@ function applyLogoFile(locKey,file){
         thumb=tc.toDataURL('image/png');
       }catch(e){}
       DESIGNS[locKey]={
+        kind:'art', loc:locKey,
         name:file.name||'artwork',
         src:src,
         thumb:thumb,
@@ -4215,6 +4857,7 @@ function uploadDesign(locKey,file){
 function removeDesign(locKey){
   delete DESIGNS[locKey];
   if(_selLayer===locKey)_selLayer=null;
+  autoApplyImprint(locKey);
   syncArtworkPayload();
   refreshMockUI();
   if(typeof calc==='function')calc();
@@ -4222,35 +4865,43 @@ function removeDesign(locKey){
 
 /* ---- drive the imprint dropdown from the detected color count ---- */
 function autoApplyImprint(locKey){
-  var d=DESIGNS[locKey];if(!d||!sel)return;
+  if(!sel)return;
+  var ink=locInkCount(locKey);
+  var d=DESIGNS[locKey];
+
+  // Nothing left at this location — the artwork and any text were both
+  // removed — so switch the print location back off rather than leaving the
+  // customer paying for a screen with nothing on it.
+  if(!ink.hasArt&&!ink.hasText){
+    LOC_NOTE[locKey]='';
+    if(locs.has(locKey)&&locKey!=='front')locs.delete(locKey);
+    if(typeof renderLocationPills==='function')renderLocationPills();
+    if(typeof syncDecoMethod==='function')syncDecoMethod();
+    return;
+  }
+
   var av=availableDecoMethods(sel);
   var dw=(typeof isDrinkware==='function'&&isDrinkware());
   var hasSP=dw||av.indexOf('sp')>-1;
   var hasEM=!dw&&av.indexOf('em')>-1;
   var hasHT=!dw&&av.indexOf('ht')>-1;
   var cap=imprintColorCap();
-  var n=d.count;
+  var n=ink.count;
   var note='';
 
-  // Analysis failed (an SVG with no intrinsic size, an exotic encoding, a
-  // cross-origin source). Fall back to whatever this product normally uses
-  // rather than silently charging for Full Color, and say so.
-  if(!d.detected){
-    if(hasSP){locMethod[locKey]='sp';locColorCount[locKey]=1;}
+  // Analysis of an uploaded file failed (an SVG with no intrinsic size, an
+  // exotic encoding). Fall back to whatever this product normally uses rather
+  // than silently charging for Full Color, and say so.
+  if(!ink.known){
+    if(hasSP){locMethod[locKey]='sp';locColorCount[locKey]=Math.max(1,Math.min(cap,n||1));}
     else if(hasEM){locMethod[locKey]='em';}
     else if(hasHT){locMethod[locKey]='ht';}
     else return;
-    locs.add(locKey);
-    d.note='We couldn’t read the colors in this file automatically — please check the dropdown above.';
-    if(typeof renderLocationPills==='function')renderLocationPills();
-    if(typeof syncDecoMethod==='function')syncDecoMethod();
-    return;
-  }
-
-  if(hasSP&&!d.photoish&&n&&n<=cap){
+    note='We couldn’t read the colors in this file automatically — please check the dropdown above.';
+  }else if(hasSP&&!ink.photoish&&n&&n<=cap){
     locMethod[locKey]='sp';locColorCount[locKey]=n;
-    note=n+(n===1?' color':' colors')+' detected';
-  }else if(!hasSP&&hasEM&&!d.photoish){
+    note=_inkNote(ink,n);
+  }else if(!hasSP&&hasEM&&!ink.photoish){
     // Polos, jackets, caps and bags aren't screen printed — embroidery is the
     // house default there, so simple artwork should land on Embroidery rather
     // than being pushed to Full Color just because it isn't screen printable.
@@ -4258,22 +4909,32 @@ function autoApplyImprint(locKey){
     note='Set to Embroidery — the standard for this product';
   }else if(hasHT){
     locMethod[locKey]='ht';
-    note=d.photoish?'Photographic / gradient artwork — set to Full Color'
-                   :(n?n+' colors detected — over the '+cap+'-color screen print limit, set to Full Color'
-                      :'Set to Full Color');
+    note=ink.photoish?'Photographic / gradient artwork — set to Full Color'
+                     :(n?n+' colors — over the '+cap+'-color screen print limit, set to Full Color'
+                        :'Set to Full Color');
   }else if(hasEM){
     locMethod[locKey]='em';
     note='Set to Embroidery (this product is embroidery only)';
   }else if(hasSP){
     locMethod[locKey]='sp';locColorCount[locKey]=Math.min(n||1,cap);
     note='This product tops out at '+cap+' colors — please simplify the artwork or contact us';
-  }else{
-    return;
-  }
+  }else return;
+
   locs.add(locKey);
-  d.note=note;
+  LOC_NOTE[locKey]=note;
+  if(d)d.note=note;
   if(typeof renderLocationPills==='function')renderLocationPills();
   if(typeof syncDecoMethod==='function')syncDecoMethod();
+}
+
+// Spell out where the count came from. A customer who adds white text to a
+// one-color logo watches the price move, and "2 colors detected" on its own
+// reads like a bug rather than an explanation.
+function _inkNote(ink,n){
+  var base=n+(n===1?' color':' colors');
+  if(ink.hasArt&&ink.hasText)return base+' across your artwork and text together';
+  if(ink.hasText&&!ink.hasArt)return base+' in your text';
+  return base+' detected';
 }
 
 /* ---- product-card upload rows ---- */
@@ -4291,7 +4952,7 @@ function renderLogoUploads(){
       var chips=(d.colors||[]).slice(0,8).map(function(c){
         return '<span class="lu-dot" style="background:'+c.hex+'"></span>';
       }).join('');
-      var state=d.uploading?'uploading…':(d.uploadFailed?'upload failed — see below':'uploaded');
+      var state=d.uploading?'uploading…':(d.uploadFailed?'upload failed — see below':(d.cleanUploading?'saving cut-out…':'uploaded'));
       sub='<span>'+(d.photoish?'full color':(d.count?d.count+(d.count===1?' color':' colors'):'—'))+'</span>'+chips+'<span>· '+state+'</span>';
     }else{
       sub='<span>'+(prevOK?'PNG, JPG or SVG':'no preview for this location')+'</span>';
@@ -4301,9 +4962,11 @@ function renderLogoUploads(){
       +'<div class="lu-meta"><div class="lu-name">'+it.label+' logo</div><div class="lu-sub">'+sub+'</div></div>'
       +'<button type="button" class="lu-btn" onclick="pickLogo(\''+it.key+'\')">'+(d?'Change':'Upload')+'</button>'
       +(d?'<button type="button" class="lu-x" title="Remove" onclick="removeDesign(\''+it.key+'\')">&#x2715;</button>':'')
-      +'</div>';
+      +'</div>'
+      +(d?bgRowFor(it.key,d):'');
   }).join('');
-  host.innerHTML='<div class="logo-uploads-title">Add your design</div>'+rows;
+  host.innerHTML='<div class="logo-uploads-title">Add your design</div>'+rows
+    +'<button type="button" class="tx-add" onclick="addText()">&#43; Add text</button>';
 }
 
 /* ---- the composited preview ---- */
@@ -4313,9 +4976,12 @@ function renderMockLayers(){
   if(!host)return;
   if(!sel){host.innerHTML='';if(hint)hint.textContent='';return;}
   var view=(typeof currentView!=='undefined')?currentView:'front';
-  var keys=Object.keys(DESIGNS).filter(function(k){return locView(k)===view;});
+  var keys=layerIds().filter(function(k){
+    var l=getLayer(k);
+    return l&&l.src&&layerView(k)===view;
+  });
   host.innerHTML=keys.map(function(k){
-    var d=DESIGNS[k],p=d.place;
+    var d=getLayer(k),p=d.place;
     return '<div class="mock-layer'+(_selLayer===k?' sel':'')+'" data-loc="'+k+'" '
       +'style="left:'+(p.cx*100)+'%;top:'+(p.cy*100)+'%;width:'+(p.w*100)+'%;'
       +'transform:translate(-50%,-50%) rotate('+p.rot+'deg);">'
@@ -4327,7 +4993,7 @@ function renderMockLayers(){
   }).join('');
   wireLayers();
   if(hint){
-    var pending=Object.keys(DESIGNS).filter(function(k){return !locPreviewable(k);});
+    var pending=layerIds().filter(function(k){return !locPreviewable(layerLoc(k));});
     if(keys.length)hint.innerHTML='<b>Drag to move.</b> Corner handles resize and rotate.';
     else if(pending.length)hint.textContent='';
     else hint.textContent='';
@@ -4344,7 +5010,11 @@ function wireLayers(){
         var h=e.target&&e.target.getAttribute?e.target.getAttribute('data-h'):null;
         var loc=el.getAttribute('data-loc');
         _selLayer=loc;
-        if(h==='del'){e.preventDefault();e.stopPropagation();removeDesign(loc);return;}
+        if(h==='del'){
+          e.preventDefault();e.stopPropagation();
+          if(TEXTS[loc])removeText(loc); else removeDesign(loc);
+          return;
+        }
         startLayerDrag(e,el,loc,h||'move');
       });
     })(layers[i]);
@@ -4354,7 +5024,7 @@ function wireLayers(){
 function startLayerDrag(e,el,loc,mode){
   e.preventDefault();e.stopPropagation();
   var host=document.getElementById('mock-layers');
-  var d=DESIGNS[loc];if(!d||!host)return;
+  var d=getLayer(loc);if(!d||!host)return;
   var box=host.getBoundingClientRect();
   var start={x:e.clientX,y:e.clientY};
   var p0={cx:d.place.cx,cy:d.place.cy,w:d.place.w,rot:d.place.rot};
@@ -4364,7 +5034,7 @@ function startLayerDrag(e,el,loc,mode){
   renderMockLayers();
 
   function move(ev){
-    var d2=DESIGNS[loc];if(!d2)return;
+    var d2=getLayer(loc);if(!d2)return;
     if(mode==='move'){
       d2.place.cx=Math.min(1.1,Math.max(-0.1,p0.cx+(ev.clientX-start.x)/box.width));
       d2.place.cy=Math.min(1.1,Math.max(-0.1,p0.cy+(ev.clientY-start.y)/box.height));
@@ -4392,7 +5062,7 @@ function startLayerDrag(e,el,loc,mode){
 function applyLayerStyle(loc){
   var host=document.getElementById('mock-layers');if(!host)return;
   var el=host.querySelector('.mock-layer[data-loc="'+loc+'"]');
-  var d=DESIGNS[loc];if(!el||!d)return;
+  var d=getLayer(loc);if(!el||!d)return;
   el.style.left=(d.place.cx*100)+'%';
   el.style.top=(d.place.cy*100)+'%';
   el.style.width=(d.place.w*100)+'%';
@@ -4400,7 +5070,7 @@ function applyLayerStyle(loc){
 }
 
 function onStageClick(ev){
-  if(_selLayer){_selLayer=null;renderMockLayers();return;}
+  if(_selLayer){_selLayer=null;renderMockLayers();renderTextCards();return;}
   if(typeof openLightbox==='function')openLightbox();
 }
 
@@ -4419,7 +5089,14 @@ function renderArtCards(){
     var lines=[];
     lines.push('<div class="art-line">'+d.name+'</div>');
     if(d.note)lines.push('<div class="art-line">'+d.note+'</div>');
-    if(d.bgDropped)lines.push('<div class="art-line">Solid background ignored when counting colors.</div>');
+    if(d.bgRemoved){
+      lines.push('<div class="art-line">Background removed'
+        +(d.bgRemovedPct?' — '+Math.round(d.bgRemovedPct*100)+'% of the image cleared':'')
+        +'. <a href="#" class="art-undo" onclick="event.preventDefault();undoBg(\''+k+'\')">Undo</a></div>');
+      if(d.cleanFailed&&!d.uploadFailed)lines.push('<div class="lu-warn">The cut-out could not be saved to our servers, so we may print from your original file. Mention it when you submit and we’ll sort it out.</div>');
+    }
+    else if(d.bgDropped)lines.push('<div class="art-line">Solid background ignored when counting colors.</div>');
+    if(d.bgMsg)lines.push('<div class="lu-warn">'+d.bgMsg+'</div>');
     if(!locPreviewable(k))lines.push('<div class="art-line">No product photo of this location, so there’s no on-garment preview — the file is still attached to your order.</div>');
     if(d.uploadFailed)lines.push('<div class="lu-warn">We couldn’t send this file to our servers. It still shows here, but please mention it when you submit so we can collect the artwork.</div>');
     return '<div class="art-card"><img class="art-thumb" src="'+d.src+'" alt="">'
@@ -4436,6 +5113,13 @@ function designsByLoc(){
     var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[k])?LOC_LABEL[k]:k;
     out[label]=[{name:d.name,url:d.ucUrl||''}];
   });
+  // Text is not a file, but the shop still has to be told what to set.
+  textPayload().forEach(function(t){
+    var line=t.text+' — '+t.font+', '+t.color
+      +(t.outline?' with '+t.outline+' outline':'')
+      +(t.curve?', curved':'');
+    out[t.location]=(out[t.location]||[]).concat([{name:'TEXT: '+line,url:''}]);
+  });
   return out;
 }
 // The cart reads item.artworkFiles, so each design goes across with its
@@ -4446,8 +5130,10 @@ function syncArtworkPayload(){
   ARTWORK=Object.keys(DESIGNS).map(function(k){
     var d=DESIGNS[k];
     var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[k])?LOC_LABEL[k]:k;
-    return {name:d.name,url:d.ucUrl||'',location:label,thumb:d.thumb||'',pending:!d.ucUrl};
+    return {name:d.name,url:d.ucUrl||'',location:label,thumb:d.thumb||'',pending:!d.ucUrl,
+            originalUrl:d.ucOriginalUrl||'',bgRemoved:!!d.bgRemoved};
   });
+  if(typeof ORDERTEXT!=='undefined')ORDERTEXT=textPayload();
 }
 
 /* ---- rendered proof for the cart (best effort) ---- */
@@ -4460,7 +5146,10 @@ function proxied(u){return 'https://wsrv.nl/?url='+encodeURIComponent(u)+'&outpu
 function buildProof(){
   try{
     var view=(typeof currentView!=='undefined')?currentView:'front';
-    var keys=Object.keys(DESIGNS).filter(function(k){return locView(k)===view;});
+    var keys=layerIds().filter(function(k){
+      var l=getLayer(k);
+      return l&&l.src&&layerView(k)===view;
+    });
     if(!keys.length)return;
     var gsrc=viewSrcFor(view);if(!gsrc)return;
     var g=new Image();g.crossOrigin='anonymous';
@@ -4472,7 +5161,7 @@ function buildProof(){
       cx.drawImage(g,0,0,W,H);
       var pend=keys.length;
       keys.forEach(function(k){
-        var d=DESIGNS[k],im=new Image();
+        var d=getLayer(k),im=new Image();
         im.onload=function(){
           var w=d.place.w*W,h=w*(im.naturalHeight/im.naturalWidth||1);
           cx.save();
@@ -4515,9 +5204,10 @@ function refreshMockUI(){
   renderLogoUploads();
   renderMockLayers();
   renderArtCards();
+  renderTextCards();
   syncArtworkPayload();
   var sec=document.getElementById('artwork-section');
-  if(sec)sec.style.display=Object.keys(DESIGNS).length?'':'none';
+  if(sec)sec.style.display=hasAnyLayer()?'':'none';
   scheduleProof();
 }
 
@@ -4535,6 +5225,7 @@ function refreshMockUI(){
       try{
         var valid={};currentLocations().forEach(function(it){valid[it.key]=1;});
         Object.keys(DESIGNS).forEach(function(k){if(!valid[k])delete DESIGNS[k];});
+        Object.keys(TEXTS||{}).forEach(function(k){if(!valid[TEXTS[k].loc])delete TEXTS[k];});
       }catch(e){}
       refreshMockUI();
       return r;
@@ -4542,7 +5233,7 @@ function refreshMockUI(){
   }
   if(typeof clearItem==='function'){
     var _ci=clearItem;
-    window.clearItem=function(){DESIGNS={};_selLayer=null;refreshMockUI();return _ci.apply(this,arguments);};
+    window.clearItem=function(){DESIGNS={};TEXTS={};_selLayer=null;refreshMockUI();return _ci.apply(this,arguments);};
   }
   if(typeof selectColor==='function'){
     var _sc=selectColor;
@@ -4551,6 +5242,430 @@ function refreshMockUI(){
   if(document.readyState!=='loading')refreshMockUI();
   else document.addEventListener('DOMContentLoaded',refreshMockUI);
 })();
+
+// =====================================================================
+// BACKGROUND REMOVAL + TEXT LAYERS
+// Extends the inline mockup above. Text is rasterised by AliveText and then
+// lives in the same layer system as uploaded artwork, so drag, resize,
+// rotate, the proof export and the cart thumbnails all work unchanged.
+// =====================================================================
+
+var TEXTS={};        // id -> text layer
+var LOC_NOTE={};     // locKey -> the note shown under that print location
+var ORDERTEXT=[];    // text specs handed to the cart / order email
+var _textSeq=0;
+
+/* ---- unified layer access ------------------------------------------------
+   Design layers are keyed by location ('front', 'left-chest'); text layers by
+   a generated id ('t1'). The two namespaces cannot collide, so one lookup
+   covers both. */
+function getLayer(id){
+  if(DESIGNS[id])return DESIGNS[id];
+  if(TEXTS&&TEXTS[id])return TEXTS[id];
+  return null;
+}
+function layerIds(){
+  return Object.keys(DESIGNS).concat(Object.keys(TEXTS||{}));
+}
+function layerLoc(id){
+  var l=getLayer(id);
+  return (l&&l.loc)?l.loc:id;
+}
+function layerView(id){return locView(layerLoc(id));}
+function hasAnyLayer(){return layerIds().length>0;}
+
+/* ---- ink accounting ------------------------------------------------------
+   The colour count that drives screen-print pricing is per LOCATION, not per
+   layer: a red logo plus red text on the same chest is still one screen, but
+   a red logo plus white text is two. Merging by colour distance rather than
+   exact hex is what makes that true — the detector's estimate of a logo's red
+   will never be byte-identical to the red a customer picks from a swatch. */
+var INK_MERGE=44;                       // same threshold the detector clusters at
+function _hexRgb(h){
+  h=String(h||'').replace('#','');
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var n=parseInt(h,16);
+  if(isNaN(n))return null;
+  return [(n>>16)&255,(n>>8)&255,n&255];
+}
+function _inkDist(a,b){
+  var r=a[0]-b[0],g=a[1]-b[1],bb=a[2]-b[2];
+  return Math.sqrt(r*r+g*g+bb*bb);
+}
+function textsAt(loc){
+  if(!TEXTS)return [];
+  return Object.keys(TEXTS).filter(function(id){return TEXTS[id].loc===loc;})
+                           .map(function(id){return TEXTS[id];});
+}
+function locInkCount(loc){
+  var d=DESIGNS[loc];
+  var ts=textsAt(loc);
+  var out={hasArt:!!d,hasText:ts.length>0,photoish:false,known:true,colors:[],count:0};
+  if(!out.hasArt&&!out.hasText)return out;
+
+  var raw=[];
+  if(d){
+    if(!d.detected)out.known=false;
+    else if(d.photoish)out.photoish=true;
+    else raw=raw.concat((d.colors||[]).map(function(c){return c.hex;}));
+  }
+  ts.forEach(function(t){raw=raw.concat(AliveText.inks(t.spec));});
+
+  var merged=[];
+  raw.forEach(function(hex){
+    var rgb=_hexRgb(hex);
+    if(!rgb)return;
+    for(var i=0;i<merged.length;i++){
+      if(_inkDist(rgb,merged[i].rgb)<INK_MERGE)return;
+    }
+    merged.push({hex:hex,rgb:rgb});
+  });
+  out.colors=merged;
+  // Photographic artwork has no meaningful count; any text sits on top of a
+  // full-colour print and does not add a screen.
+  out.count=out.photoish?null:merged.length;
+  return out;
+}
+
+/* ---- background removal --------------------------------------------------
+   Wrapper around AliveBgRemove: keeps the original for undo, re-measures the
+   colours on the cut-out (dropping a white background usually changes the
+   count), and re-uploads so production receives the file the customer
+   approved rather than the one they started with. */
+var BG_MSG={
+  'no-solid-bg':'There is too much going on behind this design for an automatic cut. Leave it with us — your free design review covers this.',
+  'already-transparent':'This file already has a transparent background, so there is nothing to remove.',
+  'nothing-removed':'We could not find a background to remove on this one.',
+  'removed-everything':'This design is almost the same color as its background, so removing it would leave an empty file.',
+  'soft-edges':'This design has a soft shadow or glow that fades out into the background, so it cannot be cut cleanly by machine. Our team will tidy it up in your free design review.',
+  'tainted':'We could not read this file in the browser. Our team will remove the background for you.',
+  'draw':'We could not read this file in the browser. Our team will remove the background for you.',
+  'no-image':'We could not read this file in the browser. Our team will remove the background for you.',
+  '_default':'We could not remove the background automatically. Our team will do it for you before printing.'
+};
+
+function _dataUrlToBlob(u){
+  var parts=String(u).split(',');
+  var mime=(parts[0].match(/:(.*?);/)||[])[1]||'image/png';
+  var bin=atob(parts[1]||'');
+  var arr=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+function _thumbFrom(im){
+  try{
+    var TS=96,iw=im.naturalWidth||TS,ih=im.naturalHeight||TS;
+    var rr=Math.min(TS/iw,TS/ih,1);
+    var tc=document.createElement('canvas');
+    tc.width=Math.max(1,Math.round(iw*rr));
+    tc.height=Math.max(1,Math.round(ih*rr));
+    tc.getContext('2d').drawImage(im,0,0,tc.width,tc.height);
+    return tc.toDataURL('image/png');
+  }catch(e){return '';}
+}
+
+function removeBg(locKey){
+  var d=DESIGNS[locKey];
+  if(!d||d.bgBusy||d.bgRemoved)return;
+  d.bgBusy=true;d.bgMsg='';
+  renderLogoUploads();
+  // Yield first so the "working…" state actually paints before the canvas
+  // work blocks the thread.
+  setTimeout(function(){
+    var im=new Image();
+    im.onload=function(){
+      var r;
+      try{r=AliveBgRemove.run(im);}catch(e){r={ok:false,reason:'_default'};}
+      d.bgBusy=false;
+      if(!r||!r.ok){
+        d.bgMsg=BG_MSG[r&&r.reason]||BG_MSG._default;
+        renderLogoUploads();renderArtCards();
+        return;
+      }
+      // Snapshot for undo before anything is overwritten.
+      d.bgPrev={src:d.src,thumb:d.thumb,colors:d.colors,count:d.count,
+                photoish:d.photoish,detected:d.detected,nw:d.nw,nh:d.nh,
+                ucUrl:d.ucUrl,ucUuid:d.ucUuid,note:d.note};
+      d.src=r.dataUrl;d.bgRemoved=true;d.bgMsg='';
+      d.bgRemovedPct=r.removedPct;
+
+      var im2=new Image();
+      im2.onload=function(){
+        var det={ok:false};
+        try{det=AliveArtColors.detect(im2);}catch(e){}
+        if(det.ok){
+          d.count=det.count;d.photoish=!!det.photoish;
+          d.colors=det.colors||[];d.detected=true;
+        }
+        d.nw=im2.naturalWidth||d.nw;d.nh=im2.naturalHeight||d.nh;
+        d.thumb=_thumbFrom(im2);
+        uploadCleaned(locKey);
+        autoApplyImprint(locKey);
+        refreshMockUI();
+        if(typeof calc==='function')calc();
+        scheduleProof();
+      };
+      im2.onerror=function(){
+        uploadCleaned(locKey);
+        refreshMockUI();
+        if(typeof calc==='function')calc();
+      };
+      im2.src=r.dataUrl;
+    };
+    im.onerror=function(){
+      d.bgBusy=false;d.bgMsg=BG_MSG._default;
+      renderLogoUploads();renderArtCards();
+    };
+    im.src=d.src;
+  },30);
+}
+
+// Send the cut-out to Uploadcare. The original stays available on its own URL
+// so the shop can fall back to it if the knockout was too aggressive.
+function uploadCleaned(locKey){
+  var d=DESIGNS[locKey];if(!d)return;
+  var blob;
+  try{blob=_dataUrlToBlob(d.src);}catch(e){return;}
+  var base=(d.name||'artwork').replace(/\.[^.]+$/,'');
+  var fd=new FormData();
+  fd.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
+  fd.append('UPLOADCARE_STORE','1');
+  fd.append('file',blob,base+'-background-removed.png');
+  d.cleanUploading=true;
+  renderLogoUploads();
+  fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
+    .then(function(r){if(!r.ok)throw new Error('upload '+r.status);return r.json();})
+    .then(function(j){
+      var dd=DESIGNS[locKey];if(!dd)return;
+      dd.cleanUploading=false;
+      if(j&&j.file){
+        if(dd.ucUrl&&!dd.ucOriginalUrl)dd.ucOriginalUrl=dd.ucUrl;
+        dd.ucUrl='https://ucarecdn.com/'+j.file+'/'+encodeURIComponent(base+'-background-removed.png');
+        dd.ucUuid=j.file;dd.uploadFailed=false;
+      }else dd.cleanFailed=true;
+      syncArtworkPayload();renderArtCards();renderLogoUploads();
+    })
+    .catch(function(){
+      var dd=DESIGNS[locKey];if(!dd)return;
+      dd.cleanUploading=false;dd.cleanFailed=true;
+      syncArtworkPayload();renderArtCards();renderLogoUploads();
+    });
+}
+
+function undoBg(locKey){
+  var d=DESIGNS[locKey];
+  if(!d||!d.bgRemoved||!d.bgPrev)return;
+  var p=d.bgPrev;
+  d.src=p.src;d.thumb=p.thumb;d.colors=p.colors;d.count=p.count;
+  d.photoish=p.photoish;d.detected=p.detected;d.nw=p.nw;d.nh=p.nh;
+  d.ucUrl=p.ucUrl;d.ucUuid=p.ucUuid;d.note=p.note;
+  d.bgRemoved=false;d.bgPrev=null;d.bgMsg='';d.ucOriginalUrl=null;
+  d.cleanFailed=false;d.bgRemovedPct=null;
+  autoApplyImprint(locKey);
+  refreshMockUI();
+  if(typeof calc==='function')calc();
+  scheduleProof();
+}
+
+/* ---- text layers --------------------------------------------------------- */
+function defaultTextSpec(){
+  return {text:'YOUR TEXT',font:'athletic',color:'#111111',
+          outline:false,outlineColor:'#ffffff',outlineWidth:0.08,arc:0};
+}
+function addText(loc){
+  if(!sel)return;
+  var av=currentLocations();
+  if(!av.length)return;
+  if(!loc){
+    var view=(typeof currentView!=='undefined')?currentView:'front';
+    for(var i=0;i<av.length;i++){if(locView(av[i].key)===view){loc=av[i].key;break;}}
+    if(!loc)loc=av[0].key;
+  }
+  var id='t'+(++_textSeq);
+  TEXTS[id]={id:id,kind:'text',loc:loc,spec:defaultTextSpec(),
+             src:'',nw:300,nh:100,place:defaultPlace(loc),pending:true};
+  _selLayer=id;
+  renderTextCards();
+  rasterText(id,function(){
+    autoApplyImprint(loc);
+    refreshMockUI();
+    if(typeof calc==='function')calc();
+    scheduleProof();
+  });
+}
+function removeText(id){
+  var t=TEXTS[id];if(!t)return;
+  var loc=t.loc;
+  delete TEXTS[id];
+  if(_selLayer===id)_selLayer=null;
+  autoApplyImprint(loc);
+  refreshMockUI();
+  if(typeof calc==='function')calc();
+  scheduleProof();
+}
+function rasterText(id,done){
+  var t=TEXTS[id];if(!t){if(done)done();return;}
+  AliveText.render(t.spec,function(r){
+    var tt=TEXTS[id];if(!tt){if(done)done();return;}
+    if(!r){
+      // Nothing visible — an empty string, or a font that rendered blank.
+      tt.src='';tt.empty=true;
+      if(done)done();
+      return;
+    }
+    tt.empty=false;
+    tt.src=r.dataUrl;tt.nw=r.w;tt.nh=r.h;tt.fontLabel=r.fontLabel;
+    tt.thumb=r.dataUrl;
+    // Keep the on-garment height sensible when the shape changes a lot —
+    // an arced word is much taller than the same word set straight, and
+    // without this it visibly jumps when the arc slider moves.
+    tt.pending=false;
+    if(done)done();
+  });
+}
+
+// Typing re-rasterises, which is far too expensive per keystroke.
+var _textT={};
+function onTextEdit(id,field,value){
+  var t=TEXTS[id];if(!t)return;
+  if(field==='loc'){
+    t.loc=value;t.place=defaultPlace(value);
+    autoApplyImprint(value);refreshMockUI();
+    if(typeof calc==='function')calc();
+    return;
+  }
+  if(field==='outline')t.spec.outline=!!value;
+  else if(field==='arc')t.spec.arc=parseFloat(value)||0;
+  else t.spec[field]=value;
+
+  // Colour changes move the price, so those apply straight away; the shape
+  // re-render can wait for the typing to settle.
+  if(field==='color'||field==='outlineColor'||field==='outline'){
+    autoApplyImprint(t.loc);
+    if(typeof calc==='function')calc();
+  }
+  if(_textT[id])clearTimeout(_textT[id]);
+  _textT[id]=setTimeout(function(){
+    rasterText(id,function(){
+      autoApplyImprint(t.loc);
+      refreshMockUI();
+      if(typeof calc==='function')calc();
+      scheduleProof();
+    });
+  },field==='text'?260:60);
+}
+
+/* ---- text editor cards --------------------------------------------------- */
+function renderTextCards(){
+  var host=document.getElementById('text-cards');
+  if(!host||!TEXTS)return;
+  var ids=Object.keys(TEXTS);
+  if(!sel){host.innerHTML='';return;}
+  var av=currentLocations();
+  if(!ids.length){
+    host.innerHTML='<div class="art-empty">No text added yet.</div>';
+    return;
+  }
+  host.innerHTML=ids.map(function(id){
+    var t=TEXTS[id];
+    var fonts=AliveText.FONTS.map(function(f){
+      return '<option value="'+f.id+'"'+(t.spec.font===f.id?' selected':'')+'>'+f.label+'</option>';
+    }).join('');
+    var oplocs=av.map(function(it){
+      return '<option value="'+it.key+'"'+(t.loc===it.key?' selected':'')+'>'+it.label+'</option>';
+    }).join('');
+    return '<div class="tx-card'+(_selLayer===id?' sel':'')+'" onclick="selectLayer(\''+id+'\')">'
+      +'<div class="tx-top">'
+        +'<input class="tx-input" type="text" maxlength="80" value="'+String(t.spec.text||'').replace(/"/g,'&quot;')+'" '
+          +'oninput="onTextEdit(\''+id+'\',\'text\',this.value)" placeholder="Type your text">'
+        +'<button type="button" class="lu-x" title="Remove" onclick="event.stopPropagation();removeText(\''+id+'\')">&#x2715;</button>'
+      +'</div>'
+      +'<div class="tx-grid">'
+        +'<label class="tx-f"><span>Font</span><select class="tx-sel" onchange="onTextEdit(\''+id+'\',\'font\',this.value)">'+fonts+'</select></label>'
+        +'<label class="tx-f"><span>Color</span><input class="tx-col" type="color" value="'+(t.spec.color||'#111111')+'" oninput="onTextEdit(\''+id+'\',\'color\',this.value)"></label>'
+        +'<label class="tx-f"><span>Location</span><select class="tx-sel" onchange="onTextEdit(\''+id+'\',\'loc\',this.value)">'+oplocs+'</select></label>'
+      +'</div>'
+      +'<div class="tx-grid">'
+        +'<label class="tx-f tx-chk"><input type="checkbox" '+(t.spec.outline?'checked':'')+' onchange="onTextEdit(\''+id+'\',\'outline\',this.checked)"><span>Outline</span></label>'
+        +(t.spec.outline?'<label class="tx-f"><span>Outline color</span><input class="tx-col" type="color" value="'+(t.spec.outlineColor||'#ffffff')+'" oninput="onTextEdit(\''+id+'\',\'outlineColor\',this.value)"></label>':'<span></span>')
+        +'<label class="tx-f"><span>Curve</span><input class="tx-rng" type="range" min="-160" max="160" step="5" value="'+(t.spec.arc||0)+'" oninput="onTextEdit(\''+id+'\',\'arc\',this.value)"></label>'
+      +'</div>'
+      +(t.empty?'<div class="lu-warn">Type something for this to show on the garment.</div>':textCostLine(t))
+      +'</div>';
+  }).join('');
+}
+
+function selectLayer(id){
+  _selLayer=id;
+  renderMockLayers();
+  renderTextCards();
+}
+
+/* ---- what the shop receives ---------------------------------------------
+   The rasterised PNG is a preview. The shop gets the words, the font name and
+   the colours as text so the type is set properly in vector — sending a
+   screen-resolution raster as the print file would be unusable. */
+function textPayload(){
+  if(!TEXTS)return [];
+  return Object.keys(TEXTS).map(function(id){
+    var t=TEXTS[id];
+    var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[t.loc])?LOC_LABEL[t.loc]:t.loc;
+    return {location:label,text:t.spec.text||'',font:t.fontLabel||t.spec.font,
+            color:t.spec.color,
+            outline:t.spec.outline?(t.spec.outlineColor||'#ffffff'):null,
+            curve:t.spec.arc||0,thumb:t.thumb||''};
+  }).filter(function(x){return x.text.trim();});
+}
+
+
+/* ---- the background-removal control under each upload row ---------------- */
+function bgRowFor(locKey,d){
+  var out='';
+  if(d.bgBusy){
+    out+='<div class="bg-row"><button type="button" class="bg-btn" disabled>'
+       +'<span class="bg-spin"></span> Removing background…</button></div>';
+  }else if(d.bgRemoved){
+    out+='<div class="bg-row"><span class="bg-done">&#10003; Background removed</span>'
+       +'<button type="button" class="bg-undo" onclick="undoBg(\''+locKey+'\')">Undo</button></div>';
+  }else{
+    out+='<div class="bg-row"><button type="button" class="bg-btn" onclick="removeBg(\''+locKey+'\')">'
+       +'Remove background</button></div>';
+  }
+  if(d.bgMsg)out+='<div class="bg-note">'+d.bgMsg+'</div>';
+  return out;
+}
+
+/* ---- price transparency on the text cards -------------------------------
+   A customer adding white text to a one-color logo sees the total move. This
+   line says why, before they wonder whether the calculator is broken. */
+function textCostLine(t){
+  var ink=locInkCount(t.loc);
+  var label=(typeof LOC_LABEL!=='undefined'&&LOC_LABEL[t.loc])?LOC_LABEL[t.loc]:t.loc;
+  if(locMethod[t.loc]==='em')
+    return '<div class="tx-cost">Embroidered on the <b>'+label+'</b>. Thread colors don’t change the price.</div>';
+  if(locMethod[t.loc]==='ht'||ink.photoish)
+    return '<div class="tx-cost">Printed full color on the <b>'+label+'</b>, so extra colors cost nothing here.</div>';
+  if(ink.count==null)return '';
+  var withoutText=locInkCountWithout(t.loc,t.id);
+  var added=ink.count-withoutText;
+  var swatches=ink.colors.map(function(c){
+    return '<span class="lu-dot" style="background:'+c.hex+'"></span>';
+  }).join(' ');
+  var msg='<b>'+label+'</b>: '+ink.count+(ink.count===1?' screen print color':' screen print colors')+' ';
+  if(added>0)msg+='— this text adds '+added+'. ';
+  else if(ink.hasArt)msg+='— this text reuses a color already in your artwork, so it adds nothing. ';
+  return '<div class="tx-cost">'+msg+swatches+'</div>';
+}
+
+// What the location's count would be if this one text layer were not there.
+function locInkCountWithout(loc,id){
+  var keep=TEXTS[id];
+  if(!keep)return locInkCount(loc).count||0;
+  delete TEXTS[id];
+  var n=locInkCount(loc).count;
+  TEXTS[id]=keep;
+  return n||0;
+}
 
 </script>
 <!-- Browse modal removed: customers browse from index.html and deep-link with ?style=XXX -->

@@ -153,6 +153,26 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
 .ty-btn.secondary:hover{background:var(--blue-light);}
 
 /* SAVE FOR LATER */
+
+/* ── THE ALIVE PRINT SHOP GUARANTEE ───────────────────────────────────────
+   Sits directly above the checkout form, which is where a first-time
+   customer hesitates: they are about to pay for something they have only
+   seen as a rough on-screen mockup. */
+.gtee{background:linear-gradient(180deg,var(--green-light) 0%,#fff 78%);
+  border:1.5px solid #BFE3CE;border-radius:var(--r-lg);padding:16px 18px 14px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.gtee-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.gtee-seal{width:26px;height:26px;flex-shrink:0;border-radius:50%;background:var(--green);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1;}
+.gtee-ttl{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:var(--text);letter-spacing:.01em;}
+.gtee-lead{font-size:13.5px;line-height:1.5;color:var(--text2);margin:0 0 11px;}
+.gtee-lead b{color:var(--text);font-weight:800;}
+.gtee-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.gtee-list li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text2);}
+.gtee-list .tick{color:var(--green);font-weight:800;flex-shrink:0;line-height:1.35;}
+.gtee-list b{color:var(--text);font-weight:700;}
+.gtee-foot{margin-top:11px;padding-top:10px;border-top:1px dashed #C9E3D5;
+  font-size:11.5px;color:var(--text3);line-height:1.45;}
 .save-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
 .save-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
 .save-sub{font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:12px;}
@@ -267,6 +287,20 @@ html,body{font-family:'Open Sans',sans-serif;background:#F2F4F8;color:var(--text
       <div class="summary-row"><span id="sum-items-lbl">Subtotal (0 items)</span><span id="sum-subtotal">$0.00</span></div>
       <div class="summary-row savings" id="sum-savings-row" style="display:none;"><span>Promo savings</span><span id="sum-savings">-$0.00</span></div>
       <div class="summary-row total"><span>Total</span><span id="sum-total">$0.00</span></div>
+    </div>
+
+    <div class="gtee" id="gtee">
+      <div class="gtee-hd">
+        <div class="gtee-seal">&#10003;</div>
+        <div class="gtee-ttl">The Alive Print Shop Guarantee</div>
+      </div>
+      <p class="gtee-lead"><b>We email you a final mockup before we print &mdash; in 24 hours or less.</b> Nothing goes on a shirt until you have seen it and said yes.</p>
+      <ul class="gtee-list">
+        <li><span class="tick">&#10003;</span><span><b>Free professional design review on every order.</b> A real person on our team checks your artwork &mdash; sizing, placement, print quality &mdash; before anything goes to print.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>No setup fees.</b> Screens and setup are included, however many colors you print.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>100% print guarantee.</b> If your order is not right, we make it right.</span></li>
+      </ul>
+      <div class="gtee-foot">The mockup in your cart is a rough placement guide. Your approved proof is what we print from.</div>
     </div>
 
     <div class="save-card" id="save-card">
