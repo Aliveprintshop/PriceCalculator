@@ -205,7 +205,7 @@
   border-top:1px solid #FCA5A5;font-size:12.5px;line-height:1.5;color:#7F1D1D;cursor:pointer;}
 #alive-cart .miss-ack input{width:16px;height:16px;margin-top:1px;flex-shrink:0;accent-color:#DC2626;cursor:pointer;}
 #alive-cart .miss a{color:#991B1B;text-decoration:underline;font-weight:700;}
-#alive-cart .gtee{background:linear-gradient(180deg,var(--green-light) 0%,#fff 78%);
+#alive-cart .gtee{grid-column:1/-1;background:linear-gradient(180deg,var(--green-light) 0%,#fff 78%);
   border:1.5px solid #BFE3CE;border-radius:var(--r-lg);padding:16px 18px 14px;
   box-shadow:0 1px 3px rgba(0,0,0,0.04);}
 #alive-cart .gtee-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
@@ -214,7 +214,8 @@
 #alive-cart .gtee-ttl{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:var(--text);letter-spacing:.01em;}
 #alive-cart .gtee-lead{font-size:13.5px;line-height:1.5;color:var(--text2);margin:0 0 11px;}
 #alive-cart .gtee-lead b{color:var(--text);font-weight:800;}
-#alive-cart .gtee-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+#alive-cart .gtee-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px 22px;}
+@media(max-width:900px){#alive-cart .gtee-list{grid-template-columns:1fr;}}
 #alive-cart .gtee-list li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text2);}
 #alive-cart .gtee-list .tick{color:var(--green);font-weight:800;flex-shrink:0;line-height:1.35;}
 #alive-cart .gtee-list b{color:var(--text);font-weight:700;}
@@ -307,6 +308,20 @@
     <a class="continue-link" href="https://aliveprintshop.com/insta-price" target="_top">&larr; Continue shopping</a>
   </div>
 
+  <div class="gtee" id="gtee">
+      <div class="gtee-hd">
+        <div class="gtee-seal">&#10003;</div>
+        <div class="gtee-ttl">The Alive Print Shop Guarantee</div>
+      </div>
+      <p class="gtee-lead"><b>We email you a final mockup before we print &mdash; in 24 hours or less.</b> Nothing goes on a shirt until you have seen it and said yes.</p>
+      <ul class="gtee-list">
+        <li><span class="tick">&#10003;</span><span><b>Free professional design review on every order.</b> A real person on our team checks your artwork &mdash; sizing, placement, print quality &mdash; before anything goes to print.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>No setup fees.</b> Screens and setup are included, however many colors you print.</span></li>
+        <li><span class="tick">&#10003;</span><span><b>100% print guarantee.</b> If your order is not right, we make it right.</span></li>
+      </ul>
+      <div class="gtee-foot">The mockup in your cart is a rough placement guide. Your approved proof is what we print from.</div>
+    </div>
+
   <div class="items" id="items-host">
     <div class="empty-state" id="empty-state">
       <div class="icon">🛒</div>
@@ -317,6 +332,22 @@
   </div>
 
   <aside class="summary-panel" id="summary-panel" style="display:none;">
+
+    <form class="checkout-form" id="checkout-form" onsubmit="submitOrder(event)">
+      <h3>Submit Your Order</h3>
+      <div class="cf-row two">
+        <div><label class="cf-lbl">Full Name *</label><input class="cf-input" id="cf-name" type="text" placeholder="John Smith" required></div>
+        <div><label class="cf-lbl">Company</label><input class="cf-input" id="cf-company" type="text" placeholder="Your company"></div>
+      </div>
+      <div class="cf-row"><label class="cf-lbl">Email *</label><input class="cf-input" id="cf-email" type="email" placeholder="you@company.com" required></div>
+      <div class="cf-row"><label class="cf-lbl">Phone *</label><input class="cf-input" id="cf-phone" type="tel" placeholder="(702) 555-0100" required></div>
+      <div class="cf-row"><label class="cf-lbl">Shipping address (optional)</label><textarea class="cf-textarea" id="cf-shipping" placeholder="Street, city, state, ZIP" style="min-height:46px;"></textarea></div>
+      <div class="cf-row"><label class="cf-lbl">Order notes (optional)</label><textarea class="cf-textarea" id="cf-notes" placeholder="In-hands date, special requests, etc."></textarea></div>
+      <div id="miss-host"></div>
+      <div class="cf-err" id="cf-err"></div>
+      <button type="submit" class="checkout-btn" id="cf-btn">Submit Order Request &rarr;</button>
+      <div class="checkout-fineprint" id="cf-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
+    </form>
 
     <div class="promo-bar" id="promo-bar">
       <div class="promo-bar-lbl" id="promo-bar-lbl">Have a promo code?</div>
@@ -338,20 +369,6 @@
       <div class="summary-row total"><span>Total</span><span id="sum-total">$0.00</span></div>
     </div>
 
-    <div class="gtee" id="gtee">
-      <div class="gtee-hd">
-        <div class="gtee-seal">&#10003;</div>
-        <div class="gtee-ttl">The Alive Print Shop Guarantee</div>
-      </div>
-      <p class="gtee-lead"><b>We email you a final mockup before we print &mdash; in 24 hours or less.</b> Nothing goes on a shirt until you have seen it and said yes.</p>
-      <ul class="gtee-list">
-        <li><span class="tick">&#10003;</span><span><b>Free professional design review on every order.</b> A real person on our team checks your artwork &mdash; sizing, placement, print quality &mdash; before anything goes to print.</span></li>
-        <li><span class="tick">&#10003;</span><span><b>No setup fees.</b> Screens and setup are included, however many colors you print.</span></li>
-        <li><span class="tick">&#10003;</span><span><b>100% print guarantee.</b> If your order is not right, we make it right.</span></li>
-      </ul>
-      <div class="gtee-foot">The mockup in your cart is a rough placement guide. Your approved proof is what we print from.</div>
-    </div>
-
     <div class="save-card" id="save-card">
       <h3>&#128190; Save your cart for later</h3>
       <p class="save-sub">No account needed. Your cart is auto-saved on this device &mdash; or grab a link to reopen it on another device or come back later.</p>
@@ -363,22 +380,6 @@
       </div>
       <div class="save-result" id="save-result" style="display:none;"></div>
     </div>
-
-    <form class="checkout-form" id="checkout-form" onsubmit="submitOrder(event)">
-      <h3>Submit Your Order</h3>
-      <div class="cf-row two">
-        <div><label class="cf-lbl">Full Name *</label><input class="cf-input" id="cf-name" type="text" placeholder="John Smith" required></div>
-        <div><label class="cf-lbl">Company</label><input class="cf-input" id="cf-company" type="text" placeholder="Your company"></div>
-      </div>
-      <div class="cf-row"><label class="cf-lbl">Email *</label><input class="cf-input" id="cf-email" type="email" placeholder="you@company.com" required></div>
-      <div class="cf-row"><label class="cf-lbl">Phone *</label><input class="cf-input" id="cf-phone" type="tel" placeholder="(702) 555-0100" required></div>
-      <div class="cf-row"><label class="cf-lbl">Shipping address (optional)</label><textarea class="cf-textarea" id="cf-shipping" placeholder="Street, city, state, ZIP" style="min-height:46px;"></textarea></div>
-      <div class="cf-row"><label class="cf-lbl">Order notes (optional)</label><textarea class="cf-textarea" id="cf-notes" placeholder="In-hands date, special requests, etc."></textarea></div>
-      <div id="miss-host"></div>
-      <div class="cf-err" id="cf-err"></div>
-      <button type="submit" class="checkout-btn" id="cf-btn">Submit Order Request &rarr;</button>
-      <div class="checkout-fineprint" id="cf-fineprint">We'll respond with a final quote within 1 business day. No payment now.</div>
-    </form>
 
     <div class="success-box" id="success-box">
       <div class="check">&#10003;</div>
@@ -562,6 +563,7 @@ function render(){
   if(!items.length){
     if(empty)empty.style.display='block';
     if(summary)summary.style.display='none';
+    var _g0=document.getElementById('gtee'); if(_g0)_g0.style.display='none';
     if(title)title.textContent='Your Cart';
     // Clear any in-flight item nodes
     Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state')ch.remove();});
@@ -569,6 +571,7 @@ function render(){
     return;
   }
   if(empty)empty.style.display='none';
+  var _g1=document.getElementById('gtee'); if(_g1)_g1.style.display='';
   if(summary)summary.style.display='flex';
   if(title)title.textContent='Your Cart ('+items.length+(items.length===1?' item)':' items)');
 
