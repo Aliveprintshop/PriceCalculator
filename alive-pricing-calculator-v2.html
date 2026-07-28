@@ -4763,6 +4763,55 @@ var DESIGNS={};              // locKey -> design record
 var _selLayer=null;          // locKey of the selected layer
 var UC_PUBKEY='7861e880db07f9de6779';
 
+/* ---- artwork storage ------------------------------------------------------
+   Artwork goes to our own Cloudflare Worker backed by an R2 bucket. Point
+   ART_ENDPOINT at the deployed Worker, e.g.
+
+       var ART_ENDPOINT='https://alive-artwork.aliveprintshop.workers.dev';
+
+   Left blank it falls back to the old Uploadcare path, so this file still
+   behaves exactly as before until the Worker is live.
+
+   Why the move: on 2026-07-28 Uploadcare began refusing every upload with a
+   403 at the account gate — valid key, read API still answering, but uploads
+   blocked and previously stored files returning 404. A dependency that can
+   switch itself off and take the artwork with it is not one to keep for the
+   only copy of a customer's design. */
+var ART_ENDPOINT='';
+
+function aliveUpload(blob,filename){
+  filename=filename||'artwork';
+  if(ART_ENDPOINT){
+    var fd=new FormData();
+    fd.append('file',blob,filename);
+    return fetch(String(ART_ENDPOINT).replace(/\/+$/,'')+'/upload',{method:'POST',body:fd})
+      .then(function(r){
+        if(r.ok)return r.json();
+        // Surface the Worker's own reason (too large, type not accepted) rather
+        // than a bare status, so the note the customer sees can be specific.
+        return r.json().catch(function(){return {};}).then(function(j){
+          var err=new Error('upload '+r.status+(j&&j.error?': '+j.error:''));
+          err.status=r.status;err.reason=j&&j.error;
+          throw err;
+        });
+      })
+      .then(function(j){
+        if(!j||!j.url)throw new Error('storage returned no url');
+        return {url:j.url,id:j.key||''};
+      });
+  }
+  var f2=new FormData();
+  f2.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
+  f2.append('UPLOADCARE_STORE','1');
+  f2.append('file',blob,filename);
+  return fetch('https://upload.uploadcare.com/base/',{method:'POST',body:f2})
+    .then(function(r){if(!r.ok)throw new Error('upload '+r.status);return r.json();})
+    .then(function(j){
+      if(!j||!j.file)throw new Error('storage returned no file id');
+      return {url:'https://ucarecdn.com/'+j.file+'/'+encodeURIComponent(filename),id:j.file};
+    });
+}
+
 var LOC_VIEW={'front':'front','front-center':'front','left-chest':'front','right-chest':'front',
               'back':'back','left-sleeve':'side','right-sleeve':'side','left-side':'side','right-side':'side'};
 function locView(k){return LOC_VIEW[k]||'front';}
@@ -4860,24 +4909,17 @@ function applyLogoFile(locKey,file){
 // Push the original file to Uploadcare so production receives the real artwork.
 // Best-effort: if it fails the design still previews and the customer is told.
 function uploadDesign(locKey,file){
-  var fd=new FormData();
-  fd.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
-  fd.append('UPLOADCARE_STORE','1');
-  fd.append('file',file,file.name||'artwork');
-  fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
-    .then(function(r){if(!r.ok)throw new Error('upload '+r.status);return r.json();})
-    .then(function(j){
+  aliveUpload(file,file.name||'artwork')
+    .then(function(res){
       var d=DESIGNS[locKey];if(!d)return;
-      if(j&&j.file){
-        d.ucUrl='https://ucarecdn.com/'+j.file+'/'+encodeURIComponent(d.name);
-        d.ucUuid=j.file;
-      }
-      d.uploading=false;d.uploadFailed=!d.ucUrl;
+      d.ucUrl=res.url;d.ucUuid=res.id;
+      d.uploading=false;d.uploadFailed=false;d.uploadReason='';
       syncArtworkPayload();renderArtCards();renderLogoUploads();
     })
-    .catch(function(){
+    .catch(function(err){
       var d=DESIGNS[locKey];if(!d)return;
       d.uploading=false;d.uploadFailed=true;
+      d.uploadReason=(err&&err.reason)?String(err.reason):'';
       syncArtworkPayload();renderArtCards();renderLogoUploads();
     });
 }
@@ -5211,17 +5253,9 @@ function exportProof(cv){
   try{
     cv.toBlob(function(b){
       if(!b)return;
-      var fd=new FormData();
-      fd.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
-      fd.append('UPLOADCARE_STORE','1');
-      fd.append('file',b,'mockup-proof.png');
-      fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
-        .then(function(r){return r.json();})
-        .then(function(j){
-          if(j&&j.file){
-            var url='https://ucarecdn.com/'+j.file+'/mockup-proof.png';
-            try{localStorage.setItem('alive_pending_mockup_v1',JSON.stringify({url:url,name:'Mockup proof',ts:Date.now()}));}catch(e){}
-          }
+      aliveUpload(b,'mockup-proof.png')
+        .then(function(res){
+          try{localStorage.setItem('alive_pending_mockup_v1',JSON.stringify({url:res.url,name:'Mockup proof',ts:Date.now()}));}catch(e){}
         }).catch(function(){});
     },'image/png');
   }catch(e){}
@@ -5455,22 +5489,15 @@ function uploadCleaned(locKey){
   var blob;
   try{blob=_dataUrlToBlob(d.src);}catch(e){return;}
   var base=(d.name||'artwork').replace(/\.[^.]+$/,'');
-  var fd=new FormData();
-  fd.append('UPLOADCARE_PUB_KEY',UC_PUBKEY);
-  fd.append('UPLOADCARE_STORE','1');
-  fd.append('file',blob,base+'-background-removed.png');
   d.cleanUploading=true;
   renderLogoUploads();
-  fetch('https://upload.uploadcare.com/base/',{method:'POST',body:fd})
-    .then(function(r){if(!r.ok)throw new Error('upload '+r.status);return r.json();})
-    .then(function(j){
+  aliveUpload(blob,base+'-background-removed.png')
+    .then(function(res){
       var dd=DESIGNS[locKey];if(!dd)return;
       dd.cleanUploading=false;
-      if(j&&j.file){
-        if(dd.ucUrl&&!dd.ucOriginalUrl)dd.ucOriginalUrl=dd.ucUrl;
-        dd.ucUrl='https://ucarecdn.com/'+j.file+'/'+encodeURIComponent(base+'-background-removed.png');
-        dd.ucUuid=j.file;dd.uploadFailed=false;
-      }else dd.cleanFailed=true;
+      if(dd.ucUrl&&!dd.ucOriginalUrl)dd.ucOriginalUrl=dd.ucUrl;
+      dd.ucUrl=res.url;dd.ucUuid=res.id;
+      dd.uploadFailed=false;dd.cleanFailed=false;
       syncArtworkPayload();renderArtCards();renderLogoUploads();
     })
     .catch(function(){

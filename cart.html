@@ -410,6 +410,16 @@ var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30
 var FALLBACK_EMAIL='austin@aliveprintshop.com';
 
 function fmt(n){return'$'+(parseFloat(n)||0).toFixed(2);}
+
+/* Uploadcare serves a resized copy when you append -/preview/NxN/ to the file
+   URL. Artwork now lives on our own Cloudflare Worker, which has no such
+   transform endpoint, so that suffix has to be added ONLY for ucarecdn links.
+   Appending it to a worker URL produced ".../logo.png-/preview/240x240/",
+   which 404s — every thumbnail in the cart would have been a broken image. */
+function previewUrl(u,size){
+  if(!u)return '';
+  return /^https?:\/\/ucarecdn\.com\//.test(u) ? (u+'-/preview/'+size+'/') : u;
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // =====================================================================
@@ -585,7 +595,7 @@ function render(){
           (addonLine!=='None'?'<div style="grid-column:1/-1;"><div class="label">Add-ons</div><b>'+esc(addonLine)+'</b></div>':'')+
           '<div style="grid-column:1/-1;"><div class="label">Turnaround</div><b>'+esc(it.turnaroundLabel||'')+'</b></div>'+
         '</div>'+
-        (it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(it.mockupUrl)+'-/preview/240x240/" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'')+
+        (it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(previewUrl(it.mockupUrl,'240x240'))+'" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'')+
         (function(){
           // Show the customer their actual designs, one tile per print location,
           // so it is obvious the upload landed. Older cart entries have no thumb
@@ -601,7 +611,7 @@ function render(){
           var tiles=af.map(function(f){
             var name=f.name||'artwork';
             var isImg=/\.(png|jpe?g|gif|webp|bmp|svg|tiff?)$/i.test(name);
-            var src=f.thumb||(f.url&&isImg?f.url+'-/preview/240x240/':'');
+            var src=f.thumb||(f.url&&isImg?previewUrl(f.url,'240x240'):'');
             var visual=src?'<img class="art-tile-img" src="'+esc(src)+'" alt="'+esc(name)+'" loading="lazy">'
                           :'<div class="art-tile-doc">&#128196;</div>';
             var body='<div class="art-tile">'+
@@ -744,7 +754,7 @@ function buildPayload(form){
 
   var allArtwork=[];
   items.forEach(function(it){(it.artworkFiles||[]).forEach(function(f){if(f&&f.url)allArtwork.push(f.url);});});
-  var artworkHtml=items.map(function(it){return (it.artworkFiles||[]).map(function(f){var isImg=/\.(png|jpe?g|gif|webp|bmp|tiff?)$/i.test(f.name||'');return isImg?'<a href="'+f.url+'" target="_blank"><img src="'+f.url+'-/preview/400x400/" alt="'+(f.name||'')+'" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>':'<div style="margin:6px;">&#128206; <a href="'+f.url+'" target="_blank">'+(f.name||'artwork')+'</a></div>';}).join('');}).join('');
+  var artworkHtml=items.map(function(it){return (it.artworkFiles||[]).map(function(f){var isImg=/\.(png|jpe?g|gif|webp|bmp|tiff?)$/i.test(f.name||'');return isImg?'<a href="'+f.url+'" target="_blank"><img src="'+previewUrl(f.url,'400x400')+'" alt="'+(f.name||'')+'" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>':'<div style="margin:6px;">&#128206; <a href="'+f.url+'" target="_blank">'+(f.name||'artwork')+'</a></div>';}).join('');}).join('');
   var submittedAt=new Date().toISOString();
 
   // One fully-formatted note for GHL — drop this single field into the workflow's
