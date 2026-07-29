@@ -232,12 +232,22 @@
 #alive-cart .gtee-list b{color:var(--text);font-weight:700;}
 #alive-cart .gtee-foot{margin-top:7px;padding-top:0;border-top:none;
   font-size:11.5px;color:var(--text3);line-height:1.45;}
-#alive-cart .save-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-#alive-cart .save-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-#alive-cart .save-sub{font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:12px;}
+#alive-cart .save-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
+/* The copy-link button, the word "or" and the email field used to be three
+   stacked rows. They are one control each, so they sit on one line. */
+#alive-cart .save-row{display:flex;align-items:center;gap:8px;}
+#alive-cart .save-row .save-btn-outline{width:auto;flex:0 0 auto;white-space:nowrap;padding:8px 12px;}
+#alive-cart .save-row .save-email-row{flex:1;min-width:0;}
+@media(max-width:520px){
+  #alive-cart .save-row{flex-wrap:wrap;}
+  #alive-cart .save-row .save-btn-outline{width:100%;}
+  #alive-cart .save-row .save-email-row{flex-basis:100%;}
+}
+#alive-cart .save-card h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+#alive-cart .save-sub{font-size:11.5px;color:var(--text3);line-height:1.4;margin-bottom:9px;}
 #alive-cart .save-btn-outline{width:100%;padding:11px;background:var(--blue-light);color:var(--blue-dark);border:1.5px solid var(--blue-mid);border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;}
 #alive-cart .save-btn-outline:hover{background:#dbeafe;}
-#alive-cart .save-or{text-align:center;font-size:11px;color:var(--text3);margin:12px 0 10px;}
+#alive-cart .save-or{font-size:11px;color:var(--text3);margin:0;flex:0 0 auto;}
 #alive-cart .save-email-row{display:flex;gap:8px;}
 #alive-cart .save-email-row .cf-input{flex:1;}
 #alive-cart .save-btn{padding:9px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
@@ -382,12 +392,14 @@
 
     <div class="save-card" id="save-card">
       <h3>&#128190; Save your cart for later</h3>
-      <p class="save-sub">No account needed. Your cart is auto-saved on this device &mdash; or grab a link to reopen it on another device or come back later.</p>
-      <button type="button" class="save-btn-outline" id="save-link-btn" onclick="copySaveLink()">&#128279; Copy my cart link</button>
-      <div class="save-or">&mdash; or have us email it to you &mdash;</div>
-      <div class="save-email-row">
-        <input type="email" class="cf-input" id="save-email" placeholder="you@email.com" autocomplete="email">
-        <button type="button" class="save-btn" id="save-email-btn" onclick="emailMyCart()">Email me</button>
+      <p class="save-sub">Saved on this device. Grab a link to open it anywhere.</p>
+      <div class="save-row">
+        <button type="button" class="save-btn-outline" id="save-link-btn" onclick="copySaveLink()">&#128279; Copy link</button>
+        <div class="save-or">or</div>
+        <div class="save-email-row">
+          <input type="email" class="cf-input" id="save-email" placeholder="you@email.com" autocomplete="email">
+          <button type="button" class="save-btn" id="save-email-btn" onclick="emailMyCart()">Email me</button>
+        </div>
       </div>
       <div class="save-result" id="save-result" style="display:none;"></div>
     </div>
