@@ -93,6 +93,11 @@
 #alive-cart .item-spec-grid .label{color:var(--text3);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
 
 #alive-cart .item-artwork{display:flex;flex-direction:column;gap:4px;font-size:12px;}
+/* Designs and the approved mockup sit side by side on desktop. They stack on a
+   phone, where two columns would leave both images too small to judge. */
+#alive-cart .item-visuals{display:flex;gap:18px;align-items:flex-start;}
+#alive-cart .item-visuals > .item-artwork{flex:1 1 0;min-width:0;}
+@media(max-width:640px){#alive-cart .item-visuals{flex-direction:column;gap:10px;}}
 #alive-cart .item-artwork-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);}
 #alive-cart .art-tiles{display:flex;flex-wrap:wrap;gap:10px;}
 #alive-cart .art-tile-link{text-decoration:none;color:inherit;}
@@ -741,19 +746,22 @@ function render(){
           (addonLine!=='None'?'<div style="grid-column:1/-1;"><div class="label">Add-ons</div><b>'+esc(addonLine)+'</b></div>':'')+
           '<div style="grid-column:1/-1;"><div class="label">Turnaround</div><b>'+esc(it.turnaroundLabel||'')+'</b></div>'+
         '</div>'+
-        (it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(previewUrl(it.mockupUrl,'240x240'))+'" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'')+
         (function(){
-          // Show the customer their actual designs, one tile per print location,
-          // so it is obvious the upload landed. Older cart entries have no thumb
-          // or location, so fall back to an Uploadcare preview then a file chip.
-          // Keep designs that never uploaded, too. They have no url and lose
-          // their thumbnail when the cart travels through a share link, but the
-          // customer must still see that a location has artwork outstanding
-          // rather than have it quietly disappear.
+          // Designs on the left, the approved mockup on the right. They are two
+          // views of the same order, so side by side reads better than stacked
+          // and keeps the item card short.
+          //
+          // Older cart entries have no thumb or location, so fall back to a
+          // preview then a file chip. Designs that never uploaded are kept too:
+          // they have no url and lose their thumbnail when the cart travels
+          // through a share link, but the customer must still see that a
+          // location has artwork outstanding rather than have it quietly
+          // disappear.
           var af=(Array.isArray(it.artworkFiles)?it.artworkFiles:[]).filter(function(f){
             return f&&(f.url||f.thumb||f.pending)&&f.url!==it.mockupUrl;
           });
-          if(!af.length)return '';
+          var designs='';
+          if(af.length){
           var tiles=af.map(function(f){
             var name=f.name||'artwork';
             var isImg=/\.(png|jpe?g|gif|webp|bmp|svg|tiff?)$/i.test(name);
@@ -768,7 +776,11 @@ function render(){
             '</div>';
             return f.url?'<a class="art-tile-link" href="'+esc(f.url)+'" target="_blank" rel="noopener">'+body+'</a>':body;
           }).join('');
-          return '<div class="item-artwork"><div class="item-artwork-label">Your designs ('+af.length+')</div><div class="art-tiles">'+tiles+'</div></div>';
+            designs='<div class="item-artwork"><div class="item-artwork-label">Your designs ('+af.length+')</div><div class="art-tiles">'+tiles+'</div></div>';
+          }
+          var mock=it.mockupUrl?'<div class="item-artwork"><div class="item-artwork-label" style="color:var(--green);">&#10003; Approved mockup</div><a href="'+esc(it.mockupUrl)+'" target="_blank" rel="noopener"><img src="'+esc(previewUrl(it.mockupUrl,'240x240'))+'" alt="Approved mockup" loading="lazy" style="max-width:130px;border:1px solid var(--border);border-radius:8px;background:#fff;"></a></div>':'';
+          if(!designs&&!mock)return '';
+          return '<div class="item-visuals">'+designs+mock+'</div>';
         })()+
         (it.notes?'<div style="font-size:12px;color:var(--text2);"><span style="font-family:\'Montserrat\',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);">Notes:</span> '+esc(it.notes)+'</div>':'')+
         '<div class="item-prices">'+
