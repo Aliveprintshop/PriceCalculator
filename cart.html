@@ -264,32 +264,53 @@
 #alive-cart .save-link-box{display:flex;gap:6px;margin-top:8px;}
 #alive-cart .save-link-box input{flex:1;min-width:0;padding:7px 9px;font-size:11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--text2);}
 #alive-cart .save-link-copy{padding:7px 12px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
-#alive-cart /* RESTORED BANNER */
-.restored-banner{grid-column:1/-1;background:var(--green-light);border:1px solid var(--green);border-radius:var(--r-lg);padding:12px 16px;font-size:13px;font-weight:600;color:#155e34;display:flex;align-items:center;gap:8px;}
+/* RESTORED BANNER */
+#alive-cart .restored-banner{grid-column:1/-1;background:var(--green-light);border:1px solid var(--green);border-radius:var(--r-lg);padding:12px 16px;font-size:13px;font-weight:600;color:#155e34;display:flex;align-items:center;gap:8px;}
 
-#alive-cart /* MOBILE */
+/* MOBILE — collapse cart to single-column stack. Prefixed with #alive-cart so these
+   beat the desktop rules' higher specificity; previously the whole block was silently
+   discarded by a CSS syntax error (a bare `#alive-cart` before `@media`), which is
+   why the mobile layout never took effect. */
 @media(max-width:820px){
   body{background:var(--surface);}
-  .wrap{grid-template-columns:1fr;gap:0;padding:0;max-width:100%;}
-  .page-header{padding:14px 16px;margin:0;border-bottom:6px solid #F2F4F8;}
-  .page-title{font-size:20px;}
-  .items{gap:0;}
-  .promo-bar{border-left:none;border-right:none;border-top:none;border-radius:0;box-shadow:none;border-bottom:6px solid #F2F4F8;}
-  .item{border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:6px solid #F2F4F8;box-shadow:none;flex-direction:column;}
-  .item-img{width:100%;border-right:none;border-bottom:1px solid var(--border);padding:14px;}
-  .item-img img{max-height:200px;}
-  .item-body{padding:14px 16px;}
-  .summary-panel{position:static;}
-  .summary,.checkout-form,.success-box,.save-card{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;border-bottom:6px solid #F2F4F8;}
-  .restored-banner{border-radius:0;border-left:none;border-right:none;border-top:none;margin:0;}
-  .checkout-form{border:none;border-bottom:6px solid #F2F4F8;border-top:3px solid var(--blue-mid);}
-  .empty-state{margin:0;border-radius:0;border:none;border-bottom:6px solid #F2F4F8;box-shadow:none;padding:48px 24px;}
-  .thankyou{padding:32px 18px 48px;}
-  .thankyou h1{font-size:24px;}
-  .thankyou .ty-check{width:72px;height:72px;font-size:36px;}
-  .ty-summary,.ty-steps{padding:16px 18px;}
-  .ty-actions{flex-direction:column;}
-  .ty-btn{justify-content:center;}
+  #alive-cart{overflow-x:hidden;}
+  #alive-cart .wrap{grid-template-columns:1fr;gap:0;padding:0;max-width:100%;}
+  #alive-cart .page-header{padding:14px 16px;margin:0;border-bottom:6px solid #F2F4F8;}
+  #alive-cart .page-title{font-size:20px;}
+  #alive-cart .items{gap:0;}
+  #alive-cart .promo-bar{border-left:none;border-right:none;border-top:none;border-radius:0;box-shadow:none;border-bottom:6px solid #F2F4F8;}
+  /* Product card: stack image on top, body below */
+  #alive-cart .item{border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:6px solid #F2F4F8;box-shadow:none;flex-direction:column;}
+  #alive-cart .item-img{width:100%;border-right:none;border-bottom:1px solid var(--border);padding:14px;}
+  #alive-cart .item-img img{max-height:200px;}
+  #alive-cart .item-body{padding:14px 16px;min-width:0;}
+  /* Head: stack title above action row so title reads cleanly and buttons don't clip */
+  #alive-cart .item-head{flex-direction:column;align-items:stretch;gap:12px;}
+  #alive-cart .item-title-block{min-width:0;}
+  #alive-cart .item-name{overflow-wrap:break-word;word-break:normal;}
+  /* Actions: full-width row of two equal 50/50 buttons with comfortable tap targets */
+  #alive-cart .item-actions{display:flex;gap:8px;flex-shrink:1;}
+  #alive-cart .item-actions .item-action-btn{flex:1;justify-content:center;text-align:center;min-height:44px;font-size:12.5px;padding:0 12px;box-sizing:border-box;}
+  /* Spec grid: allow long decoration/size values to wrap instead of clipping */
+  #alive-cart .item-spec-grid{min-width:0;}
+  #alive-cart .item-spec-grid > div{min-width:0;}
+  #alive-cart .item-spec-grid b{overflow-wrap:break-word;word-break:normal;display:block;}
+  /* Prices row: line total pins right, doesn't clip */
+  #alive-cart .item-prices-left{min-width:0;flex:1;}
+  #alive-cart .item-line-total{flex-shrink:0;white-space:nowrap;}
+  /* Summary panel: full-bleed at mobile, prices visible on the right */
+  #alive-cart .summary-panel{position:static;}
+  #alive-cart .summary,#alive-cart .checkout-form,#alive-cart .success-box,#alive-cart .save-card{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;border-bottom:6px solid #F2F4F8;}
+  #alive-cart .summary .summary-row{max-width:none;}
+  #alive-cart .restored-banner{border-radius:0;border-left:none;border-right:none;border-top:none;margin:0;}
+  #alive-cart .checkout-form{border:none;border-bottom:6px solid #F2F4F8;border-top:3px solid var(--blue-mid);}
+  #alive-cart .empty-state{margin:0;border-radius:0;border:none;border-bottom:6px solid #F2F4F8;box-shadow:none;padding:48px 24px;}
+  #alive-cart .thankyou{padding:32px 18px 48px;}
+  #alive-cart .thankyou h1{font-size:24px;}
+  #alive-cart .thankyou .ty-check{width:72px;height:72px;font-size:36px;}
+  #alive-cart .ty-summary,#alive-cart .ty-steps{padding:16px 18px;}
+  #alive-cart .ty-actions{flex-direction:column;}
+  #alive-cart .ty-btn{justify-content:center;}
 }
 </style>
 </head>
