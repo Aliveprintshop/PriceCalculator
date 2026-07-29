@@ -478,28 +478,125 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 // =====================================================================
 function _b64urlEncode(str){var b=btoa(unescape(encodeURIComponent(str)));return b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function _b64urlDecode(s){try{var b=String(s).replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return decodeURIComponent(escape(atob(b)));}catch(e){return null;}}
+/* ---- saved-cart link ------------------------------------------------------
+   v2 links are deflate-compressed and marked with a leading "z". v1 links are
+   plain base64 JSON and are still read, so links already in customers' inboxes
+   keep working.
+
+   Only these fields travel. Everything else on a cart item is either derived
+   (recomputed on render) or was never read again after the item was built.
+   This list must stay in step with what render() and buildPayload() use. */
+var LINK_KEYS = ['style','productName','brand','color','productImage','decoMethod',
+  'decoLabel','locations','frontColors','backColors','qty','sizes','addonList',
+  'turnaroundLabel','artworkLink','notes','unitPrice','sizeUpchargeTotal',
+  'lineTotal','promoCodeAtAdd','promoSavingsTotal','mockupUrl','id'];
+
 function _slimForLink(items){
   return (items||[]).map(function(it){
-    var c={};for(var k in it)c[k]=it[k];
-    if(Array.isArray(it.artworkFiles)){
-      c.artworkFiles=it.artworkFiles.map(function(f){
-        return {name:f.name,url:f.url,location:f.location,pending:f.pending};
-      });
-    }
+    var c={};
+    LINK_KEYS.forEach(function(k){
+      var v=it[k];
+      if(v===undefined||v===null||v===''||v===0)return;
+      if(Array.isArray(v)&&!v.length)return;
+      if(typeof v==='object'&&!Array.isArray(v)&&!Object.keys(v).length)return;
+      c[k]=v;
+    });
+    // Short keys: the thumbnail is a data URL and never belongs in a URL.
+    c.f=(it.artworkFiles||[]).map(function(f){
+      var o={};
+      if(f.name)o.n=f.name;
+      if(f.url)o.u=f.url;
+      if(f.location)o.l=f.location;
+      if(f.pending)o.p=1;
+      return o;
+    });
     return c;
   });
 }
-function encodeCart(){return _b64urlEncode(JSON.stringify({v:1,i:_slimForLink(CART.getItems()),p:CART.getPromo()}));}
-function buildSaveLink(){return location.origin+location.pathname+'?cart='+encodeCart();}
+
+// Restore the long-form shape the rest of the page expects.
+function _fattenFromLink(items){
+  return (items||[]).map(function(c){
+    var it={};for(var k in c)if(k!=='f')it[k]=c[k];
+    it.artworkFiles=(c.f||c.artworkFiles||[]).map(function(o){
+      if(o.name!==undefined||o.url!==undefined)return o;   // a v1 link
+      return {name:o.n||'',url:o.u||'',location:o.l||'',pending:!!o.p};
+    });
+    return it;
+  });
+}
+
+function _cartJson(){
+  return JSON.stringify({v:2,i:_slimForLink(CART.getItems()),p:CART.getPromo()});
+}
+
+function _bytesToB64url(bytes){
+  var bin='';for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function _b64urlToBytes(str){
+  var b=String(str).replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';
+  var bin=atob(b),out=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+
+// CompressionStream is not everywhere; without it we fall back to a v1 link,
+// which is long but still correct.
+function _canCompress(){return typeof CompressionStream==='function';}
+
+function encodeCartAsync(){
+  var json=_cartJson();
+  if(!_canCompress())return Promise.resolve(_b64urlEncode(json));
+  try{
+    var cs=new CompressionStream('deflate-raw');
+    var w=cs.writable.getWriter();
+    w.write(new TextEncoder().encode(json));w.close();
+    return new Response(cs.readable).arrayBuffer()
+      .then(function(buf){return 'z'+_bytesToB64url(new Uint8Array(buf));})
+      .catch(function(){return _b64urlEncode(json);});
+  }catch(e){return Promise.resolve(_b64urlEncode(json));}
+}
+
+function decodeCartAsync(raw){
+  if(!raw)return Promise.resolve(null);
+  if(String(raw).charAt(0)!=='z')return Promise.resolve(_b64urlDecode(raw));   // v1
+  if(typeof DecompressionStream!=='function')return Promise.resolve(null);
+  try{
+    var ds=new DecompressionStream('deflate-raw');
+    var w=ds.writable.getWriter();
+    w.write(_b64urlToBytes(String(raw).slice(1)));w.close();
+    return new Response(ds.readable).arrayBuffer()
+      .then(function(buf){return new TextDecoder().decode(buf);})
+      .catch(function(){return null;});
+  }catch(e){return Promise.resolve(null);}
+}
+
+/* The clipboard write has to happen inside the click, and compression is async,
+   so the link is built whenever the cart changes and cached here. */
+var _linkCache='';
+function refreshSaveLink(){
+  if(!CART.getCount()){_linkCache='';return;}
+  encodeCartAsync().then(function(enc){
+    _linkCache=location.origin+location.pathname+'?cart='+enc;
+  }).catch(function(){});
+}
+function buildSaveLink(){
+  if(_linkCache)return _linkCache;
+  return location.origin+location.pathname+'?cart='+_b64urlEncode(_cartJson());
+}
+
 function loadFromLink(){
   var raw;try{raw=new URLSearchParams(location.search).get('cart');}catch(e){raw=null;}
-  if(!raw)return false;
-  var json=_b64urlDecode(raw);if(!json)return false;
-  var data;try{data=JSON.parse(json);}catch(e){return false;}
-  if(!data||!Array.isArray(data.i)||!data.i.length)return false;
-  CART.setItems(data.i);
-  if(data.p&&data.p.code)CART.setPromo(data.p);else CART.clearPromo();
-  return true;
+  if(!raw)return Promise.resolve(false);
+  return decodeCartAsync(raw).then(function(json){
+    if(!json)return false;
+    var data;try{data=JSON.parse(json);}catch(e){return false;}
+    if(!data||!Array.isArray(data.i)||!data.i.length)return false;
+    CART.setItems(_fattenFromLink(data.i));
+    if(data.p&&data.p.code)CART.setPromo(data.p);else CART.clearPromo();
+    return true;
+  });
 }
 function _copyText(text,cb){
   cb=cb||function(){};
@@ -518,17 +615,17 @@ function _showSaveResult(html,ok){
   broadcastHeight();
 }
 function copySaveLink(){
-  if(!CART.getCount()){_showSaveResult('Your cart is empty &mdash; add an item first.',false);return;}
+  if(!CART.getCount()){_showSaveResult('Your cart is empty. Add an item first.',false);return;}
   var link=buildSaveLink();
-  var tooLong=link.length>7000;
+  var tooLong=link.length>2000;
   _copyText(link,function(ok){
-    _showSaveResult((ok?'&#10003; Link copied! ':'Here&rsquo;s your cart link &mdash; ')+
+    _showSaveResult((ok?'&#10003; Link copied! ':'Here&rsquo;s your cart link. ')+
       'Bookmark it or paste it anywhere to reopen this exact cart:'+_linkBox(link)+
       (tooLong?'<div style="margin-top:8px;color:#b95900;font-size:12px;">This cart is large, so the link is long and some email or chat apps may cut it short. Use &ldquo;Email me my cart&rdquo; below to be safe.</div>':''),ok);
   });
 }
 function emailMyCart(){
-  if(!CART.getCount()){_showSaveResult('Your cart is empty &mdash; add an item first.',false);return;}
+  if(!CART.getCount()){_showSaveResult('Your cart is empty. Add an item first.',false);return;}
   var email=(document.getElementById('save-email').value||'').trim();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){_showSaveResult('Please enter a valid email address.',false);return;}
   var btn=document.getElementById('save-email-btn');btn.disabled=true;btn.textContent='Sending...';
@@ -697,6 +794,7 @@ function render(){
   else srow.style.display='none';
 
   renderPromoUI();
+  try{refreshSaveLink();}catch(e){}
   try{renderMissingArtwork();}catch(e){}
   broadcastHeight();
 }
@@ -1155,11 +1253,13 @@ function broadcastHeight(){if(typeof window.aliveBroadcastHeight==='function')wi
 // ---- Boot ----
 // If arriving from a saved-cart link (?cart=...), restore it BEFORE the first
 // render, show a welcome banner, and clean the URL so a refresh doesn't re-apply.
-if(loadFromLink()){
-  var _rb=document.getElementById('restored-banner');if(_rb)_rb.style.display='flex';
-  try{history.replaceState(null,'',location.origin+location.pathname);}catch(e){}
-}
-render();
+loadFromLink().then(function(restored){
+  if(restored){
+    var _rb=document.getElementById('restored-banner');if(_rb)_rb.style.display='flex';
+    try{history.replaceState(null,'',location.origin+location.pathname);}catch(e){}
+  }
+  render();
+}).catch(function(){render();});
 </script>
 
 
