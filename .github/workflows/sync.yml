@@ -112,7 +112,7 @@ jobs:
           mkdir -p _site
 
           REQUIRED="products.json index.html"
-          OPTIONAL="alive-pricing-calculator.html alive-pricing-calculator-v2.html cart.html mockup.html design-studio.html project.html"
+          OPTIONAL="alive-pricing-calculator.html alive-pricing-calculator-v2.html cart.html mockup.html design-studio.html project.html deals-config.js deal.html"
 
           for f in $REQUIRED; do
             if [ ! -f "$f" ]; then
