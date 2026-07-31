@@ -5731,5 +5731,57 @@ function locInkCountWithout(loc,id){
 </div>
 
 </div><!-- /#alive-calc -->
+
+<script>
+/* ─── URL-DRIVEN CATEGORY DEEP-LINK ────────────────────────────────────
+   /insta-price?cat=<slug> opens the Browse Products modal with that
+   category pre-selected on first render. ?style= wins over ?cat=. */
+(function(){
+  var CAT_SLUG_MAP = {
+    't-shirts': 'T-Shirts',
+    'sweatshirts': 'Sweatshirts/Fleece',
+    'polos': 'Polos/Knits',
+    'outerwear': 'Outerwear',
+    'hats': 'Caps',
+    'bags': 'Bags',
+    'activewear': 'Activewear',
+    'workwear': 'Workwear',
+    'woven-shirts': 'Woven Shirts',
+    'accessories': 'Accessories',
+    'womens': "Women's",
+    'youth': 'Youth',
+    'bottoms': 'Bottoms',
+    'tall': 'Tall',
+    'personal-protection': 'Personal Protection',
+    'infant-toddler': 'Infant & Toddler'
+  };
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var urlStyle = params.get('style');
+    var urlCat = params.get('cat');
+    if (!urlCat || urlStyle) return; // style wins over cat; nothing to do otherwise
+    var canonical = CAT_SLUG_MAP[String(urlCat).toLowerCase().trim()];
+    if (!canonical) return; // invalid slug — silently ignore, calc opens normally
+    // Wait until products.json has loaded (ITEMS populated) and browse fns exist,
+    // then open the modal pre-filtered to the requested category.
+    var tries = 0;
+    var timer = setInterval(function(){
+      tries++;
+      var ready = (typeof ITEMS !== 'undefined') && ITEMS && ITEMS.length > 0 &&
+                  (typeof openBrowseModal === 'function') &&
+                  (typeof _browseCategory !== 'undefined');
+      if (ready) {
+        clearInterval(timer);
+        _browseCategory = canonical;
+        _browseBrand = 'All Brands';
+        _browseSearch = '';
+        try { openBrowseModal(); } catch(e) { console.warn('[Alive] cat deep-link openBrowseModal failed:', e); }
+      } else if (tries > 60) { // 30s max wait, then give up
+        clearInterval(timer);
+      }
+    }, 500);
+  } catch(e) { /* URL API not supported — silent */ }
+})();
+</script>
 </body>
 </html>
