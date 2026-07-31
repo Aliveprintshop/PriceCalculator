@@ -1059,6 +1059,14 @@ function slugToBrandName(slug){
   }
   return null;
 }
+function slugToColorKey(slug){
+  if(!slug)return null;
+  var t=String(slug).toLowerCase().trim();
+  for(var i=0;i<COLOR_BUCKETS.length;i++){
+    if(COLOR_BUCKETS[i].key===t)return COLOR_BUCKETS[i].key;
+  }
+  return null;
+}
 // Push the active single-filter slug to the parent so the top-frame URL hash
 // stays shareable. Priority: industry > single category > single brand. Any
 // multi-select combination clears the hash (can't be represented by one slug).
@@ -1068,6 +1076,7 @@ function notifyParentRoute(){
   if(_industry){slug=labelToSlug(_industry);}
   else if(_cats.size===1&&_brands.size===0){slug=labelToSlug(Array.from(_cats)[0]);}
   else if(_brands.size===1&&_cats.size===0){slug=labelToSlug(Array.from(_brands)[0]);}
+  else if(_colors.size===1&&_cats.size===0&&_brands.size===0&&!_industry){slug=Array.from(_colors)[0];}
   try{window.parent.postMessage({type:'alive-route',slug:slug},'*');}catch(e){}
 }
 // Name-based detectors. Order in bucketForProduct matters — audience
@@ -1979,6 +1988,10 @@ async function loadProducts(){
           else{
             var brandName=slugToBrandName(rawSlug);
             if(brandName){_brands.clear();_brands.add(brandName);_cats.clear();_industry=null;}
+            else{
+              var colorKey=slugToColorKey(rawSlug);
+              if(colorKey){_colors.clear();_colors.add(colorKey);_cats.clear();_brands.clear();_industry=null;}
+            }
           }
         }
       }
