@@ -248,6 +248,17 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
   .pag-pages{justify-content:center;flex-wrap:wrap;}
   .pagination-perpage{justify-content:center;}
 }
+
+/* ── BUY-IT-NOW DEALS (hidden #deals view) — card styling in the product grid ── */
+.deal-card .card-info{gap:4px;padding-bottom:14px;}
+.deal-price-line{margin-top:5px;font-family:'Montserrat',sans-serif;line-height:1;}
+.deal-price-line strong{font-size:21px;font-weight:800;color:var(--blue-dark);}
+.deal-price-line span{font-size:12px;color:var(--text3);font-weight:600;margin-left:4px;}
+.deal-qty-line{font-size:11.5px;color:var(--text3);margin-top:3px;line-height:1.3;}
+.deal-chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.deal-chip{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);color:var(--green);font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:999px;line-height:1.2;}
+.deal-view-cta{margin-top:11px;display:inline-block;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:800;}
+.deal-card:hover .deal-view-cta{text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -406,6 +417,9 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
   </div>
 </div>
 
+<!-- Buy-It-Now Deals config (shared with deal.html). Must load before the main
+     script so the hidden #deals view can read window.ALIVE_DEALS on boot. -->
+<script src="deals-config.js"></script>
 <script>
 // =====================================================================
 // Data + state
@@ -478,7 +492,7 @@ function quickPickCategory(label){
   var wasActive=_cats.has(label);
   _cats.clear();
   if(!wasActive)_cats.add(label);
-  _industry=null;
+  _industry=null;_dealsMode=false;
   _page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
   // Scroll up so the product grid is visible after a category tap.
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1073,7 +1087,8 @@ function slugToColorKey(slug){
 function notifyParentRoute(){
   if(window.self===window.top)return;
   var slug='';
-  if(_industry){slug=labelToSlug(_industry);}
+  if(_dealsMode){slug=DEALS_SLUG;}
+  else if(_industry){slug=labelToSlug(_industry);}
   else if(_cats.size===1&&_brands.size===0){slug=labelToSlug(Array.from(_cats)[0]);}
   else if(_brands.size===1&&_cats.size===0){slug=labelToSlug(Array.from(_brands)[0]);}
   else if(_colors.size===1&&_cats.size===0&&_brands.size===0&&!_industry){slug=Array.from(_colors)[0];}
@@ -1121,6 +1136,11 @@ var _cats=new Set();
 var _brands=new Set();
 var _industry=null;   // active "Shop By Industry" label, or null
 var _gbb=null;   // active "Good / Better / Best" category label, or null
+// Hidden "Buy-It-Now Deals" view. Reached ONLY by the deals slug (below); it is
+// never shown in any sidebar list, so the page is unlisted. Deal definitions live
+// in deals-config.js (window.ALIVE_DEALS), shared with the deal.html calculator.
+var _dealsMode=false;
+var DEALS_SLUG='deals';   // /products#deals -> shows the deals view. Change to rename the hidden URL.
 var _search='';
 var _colors=new Set();   // active garment-color buckets
 var _sort='featured';   // sort mode: featured|price-asc|price-desc|name-asc
@@ -1585,6 +1605,7 @@ function setPerPage(v){
 // =====================================================================
 function renderGrid(){
   var host=document.getElementById('page-grid');if(!host)return;
+  if(_dealsMode){renderDealsView(host);return;}
   if(_gbb&&gbbByLabel(_gbb)){renderGbbView(host);return;}
   var rows=filtered();
 
@@ -1790,12 +1811,13 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){_industry=null;_gbb=null;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleCategory(label){_industry=null;_gbb=null;_dealsMode=false;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
 function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function toggleBrand(name){_industry=null;_gbb=null;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
+function toggleBrand(name){_industry=null;_gbb=null;_dealsMode=false;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 // Shop By Industry: single-select. Selecting one clears category/brand filters and shows only its curated list.
 function toggleIndustry(label){
+  _dealsMode=false;
   if(_industry===label){_industry=null;}
   else{_industry=label;_gbb=null;_cats.clear();_brands.clear();}
   _page=1;
@@ -1871,8 +1893,47 @@ function renderGbbView(host){
   var pag=document.getElementById('pagination');if(pag)pag.style.display='none';
   if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
 }
+
+// =====================================================================
+// BUY-IT-NOW DEALS view (hidden #deals slug).
+// Renders window.ALIVE_DEALS (from deals-config.js) as cards in the product
+// grid. Each card clones its product's image live from the loaded catalog and
+// links to the stripped-down deal calculator. To add/edit deals, edit
+// deals-config.js — nothing here needs to change.
+// =====================================================================
+function renderDealsView(host){
+  var deals=(window.ALIVE_DEALS||[]).filter(function(d){return d&&d.active!==false;});
+  var base=(window.ALIVE_DEAL_CALC_URL||'deal.html');   // where a deal card opens; set in deals-config.js
+  var idx={};for(var i=0;i<ITEMS.length;i++)idx[(ITEMS[i].s||'').toUpperCase()]=ITEMS[i];
+  var cards=deals.map(function(d){
+    var it=idx[String(d.style).toUpperCase()];
+    var p=it?it._full:null;
+    var src='';
+    if(p&&Array.isArray(p.colors)){for(var c=0;c<p.colors.length;c++){var im=p.colors[c].images||{};src=im.front_model||im.front_flat||'';if(src)break;}}
+    var name=(d.title||(it?cleanName(it.n||'',it.b||''):d.style)).replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+    var chips=(d.includes||[]).map(function(t){return '<span class="deal-chip">&#10003; '+String(t).replace(/</g,'&lt;')+'</span>';}).join('');
+    var href=base+'?deal='+encodeURIComponent(d.id);
+    return '<a class="card deal-card" href="'+href+'" target="_top">'+
+      (d.badge?'<span class="card-badge">'+escAttr(d.badge)+'</span>':'')+
+      '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+      '<div class="card-info">'+
+        '<div class="card-name">'+name+'</div>'+
+        '<div class="deal-price-line"><strong>$'+Number(d.total).toFixed(2)+'</strong><span>$'+Number(d.unitPrice).toFixed(2)+' ea</span></div>'+
+        '<div class="deal-qty-line">'+d.qty+' pcs &middot; '+escAttr(d.decoration||'')+'</div>'+
+        (chips?'<div class="deal-chip-row">'+chips+'</div>':'')+
+        '<span class="deal-view-cta">Pick sizes &amp; order &rarr;</span>'+
+      '</div></a>';
+  });
+  if(!cards.length)cards=['<div class="empty">No deals are active right now.</div>'];
+  host.innerHTML=cards.join('');
+  var countEl=document.getElementById('results-count');
+  if(countEl)countEl.innerHTML='<strong>Buy-It-Now Deals</strong> &middot; exclusive package pricing';
+  var pag=document.getElementById('pagination');if(pag)pag.style.display='none';
+  if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
+}
 // Good/Better/Best: single-select. Selecting one clears all other filters and shows the tiered view.
 function toggleGbb(label){
+  _dealsMode=false;
   if(_gbb===label){_gbb=null;}
   else{_gbb=label;_cats.clear();_brands.clear();_colors.clear();_industry=null;_search='';var sb=document.getElementById('page-search');if(sb)sb.value='';}
   _page=1;
@@ -1882,17 +1943,17 @@ function toggleGbb(label){
 function clearGbb(){_gbb=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
 // Spotlight click: exit industry view and show ALL of the promoted brand.
 function spotlightBrand(brand){
-  _industry=null;_gbb=null;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
+  _industry=null;_gbb=null;_dealsMode=false;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
   var sb=document.getElementById('page-search');if(sb)sb.value='';
   _page=1;
   renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
   var grid=document.getElementById('page-grid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function toggleColor(key){_industry=null;_gbb=null;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleColor(key){_industry=null;_gbb=null;_dealsMode=false;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
 function clearColors(){_colors.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();}
 function changeSort(v){_sort=v||'featured';_page=1;renderGrid();}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search){_industry=null;_gbb=null;}_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search){_industry=null;_gbb=null;_dealsMode=false;}_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();}
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
 // =====================================================================
@@ -1979,9 +2040,11 @@ async function loadProducts(){
           var tyb=document.getElementById('thankyou-banner');
           if(tyb)tyb.style.display='flex';
         }
-        // Resolve in priority order: category > industry > brand.
+        // Resolve in priority order: deals > category > industry > brand.
+        // The hidden "Buy-It-Now Deals" view is reached only by the deals slug.
         var label=slugToBucketLabel(rawSlug);
-        if(label){_cats.clear();_cats.add(label);}
+        if(rawSlug===DEALS_SLUG){_dealsMode=true;}
+        else if(label){_cats.clear();_cats.add(label);}
         else{
           var indLabel=slugToIndustryLabel(rawSlug);
           if(indLabel){_industry=indLabel;_cats.clear();_brands.clear();}
@@ -2030,14 +2093,17 @@ window.addEventListener('message',function(e){
   var d=e&&e.data;
   if(!d||d.type!=='alive-route-set')return;
   var slug=(d.slug||'').toLowerCase().trim();
-  _industry=null;_gbb=null;_cats.clear();_brands.clear();_colors.clear();
+  _industry=null;_gbb=null;_dealsMode=false;_cats.clear();_brands.clear();_colors.clear();
   if(slug){
-    var label=slugToBucketLabel(slug);
-    if(label){_cats.add(label);}
+    if(slug===DEALS_SLUG){_dealsMode=true;}
     else{
-      var ind=slugToIndustryLabel(slug);
-      if(ind){_industry=ind;}
-      else{var bn=slugToBrandName(slug);if(bn){_brands.add(bn);}}
+      var label=slugToBucketLabel(slug);
+      if(label){_cats.add(label);}
+      else{
+        var ind=slugToIndustryLabel(slug);
+        if(ind){_industry=ind;}
+        else{var bn=slugToBrandName(slug);if(bn){_brands.add(bn);}}
+      }
     }
   }
   _page=1;
