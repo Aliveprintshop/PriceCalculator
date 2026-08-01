@@ -254,6 +254,7 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .deal-price-line{margin-top:5px;font-family:'Montserrat',sans-serif;line-height:1;}
 .deal-price-line strong{font-size:21px;font-weight:800;color:var(--blue-dark);}
 .deal-price-line span{font-size:12px;color:var(--text3);font-weight:600;margin-left:4px;}
+.deal-price-orig{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;color:#8b95a3;text-decoration:line-through;margin-right:6px;}
 .deal-qty-line{font-size:11.5px;color:var(--text3);margin-top:3px;line-height:1.3;}
 .deal-chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
 .deal-chip{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);color:var(--green);font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:999px;line-height:1.2;}
@@ -1911,15 +1912,18 @@ function renderDealsView(host){
     var src='';
     if(p&&Array.isArray(p.colors)){for(var c=0;c<p.colors.length;c++){var im=p.colors[c].images||{};src=im.front_model||im.front_flat||'';if(src)break;}}
     var name=(d.title||(it?cleanName(it.n||'',it.b||''):d.style)).replace(/&amp;/g,'&').replace(/"/g,'&quot;');
-    var chips=(d.includes||[]).map(function(t){return '<span class="deal-chip">&#10003; '+String(t).replace(/</g,'&lt;')+'</span>';}).join('');
+    var chipItems=(d.includes||[]).filter(function(t){var lc=String(t).toLowerCase();return !/(print included|logo included|embroidered)/.test(lc);});
+    var chips=chipItems.map(function(t){return '<span class="deal-chip">&#10003; '+String(t).replace(/</g,'&lt;')+'</span>';}).join('');
+    var deco=String(d.decoration||'').replace(/\s*\u2014\s*/g,' \u00b7 ').replace(/\s+(print|logo)\s+included\s*$/i,'');
+    var origPriceHtml=(d.originalTotal!=null)?'<span class="deal-price-orig">$'+Number(d.originalTotal).toFixed(0)+'</span>':'';
     var href=base+'?deal='+encodeURIComponent(d.id);
     return '<a class="card deal-card" href="'+href+'" target="_top">'+
       (d.badge?'<span class="card-badge">'+escAttr(d.badge)+'</span>':'')+
       '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
       '<div class="card-info">'+
         '<div class="card-name">'+name+'</div>'+
-        '<div class="deal-price-line"><strong>$'+Number(d.total).toFixed(2)+'</strong><span>$'+Number(d.unitPrice).toFixed(2)+' ea</span></div>'+
-        '<div class="deal-qty-line">'+d.qty+' pcs &middot; '+escAttr(d.decoration||'')+'</div>'+
+        '<div class="deal-price-line">'+origPriceHtml+'<strong>$'+Number(d.total).toFixed(0)+'</strong><span>$'+Number(d.unitPrice).toFixed(0)+'/ea</span></div>'+
+        '<div class="deal-qty-line">'+escAttr(deco)+'</div>'+
         (chips?'<div class="deal-chip-row">'+chips+'</div>':'')+
         '<span class="deal-view-cta">Pick sizes &amp; order &rarr;</span>'+
       '</div></a>';
