@@ -60,8 +60,58 @@ window.ALIVE_DEALS = [
     // Flat deals ignore 2XL+ size upcharges (the price is the price). Set true
     // only if you want the calculator to add the feed's size_upcharges on top.
     applySizeUpcharge: false
-  }
+  },
 
-  // ,{  id:'...', style:'...', ...next deal...  }
+  {
+    id:'g5000-50-frontback', style:'5000', active:true,
+    badge:'Buy It Now',
+    title:'50 Gildan Tees',
+    subtitle:'5000 — classic heavyweight cotton tee',
+    blurb:'A budget-friendly package of 50 Gildan 5000 tees with a front & back print, one flat price.',
+    qty:50, unitPrice:9.00, total:450.00,
+    decoration:'Screen Print — Front & Back print included',
+    turnaround:'Standard — 10 business days',
+    includes:['Front & back print included','Free shipping','No setup fee','Proof before we print'],
+    forceColors:null, applySizeUpcharge:false
+  },
+
+  {
+    id:'nike883681-24-embroidered', style:'883681', active:true,
+    badge:'Buy It Now',
+    title:'24 Nike Polos',
+    subtitle:'883681 — Nike Dri-FIT polo',
+    blurb:'A premium package of 24 Nike Dri-FIT polos with an embroidered left-chest logo, one flat price.',
+    qty:24, unitPrice:52.08, total:1250.00,
+    decoration:'Embroidery — Left chest logo included',
+    turnaround:'Standard — 10 business days',
+    includes:['Embroidered left chest','Free shipping','No setup fee','Proof before we print'],
+    forceColors:null, applySizeUpcharge:false
+  },
+
+  {
+    id:'cap112-50-embroidered', style:'112', active:true,
+    badge:'Buy It Now',
+    title:'50 Trucker Caps',
+    subtitle:'112 — Richardson trucker cap',
+    blurb:'A ready-to-go package of 50 Richardson 112 trucker caps with an embroidered front logo, one flat price.',
+    qty:50, unitPrice:16.00, total:800.00,
+    decoration:'Embroidery — Front logo included',
+    turnaround:'Standard — 10 business days',
+    includes:['Embroidered front','Free shipping','No setup fee','Proof before we print'],
+    forceColors:null, applySizeUpcharge:false
+  },
+
+  {
+    id:'st350-50-frontback', style:'ST350', active:true,
+    badge:'Buy It Now',
+    title:'50 Performance Tees',
+    subtitle:'ST350 — Sport-Tek PosiCharge tee',
+    blurb:'A team-ready package of 50 Sport-Tek ST350 performance tees with a front & back print, one flat price.',
+    qty:50, unitPrice:14.00, total:700.00,
+    decoration:'Screen Print — Front & Back print included',
+    turnaround:'Standard — 10 business days',
+    includes:['Front & back print included','Free shipping','No setup fee','Proof before we print'],
+    forceColors:null, applySizeUpcharge:false
+  }
 
 ];
