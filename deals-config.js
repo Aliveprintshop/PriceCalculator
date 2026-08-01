@@ -40,6 +40,7 @@ window.ALIVE_DEALS = [
     qty:        50,        // total pieces — customer splits this across sizes, must total exactly this
     unitPrice:  13.00,     // $ shown as "each"
     total:      650.00,    // flat order total the customer pays
+  originalTotal: 725,    // regular price shown crossed out for savings framing
 
     // What's baked into the price (shown as the imprint line + benefit chips)
     decoration: 'Screen Print — Front & Back print included',
@@ -68,7 +69,7 @@ window.ALIVE_DEALS = [
     title:'50 Gildan Tees',
     subtitle:'5000 — classic heavyweight cotton tee',
     blurb:'A budget-friendly package of 50 Gildan 5000 tees with a front & back print, one flat price.',
-    qty:50, unitPrice:9.00, total:450.00,
+    qty:50, unitPrice:9.00, total:450.00, originalTotal:500,
     decoration:'Screen Print — Front & Back print included',
     turnaround:'Standard — 10 business days',
     includes:['Front & back print included','Free shipping','No setup fee','Proof before we print'],
@@ -81,7 +82,7 @@ window.ALIVE_DEALS = [
     title:'24 Nike Polos',
     subtitle:'883681 — Nike Dri-FIT polo',
     blurb:'A premium package of 24 Nike Dri-FIT polos with an embroidered left-chest logo, one flat price.',
-    qty:24, unitPrice:52.08, total:1250.00,
+    qty:24, unitPrice:52.08, total:1250.00, originalTotal:1400,
     decoration:'Embroidery — Left chest logo included',
     turnaround:'Standard — 10 business days',
     includes:['Embroidered left chest','Free shipping','No setup fee','Proof before we print'],
@@ -94,7 +95,7 @@ window.ALIVE_DEALS = [
     title:'50 Trucker Caps',
     subtitle:'112 — Richardson trucker cap',
     blurb:'A ready-to-go package of 50 Richardson 112 trucker caps with an embroidered front logo, one flat price.',
-    qty:50, unitPrice:16.00, total:800.00,
+    qty:50, unitPrice:16.00, total:800.00, originalTotal:895,
     decoration:'Embroidery — Front logo included',
     turnaround:'Standard — 10 business days',
     includes:['Embroidered front','Free shipping','No setup fee','Proof before we print'],
@@ -107,7 +108,7 @@ window.ALIVE_DEALS = [
     title:'50 Performance Tees',
     subtitle:'ST350 — Sport-Tek PosiCharge tee',
     blurb:'A team-ready package of 50 Sport-Tek ST350 performance tees with a front & back print, one flat price.',
-    qty:50, unitPrice:14.00, total:700.00,
+    qty:50, unitPrice:14.00, total:700.00, originalTotal:780,
     decoration:'Screen Print — Front & Back print included',
     turnaround:'Standard — 10 business days',
     includes:['Front & back print included','Free shipping','No setup fee','Proof before we print'],
