@@ -85,6 +85,24 @@ a{color:var(--blue);text-decoration:none;}
 .cta svg{width:18px;height:18px;}
 .cta-note{text-align:center;font-size:12px;color:var(--text3);margin-top:10px;line-height:1.5;}
 
+/* Artwork upload */
+.art-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px 22px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.art-card h2{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;margin:0 0 3px;}
+.art-card .hint{font-size:13px;color:var(--text3);margin:0 0 16px;line-height:1.5;}
+.art-slots{display:flex;flex-direction:column;gap:14px;}
+.art-slot-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;flex-wrap:wrap;}
+.art-slot-label{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text);}
+.art-status{font-size:12.5px;}
+.art-ok{color:var(--green);font-weight:700;}
+.art-err{color:#c02626;font-weight:600;}
+.art-remove{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline;padding:0 2px;font-family:'Open Sans',sans-serif;}
+.art-remove:hover{color:#c02626;}
+.art-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:var(--surface2);border:1.5px dashed var(--border2);border-radius:var(--r);padding:13px 16px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:var(--blue);transition:border-color .12s,background .12s;}
+.art-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-light);}
+.art-btn:disabled{opacity:0.75;cursor:default;}
+.art-btn svg{width:18px;height:18px;flex-shrink:0;}
+.art-btn.done{border-style:solid;border-color:var(--green);color:var(--green);background:var(--green-light);}
+
 .notfound{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:40px 24px;text-align:center;color:var(--text2);}
 .notfound h2{font-family:'Montserrat',sans-serif;margin:0 0 8px;}
 
@@ -186,6 +204,14 @@ var PRODUCT=null;     // cloned catalog record
 var COLORS=[];        // usable color objects for this deal
 var activeColor=0;
 var qtyBySize={};     // sizeName -> qty
+var artwork={};       // print location -> {name,url}  (uploaded to the R2 worker)
+var artworkPending={};// print location -> true if an upload failed
+
+// Artwork storage — the SAME Cloudflare R2 worker the main calculator uploads to
+// (aliveprintshop.github.io is on its allowed-origins list). Files land in the
+// same bucket the team retrieves production art from.
+var ART_ENDPOINT='https://alive-artwork.austin-662.workers.dev';
+var ART_ACCEPT='image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.pdf,.ai,.eps';
 
 // ---- helpers ----
 function money(n){return '$'+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -213,6 +239,84 @@ function resolveHex(c){
 }
 function isLight(hex){var h=(hex||'').toLowerCase();return h==='#ffffff'||h==='#fff'||h==='#f4e5c7';}
 function colorImage(c){var im=(c&&c.images)||{};return im.front_model||im.front_flat||im.back_flat||'';}
+
+// =====================================================================
+// ARTWORK UPLOADS — same R2 worker as the main calculator. Upload slots match
+// each deal's decoration (front & back for print tees, left chest / front for
+// embroidery). Optional: customers can submit and send artwork later.
+// =====================================================================
+var UPLOAD_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 20h14"/></svg>';
+// Locations to show an upload button for. Explicit deal.artwork wins; otherwise
+// derived from the decoration text.
+function artworkLocations(d){
+  if(d&&Array.isArray(d.artwork)&&d.artwork.length)return d.artwork;
+  var s=((d&&d.decoration)||'').toLowerCase();
+  if(s.indexOf('left chest')>-1)return ['Left Chest'];
+  if(s.indexOf('front & back')>-1||s.indexOf('front and back')>-1)return ['Front','Back'];
+  if(s.indexOf('front')>-1)return ['Front'];
+  return ['Front','Back'];
+}
+function aliveUpload(file){
+  var fd=new FormData(); fd.append('file',file,file.name||'artwork');
+  return fetch(String(ART_ENDPOINT).replace(/\/+$/,'')+'/upload',{method:'POST',body:fd})
+    .then(function(r){
+      return r.ok ? r.json()
+        : r.json().catch(function(){return {};}).then(function(j){throw new Error(j.error||('HTTP '+r.status));});
+    });
+}
+function artSlotHtml(loc){
+  var id=cssId(loc), js=jsSafe(loc);
+  return '<div class="art-slot" id="art-slot-'+id+'">'+
+    '<div class="art-slot-top"><span class="art-slot-label">'+esc(loc)+' artwork</span>'+
+      '<span class="art-status" id="art-status-'+id+'"></span></div>'+
+    '<input type="file" id="art-in-'+id+'" accept="'+ART_ACCEPT+'" style="display:none" onchange="onArtFile(\''+js+'\',this)">'+
+    '<button type="button" class="art-btn" id="art-btn-'+id+'" onclick="document.getElementById(\'art-in-'+id+'\').click()">'+
+      UPLOAD_ICON+'<span class="art-btn-label">Upload '+esc(loc)+' artwork</span></button>'+
+  '</div>';
+}
+function onArtFile(loc,input){
+  var file=input.files&&input.files[0]; if(!file){return;}
+  input.value='';
+  var id=cssId(loc);
+  var btn=document.getElementById('art-btn-'+id);
+  var lbl=btn?btn.querySelector('.art-btn-label'):null;
+  var status=document.getElementById('art-status-'+id);
+  delete artworkPending[loc];
+  if(btn){btn.disabled=true;btn.classList.remove('done');}
+  if(lbl)lbl.textContent='Uploading…';
+  if(status)status.innerHTML='';
+  aliveUpload(file).then(function(res){
+    if(!res||!res.url)throw new Error('no url');
+    artwork[loc]={name:file.name,url:res.url};
+    if(btn){btn.disabled=false;btn.classList.add('done');}
+    if(lbl)lbl.textContent='Replace '+loc+' artwork';
+    if(status)status.innerHTML='<span class="art-ok">✓ '+esc(file.name)+'</span> <button type="button" class="art-remove" onclick="removeArt(\''+jsSafe(loc)+'\')">Remove</button>';
+  }).catch(function(e){
+    artworkPending[loc]=true;
+    if(btn){btn.disabled=false;btn.classList.remove('done');}
+    if(lbl)lbl.textContent='Upload '+loc+' artwork';
+    if(status)status.innerHTML='<span class="art-err">Couldn’t upload — try again, or just submit and email it to us.</span>';
+  });
+}
+function removeArt(loc){
+  delete artwork[loc]; delete artworkPending[loc];
+  var id=cssId(loc);
+  var btn=document.getElementById('art-btn-'+id), lbl=btn?btn.querySelector('.art-btn-label'):null;
+  var status=document.getElementById('art-status-'+id);
+  if(btn)btn.classList.remove('done');
+  if(lbl)lbl.textContent='Upload '+loc+' artwork';
+  if(status)status.innerHTML='';
+}
+// "Front: <url> | Back: (to be provided)" for the order note.
+function artworkLines(){
+  return artworkLocations(DEAL).map(function(l){
+    return artwork[l] ? (l+': '+artwork[l].url) : (l+': (to be provided)');
+  });
+}
+// Short recap for the confirmation modal, e.g. "Front ✓, Back —".
+function artworkRecap(){
+  return artworkLocations(DEAL).map(function(l){return l+(artwork[l]?' ✓':' —');}).join(', ');
+}
 
 // =====================================================================
 // Boot
@@ -328,6 +432,11 @@ function render(){
         (DEAL.decoration?'<div class="deco-line">'+PRINT_ICON+'<span>'+esc(DEAL.decoration)+'</span></div>':'')+
         (chips?'<div class="benefit-chips">'+chips+'</div>':'')+
       '</div>'+
+      '<div class="art-card">'+
+        '<h2>Upload your artwork</h2>'+
+        '<p class="hint">Add your logo or design for each print location below. Prefer to send it later? Skip it — we’ll confirm your artwork before we print.</p>'+
+        '<div class="art-slots">'+artworkLocations(DEAL).map(artSlotHtml).join('')+'</div>'+
+      '</div>'+
       '<div class="size-card">'+
         '<h2>Choose your sizes</h2>'+
         '<p class="hint">Split your <b>'+DEAL.qty+' pieces</b> across any sizes below. The total must equal <b>'+DEAL.qty+'</b> to continue.</p>'+
@@ -438,6 +547,7 @@ function openOrder(){
     '<div><span>Color</span><span>'+esc(c.name||'—')+'</span></div>'+
     '<div><span>Sizes</span><span>'+esc(sizeBreakdownStr())+'</span></div>'+
     '<div><span>Decoration</span><span>'+esc(DEAL.decoration||'')+'</span></div>'+
+    '<div><span>Artwork</span><span>'+esc(artworkRecap())+'</span></div>'+
     '<div><span>Quantity</span><span>'+DEAL.qty+' pcs</span></div>'+
     '<div class="rtot"><span>Total</span><span>'+money(DEAL.total)+'</span></div>';
   document.getElementById('form-err').style.display='none';
@@ -476,7 +586,7 @@ function buildPayload(d){
     garmentStyle:DEAL.style,
     garmentColor:c.name||'',
     decoration:DEAL.decoration||'',
-    locations:'Front & Back',
+    locations:artworkLocations(DEAL).join(' & '),
     addons:'None',
     turnaround:DEAL.turnaround||'Standard',
     pricePerUnit:money(DEAL.unitPrice),
@@ -485,8 +595,10 @@ function buildPayload(d){
     totalPrice:money(DEAL.total),
     totalPriceValue:DEAL.total,
     sizeBreakdown:sizeBreakdownStr(),
-    notes:(d.notes?d.notes+'  ':'')+'[Buy-It-Now Deal: '+(DEAL.title||DEAL.id)+']',
-    artworkLink:'None provided',
+    notes:(d.notes?d.notes+'  ':'')+'[Buy-It-Now Deal: '+(DEAL.title||DEAL.id)+']'+
+          '  Artwork — '+(Object.keys(artwork).length?artworkLines().join('  |  '):'to be provided'),
+    artwork:artworkLines().join('  |  '),
+    artworkLink:(function(){var ls=artworkLocations(DEAL);for(var i=0;i<ls.length;i++){if(artwork[ls[i]])return artwork[ls[i]].url;}return 'None provided';})(),
     dealId:DEAL.id,
     dealName:DEAL.title||DEAL.id,
     source:'Buy-It-Now Deal Page',
