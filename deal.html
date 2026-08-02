@@ -29,6 +29,10 @@ a{color:var(--blue);text-decoration:none;}
 
 /* Left: gallery + swatches */
 .gallery{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;position:sticky;top:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.gallery-view-toggle{display:flex;gap:6px;margin-bottom:12px;}
+.gv-btn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:999px;padding:8px 10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .12s;}
+.gv-btn:hover{border-color:var(--blue);color:var(--blue);}
+.gv-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 .gallery-img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#fff;border-radius:var(--r);}
 .gallery-ph{width:100%;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px;background:var(--surface2);border-radius:var(--r);}
 .swatch-label{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);margin:16px 0 9px;}
@@ -46,6 +50,8 @@ a{color:var(--blue);text-decoration:none;}
 .deal-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;line-height:1.15;margin:0 0 4px;}
 .deal-sub{font-size:13.5px;color:var(--text3);font-weight:600;margin-bottom:14px;}
 .price-block{display:flex;align-items:baseline;gap:12px;padding:14px 0 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.price-now{display:flex;align-items:baseline;gap:10px;}
+.price-was{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--text3);text-decoration:line-through;text-decoration-thickness:2px;}
 .price-total{font-family:'Montserrat',sans-serif;font-size:38px;font-weight:800;color:var(--blue-dark);line-height:1;}
 .price-meta{display:flex;flex-direction:column;gap:2px;}
 .price-each{font-size:15px;font-weight:700;color:var(--text);}
@@ -147,7 +153,7 @@ a{color:var(--blue);text-decoration:none;}
 <body>
 <div class="wrap">
 
-  <a class="backlink" href="deals.html">
+  <a class="backlink" href="https://aliveprintshop.com/products#deals" onclick="return goDeals(event)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     All deals
   </a>
@@ -184,7 +190,7 @@ a{color:var(--blue);text-decoration:none;}
       <div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></div>
       <h3>Request received!</h3>
       <p>Thanks — a member of our team will reach out shortly to confirm your order and send a proof.</p>
-      <a class="done-btn" href="deals.html">Back to deals</a>
+      <a class="done-btn" href="https://aliveprintshop.com/products#deals" onclick="return goDeals(event)">Back to deals</a>
     </div>
   </div>
 </div>
@@ -197,12 +203,22 @@ a{color:var(--blue);text-decoration:none;}
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
 var GHL='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53';
 var FALLBACK_EMAIL='info@aliveprintshop.com';
+// Where "All deals" / "Back to deals" go. Canonical hidden deals page.
+var DEALS_URL='https://aliveprintshop.com/products#deals';
+// Prefer returning to the exact deals view the customer came from; else the canonical page.
+function goDeals(e){
+  if(e&&e.preventDefault)e.preventDefault();
+  try{ if(document.referrer&&/aliveprintshop\.com\/products/i.test(document.referrer)&&window.history.length>1){history.back();return false;} }catch(_){}
+  location.href=DEALS_URL;
+  return false;
+}
 
 // State
 var DEAL=null;        // active deal config
 var PRODUCT=null;     // cloned catalog record
 var COLORS=[];        // usable color objects for this deal
 var activeColor=0;
+var galleryView='front'; // 'front' | 'back' — which side of the garment to show
 var qtyBySize={};     // sizeName -> qty
 var artwork={};       // print location -> {name,url}  (uploaded to the R2 worker)
 var artworkPending={};// print location -> true if an upload failed
@@ -239,6 +255,32 @@ function resolveHex(c){
 }
 function isLight(hex){var h=(hex||'').toLowerCase();return h==='#ffffff'||h==='#fff'||h==='#f4e5c7';}
 function colorImage(c){var im=(c&&c.images)||{};return im.front_model||im.front_flat||im.back_flat||'';}
+function frontImg(c){var im=(c&&c.images)||{};return im.front_model||im.front_flat||'';}
+function backImg(c){var im=(c&&c.images)||{};return im.back_model||im.back_flat||'';}
+function currentImg(){var c=COLORS[activeColor]||{};return galleryView==='back'?(backImg(c)||frontImg(c)):(frontImg(c)||backImg(c));}
+function galleryImgHtml(){
+  var src=currentImg();
+  return src
+    ? '<img class="gallery-img" id="gallery-img" src="'+esc(src)+'" alt="'+esc((PRODUCT&&PRODUCT.name)||DEAL.style)+'" onerror="this.outerHTML=\'<div class=&quot;gallery-ph&quot; id=&quot;gallery-img&quot;>Image unavailable</div>\';">'
+    : '<div class="gallery-ph" id="gallery-img">Image unavailable</div>';
+}
+function swapGalleryImg(){
+  var g=document.getElementById('gallery-img'); if(!g)return;
+  var src=currentImg();
+  if(src){
+    var nu=document.createElement('img');
+    nu.className='gallery-img';nu.id='gallery-img';nu.src=src;nu.alt=(PRODUCT&&PRODUCT.name)||DEAL.style;
+    nu.onerror=function(){this.outerHTML='<div class="gallery-ph" id="gallery-img">Image unavailable</div>';};
+    g.replaceWith(nu);
+  }else{ g.outerHTML='<div class="gallery-ph" id="gallery-img">Image unavailable</div>'; }
+}
+function setGalleryView(v){
+  galleryView=v;
+  var f=document.getElementById('gv-front'),b=document.getElementById('gv-back');
+  if(f)f.classList.toggle('active',v==='front');
+  if(b)b.classList.toggle('active',v==='back');
+  swapGalleryImg();
+}
 
 // =====================================================================
 // ARTWORK UPLOADS — same R2 worker as the main calculator. Upload slots match
@@ -331,11 +373,11 @@ function findDeal(){
 function boot(){
   DEAL=findDeal();
   if(!DEAL){
-    document.getElementById('root').innerHTML='<div class="notfound"><h2>Deal not found</h2><p>This deal may have ended or the link is incomplete. <a href="deals.html">See all current deals →</a></p></div>';
+    document.getElementById('root').innerHTML='<div class="notfound"><h2>Deal not found</h2><p>This deal may have ended or the link is incomplete. <a href="'+DEALS_URL+'">See all current deals →</a></p></div>';
     return;
   }
   if(DEAL.active===false){
-    document.getElementById('root').innerHTML='<div class="notfound"><h2>This deal has ended</h2><p><a href="deals.html">See all current deals →</a></p></div>';
+    document.getElementById('root').innerHTML='<div class="notfound"><h2>This deal has ended</h2><p><a href="'+DEALS_URL+'">See all current deals →</a></p></div>';
     return;
   }
   fetch(PRODUCTS_JSON_URL,{cache:'no-store'})
@@ -382,10 +424,7 @@ function render(){
   sizes.forEach(function(s){if(!(s in qtyBySize))qtyBySize[s]=0;});
 
   var c=COLORS[activeColor]||{};
-  var img=colorImage(c);
-  var galleryImg=img
-    ? '<img class="gallery-img" id="gallery-img" src="'+esc(img)+'" alt="'+esc(PRODUCT.name||DEAL.style)+'" onerror="this.outerHTML=\'<div class=&quot;gallery-ph&quot; id=&quot;gallery-img&quot;>Image unavailable</div>\';">'
-    : '<div class="gallery-ph" id="gallery-img">Image unavailable</div>';
+  var galleryImg=galleryImgHtml();
 
   var swatches=COLORS.map(function(col,i){
     var hex=resolveHex(col);
@@ -413,6 +452,10 @@ function render(){
   var html=''+
   '<div class="deal-shell">'+
     '<div class="gallery">'+
+      '<div class="gallery-view-toggle">'+
+        '<button type="button" class="gv-btn'+(galleryView==='front'?' active':'')+'" id="gv-front" onclick="setGalleryView(\'front\')">Front</button>'+
+        '<button type="button" class="gv-btn'+(galleryView==='back'?' active':'')+'" id="gv-back" onclick="setGalleryView(\'back\')">Back</button>'+
+      '</div>'+
       galleryImg+
       '<div class="swatch-label">Color: <b id="active-color-name">'+esc(c.name||'')+'</b></div>'+
       '<div class="swatches">'+swatches+'</div>'+
@@ -423,13 +466,16 @@ function render(){
         '<h1 class="deal-title">'+esc(DEAL.title||PRODUCT.name)+'</h1>'+
         (DEAL.subtitle?'<div class="deal-sub">'+esc(DEAL.subtitle)+'</div>':'')+
         '<div class="price-block">'+
-          '<div class="price-total">'+money(DEAL.total)+'</div>'+
+          '<div class="price-now">'+
+            (DEAL.compareAt?'<span class="price-was">'+money(DEAL.compareAt)+'</span>':'')+
+            '<span class="price-total">'+money(DEAL.total)+'</span>'+
+          '</div>'+
           '<div class="price-meta">'+
             '<div class="price-each">'+money(DEAL.unitPrice)+' each</div>'+
             '<div class="price-qty">for '+DEAL.qty+' pieces, one flat price</div>'+
           '</div>'+
         '</div>'+
-        (DEAL.decoration?'<div class="deco-line">'+PRINT_ICON+'<span>'+esc(DEAL.decoration)+'</span></div>':'')+
+        (DEAL.decoration?'<div class="deco-line"><span>'+esc(DEAL.decoration)+'</span></div>':'')+
         (chips?'<div class="benefit-chips">'+chips+'</div>':'')+
       '</div>'+
       '<div class="art-card">'+
@@ -439,15 +485,13 @@ function render(){
       '</div>'+
       '<div class="size-card">'+
         '<h2>Choose your sizes</h2>'+
-        '<p class="hint">Split your <b>'+DEAL.qty+' pieces</b> across any sizes below. The total must equal <b>'+DEAL.qty+'</b> to continue.</p>'+
         '<div class="size-grid">'+sizeCells+'</div>'+
         '<div class="counter-row">'+
           '<div class="counter under" id="counter"><span class="num" id="counter-num">0</span> of '+DEAL.qty+' selected</div>'+
-          '<button type="button" class="autofill" onclick="autoSplit()">Split '+DEAL.qty+' evenly</button>'+
         '</div>'+
         '<button type="button" class="cta" id="cta" disabled onclick="openOrder()">'+
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>'+
-          '<span id="cta-label">Add '+DEAL.qty+' more to continue</span>'+
+          '<span id="cta-label">Add to Cart</span>'+
         '</button>'+
         '<div class="cta-note">No payment now — we’ll confirm your order and send a proof before printing.</div>'+
       '</div>'+
@@ -467,18 +511,7 @@ function jsSafe(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 function selectColor(i){
   activeColor=i;
   var c=COLORS[i]||{};
-  var img=colorImage(c);
-  var g=document.getElementById('gallery-img');
-  if(g){
-    if(img){
-      var nu=document.createElement('img');
-      nu.className='gallery-img';nu.id='gallery-img';nu.src=img;nu.alt=PRODUCT.name||DEAL.style;
-      nu.onerror=function(){this.outerHTML='<div class="gallery-ph" id="gallery-img">Image unavailable</div>';};
-      g.replaceWith(nu);
-    }else{
-      g.outerHTML='<div class="gallery-ph" id="gallery-img">Image unavailable</div>';
-    }
-  }
+  swapGalleryImg();  // keeps the current front/back view for the newly selected color
   var nm=document.getElementById('active-color-name');if(nm)nm.textContent=c.name||'';
   document.querySelectorAll('.sw').forEach(function(el,idx){el.classList.toggle('active',idx===i);});
 }
@@ -504,9 +537,8 @@ function updateCounter(){
     counter.classList.add(t===target?'ok':(t>target?'over':'under'));
   }
   if(cta&&label){
-    if(t===target){cta.disabled=false;label.textContent='Add to Cart · '+money(DEAL.total);}
-    else if(t<target){cta.disabled=true;label.textContent='Add '+(target-t)+' more to continue';}
-    else{cta.disabled=true;label.textContent='Remove '+(t-target)+' — over by '+(t-target);}
+    cta.disabled=(t!==target);
+    label.textContent='Add to Cart';
   }
 }
 
@@ -569,40 +601,75 @@ function validate(){
   return{ok:true,data:{name:name,email:email,phone:phone,company:company,notes:notes}};
 }
 
-// Payload mirrors the main calculator's GHL schema so the same workflow /
-// merge fields resolve. Deal-specific context is added on top.
+// Payload mirrors the live CART's GHL schema so the team's existing workflow
+// (which builds its note from `noteText` and maps `totalPrice`/`totalPriceValue`)
+// shows every deal detail. Individual fields are kept for any field-level mappings.
 function buildPayload(d){
   var c=COLORS[activeColor]||{};
   var parts=(d.name||'').trim().split(/\s+/);
+  var firstName=parts[0]||'', lastName=parts.slice(1).join(' ')||'';
+  var color=c.name||'—';
+  var sizes=sizeBreakdownStr();
+  var locs=artworkLocations(DEAL).join(' & ');
+  var artLines=artworkLines();
+  var uploadedArt=[]; artworkLocations(DEAL).forEach(function(l){if(artwork[l])uploadedArt.push(artwork[l].url);});
+  var submittedAt=new Date().toISOString();
+
+  // Human-readable item block (mirrors cart.html).
+  var block=[
+    'Item: '+((PRODUCT.brand?PRODUCT.brand+' ':''))+DEAL.style+' '+(PRODUCT.name||'')+' ('+color+')',
+    '  Qty: '+DEAL.qty+' pcs ('+sizes+')',
+    '  Decoration: '+(DEAL.decoration||''),
+    '  Locations: '+(locs||'—'),
+    '  Turnaround: '+(DEAL.turnaround||'Standard'),
+    '  Price: '+money(DEAL.total)+' flat ('+money(DEAL.unitPrice)+'/unit)'
+  ];
+  artLines.forEach(function(l){block.push('  Artwork '+l);});
+  var itemsBlock=block.join('\n');
+  var itemsSummary=DEAL.style+' '+(PRODUCT.name||'')+' ('+color+') — '+DEAL.qty+' pcs ('+sizes+') — '+
+    (DEAL.decoration||'')+' on '+(locs||'—')+' — '+money(DEAL.total)+' flat'+
+    (uploadedArt.length?' — Artwork: '+uploadedArt.join(' | '):'');
+
+  // ONE pre-formatted note the GHL workflow drops into the order note.
+  var noteText=
+    '🛍 NEW BUY-IT-NOW DEAL REQUEST\n'+
+    'Submitted: '+submittedAt+'\n'+
+    'Source: Buy-It-Now Deal Page ('+DEAL.id+')\n\n'+
+    '— CUSTOMER —\n'+
+    'Name: '+(firstName+' '+lastName).trim()+'\n'+
+    'Company: '+(d.company||'—')+'\n'+
+    'Email: '+(d.email||'—')+'\n'+
+    'Phone: '+(d.phone||'—')+'\n\n'+
+    '— DEAL ('+DEAL.qty+' pcs) —\n'+
+    itemsBlock+'\n\n'+
+    '— ARTWORK FILES ('+uploadedArt.length+') —\n'+
+    (uploadedArt.length?uploadedArt.join('\n'):'None uploaded — customer to send')+'\n\n'+
+    '— PRICING —\n'+
+    'Total: '+money(DEAL.total)+' flat  ('+money(DEAL.unitPrice)+'/ea × '+DEAL.qty+')\n\n'+
+    '— CUSTOMER NOTES —\n'+
+    (d.notes||'—');
+
   return {
-    firstName:parts[0]||'',
-    lastName:parts.slice(1).join(' ')||'',
-    email:d.email,
-    phone:d.phone,
-    company:d.company,
-    quantity:DEAL.qty,
+    firstName:firstName, lastName:lastName,
+    email:d.email, phone:d.phone, company:d.company,
+    quantity:DEAL.qty, pieceCount:DEAL.qty, itemCount:1,
     garment:DEAL.style+' — '+(DEAL.title||PRODUCT.name||''),
-    garmentBrand:PRODUCT.brand||'',
-    garmentStyle:DEAL.style,
-    garmentColor:c.name||'',
-    decoration:DEAL.decoration||'',
-    locations:artworkLocations(DEAL).join(' & '),
-    addons:'None',
+    garmentBrand:PRODUCT.brand||'', garmentStyle:DEAL.style, garmentColor:color,
+    decoration:DEAL.decoration||'', locations:locs, addons:'None',
     turnaround:DEAL.turnaround||'Standard',
-    pricePerUnit:money(DEAL.unitPrice),
-    pricePerUnitValue:DEAL.unitPrice,
-    sizeUpchargeTotal:0,
-    totalPrice:money(DEAL.total),
-    totalPriceValue:DEAL.total,
-    sizeBreakdown:sizeBreakdownStr(),
-    notes:(d.notes?d.notes+'  ':'')+'[Buy-It-Now Deal: '+(DEAL.title||DEAL.id)+']'+
-          '  Artwork — '+(Object.keys(artwork).length?artworkLines().join('  |  '):'to be provided'),
-    artwork:artworkLines().join('  |  '),
-    artworkLink:(function(){var ls=artworkLocations(DEAL);for(var i=0;i<ls.length;i++){if(artwork[ls[i]])return artwork[ls[i]].url;}return 'None provided';})(),
-    dealId:DEAL.id,
-    dealName:DEAL.title||DEAL.id,
+    pricePerUnit:money(DEAL.unitPrice), pricePerUnitValue:DEAL.unitPrice,
+    totalPrice:money(DEAL.total), totalPriceValue:DEAL.total,
+    cartTotal:money(DEAL.total), cartTotalValue:DEAL.total,
+    sizeBreakdown:sizes,
+    itemsSummary:itemsSummary, itemsBlock:itemsBlock,
+    artwork:artLines.join('  |  '),
+    artworkLinks:uploadedArt.join('\n'),
+    artworkLink:(uploadedArt[0]||'None provided'),
+    orderNotes:d.notes||'', notes:d.notes||'',
+    noteText:noteText,
+    dealId:DEAL.id, dealName:DEAL.title||DEAL.id,
     source:'Buy-It-Now Deal Page',
-    submittedAt:new Date().toISOString()
+    submittedAt:submittedAt
   };
 }
 

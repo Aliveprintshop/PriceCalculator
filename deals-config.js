@@ -32,23 +32,24 @@ window.ALIVE_DEALS = [
 
     // --- Card + header copy ---
     badge:     'Buy It Now',
-    title:     '50 Next Level Tees',
+    title:     '50 Premium Next Level Tees',
     subtitle:  'NL6210 — our most popular tee',
-    blurb:     'Skip the back-and-forth. A ready-to-go package of 50 premium Next Level tees with a front & back print, one flat price.',
+    blurb:     '50 premium Next Level t-shirts with a full-color front & back design, one flat buy-it-now price.',
 
     // --- The locked deal ---
     qty:        50,        // total pieces — customer splits this across sizes, must total exactly this
     unitPrice:  13.00,     // $ shown as "each"
     total:      650.00,    // flat order total the customer pays
-  originalTotal: 725,    // regular price shown crossed out for savings framing
+    compareAt:  750.00,    // struck-through "was" price to highlight the deal (omit to hide)
 
-    // What's baked into the price (shown as the imprint line + benefit chips)
-    decoration: 'Screen Print — Front & Back print included',
+    // What's baked into the price (shown as the decoration line + benefit chips)
+    decoration: 'Front & back full-color design included',
     turnaround: 'Standard — 10 business days',
     includes: [
-      'Front & back print included',
-      'Free shipping',
+      'Front & back full-color design',
+      '1–8 color screen or full-color heat transfer',
       'No setup fee',
+      'Free shipping',
       'Proof before we print'
     ],
 
@@ -69,7 +70,7 @@ window.ALIVE_DEALS = [
     title:'50 Gildan Tees',
     subtitle:'5000 — classic heavyweight cotton tee',
     blurb:'A budget-friendly package of 50 Gildan 5000 tees with a front & back print, one flat price.',
-    qty:50, unitPrice:9.00, total:450.00, originalTotal:500,
+    qty:50, unitPrice:9.00, total:450.00,
     decoration:'Screen Print — Front & Back print included',
     turnaround:'Standard — 10 business days',
     includes:['Front & back print included','Free shipping','No setup fee','Proof before we print'],
@@ -82,7 +83,7 @@ window.ALIVE_DEALS = [
     title:'24 Nike Polos',
     subtitle:'883681 — Nike Dri-FIT polo',
     blurb:'A premium package of 24 Nike Dri-FIT polos with an embroidered left-chest logo, one flat price.',
-    qty:24, unitPrice:52.08, total:1250.00, originalTotal:1400,
+    qty:24, unitPrice:52.08, total:1250.00,
     decoration:'Embroidery — Left chest logo included',
     turnaround:'Standard — 10 business days',
     includes:['Embroidered left chest','Free shipping','No setup fee','Proof before we print'],
@@ -95,7 +96,7 @@ window.ALIVE_DEALS = [
     title:'50 Trucker Caps',
     subtitle:'112 — Richardson trucker cap',
     blurb:'A ready-to-go package of 50 Richardson 112 trucker caps with an embroidered front logo, one flat price.',
-    qty:50, unitPrice:16.00, total:800.00, originalTotal:895,
+    qty:50, unitPrice:16.00, total:800.00,
     decoration:'Embroidery — Front logo included',
     turnaround:'Standard — 10 business days',
     includes:['Embroidered front','Free shipping','No setup fee','Proof before we print'],
@@ -108,7 +109,7 @@ window.ALIVE_DEALS = [
     title:'50 Performance Tees',
     subtitle:'ST350 — Sport-Tek PosiCharge tee',
     blurb:'A team-ready package of 50 Sport-Tek ST350 performance tees with a front & back print, one flat price.',
-    qty:50, unitPrice:14.00, total:700.00, originalTotal:780,
+    qty:50, unitPrice:14.00, total:700.00,
     decoration:'Screen Print — Front & Back print included',
     turnaround:'Standard — 10 business days',
     includes:['Front & back print included','Free shipping','No setup fee','Proof before we print'],
