@@ -33,6 +33,10 @@ a{color:var(--blue);text-decoration:none;}
 .gv-btn{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:999px;padding:8px 10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .12s;}
 .gv-btn:hover{border-color:var(--blue);color:var(--blue);}
 .gv-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.gallery-stage{position:relative;line-height:0;}
+.art-overlay{position:absolute;pointer-events:none;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.22));}
+.art-overlay.full{width:32%;left:50%;top:31%;transform:translateX(-50%);}
+.art-overlay.chest{width:12%;left:33%;top:30%;}
 .gallery-img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#fff;border-radius:var(--r);}
 .gallery-ph{width:100%;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px;background:var(--surface2);border-radius:var(--r);}
 .swatch-label{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);margin:16px 0 9px;}
@@ -46,7 +50,9 @@ a{color:var(--blue);text-decoration:none;}
 /* Right: deal panel */
 .panel{display:flex;flex-direction:column;gap:16px;}
 .deal-head{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:22px 22px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
-.deal-badge{display:inline-block;background:var(--green);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:5px 11px;border-radius:999px;margin-bottom:12px;}
+.deal-badge-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.deal-badge{display:inline-block;background:var(--green);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:5px 11px;border-radius:999px;}
+.deal-qty-pill{display:inline-block;background:var(--text);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:5px 11px;border-radius:999px;}
 .deal-title{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;line-height:1.15;margin:0 0 4px;}
 .deal-sub{font-size:13.5px;color:var(--text3);font-weight:600;margin-bottom:14px;}
 .price-block{display:flex;align-items:baseline;gap:12px;padding:14px 0 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
@@ -180,6 +186,7 @@ a{color:var(--blue);text-decoration:none;}
         <div class="fld"><label for="of-email">Email *</label><input type="email" id="of-email" autocomplete="email"></div>
         <div class="fld"><label for="of-company">Company</label><input type="text" id="of-company" autocomplete="organization"></div>
       </div>
+      <div class="fld"><label for="of-shipping">Shipping address *</label><input type="text" id="of-shipping" autocomplete="street-address" placeholder="Street, City, State ZIP"></div>
       <div class="fld"><label for="of-notes">Notes / artwork details</label><textarea id="of-notes" placeholder="Tell us about your design, deadline, or anything else…"></textarea></div>
       <div class="modal-actions">
         <button type="button" class="msubmit" id="of-submit" onclick="submitDealOrder()">Submit request</button>
@@ -273,6 +280,7 @@ function swapGalleryImg(){
     nu.onerror=function(){this.outerHTML='<div class="gallery-ph" id="gallery-img">Image unavailable</div>';};
     g.replaceWith(nu);
   }else{ g.outerHTML='<div class="gallery-ph" id="gallery-img">Image unavailable</div>'; }
+  updateOverlay();
 }
 function setGalleryView(v){
   galleryView=v;
@@ -280,6 +288,24 @@ function setGalleryView(v){
   if(f)f.classList.toggle('active',v==='front');
   if(b)b.classList.toggle('active',v==='back');
   swapGalleryImg();
+}
+// Live artwork preview: overlay the uploaded file on the shirt for the current side.
+// front view shows the Front (or Left Chest) art; back view shows the Back art.
+function overlayLocForView(){
+  if(galleryView==='back') return artwork['Back']?'Back':null;
+  if(artwork['Front']) return 'Front';
+  if(artwork['Left Chest']) return 'Left Chest';
+  return null;
+}
+function updateOverlay(){
+  var ov=document.getElementById('art-overlay'); if(!ov)return;
+  var loc=overlayLocForView();
+  var a=loc?artwork[loc]:null;
+  ov.className='art-overlay'+(loc==='Left Chest'?' chest':' full');
+  if(a&&a.url){
+    ov.onerror=function(){this.style.display='none';};  // vector/PDF art may not render inline — hide gracefully
+    ov.src=a.url; ov.style.display='block';
+  }else{ ov.style.display='none'; ov.removeAttribute('src'); }
 }
 
 // =====================================================================
@@ -333,6 +359,9 @@ function onArtFile(loc,input){
     if(btn){btn.disabled=false;btn.classList.add('done');}
     if(lbl)lbl.textContent='Replace '+loc+' artwork';
     if(status)status.innerHTML='<span class="art-ok">✓ '+esc(file.name)+'</span> <button type="button" class="art-remove" onclick="removeArt(\''+jsSafe(loc)+'\')">Remove</button>';
+    // Flip the gallery to the side just uploaded so the preview is visible immediately.
+    var side=(loc==='Back')?'back':'front';
+    if(galleryView!==side){setGalleryView(side);}else{updateOverlay();}
   }).catch(function(e){
     artworkPending[loc]=true;
     if(btn){btn.disabled=false;btn.classList.remove('done');}
@@ -348,6 +377,7 @@ function removeArt(loc){
   if(btn)btn.classList.remove('done');
   if(lbl)lbl.textContent='Upload '+loc+' artwork';
   if(status)status.innerHTML='';
+  updateOverlay();
 }
 // "Front: <url> | Back: (to be provided)" for the order note.
 function artworkLines(){
@@ -456,13 +486,16 @@ function render(){
         '<button type="button" class="gv-btn'+(galleryView==='front'?' active':'')+'" id="gv-front" onclick="setGalleryView(\'front\')">Front</button>'+
         '<button type="button" class="gv-btn'+(galleryView==='back'?' active':'')+'" id="gv-back" onclick="setGalleryView(\'back\')">Back</button>'+
       '</div>'+
-      galleryImg+
+      '<div class="gallery-stage">'+galleryImg+'<img class="art-overlay" id="art-overlay" alt="" style="display:none;">'+'</div>'+
       '<div class="swatch-label">Color: <b id="active-color-name">'+esc(c.name||'')+'</b></div>'+
       '<div class="swatches">'+swatches+'</div>'+
     '</div>'+
     '<div class="panel">'+
       '<div class="deal-head">'+
-        (DEAL.badge?'<span class="deal-badge">'+esc(DEAL.badge)+'</span>':'')+
+        '<div class="deal-badge-row">'+
+          (DEAL.badge?'<span class="deal-badge">'+esc(DEAL.badge)+'</span>':'')+
+          '<span class="deal-qty-pill">'+DEAL.qty+'-piece deal</span>'+
+        '</div>'+
         '<h1 class="deal-title">'+esc(DEAL.title||PRODUCT.name)+'</h1>'+
         (DEAL.subtitle?'<div class="deal-sub">'+esc(DEAL.subtitle)+'</div>':'')+
         '<div class="price-block">'+
@@ -594,11 +627,13 @@ function validate(){
   var email=(document.getElementById('of-email').value||'').trim();
   var phone=(document.getElementById('of-phone').value||'').trim();
   var company=(document.getElementById('of-company').value||'').trim();
+  var shipping=(document.getElementById('of-shipping').value||'').trim();
   var notes=(document.getElementById('of-notes').value||'').trim();
   if(!name)return{ok:false,msg:'Please enter your name.'};
   if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return{ok:false,msg:'Please enter a valid email.'};
   if(!phone)return{ok:false,msg:'Please enter your phone number.'};
-  return{ok:true,data:{name:name,email:email,phone:phone,company:company,notes:notes}};
+  if(!shipping)return{ok:false,msg:'Please enter your shipping address.'};
+  return{ok:true,data:{name:name,email:email,phone:phone,company:company,shipping:shipping,notes:notes}};
 }
 
 // Payload mirrors the live CART's GHL schema so the team's existing workflow
@@ -639,7 +674,8 @@ function buildPayload(d){
     'Name: '+(firstName+' '+lastName).trim()+'\n'+
     'Company: '+(d.company||'—')+'\n'+
     'Email: '+(d.email||'—')+'\n'+
-    'Phone: '+(d.phone||'—')+'\n\n'+
+    'Phone: '+(d.phone||'—')+'\n'+
+    'Shipping: '+(d.shipping||'—')+'\n\n'+
     '— DEAL ('+DEAL.qty+' pcs) —\n'+
     itemsBlock+'\n\n'+
     '— ARTWORK FILES ('+uploadedArt.length+') —\n'+
@@ -652,6 +688,7 @@ function buildPayload(d){
   return {
     firstName:firstName, lastName:lastName,
     email:d.email, phone:d.phone, company:d.company,
+    shippingAddress:d.shipping||'',
     quantity:DEAL.qty, pieceCount:DEAL.qty, itemCount:1,
     garment:DEAL.style+' — '+(DEAL.title||PRODUCT.name||''),
     garmentBrand:PRODUCT.brand||'', garmentStyle:DEAL.style, garmentColor:color,

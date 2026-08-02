@@ -259,6 +259,7 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .deal-chip{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);color:var(--green);font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:999px;line-height:1.2;}
 .deal-view-cta{margin-top:11px;display:inline-block;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:800;}
 .deal-card:hover .deal-view-cta{text-decoration:underline;}
+.deal-qty-pill{position:absolute;top:8px;right:8px;z-index:2;background:#1A2330;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,0.2);line-height:1;}
 </style>
 </head>
 <body>
@@ -1915,6 +1916,7 @@ function renderDealsView(host){
     var href=base+'?deal='+encodeURIComponent(d.id);
     return '<a class="card deal-card" href="'+href+'" target="_top">'+
       (d.badge?'<span class="card-badge">'+escAttr(d.badge)+'</span>':'')+
+      '<span class="deal-qty-pill">'+d.qty+' pcs</span>'+
       '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
       '<div class="card-info">'+
         '<div class="card-name">'+name+'</div>'+
