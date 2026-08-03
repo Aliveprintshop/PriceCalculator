@@ -1922,6 +1922,7 @@ function dealCardHtml(d, idx, base){
     (d.badge?'<span class="card-badge">'+escAttr(d.badge)+'</span>':'')+
     '<span class="deal-qty-pill">'+d.qty+' pcs</span>'+
     '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+    (p?'<div class="card-swatches">'+swatchesHtml(p)+'</div>':'')+
     '<div class="card-info">'+
       '<div class="card-name">'+name+'</div>'+
       '<div class="deal-price-line">'+
