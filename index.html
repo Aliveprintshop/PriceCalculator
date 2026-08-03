@@ -255,6 +255,7 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .deal-price-line strong{font-size:21px;font-weight:800;color:var(--blue-dark);}
 .deal-price-line span{font-size:12px;color:var(--text3);font-weight:600;margin-left:4px;}
 .deal-price-line .deal-was{font-size:15px;color:var(--text3);font-weight:700;text-decoration:line-through;text-decoration-thickness:2px;margin-left:0;margin-right:2px;}
+.deal-save{display:inline-block;margin-top:6px;background:var(--green-light);color:var(--green);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;}
 .deal-chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
 .deal-chip{display:inline-flex;align-items:center;gap:4px;background:var(--green-light);color:var(--green);font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:999px;line-height:1.2;}
 .deal-view-cta{margin-top:11px;display:inline-block;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:800;}
@@ -1925,6 +1926,7 @@ function renderDealsView(host){
           '<strong>$'+Number(d.total).toFixed(2)+'</strong>'+
           '<span>$'+Number(d.unitPrice).toFixed(2)+' ea</span>'+
         '</div>'+
+        (d.compareAt&&d.compareAt>d.total?'<div class="deal-save">Save $'+(d.compareAt-d.total).toFixed(2)+' &middot; '+Math.round((d.compareAt-d.total)/d.compareAt*100)+'% off</div>':'')+
         (chips?'<div class="deal-chip-row">'+chips+'</div>':'')+
         '<span class="deal-view-cta">Pick sizes &amp; order &rarr;</span>'+
       '</div></a>';

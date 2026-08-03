@@ -58,6 +58,9 @@ a{color:var(--blue);text-decoration:none;}
 .price-block{display:flex;align-items:baseline;gap:12px;padding:14px 0 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .price-now{display:flex;align-items:baseline;gap:10px;}
 .price-was{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:var(--text3);text-decoration:line-through;text-decoration-thickness:2px;}
+.unit-was{color:var(--text3);text-decoration:line-through;font-weight:600;margin-right:2px;}
+.deal-save{display:inline-block;margin-top:12px;background:var(--green-light);color:var(--green);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;padding:6px 12px;border-radius:999px;}
+.ship-line{margin-top:12px;font-size:12.5px;color:var(--text3);font-weight:600;}
 .price-total{font-family:'Montserrat',sans-serif;font-size:38px;font-weight:800;color:var(--blue-dark);line-height:1;}
 .price-meta{display:flex;flex-direction:column;gap:2px;}
 .price-each{font-size:15px;font-weight:700;color:var(--text);}
@@ -136,6 +139,8 @@ a{color:var(--blue);text-decoration:none;}
 .fld input:focus,.fld textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,0.08);}
 .fld textarea{min-height:66px;resize:vertical;}
 .fld-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fld-row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;}
+@media(max-width:520px){.fld-row3{grid-template-columns:1fr 1fr;}}
 .form-err{display:none;background:#fdecec;border:1px solid #f5c2c2;color:#b02121;font-size:13px;padding:10px 12px;border-radius:9px;margin-bottom:12px;line-height:1.5;}
 .modal-actions{display:flex;gap:10px;align-items:center;margin-top:6px;}
 .msubmit{flex:1;background:var(--blue);color:#fff;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;border:none;border-radius:10px;padding:13px 16px;cursor:pointer;}
@@ -186,7 +191,12 @@ a{color:var(--blue);text-decoration:none;}
         <div class="fld"><label for="of-email">Email *</label><input type="email" id="of-email" autocomplete="email"></div>
         <div class="fld"><label for="of-company">Company</label><input type="text" id="of-company" autocomplete="organization"></div>
       </div>
-      <div class="fld"><label for="of-shipping">Shipping address *</label><input type="text" id="of-shipping" autocomplete="street-address" placeholder="Street, City, State ZIP"></div>
+      <div class="fld"><label for="of-ship-street">Shipping address *</label><input type="text" id="of-ship-street" autocomplete="address-line1" placeholder="Street address"></div>
+      <div class="fld-row3">
+        <div class="fld"><label for="of-ship-city">City *</label><input type="text" id="of-ship-city" autocomplete="address-level2"></div>
+        <div class="fld"><label for="of-ship-state">State *</label><input type="text" id="of-ship-state" autocomplete="address-level1" placeholder="TX"></div>
+        <div class="fld"><label for="of-ship-zip">ZIP *</label><input type="text" id="of-ship-zip" autocomplete="postal-code" inputmode="numeric" placeholder="78701"></div>
+      </div>
       <div class="fld"><label for="of-notes">Notes / artwork details</label><textarea id="of-notes" placeholder="Tell us about your design, deadline, or anything else…"></textarea></div>
       <div class="modal-actions">
         <button type="button" class="msubmit" id="of-submit" onclick="submitDealOrder()">Submit request</button>
@@ -318,7 +328,7 @@ var UPLOAD_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 // derived from the decoration text.
 function artworkLocations(d){
   if(d&&Array.isArray(d.artwork)&&d.artwork.length)return d.artwork;
-  var s=((d&&d.decoration)||'').toLowerCase();
+  var s=((d&&d.decoration)||'').toLowerCase().replace(/-/g,' ');
   if(s.indexOf('left chest')>-1)return ['Left Chest'];
   if(s.indexOf('front & back')>-1||s.indexOf('front and back')>-1)return ['Front','Back'];
   if(s.indexOf('front')>-1)return ['Front'];
@@ -504,11 +514,13 @@ function render(){
             '<span class="price-total">'+money(DEAL.total)+'</span>'+
           '</div>'+
           '<div class="price-meta">'+
-            '<div class="price-each">'+money(DEAL.unitPrice)+' each</div>'+
+            '<div class="price-each">'+(DEAL.compareUnit?'<span class="unit-was">'+money(DEAL.compareUnit)+'</span> ':'')+money(DEAL.unitPrice)+' each</div>'+
             '<div class="price-qty">for '+DEAL.qty+' pieces, one flat price</div>'+
           '</div>'+
         '</div>'+
+        (DEAL.compareAt&&DEAL.compareAt>DEAL.total?'<div class="deal-save">Save '+money(DEAL.compareAt-DEAL.total)+' &middot; '+Math.round((DEAL.compareAt-DEAL.total)/DEAL.compareAt*100)+'% off the regular price</div>':'')+
         (DEAL.decoration?'<div class="deco-line"><span>'+esc(DEAL.decoration)+'</span></div>':'')+
+        '<div class="ship-line">2-week standard turnaround &middot; Free ground shipping (USA, lower 48 states)</div>'+
         (chips?'<div class="benefit-chips">'+chips+'</div>':'')+
       '</div>'+
       '<div class="art-card">'+
@@ -627,13 +639,17 @@ function validate(){
   var email=(document.getElementById('of-email').value||'').trim();
   var phone=(document.getElementById('of-phone').value||'').trim();
   var company=(document.getElementById('of-company').value||'').trim();
-  var shipping=(document.getElementById('of-shipping').value||'').trim();
+  var street=(document.getElementById('of-ship-street').value||'').trim();
+  var city=(document.getElementById('of-ship-city').value||'').trim();
+  var state=(document.getElementById('of-ship-state').value||'').trim();
+  var zip=(document.getElementById('of-ship-zip').value||'').trim();
   var notes=(document.getElementById('of-notes').value||'').trim();
   if(!name)return{ok:false,msg:'Please enter your name.'};
   if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return{ok:false,msg:'Please enter a valid email.'};
   if(!phone)return{ok:false,msg:'Please enter your phone number.'};
-  if(!shipping)return{ok:false,msg:'Please enter your shipping address.'};
-  return{ok:true,data:{name:name,email:email,phone:phone,company:company,shipping:shipping,notes:notes}};
+  if(!street||!city||!state||!zip)return{ok:false,msg:'Please complete the full shipping address — street, city, state and ZIP.'};
+  var shipping=street+', '+city+', '+state+' '+zip;
+  return{ok:true,data:{name:name,email:email,phone:phone,company:company,shipping:shipping,shipStreet:street,shipCity:city,shipState:state,shipZip:zip,notes:notes}};
 }
 
 // Payload mirrors the live CART's GHL schema so the team's existing workflow
@@ -689,6 +705,7 @@ function buildPayload(d){
     firstName:firstName, lastName:lastName,
     email:d.email, phone:d.phone, company:d.company,
     shippingAddress:d.shipping||'',
+    shippingStreet:d.shipStreet||'', shippingCity:d.shipCity||'', shippingState:d.shipState||'', shippingZip:d.shipZip||'',
     quantity:DEAL.qty, pieceCount:DEAL.qty, itemCount:1,
     garment:DEAL.style+' — '+(DEAL.title||PRODUCT.name||''),
     garmentBrand:PRODUCT.brand||'', garmentStyle:DEAL.style, garmentColor:color,
