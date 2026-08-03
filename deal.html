@@ -34,9 +34,15 @@ a{color:var(--blue);text-decoration:none;}
 .gv-btn:hover{border-color:var(--blue);color:var(--blue);}
 .gv-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 .gallery-stage{position:relative;line-height:0;}
-.art-overlay{position:absolute;pointer-events:none;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.22));}
-.art-overlay.full{width:32%;left:50%;top:31%;transform:translateX(-50%);}
-.art-overlay.chest{width:12%;left:33%;top:30%;}
+.art-overlay{position:absolute;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.22));pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-drag:none;}
+.art-overlay.dragging{cursor:grabbing;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.3));}
+.art-adjust{margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;}
+.art-adjust-row{display:flex;align-items:center;gap:10px;}
+.art-adjust-lbl{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.03em;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+.art-adjust-row input[type=range]{flex:1;accent-color:var(--blue);cursor:pointer;min-width:0;}
+.art-reset{background:none;border:none;color:var(--blue);font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Open Sans',sans-serif;padding:4px 2px;white-space:nowrap;}
+.art-reset:hover{text-decoration:underline;}
+.art-adjust-hint{font-size:12px;color:var(--text3);margin-top:7px;line-height:1.4;}
 .gallery-img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#fff;border-radius:var(--r);}
 .gallery-ph{width:100%;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px;background:var(--surface2);border-radius:var(--r);}
 .swatch-label{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);margin:16px 0 9px;}
@@ -307,15 +313,59 @@ function overlayLocForView(){
   if(artwork['Left Chest']) return 'Left Chest';
   return null;
 }
+// Per-location placement of the design on the garment (center x/y % of the image, width %).
+var artXform={};
+var _drag=null;
+function defaultXform(loc){ return (loc==='Left Chest')?{x:34,y:31,w:12}:{x:50,y:33,w:32}; }
+function getXform(loc){ if(!artXform[loc])artXform[loc]=defaultXform(loc); return artXform[loc]; }
+function applyOverlayStyle(ov,xf){ ov.style.left=xf.x+'%'; ov.style.top=xf.y+'%'; ov.style.width=xf.w+'%'; ov.style.transform='translate(-50%,-50%)'; }
 function updateOverlay(){
   var ov=document.getElementById('art-overlay'); if(!ov)return;
+  var adj=document.getElementById('art-adjust');
   var loc=overlayLocForView();
   var a=loc?artwork[loc]:null;
-  ov.className='art-overlay'+(loc==='Left Chest'?' chest':' full');
+  ov.className='art-overlay';
   if(a&&a.url){
-    ov.onerror=function(){this.style.display='none';};  // vector/PDF art may not render inline — hide gracefully
-    ov.src=a.url; ov.style.display='block';
-  }else{ ov.style.display='none'; ov.removeAttribute('src'); }
+    var xf=getXform(loc);
+    ov.onerror=function(){this.style.display='none';if(adj)adj.style.display='none';};  // vector/PDF may not render inline
+    ov.src=a.url; ov.style.display='block'; applyOverlayStyle(ov,xf);
+    if(adj){adj.style.display='block'; var sz=document.getElementById('art-size'); if(sz)sz.value=xf.w;}
+  }else{
+    ov.style.display='none'; ov.removeAttribute('src');
+    if(adj)adj.style.display='none';
+  }
+}
+function onArtSize(v){
+  var loc=overlayLocForView(); if(!loc)return;
+  var xf=getXform(loc); xf.w=parseFloat(v)||xf.w;
+  var ov=document.getElementById('art-overlay'); if(ov)applyOverlayStyle(ov,xf);
+}
+function resetArtXform(){
+  var loc=overlayLocForView(); if(!loc)return;
+  artXform[loc]=defaultXform(loc); updateOverlay();
+}
+// Drag-to-move: attach pointer handlers to the overlay once per render.
+function wireOverlay(){
+  var ov=document.getElementById('art-overlay'); if(!ov||ov._wired)return; ov._wired=1;
+  ov.addEventListener('pointerdown',function(e){
+    if(ov.style.display==='none')return;
+    var loc=overlayLocForView(); if(!loc)return;
+    e.preventDefault();
+    var st=ov.parentNode.getBoundingClientRect();
+    _drag={loc:loc,w:st.width,h:st.height,sx:e.clientX,sy:e.clientY,ox:getXform(loc).x,oy:getXform(loc).y};
+    try{ov.setPointerCapture(e.pointerId);}catch(_){}
+    ov.classList.add('dragging');
+  });
+  ov.addEventListener('pointermove',function(e){
+    if(!_drag)return;
+    var xf=getXform(_drag.loc);
+    xf.x=Math.max(2,Math.min(98,_drag.ox+(e.clientX-_drag.sx)/_drag.w*100));
+    xf.y=Math.max(2,Math.min(98,_drag.oy+(e.clientY-_drag.sy)/_drag.h*100));
+    applyOverlayStyle(ov,xf);
+  });
+  function end(){ if(_drag){ov.classList.remove('dragging');_drag=null;} }
+  ov.addEventListener('pointerup',end);
+  ov.addEventListener('pointercancel',end);
 }
 
 // =====================================================================
@@ -497,6 +547,14 @@ function render(){
         '<button type="button" class="gv-btn'+(galleryView==='back'?' active':'')+'" id="gv-back" onclick="setGalleryView(\'back\')">Back</button>'+
       '</div>'+
       '<div class="gallery-stage">'+galleryImg+'<img class="art-overlay" id="art-overlay" alt="" style="display:none;">'+'</div>'+
+      '<div class="art-adjust" id="art-adjust" style="display:none;">'+
+        '<div class="art-adjust-row">'+
+          '<span class="art-adjust-lbl">Design size</span>'+
+          '<input type="range" id="art-size" min="6" max="75" step="0.5" value="32" oninput="onArtSize(this.value)">'+
+          '<button type="button" class="art-reset" onclick="resetArtXform()">Reset</button>'+
+        '</div>'+
+        '<div class="art-adjust-hint">Drag the design on the garment to move it &middot; use the slider to resize.</div>'+
+      '</div>'+
       '<div class="swatch-label">Color: <b id="active-color-name">'+esc(c.name||'')+'</b></div>'+
       '<div class="swatches">'+swatches+'</div>'+
     '</div>'+
@@ -545,6 +603,8 @@ function render(){
 
   document.getElementById('root').innerHTML=html;
   updateCounter();
+  wireOverlay();
+  updateOverlay();
 }
 
 function cssId(s){return String(s).replace(/[^a-zA-Z0-9]/g,'_');}

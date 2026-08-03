@@ -261,6 +261,12 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .deal-view-cta{margin-top:11px;display:inline-block;color:var(--blue);font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:800;}
 .deal-card:hover .deal-view-cta{text-decoration:underline;}
 .deal-qty-pill{position:absolute;top:8px;right:8px;z-index:2;background:#1A2330;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,0.2);line-height:1;}
+.deals-section{grid-column:1/-1;margin-bottom:6px;}
+.deals-section-head{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin:0 0 14px;}
+.deals-section-head span{font-size:13px;font-weight:600;color:var(--text3);}
+.deals-grid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+.allprod-head{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin:26px 0 4px;padding-top:22px;border-top:1px solid var(--border);}
+@media(max-width:820px){.deals-section{margin:0;}.deals-section-head{padding:14px 14px 0;margin:0;font-size:17px;}.deals-grid-inner{grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);margin-top:10px;}.allprod-head{padding:18px 14px 0;margin:0;font-size:17px;}}
 </style>
 </head>
 <body>
@@ -1607,7 +1613,6 @@ function setPerPage(v){
 // =====================================================================
 function renderGrid(){
   var host=document.getElementById('page-grid');if(!host)return;
-  if(_dealsMode){renderDealsView(host);return;}
   if(_gbb&&gbbByLabel(_gbb)){renderGbbView(host);return;}
   var rows=filtered();
 
@@ -1804,6 +1809,8 @@ function renderGrid(){
       cards.splice(Math.min(6,cards.length),0,banner);
     }
   }
+  // On the hidden #deals slug, show the deals block first (page 1), then the full catalog below.
+  if(_dealsMode&&_page===1){cards.unshift(dealsSectionHtml());}
   host.innerHTML=cards.join('');
   renderPagination(rows.length);
   // Re-broadcast iframe height now that the grid has changed.
@@ -1903,40 +1910,42 @@ function renderGbbView(host){
 // links to the stripped-down deal calculator. To add/edit deals, edit
 // deals-config.js — nothing here needs to change.
 // =====================================================================
-function renderDealsView(host){
+function dealCardHtml(d, idx, base){
+  var it=idx[String(d.style).toUpperCase()];
+  var p=it?it._full:null;
+  var src='';
+  if(p&&Array.isArray(p.colors)){for(var c=0;c<p.colors.length;c++){var im=p.colors[c].images||{};src=im.front_model||im.front_flat||'';if(src)break;}}
+  var name=(d.title||(it?cleanName(it.n||'',it.b||''):d.style)).replace(/&amp;/g,'&').replace(/"/g,'&quot;');
+  var chips=(d.includes||[]).map(function(t){return '<span class="deal-chip">&#10003; '+String(t).replace(/</g,'&lt;')+'</span>';}).join('');
+  var href=base+'?deal='+encodeURIComponent(d.id);
+  return '<a class="card deal-card" href="'+href+'" target="_top">'+
+    (d.badge?'<span class="card-badge">'+escAttr(d.badge)+'</span>':'')+
+    '<span class="deal-qty-pill">'+d.qty+' pcs</span>'+
+    '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+    '<div class="card-info">'+
+      '<div class="card-name">'+name+'</div>'+
+      '<div class="deal-price-line">'+
+        (d.compareAt?'<span class="deal-was">$'+Number(d.compareAt).toFixed(2)+'</span>':'')+
+        '<strong>$'+Number(d.total).toFixed(2)+'</strong>'+
+        '<span>$'+Number(d.unitPrice).toFixed(2)+' ea</span>'+
+      '</div>'+
+      (d.compareAt&&d.compareAt>d.total?'<div class="deal-save">Save $'+(d.compareAt-d.total).toFixed(2)+' &middot; '+Math.round((d.compareAt-d.total)/d.compareAt*100)+'% off</div>':'')+
+      (chips?'<div class="deal-chip-row">'+chips+'</div>':'')+
+      '<span class="deal-view-cta">Pick sizes &amp; order &rarr;</span>'+
+    '</div></a>';
+}
+// Full-width deals block shown ABOVE the normal product grid on the #deals slug.
+function dealsSectionHtml(){
   var deals=(window.ALIVE_DEALS||[]).filter(function(d){return d&&d.active!==false;});
-  var base=(window.ALIVE_DEAL_CALC_URL||'deal.html');   // where a deal card opens; set in deals-config.js
+  if(!deals.length)return '';
+  var base=(window.ALIVE_DEAL_CALC_URL||'deal.html');
   var idx={};for(var i=0;i<ITEMS.length;i++)idx[(ITEMS[i].s||'').toUpperCase()]=ITEMS[i];
-  var cards=deals.map(function(d){
-    var it=idx[String(d.style).toUpperCase()];
-    var p=it?it._full:null;
-    var src='';
-    if(p&&Array.isArray(p.colors)){for(var c=0;c<p.colors.length;c++){var im=p.colors[c].images||{};src=im.front_model||im.front_flat||'';if(src)break;}}
-    var name=(d.title||(it?cleanName(it.n||'',it.b||''):d.style)).replace(/&amp;/g,'&').replace(/"/g,'&quot;');
-    var chips=(d.includes||[]).map(function(t){return '<span class="deal-chip">&#10003; '+String(t).replace(/</g,'&lt;')+'</span>';}).join('');
-    var href=base+'?deal='+encodeURIComponent(d.id);
-    return '<a class="card deal-card" href="'+href+'" target="_top">'+
-      (d.badge?'<span class="card-badge">'+escAttr(d.badge)+'</span>':'')+
-      '<span class="deal-qty-pill">'+d.qty+' pcs</span>'+
-      '<img class="card-img" loading="lazy" src="'+src+'" alt="'+name+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
-      '<div class="card-info">'+
-        '<div class="card-name">'+name+'</div>'+
-        '<div class="deal-price-line">'+
-          (d.compareAt?'<span class="deal-was">$'+Number(d.compareAt).toFixed(2)+'</span>':'')+
-          '<strong>$'+Number(d.total).toFixed(2)+'</strong>'+
-          '<span>$'+Number(d.unitPrice).toFixed(2)+' ea</span>'+
-        '</div>'+
-        (d.compareAt&&d.compareAt>d.total?'<div class="deal-save">Save $'+(d.compareAt-d.total).toFixed(2)+' &middot; '+Math.round((d.compareAt-d.total)/d.compareAt*100)+'% off</div>':'')+
-        (chips?'<div class="deal-chip-row">'+chips+'</div>':'')+
-        '<span class="deal-view-cta">Pick sizes &amp; order &rarr;</span>'+
-      '</div></a>';
-  });
-  if(!cards.length)cards=['<div class="empty">No deals are active right now.</div>'];
-  host.innerHTML=cards.join('');
-  var countEl=document.getElementById('results-count');
-  if(countEl)countEl.innerHTML='<strong>Buy-It-Now Deals</strong> &middot; exclusive package pricing';
-  var pag=document.getElementById('pagination');if(pag)pag.style.display='none';
-  if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
+  var cards=deals.map(function(d){return dealCardHtml(d,idx,base);}).join('');
+  return '<div class="deals-section">'+
+    '<div class="deals-section-head">Buy-It-Now Deals <span>&middot; ready-to-order package pricing</span></div>'+
+    '<div class="deals-grid-inner">'+cards+'</div>'+
+    '<div class="allprod-head">All Products</div>'+
+  '</div>';
 }
 // Good/Better/Best: single-select. Selecting one clears all other filters and shows the tiered view.
 function toggleGbb(label){
