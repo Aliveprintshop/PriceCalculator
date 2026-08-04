@@ -105,6 +105,15 @@ a{color:var(--blue);text-decoration:none;}
 .cta:disabled{background:var(--border2);cursor:not-allowed;}
 .cta svg{width:18px;height:18px;}
 .cta-note{text-align:center;font-size:12px;color:var(--text3);margin-top:10px;line-height:1.5;}
+.checkout-err{margin-top:12px;background:#fdecec;border:1px solid #f5c2c2;color:#b02121;font-size:13px;padding:10px 12px;border-radius:9px;line-height:1.5;}
+.checkout-err a{color:#b02121;font-weight:700;text-decoration:underline;}
+.checkout-cancel{background:#fff7e6;border:1px solid #f0d9a8;color:#8a5a00;font-size:13.5px;line-height:1.5;padding:12px 15px;border-radius:12px;margin-bottom:16px;}
+.checkout-result{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:44px 26px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);max-width:560px;margin:0 auto;}
+.checkout-result .chk{width:60px;height:60px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.checkout-result .chk svg{width:30px;height:30px;}
+.checkout-result h2{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;margin:0 0 10px;}
+.checkout-result p{color:var(--text2);font-size:14.5px;line-height:1.6;margin:0 auto 16px;max-width:440px;}
+.checkout-result .done-btn{display:inline-block;margin-top:6px;background:var(--blue);color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;border:none;border-radius:10px;padding:12px 26px;cursor:pointer;text-decoration:none;}
 
 /* Artwork upload */
 .art-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px 22px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
@@ -226,6 +235,12 @@ a{color:var(--blue);text-decoration:none;}
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
 var GHL='https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53';
 var FALLBACK_EMAIL='info@aliveprintshop.com';
+// ---- Stripe Checkout (Phase 1: Buy-It-Now Deals) ----
+// 'stripe' = charge full payment at checkout via the alive-checkout Worker.
+// 'form'   = fall back to the old order-request form (no payment).
+var CHECKOUT_MODE='stripe';
+// Base URL of the alive-checkout Cloudflare Worker. Confirm the subdomain.
+var CHECKOUT_ENDPOINT='https://alive-checkout.austin-662.workers.dev';
 // Where "All deals" / "Back to deals" go. Canonical hidden deals page.
 var DEALS_URL='https://aliveprintshop.com/products#deals';
 // Prefer returning to the exact deals view the customer came from; else the canonical page.
@@ -466,6 +481,8 @@ function boot(){
     document.getElementById('root').innerHTML='<div class="notfound"><h2>Deal not found</h2><p>This deal may have ended or the link is incomplete. <a href="'+DEALS_URL+'">See all current deals →</a></p></div>';
     return;
   }
+  // Returned from Stripe Checkout paid — show confirmation, skip the configurator.
+  if(qparam('checkout')==='success'){ renderCheckoutSuccess(); return; }
   if(DEAL.active===false){
     document.getElementById('root').innerHTML='<div class="notfound"><h2>This deal has ended</h2><p><a href="'+DEALS_URL+'">See all current deals →</a></p></div>';
     return;
@@ -592,11 +609,16 @@ function render(){
         '<div class="counter-row">'+
           '<div class="counter under" id="counter"><span class="num" id="counter-num">0</span> of '+DEAL.qty+' selected</div>'+
         '</div>'+
-        '<button type="button" class="cta" id="cta" disabled onclick="openOrder()">'+
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>'+
-          '<span id="cta-label">Add to Cart</span>'+
+        '<button type="button" class="cta" id="cta" disabled onclick="onCheckout()">'+
+          (CHECKOUT_MODE==='stripe'
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>')+
+          '<span id="cta-label">'+ctaLabel()+'</span>'+
         '</button>'+
-        '<div class="cta-note">No payment now — we’ll confirm your order and send a proof before printing.</div>'+
+        '<div class="checkout-err" id="checkout-err" style="display:none;"></div>'+
+        '<div class="cta-note">'+(CHECKOUT_MODE==='stripe'
+          ? 'Secure payment by Stripe. Custom printed goods are non-refundable — we email a final proof for your approval before printing.'
+          : 'No payment now — we’ll confirm your order and send a proof before printing.')+'</div>'+
       '</div>'+
     '</div>'+
   '</div>';
@@ -605,6 +627,7 @@ function render(){
   updateCounter();
   wireOverlay();
   updateOverlay();
+  if(qparam('checkout')==='cancel'&&!document.querySelector('.checkout-cancel'))showCancelBanner();
 }
 
 function cssId(s){return String(s).replace(/[^a-zA-Z0-9]/g,'_');}
@@ -643,7 +666,7 @@ function updateCounter(){
   }
   if(cta&&label){
     cta.disabled=(t!==target);
-    label.textContent='Add to Cart';
+    label.textContent=ctaLabel();
   }
 }
 
@@ -673,6 +696,61 @@ function sizeBreakdownStr(){
   var sizes=availableSizes(),parts=[];
   sizes.forEach(function(s){var v=qtyBySize[s]||0;if(v>0)parts.push(s+' x'+v);});
   return parts.join(', ');
+}
+
+// Route the primary CTA: Stripe checkout, or the legacy request form.
+function onCheckout(){
+  if(totalQty()!==DEAL.qty)return;
+  if(CHECKOUT_MODE==='stripe')startCheckout();
+  else openOrder();
+}
+// Stripe path: send the configuration to the Worker, then redirect to Stripe
+// Checkout. The amount is set server-side from the deal id — never from here.
+function startCheckout(){
+  if(totalQty()!==DEAL.qty)return;
+  var c=COLORS[activeColor]||{};
+  var payload={
+    dealId:DEAL.id,
+    color:c.name||'',
+    sizes:sizeBreakdownStr(),
+    artwork:artworkLocations(DEAL).map(function(l){return l+': '+(artwork[l]?artwork[l].url:'(to be provided)');}).join('  |  '),
+    origin:location.origin,
+    returnUrl:location.origin+location.pathname
+  };
+  var btn=document.getElementById('cta'),label=document.getElementById('cta-label'),err=document.getElementById('checkout-err');
+  if(err)err.style.display='none';
+  if(btn)btn.disabled=true;
+  if(label)label.textContent='Redirecting to secure checkout…';
+  fetch(String(CHECKOUT_ENDPOINT).replace(/\/+$/,'')+'/checkout',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+  }).then(function(r){return r.json().catch(function(){return {};}).then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(res){
+      if(res.ok&&res.j&&res.j.url){location.href=res.j.url;return;}
+      throw new Error((res.j&&res.j.error)||'We couldn’t start checkout.');
+    }).catch(function(e){
+      if(btn)btn.disabled=false;
+      if(label)label.textContent=ctaLabel();
+      if(err){err.innerHTML=esc(e.message||'Checkout is unavailable right now.')+' Please try again, or email <a href="mailto:'+FALLBACK_EMAIL+'">'+FALLBACK_EMAIL+'</a>.';err.style.display='block';}
+    });
+}
+function ctaLabel(){return CHECKOUT_MODE==='stripe'?'Check Out Securely':'Add to Cart';}
+
+// Paid return: show a confirmation instead of the configurator.
+function renderCheckoutSuccess(){
+  document.getElementById('root').innerHTML=
+    '<div class="checkout-result">'+
+      '<div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></div>'+
+      '<h2>Payment received — thank you!</h2>'+
+      '<p>Your order is confirmed and paid. Our team will email you a <b>final proof to approve</b> before we print anything. A Stripe receipt is on its way to your inbox.</p>'+
+      '<a class="done-btn" href="'+DEALS_URL+'" onclick="return goDeals(event)">Back to deals</a>'+
+    '</div>';
+}
+function showCancelBanner(){
+  var wrap=document.querySelector('.wrap'); if(!wrap)return;
+  var b=document.createElement('div');
+  b.className='checkout-cancel';
+  b.innerHTML='Checkout canceled — <b>nothing was charged.</b> Pick your sizes below and try again whenever you’re ready.';
+  wrap.insertBefore(b, wrap.firstChild.nextSibling);
 }
 
 function openOrder(){
