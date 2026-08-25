@@ -224,6 +224,10 @@
 #alive-cart .gtee{grid-column:1/-1;background:linear-gradient(180deg,var(--green-light) 0%,#fff 82%);
   border:1.5px solid #BFE3CE;border-radius:var(--r-lg);padding:11px 16px 10px;
   box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+#alive-cart .ai-note{background:#FCF8F0;border:1.5px solid #E8D9BC;border-radius:var(--r-lg);padding:12px 15px;margin-top:14px;}
+#alive-cart .ai-note-ttl{font-family:'Montserrat',sans-serif;font-size:12.5px;font-weight:800;color:var(--text);letter-spacing:.01em;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+#alive-cart .ai-note-ttl .ai-dot{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:#C9A227;color:#fff;font-size:11px;font-weight:800;line-height:16px;text-align:center;}
+#alive-cart .ai-note p{margin:0;font-size:12px;line-height:1.5;color:var(--text2);}
 #alive-cart .gtee-hd{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
 #alive-cart .gtee-seal{width:20px;height:20px;flex-shrink:0;border-radius:50%;background:var(--green);
   color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1;}
@@ -383,7 +387,19 @@
       <p>Add a product from the calculator to get started.</p>
       <a href="https://aliveprintshop.com/insta-price" target="_top">Browse Products</a>
     </div>
+
+  <!-- Sits directly under the item cards, which is where the uploaded artwork
+       tiles are, so it is read in context with the designs being submitted.
+       Hidden while the cart is empty (see render()). -->
+  <div class="ai-note" id="ai-note" style="display:none;">
+    <div class="ai-note-ttl"><span class="ai-dot">&#33;</span>AI-Generated Artwork Disclaimer</div>
+    <p>AI-generated images are generally not production-ready artwork and are subject to review and
+    approval by our Design Team. To ensure the highest quality results, artwork may require professional
+    recreation into a production-ready format. Artwork recreation fees may apply and will be quoted
+    following artwork review and prior to production.</p>
   </div>
+  </div>
+
 
   <aside class="summary-panel" id="summary-panel" style="display:none;">
 
@@ -710,15 +726,17 @@ function render(){
     if(empty)empty.style.display='block';
     if(summary)summary.style.display='none';
     var _g0=document.getElementById('gtee'); if(_g0)_g0.style.display='none';
+    var _a0=document.getElementById('ai-note'); if(_a0)_a0.style.display='none';
     var _s0=document.querySelector('#cart-wrap > .summary'); if(_s0)_s0.style.display='none';
     if(title)title.textContent='Your Cart';
     // Clear any in-flight item nodes
-    Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state')ch.remove();});
+    Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state'&&ch.id!=='ai-note')ch.remove();});
     broadcastHeight();
     return;
   }
   if(empty)empty.style.display='none';
   var _g1=document.getElementById('gtee'); if(_g1)_g1.style.display='';
+  var _a1=document.getElementById('ai-note'); if(_a1)_a1.style.display='block';
   var _s1=document.querySelector('#cart-wrap > .summary'); if(_s1)_s1.style.display='';
   if(summary)summary.style.display='flex';
   if(title)title.textContent='Your Cart ('+items.length+(items.length===1?' item)':' items)');
@@ -813,8 +831,10 @@ function render(){
   }).join('');
 
   // Replace the items (preserving empty-state node out of the way)
-  Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state')ch.remove();});
+  Array.from(host.children).forEach(function(ch){if(ch.id!=='empty-state'&&ch.id!=='ai-note')ch.remove();});
   host.insertAdjacentHTML('beforeend',html);
+  // Keep the AI-artwork disclaimer as the last thing under the item cards.
+  var _ai=document.getElementById('ai-note'); if(_ai)host.appendChild(_ai);
 
   // Summary numbers
   var subtotal=CART.getDollarTotal();

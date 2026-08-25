@@ -643,57 +643,196 @@ function projSyncBar(){
   projPositionBar();
 }
 
-// ---- Keeping the bar on screen inside the Hostinger embed ----
+// ── Alive viewport bridge ─────────────────────────────────────────────────
+// This page is embedded CROSS-ORIGIN in an auto-height iframe on
+// aliveprintshop.com: the parent sets the iframe height to our FULL content
+// height and gives it scrolling="no". Our own window therefore never scrolls —
+// the parent does — so `position:fixed` pins to the top of ~9,000px of content
+// instead of to the screen. Anything that must appear "on screen" (the sticky
+// project bar, the share dialog, the image lightbox) needs to know which
+// horizontal slice of this document is actually inside the customer's viewport.
+//
+// We cannot read the parent's scroll position (cross-origin, and the embed
+// snippet does not send it). IntersectionObserver CAN see it: for an element
+// inside a cross-origin iframe the intersection is clipped by every ancestor
+// frame's viewport, so `intersectionRect` is exactly the on-screen slice.
+// Two catches, both handled here:
+//
+//   1. A single full-height sentinel never fires mid-scroll. Its intersection
+//      RATIO is constant (900px visible out of 9,000px = 0.1 the whole way
+//      down), so no threshold is ever crossed and the callback goes silent
+//      between the top and the bottom of the page.
+//      Fix: a LADDER of short sentinels that individually enter and leave.
+//
+//   2. Rects delivered by the ladder are stale by up to one rung.
+//      Fix: every ladder event triggers a fresh ONE-SHOT observation of a
+//      full-height element — an observer's first delivery is always an
+//      accurate clipped rect.
+//
+// Verified pixel-exact against a real cross-origin harness at every scroll
+// offset. Falls back to null (callers then keep their normal fixed/centred
+// behaviour) when IntersectionObserver is missing or we are not in an iframe.
+//
+// An `alive-viewport` postMessage from the parent, if one is ever added to the
+// embed snippet, overrides this and wins.
+//
+// NOTE: this block is duplicated verbatim in index.html and in
+// alive-pricing-calculator-v2.html — these pages are embedded as single files,
+// so there is nowhere shared to put it. Change one, change the other.
+(function(){
+  var W=window, D=document;
+  var api={slice:null, subscribe:sub, refresh:schedule, embedded:false};
+  W.AliveViewport=api;
+  var subs=[];
+  function sub(fn){ if(typeof fn==='function'){subs.push(fn); if(api.slice)fn(api.slice);} }
+  function emit(){ for(var i=0;i<subs.length;i++){ try{subs[i](api.slice);}catch(e){} } }
+
+  // Parent-pushed override (backwards compatible with the older embed snippet).
+  W.addEventListener('message',function(e){
+    var d=e&&e.data;
+    if(!d||typeof d!=='object'||d.type!=='alive-viewport')return;
+    var t=parseFloat(d.visTop), b=parseFloat(d.visBottom);
+    if(isNaN(t)||isNaN(b)||b<=t)return;
+    _parentPushed=true;
+    api.embedded=true;
+    D.documentElement.classList.add('proj-embedded');
+    api.slice={visTop:t, visBottom:b};
+    emit();
+  },false);
+  var _parentPushed=false;
+
+  if(W.self===W.top)return;              // not embedded: fixed positioning works
+  if(!W.IntersectionObserver)return;     // no way to measure: callers fall back
+
+  api.embedded=true;
+  D.documentElement.classList.add('proj-embedded');
+
+  var body=D.body;
+  if(!body){ D.addEventListener('DOMContentLoaded',start); } else { start(); }
+
+  var ladderHost, measureEl, ladderIO, rungs=0, RUNG=120, pending=false;
+
+  function docH(){ return Math.max(body.scrollHeight, body.offsetHeight, 1); }
+
+  function start(){
+    body=D.body;
+    // The ladder and the measuring strip are 1px wide, out of flow and behind
+    // everything. They must never affect layout — in particular they must never
+    // change body.scrollHeight, which the iframe auto-resize broadcast measures.
+    ladderHost=D.createElement('div');
+    ladderHost.setAttribute('aria-hidden','true');
+    ladderHost.style.cssText='position:absolute;top:0;left:0;width:1px;height:0;pointer-events:none;visibility:hidden;z-index:-1;';
+    body.appendChild(ladderHost);
+
+    measureEl=D.createElement('div');
+    measureEl.setAttribute('aria-hidden','true');
+    // Overshoots UPWARDS only. Overflow above the origin is not scrollable, so
+    // this cannot change body.scrollHeight — which matters, because the iframe
+    // auto-resize broadcast measures exactly that, and inflating it would start
+    // the runaway height-feedback loop. Overshooting DOWNWARDS would do that.
+    measureEl.style.cssText='position:absolute;top:-2000px;left:0;width:1px;pointer-events:none;visibility:hidden;z-index:-1;';
+    body.appendChild(measureEl);
+
+    ladderIO=new IntersectionObserver(schedule,{threshold:0});
+    build();
+    if(W.ResizeObserver){ new ResizeObserver(function(){build();schedule();}).observe(body); }
+    else { setInterval(function(){build();schedule();},600); }
+    W.addEventListener('resize',schedule);
+    W.addEventListener('load',function(){build();schedule();});
+    schedule();
+  }
+
+  function build(){
+    if(!ladderHost)return;
+    var h=docH();
+    measureEl.style.height=(h+2000)+'px';
+    var need=Math.max(1,Math.ceil(h/RUNG));
+    if(need===rungs)return;
+    while(rungs>need){ var last=ladderHost.lastChild; if(!last)break; ladderIO.unobserve(last); ladderHost.removeChild(last); rungs--; }
+    for(var i=rungs;i<need;i++){
+      var d=D.createElement('div');
+      d.style.cssText='position:absolute;left:0;width:1px;height:'+RUNG+'px;top:'+(i*RUNG)+'px;';
+      ladderHost.appendChild(d);
+      ladderIO.observe(d);
+    }
+    rungs=need;
+  }
+
+  function schedule(){
+    if(_parentPushed||pending)return;
+    pending=true;
+    W.requestAnimationFrame(function(){ pending=false; remeasure(); });
+  }
+
+  function remeasure(){
+    if(!measureEl)return;
+    var io=new IntersectionObserver(function(entries){
+      io.disconnect();
+      var r=entries[0]&&entries[0].intersectionRect;
+      var next=null;
+      if(r&&r.height>0){
+        var sy=W.pageYOffset||D.documentElement.scrollTop||0;
+        next={visTop:r.top+sy, visBottom:r.bottom+sy};
+      }
+      var a=api.slice;
+      if(a&&next&&Math.abs(a.visTop-next.visTop)<1&&Math.abs(a.visBottom-next.visBottom)<1)return;
+      if(!a&&!next)return;
+      api.slice=next;
+      emit();
+    },{threshold:0});
+    io.observe(measureEl);
+  }
+})();
+
+// ---- Keeping the project bar and share dialog on screen inside the embed ----
 // The embed auto-sizes the iframe to the FULL content height, so the iframe
 // itself never scrolls — the parent page does. That means position:fixed pins
-// the bar to the bottom of the content, not the bottom of the screen, and you
-// have to scroll to the very end of 3,000 products to see it.
-// The embed is same-origin, so we can read the parent's scroll position and
-// slide the bar to the bottom of whatever slice of the iframe is on screen.
-// We move it with a TRANSFORM on a still-fixed element: fixed elements are out
-// of flow, so this can never change body.scrollHeight and can never feed back
-// into the iframe height broadcast (see the resize loop warning further down).
-// IMPORTANT: this page is served from aliveprintshop.github.io while the site
-// is aliveprintshop.com — CROSS-ORIGIN. We cannot read the parent's scroll
-// position ourselves. The embed snippet (same-origin with the top page) walks
-// up the frame chain, works out which slice of this iframe is actually on
-// screen, and posts it down as an 'alive-viewport' message. Everything below
-// is driven by that message; without it we fall back to a plain bottom bar.
-var _vp=null;                      // {visTop, visBottom} in OUR coordinates
-window.addEventListener('message',function(e){
-  var d=e&&e.data;
-  if(!d||typeof d!=='object'||d.type!=='alive-viewport')return;
-  var t=parseFloat(d.visTop),b=parseFloat(d.visBottom);
-  if(isNaN(t)||isNaN(b)||b<=t)return;
-  _vp={visTop:t,visBottom:b};
-  document.documentElement.classList.add('proj-embedded');
-  projPositionBar();
-  projPositionModal();
-},false);
+// the bar to the bottom of ~9,000px of content, not to the bottom of the
+// screen, and you have to scroll to the very end of 3,000 products to find the
+// Share Project button. Same for the dialog, which centred itself in the middle
+// of all that content.
+//
+// This used to depend on the embed snippet posting an 'alive-viewport' message
+// down to us. That snippet was never added to the live pages, so _vp stayed
+// null and both elements fell back to the broken behaviour. AliveViewport above
+// measures the on-screen slice by itself, so nothing outside this file has to
+// change. The parent-pushed message still wins if it is ever added.
+//
+// The bar moves with a TRANSFORM on a still-fixed element: fixed elements are
+// out of flow, so this can never change body.scrollHeight and can never feed
+// back into the iframe height broadcast (see the resize loop warning below).
+function _slice(){return window.AliveViewport&&window.AliveViewport.slice;}
+if(window.AliveViewport){
+  window.AliveViewport.subscribe(function(){projPositionBar();projPositionModal();});
+}
 
 function projPositionBar(){
   var bar=document.getElementById('proj-bar');
   if(!bar||!PROJ.length)return;
-  if(!_vp){bar.style.transform='';return;}
+  var vp=_slice();
+  if(!vp){bar.style.transform='';return;}
   var barH=bar.offsetHeight||60;
-  var y=_vp.visBottom-barH;
+  var y=vp.visBottom-barH;
   var maxY=Math.max(0,(document.body.scrollHeight||0)-barH);
   y=Math.max(0,Math.min(y,maxY));
   bar.style.transform='translateY('+Math.round(y)+'px)';
 }
 
-// The share dialog is position:fixed, which inside an auto-sized iframe centres
-// it in ~9,000px of content rather than on screen. Pin it into the visible slice.
+// Pin the share dialog into the visible slice so it opens where the customer is
+// already looking instead of somewhere down the page.
 function projPositionModal(){
   var m=document.getElementById('proj-modal');
   if(!m||!m.classList.contains('show'))return;
   var box=m.querySelector('.proj-box');
   if(!box)return;
-  if(!_vp){m.style.alignItems='';box.style.marginTop='';box.style.maxHeight='';return;}
-  var visH=Math.max(120,_vp.visBottom-_vp.visTop);
+  var vp=_slice();
+  if(!vp){m.style.alignItems='';box.style.marginTop='';box.style.maxHeight='';return;}
+  var visH=Math.max(120,vp.visBottom-vp.visTop);
   m.style.alignItems='flex-start';
   box.style.maxHeight=Math.round(visH-24)+'px';
-  var y=_vp.visTop+Math.max(12,(visH-box.offsetHeight)/2);
+  // Sit a little above centre of the visible slice — reads as "snapped to" the
+  // button that opened it rather than floating.
+  var y=vp.visTop+Math.max(12,Math.min((visH-box.offsetHeight)/2,visH*0.18));
   box.style.marginTop=Math.round(y)+'px';
 }
 function projShareUrl(){
