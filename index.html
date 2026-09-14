@@ -594,7 +594,7 @@ var CARHARTT_PINNED=["CT106923","CT107106","CT106972","CT106577","CT104597","CT1
 // NOT to the polo page or Shop-By-Industry views, which keep their own
 // curated ordering. Edit this list to change what leads the page.
 // =====================================================================
-var TOP_PICKS=['NL6210','799802','112','5000','NKDH7709','TM1MU411'];
+var TOP_PICKS=['18500','NL6210','799802','112','5000','NKDH7709','TM1MU411'];
 // Badges shown on the card. A style listed here gets the badge; the green
 // "Best Value" deal badge (Gildan 5000) takes precedence if both would apply.
 var BADGE_BEST_SELLER=['NL6210','799802','112'];
@@ -2166,6 +2166,10 @@ async function loadProducts(){
       // Basic Tee Deal: 5000 / 5000B use our $2.30 cost basis (1.5x markup applied below).
       var _stU=String(p.style).toUpperCase();
       if(_stU==='5000'||_stU==='5000B'){p.case_price=2.30;p.case_sale_price=null;p._dealBasicTee=true;}
+      // 18500 hoodie special price (50+). The card's "from" price is quoted at 144 pcs,
+      // which always qualifies, so it uses the same cost basis as the calculator.
+      // Keep in sync with HOODIE_DEAL_COST_BASE in alive-pricing-calculator-v2.html.
+      if(_stU==='18500'){p.case_price=9.1467;p.case_sale_price=null;}
       var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
       if(basePrice==null||isNaN(basePrice))continue;
       var unitPrice=+(basePrice*1.5).toFixed(2);

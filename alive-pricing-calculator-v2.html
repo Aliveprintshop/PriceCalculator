@@ -2491,23 +2491,29 @@ function renderPromoUI(errMsg){
 
 // Return the discounted blank/garment unit price (case_price + reduced markup).
 // Decoration costs are added on top in calcPP — they are NEVER discounted.
-function getDiscountedUnitPrice(){
+function getDiscountedUnitPrice(qty){
   if(!sel)return 0;
-  if(!_activePromo)return sel.p;
-  var bp=null;
-  if(sel._full){
-    bp=(sel._full.case_sale_price!=null)?sel._full.case_sale_price:sel._full.case_price;
-  }
-  if(bp==null||isNaN(bp))return sel.p;
-  // sel.p == bp * 1.5 (case + 50% markup). Reduce that markup by _activePromo.discount.
+  if(qty==null)qty=(typeof effectiveQty==='function')?effectiveQty():0;
+  var bp=baseCostAt(qty);
+  var list=hoodieDealOn(qty)?parseFloat((bp*1.5).toFixed(2)):sel.p;   // deal blank vs catalog blank
+  if(!_activePromo)return list;
+  if(bp==null||isNaN(bp))return list;
+  // list == bp * 1.5 (cost + 50% markup). Reduce that markup by _activePromo.discount.
   var newUnit=bp+(bp*0.5*(1-_activePromo.discount));
   return parseFloat(newUnit.toFixed(2));
+}
+// Blank price with no promo applied (deal-aware) — used for promo savings display.
+function getListUnitPrice(qty){
+  if(!sel)return 0;
+  if(qty==null)qty=(typeof effectiveQty==='function')?effectiveQty():0;
+  if(hoodieDealOn(qty))return parseFloat((HOODIE_DEAL_COST_BASE*1.5).toFixed(2));
+  return sel.p;
 }
 
 // Per-unit savings from the active promo code. 0 if no promo applied.
 function getPromoSavingsPerUnit(){
   if(!sel||!_activePromo)return 0;
-  return parseFloat((sel.p-getDiscountedUnitPrice()).toFixed(2));
+  return parseFloat((getListUnitPrice()-getDiscountedUnitPrice()).toFixed(2));
 }
 
 // =====================================================================
@@ -2574,6 +2580,30 @@ function applyBasicTeeDeal(p){
   p.size_upcharges=up;                                                // youth has no 2XL+ so these never apply
 }
 function isBasicTeeDeal(){return !!(sel&&sel._full&&sel._full._dealBasicTee);}
+
+// === 18500 HOODIE SPECIAL PRICE (50+) — added 2026-09 ===
+// At 50 pieces or more the Gildan 18500 prices off a special COST basis instead
+// of its catalog case price; the normal 1.5x markup, decoration, add-ons and
+// rush all work exactly as before. Under 50 pieces nothing changes.
+// Reference point: 50 pcs, 3-color front + 3-color back =
+//   S-XL $21.70 · 2XL $23.93 · 3XL-5XL $26.01  (regular: $27.12 / $31.58 / $35.64)
+// KEEP IN SYNC with pricing-core in the alive-checkout Worker, which recomputes
+// the charge at checkout.
+var HOODIE_DEAL_STYLES={'18500':1};
+var HOODIE_DEAL_MIN_QTY=50;
+var HOODIE_DEAL_COST_BASE=9.1467;                                     // x1.5 => $13.72 blank
+var HOODIE_DEAL_COST_BYSIZE={'2XL':10.6334,'3XL':12.0200,'4XL':12.0200,'5XL':12.0200};
+function isHoodieDealStyle(p){return !!(p&&p.style&&HOODIE_DEAL_STYLES[String(p.style).trim().toUpperCase()]);}
+function hoodieDealOn(qty){
+  return isHoodieDealStyle(sel&&sel._full)&&(qty||0)>=HOODIE_DEAL_MIN_QTY;
+}
+// Cost basis (pre-markup) for the current product at this quantity.
+function baseCostAt(qty){
+  if(hoodieDealOn(qty))return HOODIE_DEAL_COST_BASE;
+  if(!sel||!sel._full)return null;
+  var bp=(sel._full.case_sale_price!=null)?sel._full.case_sale_price:sel._full.case_price;
+  return (bp==null||isNaN(bp))?null:bp;
+}
 // Effective color index for screen print: deal items at 50+ collapse 1-3 colors to the 1-color rate.
 function getFrElEff(qty){var e=getFrEl();if(isBasicTeeDeal()&&decoMethod==='sp'&&qty>=50&&e>=0&&e<=2)return 0;return e;}
 function getBkElEff(qty){var e=getBkEl();if(isBasicTeeDeal()&&decoMethod==='sp'&&qty>=50&&e>=0&&e<=2)return 0;return e;}
@@ -2584,15 +2614,20 @@ function _upMarkupMult(){
   return _activePromo?(1+0.5*(1-_activePromo.discount)):1.5;
 }
 function _upRushMult(){return rush==='rush'?1.15:rush==='super'?1.25:1;}
-function sizeUpchargeRaw(sz){
+function sizeUpchargeRaw(sz,qty){
   if(!isExtendedSize(sz))return 0;            // standard sizes never carry an upcharge
+  if(qty==null)qty=(typeof effectiveQty==='function')?effectiveQty():0;
+  if(hoodieDealOn(qty)){                      // 18500 at 50+: deal cost deltas
+    var dv=HOODIE_DEAL_COST_BYSIZE[String(sz).toUpperCase()];
+    return (dv==null)?0:parseFloat((dv-HOODIE_DEAL_COST_BASE).toFixed(4));
+  }
   var su=(sel&&sel._full&&sel._full.size_upcharges)||{};
   var v=su[sz];
   return (v==null||isNaN(v)||v<=0)?0:v;
 }
 // Retail upcharge per piece for one size (marked up + rush), rounded to the cent.
-function sizeUpchargePer(sz){
-  var raw=sizeUpchargeRaw(sz);
+function sizeUpchargePer(sz,qty){
+  var raw=sizeUpchargeRaw(sz,qty);
   if(!raw)return 0;
   return parseFloat((raw*_upMarkupMult()*_upRushMult()).toFixed(2));
 }
@@ -2680,7 +2715,7 @@ function calcPP(qty){
   if(sel)syncDecoMethod();
   if(!sel||qty<getMinQty())return null;
   if(isDrinkware())return dwUnitPrice(qty);
-  var c=getDiscountedUnitPrice();
+  var c=getDiscountedUnitPrice(qty);
   c+=decoCostPerUnit(qty);
   if(addons.neck)c+=0.75;
   if(addons.hem)c+=getHem(qty);
@@ -2797,7 +2832,7 @@ function calc(){
 
   // Rush fee display
   var baseNoRush=(function(){
-    var c=getDiscountedUnitPrice();
+    var c=getDiscountedUnitPrice(qty);
     c+=decoCostPerUnit(qty);
     if(addons.neck)c+=0.75;
     if(addons.hem)c+=getHem(qty);
