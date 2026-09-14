@@ -144,6 +144,8 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 /* Best Seller = brand blue (top 3). Most Popular = amber (next tier). */
 .card-badge.seller{background:var(--blue);}
 .card-badge.popular{background:#d97706;}
+.card-badge.sale{background:#C8322B;}
+.card-sale-note{display:inline-block;align-self:flex-start;margin-top:5px;background:#FDECEC;color:#B42318;font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:0.02em;line-height:1.2;padding:4px 8px;border-radius:999px;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
 .card-swatches{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);min-height:36px;}
@@ -595,6 +597,23 @@ var CARHARTT_PINNED=["CT106923","CT107106","CT106972","CT106577","CT104597","CT1
 // curated ordering. Edit this list to change what leads the page.
 // =====================================================================
 var TOP_PICKS=['18500','NL6210','799802','112','5000','NKDH7709','TM1MU411'];
+
+// =====================================================================
+// SALE badge — styles running a special price. Shows a red "SALE" pill on the
+// product card plus a note telling customers the quantity that unlocks it.
+// Add/remove a style here; pricing itself lives in the calculator
+// (HOODIE_DEAL_* in alive-pricing-calculator-v2.html) and in the Worker.
+// =====================================================================
+var SALE_STYLES={'18500':{label:'Sale',note:'Sale price on 50+'}};
+function saleFor(style){return SALE_STYLES[String(style||'').toUpperCase()]||null;}
+function saleBadgeHtml(style){
+  var s=saleFor(style);
+  return s?'<span class="card-badge sale">'+escAttr(s.label)+'</span>':'';
+}
+function saleNoteHtml(style){
+  var s=saleFor(style);
+  return s?'<div class="card-sale-note">'+escAttr(s.note)+'</div>':'';
+}
 // Badges shown on the card. A style listed here gets the badge; the green
 // "Best Value" deal badge (Gildan 5000) takes precedence if both would apply.
 var BADGE_BEST_SELLER=['NL6210','799802','112'];
@@ -1915,7 +1934,8 @@ function renderGrid(){
     // One badge per card. Best Value (the Gildan 5000 deal) wins if both apply.
     var _st=(it.s||'').toUpperCase();
     var dealBadge='';
-    if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
+    if(saleFor(_st))dealBadge=saleBadgeHtml(_st);
+    else if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
     else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
     else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
     var isDw=!!(p&&p._drinkware);
@@ -1932,6 +1952,7 @@ function renderGrid(){
              (brand?'<div class="card-brand">'+brand+'</div>':'')+
              '<div class="card-name">'+displayName+'</div>'+
              '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
+             saleNoteHtml(_st)+
              '<div class="card-meta">'+metaHtml+'</div>'+
            '</div></a>';
   });
@@ -2003,7 +2024,8 @@ function gbbCardHtml(it){
   var safeStyle=encodeURIComponent(it.s);
   var _st=(it.s||'').toUpperCase();
   var dealBadge='';
-  if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
+  if(saleFor(_st))dealBadge=saleBadgeHtml(_st);
+  else if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
   else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
   else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
   var isDw=!!(p&&p._drinkware);
@@ -2018,6 +2040,7 @@ function gbbCardHtml(it){
            (brand?'<div class="card-brand">'+brand+'</div>':'')+
            '<div class="card-name">'+displayName+'</div>'+
            '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
+           saleNoteHtml(_st)+
            '<div class="card-meta">'+metaHtml+'</div>'+
          '</div></a>';
 }
