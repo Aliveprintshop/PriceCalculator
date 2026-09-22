@@ -1941,9 +1941,9 @@ function renderGrid(){
     var isDw=!!(p&&p._drinkware);
     var metaHtml=isDw
       ? '<span class="card-meta-rush">All-Inclusive</span>'+
-        '<span class="card-meta-moq">Min 24 pcs &middot; bottle + logo included</span>'
+        '<span class="card-meta-moq">Minimum 24 pcs &middot; bottle + logo included</span>'
       : '<span class="card-meta-rush">Rush Available</span>'+
-        '<span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>';
+        '<span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
            dealBadge+projStarHtml(it.s)+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
@@ -2030,8 +2030,8 @@ function gbbCardHtml(it){
   else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
   var isDw=!!(p&&p._drinkware);
   var metaHtml=isDw
-    ? '<span class="card-meta-rush">All-Inclusive</span><span class="card-meta-moq">Min 24 pcs &middot; bottle + logo included</span>'
-    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Min 10 pcs &middot; 10-day standard turnaround</span>';
+    ? '<span class="card-meta-rush">All-Inclusive</span><span class="card-meta-moq">Minimum 24 pcs &middot; bottle + logo included</span>'
+    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
   return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
          '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
