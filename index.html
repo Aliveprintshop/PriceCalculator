@@ -604,7 +604,7 @@ var TOP_PICKS=['18500','NL6210','799802','112','5000','NKDH7709','TM1MU411'];
 // Add/remove a style here; pricing itself lives in the calculator
 // (HOODIE_DEAL_* in alive-pricing-calculator-v2.html) and in the Worker.
 // =====================================================================
-var SALE_STYLES={'18500':{label:'Sale',note:'Sale price on 50+'}};
+var SALE_STYLES={};   // 18500 sale switched OFF 2026-09-24 (Austin) — normal pricing again, matching the calculator and checkout.
 function saleFor(style){return SALE_STYLES[String(style||'').toUpperCase()]||null;}
 function saleBadgeHtml(style){
   var s=saleFor(style);
@@ -2192,7 +2192,7 @@ async function loadProducts(){
       // 18500 hoodie special price (50+). The card's "from" price is quoted at 144 pcs,
       // which always qualifies, so it uses the same cost basis as the calculator.
       // Keep in sync with HOODIE_DEAL_COST_BASE in alive-pricing-calculator-v2.html.
-      if(_stU==='18500'){p.case_price=9.1467;p.case_sale_price=null;}
+      /* 18500 special price switched OFF 2026-09-24 — normal pricing. */
       var basePrice=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
       if(basePrice==null||isNaN(basePrice))continue;
       var unitPrice=+(basePrice*1.5).toFixed(2);
