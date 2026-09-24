@@ -2589,7 +2589,7 @@ function isBasicTeeDeal(){return !!(sel&&sel._full&&sel._full._dealBasicTee);}
 //   S-XL $21.70 · 2XL $23.93 · 3XL-5XL $26.01  (regular: $27.12 / $31.58 / $35.64)
 // KEEP IN SYNC with pricing-core in the alive-checkout Worker, which recomputes
 // the charge at checkout.
-var HOODIE_DEAL_STYLES={'18500':1};
+var HOODIE_DEAL_STYLES={};   // 18500 deal switched OFF 2026-09-24 (Austin): the checkout Worker never had it, so customers were shown one price and charged another. Normal pricing for all hoodies.
 var HOODIE_DEAL_MIN_QTY=50;
 var HOODIE_DEAL_COST_BASE=9.1467;                                     // x1.5 => $13.72 blank
 var HOODIE_DEAL_COST_BYSIZE={'2XL':10.6334,'3XL':12.0200,'4XL':12.0200,'5XL':12.0200};
