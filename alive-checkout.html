@@ -325,6 +325,17 @@
 @media(max-width:899px){
   #alive-flow .paycard{padding:4px;border-radius:var(--r);}
 }
+/* garment + customer artwork thumbnail */
+#alive-flow .item{grid-template-columns:88px minmax(0,1fr);}
+#alive-flow .item-art{width:88px;}
+#alive-flow .item-art.mock{display:flex;align-items:center;justify-content:center;padding:4px;border:0;cursor:zoom-in;background:#fff;box-shadow:inset 0 0 0 1px var(--border);}
+#alive-flow .mk{position:relative;display:block;width:100%;overflow:hidden;}
+#alive-flow .mk-a{position:absolute;display:block;}
+#alive-flow .item-art .mk-a img.mk-g,#alive-flow .mk-a img.mk-g{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;}
+#alive-flow .mk-l{position:absolute;display:block;pointer-events:none;}
+#alive-flow .item-art .mk-l img,#alive-flow .mk-l img{position:static;display:block;width:100%;height:auto;inset:auto;object-fit:initial;}
+#alive-flow .lbox figure.mkbig{background:#fff;max-width:min(520px,92vw);width:100%;}
+#alive-flow .mkbig .mk{width:100%;max-height:70vh;}
 </style>
 </head>
 <body>
@@ -998,8 +1009,10 @@ function itemHtml(it){
     var n = k === 'front' ? it.frontColors : (k === 'back' ? it.backColors : 0);
     return (LOC_LABEL[k] || k) + ': ' + (m === 'em' ? 'embroidered' : m === 'ht' ? 'full color' : (n ? n + '-color print' : 'print'));
   }).join(' · ');
+  var mk = mockHtml(it.mock);
   return '<div class="item">' +
-    '<div class="item-art">' + (it.productImage ? '<img src="' + esc(it.productImage) + '" alt="">' : '') + '</div>' +
+    (mk ? '<button type="button" class="item-art mock" data-mock="' + esc(it.id) + '" aria-label="See your design larger">' + mk + '</button>'
+        : '<div class="item-art">' + (it.productImage ? '<img src="' + esc(it.productImage) + '" alt="">' : '') + '</div>') +
     '<div><h3>' + esc(it.productName || it.style) + '</h3><dl>' +
       '<div>Color: <b>' + esc(it.color || '—') + '</b></div>' +
       (sizes ? '<div>Sizes: <b>' + esc(sizes) + '</b></div>' : '') +
@@ -1009,6 +1022,24 @@ function itemHtml(it){
     (staleDeal(it) ? '<div class="stale">Our pricing on this item has changed. Please remove it and add it again to see today’s price. <a href="' + esc(CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(it.style || '')) + '" data-readd="1">Add it again &rarr;</a></div>' : '') +
     '<div class="line"><span>' + (it.qty|0) + ' pcs · ' + money(it.unitPrice) + '/pc <button class="rm" type="button" data-rm="' + esc(it.id) + '">Remove</button></span>' +
       '<span class="amt num">' + money(it.lineTotal) + '</span></div></div></div>';
+}
+/* The garment with the customer's artwork, rebuilt from where they placed it
+   on the product page (same photo box, same crop, same coordinates). */
+function mockHtml(m){
+  if(!m || !m.img) return '';
+  var ar = +m.ar || 2/3, outer = ar, inner = 'inset:0';
+  if(m.crop && m.crop.length === 4){
+    var c = m.crop, cw = c[2] - c[0], ch = c[3] - c[1];
+    if(cw > 0 && ch > 0){
+      outer = cw * ar / ch;
+      inner = 'left:' + (-c[0] / cw * 100).toFixed(3) + '%;top:' + (-c[1] / ch * 100).toFixed(3) + '%;width:' + (100 / cw).toFixed(3) + '%;height:' + (100 / ch).toFixed(3) + '%';
+    }
+  }
+  var layers = (m.layers || []).map(function(l){
+    var src = l.src || l.url; if(!src) return '';
+    return '<span class="mk-l" style="left:' + (l.cx * 100) + '%;top:' + (l.cy * 100) + '%;width:' + (l.w * 100) + '%;transform:translate(-50%,-50%) rotate(' + (+l.rot || 0) + 'deg)"><img src="' + esc(src) + '" alt=""></span>';
+  }).join('');
+  return '<span class="mk" style="aspect-ratio:' + (+outer).toFixed(4) + '"><span class="mk-a" style="' + inner + '"><img class="mk-g" src="' + esc(m.img) + '" alt="">' + layers + '</span></span>';
 }
 function field(key, label, type, ac, extra){
   var bad = S.bad[key] ? ' bad' : '';
@@ -1195,7 +1226,9 @@ function b64u(bytes){ var s = ''; for(var i = 0; i < bytes.length; i += 0x8000) 
 function unb64u(str){ var s = atob(str.replace(/-/g,'+').replace(/_/g,'/')); var b = new Uint8Array(s.length); for(var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
 function pipe(bytes, stream){ return new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer().then(function(a){ return new Uint8Array(a); }); }
 function shareItems(){
-  return S.items.map(function(it){ var c = Object.assign({}, it); delete c.artworkByLocation; delete c.id; return c; });
+  return S.items.map(function(it){ var c = Object.assign({}, it); delete c.artworkByLocation; delete c.id;
+    if(c.mock) c.mock = Object.assign({}, c.mock, {layers:(c.mock.layers || []).map(function(l){ return Object.assign({}, l, {src:''}); })});
+    return c; });
 }
 function encodeCart(){
   var raw = new TextEncoder().encode(JSON.stringify({v:1, i:shareItems(), p:CART.getPromo()}));
@@ -1309,6 +1342,10 @@ function wire(){
   root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
   root.querySelectorAll('[data-share]').forEach(function(b){ b.onclick = openShare; });
+  root.querySelectorAll('[data-mock]').forEach(function(b){ b.onclick = function(){
+    var it = null; S.items.forEach(function(x){ if(x.id === b.dataset.mock) it = x; }); if(!it) return;
+    openBox('<figure class="mkbig">' + mockHtml(it.mock) + '<figcaption><span>' + esc(it.productName || it.style) + (it.color ? ' — ' + esc(it.color) : '') + '</span><button type="button" class="x">Close</button></figcaption></figure>', 'lbox');
+  }; });
 }
 
 var REQUIRED = {name:'Please tell us your name', email:'We need an email to send your proof to', phone:'A phone number helps us reach you quickly'};
@@ -1379,7 +1416,7 @@ function buildPayload(){
     cartSubtotal:'$' + (subtotal + savings).toFixed(2), cartTotal:'$' + subtotal.toFixed(2), cartTotalValue:subtotal,
     totalPrice:'$' + subtotal.toFixed(2), totalPriceValue:subtotal,
     promoCode:promo ? promo.code : '', promoSavings:'$' + savings.toFixed(2), promoSavingsValue:savings,
-    items:JSON.stringify(items.map(function(it){ var c = Object.assign({}, it); delete c.pricingProduct; return c; })),
+    items:JSON.stringify(items.map(function(it){ var c = Object.assign({}, it); delete c.pricingProduct; delete c.mock; return c; })),
     itemsSummary:itemsText, itemsBlock:itemsBlock, artworkLinks:allArt.join('\n'), mockupLinks:'', mockupCount:0,
     artworkHtml:artworkHtml, noteText:noteText, source:'New checkout (product page v3)', submittedAt:submittedAt,
     deliveryMethod:S.ship === 'pickup' ? 'pickup' : 'ship', shippingBoxes:ship.boxes, shippingCost:'$' + ship.cost.toFixed(2), shippingCostValue:ship.cost,
@@ -1404,7 +1441,7 @@ function submit(){
   var f = S.form, t = totals(), embed = !!CONFIG.stripeKey;
   if(embed) loadStripe().catch(function(){});   /* warm up while the session is created */
   var here = window.location.origin + window.location.pathname;
-  var body = {items:S.items, total:t.total, orderRef:ref,
+  var body = {items:S.items.map(function(it){ var c = Object.assign({}, it); delete c.mock; return c; }), total:t.total, orderRef:ref,
     customer:{name:f.name, email:f.email, phone:f.phone, company:f.company},
     /* The Worker recounts boxes itself; these are for the receipt and the note. */
     shipping:{method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship,

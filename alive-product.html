@@ -856,6 +856,10 @@
 /* step 1: Continue tapped before a design was chosen */
 #alive-flow .needpick .mode{border-color:var(--amber) !important;box-shadow:0 0 0 3px rgba(245,158,11,.18);}
 #alive-flow .undercta.nudge{color:#92400e;font-weight:700;background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--r);padding:10px 12px;}
+/* gallery sits inside the product card, right under the photo */
+#alive-flow .pcard .strip{padding:14px 0 2px;grid-auto-columns:104px;gap:8px;}
+@media(max-width:559px){ #alive-flow .pcard .strip{grid-auto-columns:84px;} }
+#alive-flow .pcard .strip figure{border-radius:var(--r);}
 </style>
 </head>
 <body>
@@ -2491,7 +2495,7 @@ function wireStrip(){
 }
 
 /* ------------------------------------------------------------ product card */
-function productCard(overlayHtml, foot, rail){
+function productCard(overlayHtml, foot, rail, strip){
   var p = S.p, c = S.colors[S.color];
   var editor = S.phase === 'artwork' || (S.phase === 'sizes' && S.gal == null);
   var fr = S.frame[S.color];
@@ -2517,7 +2521,7 @@ function productCard(overlayHtml, foot, rail){
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
       '<div class="stage-art" id="f-stage"' + artStyle + '><img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">' +
       (editor && S.gal == null ? (overlayHtml || '') : '') + '</div></div>' +
-    sides + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
+    sides + (strip || '') + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
   '</div>';
 }
 function cleanName(p){
@@ -2823,7 +2827,49 @@ function laterPrompt(){
 }
 
 /* ------------------------------------------------------------ render */
+/* A small copy of each placed design, so checkout can show the garment
+   with the artwork on it (SanMar photos can't be flattened into one image
+   in the browser, so checkout layers the two exactly as they sat here). */
+function ensurePreviews(){
+  Object.keys(S.art).forEach(function(k){
+    var d = S.art[k]; if(!d || !d.src || d.prevFor === d.src || d.prevBusy === d.src) return;
+    var src = d.src; d.prevBusy = src;
+    var im = new Image();
+    im.onload = function(){
+      try{
+        var m = 360, r = Math.min(1, m / Math.max(im.naturalWidth, im.naturalHeight));
+        var cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(im.naturalWidth * r)); cv.height = Math.max(1, Math.round(im.naturalHeight * r));
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+        var out = cv.toDataURL('image/webp', 0.86);
+        if(out.indexOf('data:image/webp') !== 0) out = cv.toDataURL('image/png');
+        if(d.src === src){ d.prev = out; d.prevFor = src; }
+      }catch(e){}
+      if(d.prevBusy === src) d.prevBusy = null;
+    };
+    im.onerror = function(){ if(d.prevBusy === src) d.prevBusy = null; };
+    im.src = src;
+  });
+}
+function mockSide(side){
+  var c = S.colors[S.color] || {}, img = side === 'back' ? colorBack(c) : colorFront(c);
+  if(!img) return null;
+  var cr = CROPS[String(S.p.style).toUpperCase()], box = cr && cr[side === 'back' ? 'b' : 'f'];
+  var layers = layersFor(side).map(function(k){
+    var d = S.art[k], p = d.place;
+    var plain = !d.bgRemoved && /\.(png|jpe?g|webp|gif|svg)$/i.test(d.name || '') ? (d.url || '') : '';
+    return {src:d.prev || d.thumb || '', url:plain, cx:+p.cx.toFixed(4), cy:+p.cy.toFixed(4), w:+p.w.toFixed(4), rot:+(+p.rot || 0).toFixed(2)};
+  });
+  return {side:side, img:img, ar:box ? box[4] : (S.frame[S.color] || 2/3), crop:box ? box.slice(0, 4) : null, layers:layers};
+}
+function mockForCart(){
+  if(S.mode !== 'later'){
+    if(layersFor('front').length) return mockSide('front');
+    if(layersFor('back').length) return mockSide('back');
+  }
+  return mockSide('front');
+}
 function render(){
+  ensurePreviews();
   var c = S.colors[S.color];
   var html = '';
   if(S.phase === 'artwork'){
@@ -2831,13 +2877,14 @@ function render(){
     html = stepper(1) +
       '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
       '<div class="shell solo">' +
-        '<div>' + productCard(overlay(), '', tools() + (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : '')) +
+        /* Photo, then Front/Back, the gallery right under it, then garment colors. */
+        '<div>' + productCard(overlay(), '', (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : ''), tools() + mediaStrip(c)) +
           methodTabs() + locPills() +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
           '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
-          mediaStrip(c) + whyAlive() +
+          whyAlive() +
           '<div class="mhelp">' + helpBar() + '</div>' +
         '</div>' +
       '</div></div>' +
@@ -3051,7 +3098,8 @@ function addToCartNow(){
     unitPrice: pp, sizeUpchargeTotal: upTot, sizeUpchargePerSize: perSize,
     lineTotal: E.lineTotal(S.p, cfg, sizes),
     promoCodeAtAdd: promo && promo.code ? promo.code : '', promoDiscountAtAdd: S.promo || 0,
-    pricingProduct: pricingProduct(), source: 'product-page-v3'
+    pricingProduct: pricingProduct(), source: 'product-page-v3',
+    mock: mockForCart()
   };
   if(!CART.addItem(item)){ S.err = 'We could not save your order in this browser. Please call ' + CONFIG.phone + '.'; render(); return; }
   nav(cartUrl());
