@@ -844,6 +844,10 @@
 /* product photo zoomed to the product (crops.json) */
 #alive-flow .stage.cropped{aspect-ratio:var(--ar) !important;height:auto !important;max-height:none !important;margin-left:auto;margin-right:auto;}
 #alive-flow .stage.cropped .stage-art > img{object-fit:fill;}
+/* garment colors on the artwork step: one swipeable row */
+#alive-flow .artsw{flex-wrap:nowrap;overflow-x:auto;padding:3px 2px 8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;}
+#alive-flow .artsw .sw{flex:none;}
+@media(min-width:700px){#alive-flow .artsw{flex-wrap:wrap;overflow:visible;}}
 </style>
 </head>
 <body>
@@ -2520,6 +2524,16 @@ function colorFoot(){
     '<span class="aux">' + S.colors.length + (S.colors.length === 1 ? ' color' : ' colors') + '</span></div>' +
     '<div class="swatches">' + sw + '</div>';
 }
+/* Artwork step: try the design on other garment colors without leaving. */
+function artColorFoot(){
+  if(S.colors.length < 2) return '';
+  var sw = S.colors.map(function(c, i){
+    return '<button class="sw' + (i === S.color ? ' on' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>';
+  }).join('');
+  return '<div class="fhead"><span class="lbl">Garment color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b></span>' +
+    '<span class="aux">' + S.colors.length + ' colors</span></div>' +
+    '<div class="swatches artsw" id="f-artsw">' + sw + '</div>';
+}
 function sizeFoot(){
   if(isOneSize()) return oneSizeFoot();
   var cells = (S.p.available_sizes || []).map(function(sz){
@@ -2801,7 +2815,7 @@ function render(){
   if(S.phase === 'artwork'){
     html = stepper(2) +
       '<div class="wrap"><div class="shell solo">' +
-        '<div>' + productCard(overlay(), '', tools()) +
+        '<div>' + productCard(overlay(), '', tools() + (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : '')) +
           methodTabs() + locPills() +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + modePicker() +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
@@ -2863,7 +2877,13 @@ function ensureFrame(){
 
 function wire(){
   root.querySelectorAll('[data-color]').forEach(function(b){
-    b.onclick = function(){ S.color = +b.dataset.color; S.side = 'front'; S.gal = null; ensureFrame(); render(); };
+    b.onclick = function(){
+      var row = document.getElementById('f-artsw'), keep = row ? row.scrollLeft : 0;
+      S.color = +b.dataset.color; S.gal = null;
+      if(S.phase !== 'artwork') S.side = 'front';   /* on the artwork step, stay on the side being designed */
+      ensureFrame(); render();
+      var r2 = document.getElementById('f-artsw'); if(r2) r2.scrollLeft = keep;
+    };
   });
   root.querySelectorAll('[data-side]').forEach(function(b){ b.onclick = function(){ S.side = b.dataset.side; S.gal = null; render(); }; });
   root.querySelectorAll('[data-phase]').forEach(function(b){ b.onclick = function(){ go(b.dataset.phase, 'foot'); }; });
