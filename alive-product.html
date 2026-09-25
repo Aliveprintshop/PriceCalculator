@@ -892,7 +892,7 @@ var PROMO_CODES={'SAMPLE50':0.5,'SAMPLE80':0.8};
 var _EXT={'2XL':1,'3XL':1,'4XL':1,'5XL':1,'6XL':1,'7XL':1,'8XL':1,'XXL':1,'XXXL':1,'XXXXL':1,'XXXXXL':1};
 function isExtendedSize(sz){return !!_EXT[String(sz||'').trim().toUpperCase()];}
 
-var BASIC_TEE_DEAL_STYLES={'5000':1,'5000B':1};
+var BASIC_TEE_DEAL_STYLES={};   /* Basic Tee Deal OFF since 2026-09-25 (Austin): normal pricing on 5000/5000B */
 var BASIC_TEE_DEAL_COST_BASE=2.30;
 var BASIC_TEE_DEAL_COST_BYSIZE={'2XL':3.89,'3XL':5.09,'4XL':5.09,'5XL':5.09};
 var HOODIE_DEAL_STYLES={}, HOODIE_DEAL_MIN_QTY=50;   /* 18500 deal OFF since 2026-09-24 — matches v2 and the Worker */
@@ -2496,7 +2496,7 @@ function productCard(overlayHtml, foot, rail){
     ? '<div class="sides"><button type="button" data-side="front" class="' + (S.side === 'front' ? 'on' : '') + '">Front</button>' +
       '<button type="button" data-side="back" class="' + (S.side === 'back' ? 'on' : '') + '">Back</button></div>' : '';
   return '<div class="pcard">' +
-    '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
+    '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee || /^5000B?$/i.test(String(p.style)) ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
     '<h2>' + esc(cleanName(p)) + '</h2>' +
     '<div class="style">Style #' + esc(p.style) + (c ? ' — ' + esc(c.name) : '') + '</div>' +
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +

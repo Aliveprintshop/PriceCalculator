@@ -1935,7 +1935,7 @@ function renderGrid(){
     var _st=(it.s||'').toUpperCase();
     var dealBadge='';
     if(saleFor(_st))dealBadge=saleBadgeHtml(_st);
-    else if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
+    else if(p&&p._bestValue)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
     else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
     else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
     var isDw=!!(p&&p._drinkware);
@@ -2025,7 +2025,7 @@ function gbbCardHtml(it){
   var _st=(it.s||'').toUpperCase();
   var dealBadge='';
   if(saleFor(_st))dealBadge=saleBadgeHtml(_st);
-  else if(p&&p._dealBasicTee)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
+  else if(p&&p._bestValue)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
   else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
   else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
   var isDw=!!(p&&p._drinkware);
@@ -2188,7 +2188,9 @@ async function loadProducts(){
       if(p.name&&EXCLUDE_NAME_EXACT[p.name.toLowerCase().trim()])continue;
       // Basic Tee Deal: 5000 / 5000B use our $2.30 cost basis (1.5x markup applied below).
       var _stU=String(p.style).toUpperCase();
-      if(_stU==='5000'||_stU==='5000B'){p.case_price=2.30;p.case_sale_price=null;p._dealBasicTee=true;}
+      /* Basic Tee Deal pricing switched OFF 2026-09-25 — 5000/5000B use normal pricing,
+         but keep the "Best Value" badge on their cards (Austin). */
+      if(_stU==='5000'||_stU==='5000B'){p._bestValue=true;}
       // 18500 hoodie special price (50+). The card's "from" price is quoted at 144 pcs,
       // which always qualifies, so it uses the same cost basis as the calculator.
       // Keep in sync with HOODIE_DEAL_COST_BASE in alive-pricing-calculator-v2.html.

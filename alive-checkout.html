@@ -294,6 +294,8 @@
   font-family:var(--disp);font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;}
 #alive-flow .reup-btn:disabled{background:var(--border2);cursor:default;}
 #alive-flow .miss .or{margin-top:12px;}
+#alive-flow .stale{margin:8px 0 2px;background:var(--amber-light);border:1px solid #fcd34d;color:#92400e;border-radius:var(--r);padding:8px 10px;font-size:12.5px;}
+#alive-flow .stale a{color:var(--blue);font-weight:700;}
 </style>
 </head>
 <body>
@@ -338,7 +340,7 @@ var PROMO_CODES={'SAMPLE50':0.5,'SAMPLE80':0.8};
 var _EXT={'2XL':1,'3XL':1,'4XL':1,'5XL':1,'6XL':1,'7XL':1,'8XL':1,'XXL':1,'XXXL':1,'XXXXL':1,'XXXXXL':1};
 function isExtendedSize(sz){return !!_EXT[String(sz||'').trim().toUpperCase()];}
 
-var BASIC_TEE_DEAL_STYLES={'5000':1,'5000B':1};
+var BASIC_TEE_DEAL_STYLES={};   /* Basic Tee Deal OFF since 2026-09-25 (Austin): normal pricing on 5000/5000B */
 var BASIC_TEE_DEAL_COST_BASE=2.30;
 var BASIC_TEE_DEAL_COST_BYSIZE={'2XL':3.89,'3XL':5.09,'4XL':5.09,'5XL':5.09};
 var HOODIE_DEAL_STYLES={}, HOODIE_DEAL_MIN_QTY=50;   /* 18500 deal OFF since 2026-09-24 — matches v2 and the Worker */
@@ -706,7 +708,7 @@ var CONFIG = {
   payEndpoint: 'https://alive-checkout.austin-662.workers.dev',
   artEndpoint: 'https://alive-artwork.austin-662.workers.dev', maxFileMB: 25,
   ghlWebhook: 'https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53',
-  pages: { live:{products: SITE + '/products/'}, stage:{products: SITE + '/products/'} },
+  pages: { live:{products: SITE + '/products/', product: SITE + '/insta-price/'}, stage:{products: SITE + '/products/', product: SITE + '/insta-price-new/'} },
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   address: '2350 W Cheyenne Ave, North Las Vegas',
   addonImg: {neck:'media/addon-neck.jpg', hem:'media/addon-hem.jpg', bag:'media/addon-bag.jpg'}
@@ -863,6 +865,15 @@ function promoDiscount(){ var p = CART.getPromo(); return p && p.code && E.PROMO
    re-priced. Items from the old calculator keep the price and options they
    were added with. */
 function priceable(it){ return !!it.pricingProduct; }
+/* Items added before deal pricing was switched off (25 Sep 2026) still carry
+   the old deal price. They must be added again at today's price. */
+var DEAL_STYLES = {'5000':1, '5000B':1};
+function staleDeal(it){
+  if(!it) return false;
+  if(it.pricingProduct) return !!it.pricingProduct._dealBasicTee;
+  return !!DEAL_STYLES[String(it.style || '').toUpperCase()] || it.source === 'deal' || !!it.dealId;
+}
+function staleItems(){ return S.items.filter(staleDeal); }
 function itemType(it){ return priceable(it) ? E.productType(it.pricingProduct) : 'tshirt'; }
 function addonFits(key, it){
   var t = itemType(it);
@@ -944,6 +955,7 @@ function itemHtml(it){
       '<div>' + (em ? 'Embroidery' : 'Decoration') + ': <b>' + esc(deco) + '</b></div>' +
       (it.artworkLater ? '<div>Artwork: <b>you’ll email it after ordering</b></div>' : '') +
     '</dl>' +
+    (staleDeal(it) ? '<div class="stale">Our pricing on this item has changed. Please remove it and add it again to see today’s price. <a href="' + esc(CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(it.style || '')) + '" data-readd="1">Add it again &rarr;</a></div>' : '') +
     '<div class="line"><span>' + (it.qty|0) + ' pcs · ' + money(it.unitPrice) + '/pc <button class="rm" type="button" data-rm="' + esc(it.id) + '">Remove</button></span>' +
       '<span class="amt num">' + money(it.lineTotal) + '</span></div></div></div>';
 }
@@ -1103,6 +1115,7 @@ function wire(){
   };
   var cp = root.querySelector('[data-clearpromo]'); if(cp) cp.onclick = function(){ CART.setPromo(null); applyOptions(); render(); };
   var ack = document.getElementById('miss-ack'); if(ack) ack.onchange = function(){ S.missAck = ack.checked; };
+  root.querySelectorAll('[data-readd]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
 }
@@ -1182,6 +1195,7 @@ function buildPayload(){
 function submit(){
   S.err = '';
   if(!validate()){ render(); var first = root.querySelector('.f.bad input, .f.bad textarea'); if(first){ first.focus(); scrollToEl(first); } return; }
+  if(staleItems().length){ S.err = 'One item in your cart has an old price. Remove it and add it again, then place your order.'; render(); scrollToEl(root.querySelector('.stale')); return; }
   if(missingArtwork().length && !S.missAck){ S.err = 'Please confirm you’ll email the artwork we’re missing.'; render(); scrollToEl(root.querySelector('.miss')); return; }
   applyOptions();
   var ref = orderRef(), payload = buildPayload();

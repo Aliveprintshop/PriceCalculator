@@ -9,7 +9,7 @@
 window.ALIVE_DEAL_CALC_URL = 'deal.html';
 window.ALIVE_DEALS = [
   {
-    id:'74609924leftchest', style:'746099', active:true,
+    id:'74609924leftchest', style:'746099', active:false,
     badge:'Buy It Now',
     title:"24 Nike Icon Polos",
     subtitle:"746099 — Nike Dri-FIT Icon polo (most popular)",
@@ -22,7 +22,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'nkfb644724front', style:'NKFB6447', active:true,
+    id:'nkfb644724front', style:'NKFB6447', active:false,
     badge:'Buy It Now',
     title:"24 Nike Caps",
     subtitle:"NKFB6447 — Nike Dri-FIT Legacy cap",
@@ -35,7 +35,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'nkdh770924front', style:'NKDH7709', active:true,
+    id:'nkdh770924front', style:'NKDH7709', active:false,
     badge:'Buy It Now',
     title:"24 Nike Backpacks",
     subtitle:"NKDH7709 — Nike Brasilia backpack",
@@ -48,7 +48,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'nl621050fb', style:'NL6210', active:true,
+    id:'nl621050fb', style:'NL6210', active:false,
     badge:'Buy It Now',
     title:"50 Premium Next Level Tees",
     subtitle:"NL6210 — our most popular tee",
@@ -61,7 +61,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'500050fb', style:'5000', active:true,
+    id:'500050fb', style:'5000', active:false,
     badge:'Buy It Now',
     title:"50 Gildan Tees",
     subtitle:"5000 — classic heavyweight cotton tee",
@@ -74,7 +74,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'st35050fb', style:'ST350', active:true,
+    id:'st35050fb', style:'ST350', active:false,
     badge:'Buy It Now',
     title:"50 Performance Tees",
     subtitle:"ST350 — Sport-Tek PosiCharge tee",
@@ -87,7 +87,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'88368124leftchest', style:'883681', active:true,
+    id:'88368124leftchest', style:'883681', active:false,
     badge:'Buy It Now',
     title:"24 Nike Legacy Polos",
     subtitle:"883681 — Nike Dri-FIT Legacy polo",
@@ -100,7 +100,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'ctk12124leftchest', style:'CTK121', active:true,
+    id:'ctk12124leftchest', style:'CTK121', active:false,
     badge:'Buy It Now',
     title:"24 Carhartt Hoodies",
     subtitle:"CTK121 — Carhartt Midweight hooded sweatshirt",
@@ -113,7 +113,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'ct10692124leftchest', style:'CT106921', active:true,
+    id:'ct10692124leftchest', style:'CT106921', active:false,
     badge:'Buy It Now',
     title:"24 Carhartt Long-Sleeve Tees",
     subtitle:"CT106921 — Carhartt long-sleeve tee",
@@ -126,7 +126,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'ct10602024leftchest', style:'CT106020', active:true,
+    id:'ct10602024leftchest', style:'CT106020', active:false,
     badge:'Buy It Now',
     title:"24 Carhartt Tees",
     subtitle:"CT106020 — Carhartt short-sleeve tee",
@@ -139,7 +139,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'11250front', style:'112', active:true,
+    id:'11250front', style:'112', active:false,
     badge:'Buy It Now',
     title:"50 Trucker Caps",
     subtitle:"112 — Richardson trucker cap",
@@ -152,7 +152,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'ct10668724front', style:'CT106687', active:true,
+    id:'ct10668724front', style:'CT106687', active:false,
     badge:'Buy It Now',
     title:"24 Carhartt Caps",
     subtitle:"CT106687 — Carhartt Rugged Professional cap",
@@ -165,7 +165,7 @@ window.ALIVE_DEALS = [
   },
 
   {
-    id:'ct10405012leftchest', style:'CT104050', active:true,
+    id:'ct10405012leftchest', style:'CT104050', active:false,
     badge:'Buy It Now',
     title:"12 Carhartt Jackets",
     subtitle:"CT104050 — Carhartt Washed Duck active jacket",
