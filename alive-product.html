@@ -837,6 +837,10 @@
 #alive-flow .qty > span:first-child{font-family:var(--disp);font-size:15px;font-weight:800;}
 /* the WordPress page draws the footer bar itself (see the embed snippet) */
 #alive-flow.hostbar .mbar{display:none !important;}
+/* Let a finger on the product photo scroll the page. Only the design
+   layer itself (and its handles) captures touch for dragging. */
+#alive-flow .stage-art{touch-action:pan-y pinch-zoom !important;}
+#alive-flow .layer,#alive-flow .layer .h{touch-action:none !important;}
 </style>
 </head>
 <body>
