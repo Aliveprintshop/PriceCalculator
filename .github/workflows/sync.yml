@@ -130,6 +130,13 @@ jobs:
             fi
           done
 
+          # One small file per product (+ a shared swatch-colour map) so the product page
+          # loads ~8 KB instead of the whole catalog. A failure here must not block the
+          # publish: the product page falls back to products.json on its own.
+          if [ -f split-products.py ]; then
+            python split-products.py products.json _site/p || echo "::warning::split-products.py failed — product page will use products.json"
+          fi
+
           echo "Staged for Pages: $(ls _site | tr '\n' ' ')"
 
       - name: Upload Pages artifact
