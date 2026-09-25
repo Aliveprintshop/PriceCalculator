@@ -296,6 +296,14 @@
 #alive-flow .miss .or{margin-top:12px;}
 #alive-flow .stale{margin:8px 0 2px;background:var(--amber-light);border:1px solid #fcd34d;color:#92400e;border-radius:var(--r);padding:8px 10px;font-size:12.5px;}
 #alive-flow .stale a{color:var(--blue);font-weight:700;}
+/* order summary: open at the top on phones, right column on desktop — never both */
+#alive-flow .morder{display:none;}
+@media(max-width:899px){
+  #alive-flow .morder{display:block;}
+  #alive-flow .sorder{display:none;}
+  #alive-flow .mo-hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+  #alive-flow .mo-hd b{font-family:var(--disp);font-size:17px;font-weight:800;letter-spacing:-.01em;}
+}
 </style>
 </head>
 <body>
@@ -1018,7 +1026,7 @@ function render(){
   var t = totals(), pickup = S.ship === 'pickup', promo = CART.getPromo();
   var items = S.items.map(itemHtml).join('');
   var summary =
-    '<div class="card"><div class="hd"><h2>Your order</h2></div>' + items +
+    '<div class="card sorder"><div class="hd"><h2>Your order</h2></div>' + items +
       '<button class="addmore" type="button" data-products="1">+ Add another product</button></div>' +
     '<div class="card tot">' +
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
@@ -1040,7 +1048,9 @@ function render(){
     '<div class="wrap"><div class="co">' +
       '<div>' +
         '<div class="hd"><h1>Checkout</h1></div>' +
-        '<details class="msum"><summary><span>Your order <u>Show</u></span><b class="num">' + money(t.total) + '</b></summary><div class="msum-b">' + items + '</div></details>' +
+        /* Phones: the order sits open at the top (the side column's copy is hidden there). */
+        '<div class="card morder"><div class="hd mo-hd"><h2>Your order</h2><b class="num">' + money(t.total) + '</b></div>' + items +
+          '<button class="addmore" type="button" data-products="1">+ Add another product</button></div>' +
         missBlock() +
         '<div class="card"><div class="hd"><h2>Your details</h2></div>' +
           '<div class="fields two">' + field('name','Full name','text','name') + field('email','Email','email','email') + '</div>' +

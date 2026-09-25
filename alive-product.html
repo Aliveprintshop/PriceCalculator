@@ -2847,7 +2847,6 @@ function refreshPrice(){
   var u = unitNow();
   if(mv) mv.textContent = u == null ? 'Min ' + minQ() + ' pcs' : money(u);
   if(ms) ms.textContent = barSub();
-  pushBar();
   var a = sizeTotal(), tot = root.querySelector('.sztot');
   if(tot && !isOneSize()){ tot.querySelector('b').textContent = a + ' pcs'; tot.classList.toggle('ok', a >= minQ()); tot.classList.toggle('off', a > 0 && a < minQ()); }
   root.querySelectorAll('[data-size]').forEach(function(inp){
@@ -2856,6 +2855,7 @@ function refreshPrice(){
   });
   var mc = root.querySelector('[data-mcta]');
   if(mc && S.phase === 'sizes') mc.disabled = !sizesReady();
+  pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
 }
 
 function go(phase, scroll){
