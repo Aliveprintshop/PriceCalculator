@@ -848,6 +848,14 @@
 #alive-flow .artsw{flex-wrap:nowrap;overflow-x:auto;padding:3px 2px 8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;}
 #alive-flow .artsw .sw{flex:none;}
 @media(min-width:700px){#alive-flow .artsw{flex-wrap:wrap;overflow:visible;}}
+/* sizes step shows the finished design read-only */
+#alive-flow .locked .layer{pointer-events:none;cursor:default;}
+#alive-flow .locked .layer:after{border-color:transparent !important;}
+#alive-flow .locked .layer .h{display:none !important;}
+#alive-flow .locked .shell,#alive-flow .shell.locked{padding-top:12px;}
+/* step 1: Continue tapped before a design was chosen */
+#alive-flow .needpick .mode{border-color:var(--amber) !important;box-shadow:0 0 0 3px rgba(245,158,11,.18);}
+#alive-flow .undercta.nudge{color:#92400e;font-weight:700;background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--r);padding:10px 12px;}
 </style>
 </head>
 <body>
@@ -2278,7 +2286,7 @@ function subscribeViewport(){
 /* ------------------------------------------------------------ ? tips */
 var TIPS = {
   pricing:  ['How pricing works', 'One price per piece covers the garment and the decoration. It drops as your quantity goes up. No setup or screen fees, ever.'],
-  includes: ['What the price includes', 'Until you add your design, the price is for a 1-color front print (or front embroidery on items we stitch). More colors, more print spots or full color are priced on the artwork step.'],
+  includes: ['What the price includes', 'The garment and your decoration as set up on this page — print spots, ink colors or embroidery. Change any of them and the price updates right away. No setup or screen fees.'],
   minimum:  ['Minimum order', 'Screen print: 24 pieces. Embroidery: 12. Full color: 10. Mix sizes however you like — your sizes add up to your total.'],
   sizes:    ['Sizes', '2XL and up use more fabric, so they cost a little more. The extra shows under each size.'],
   turnaround:['Turnaround', '10 business days, Monday to Friday. Order before 4 PM and today counts as day one. Rush options (7 or 5 days) are at checkout.'],
@@ -2307,7 +2315,7 @@ function openBox(inner, cls){
 /* ---------------------------------------------------------------- state */
 var S = {
   raw:null, p:null, colors:[], color:0, side:'front', gal:null, frame:{},
-  phase:'color', sizes:{}, qty:0, est:CONFIG.defaultEstimate,
+  phase:'artwork', sizes:{}, qty:0, est:CONFIG.defaultEstimate,
   method:null, locs:[], inks:{}, art:{}, mode:'now', sel:null, busy:null, err:'',
   promo:0
 };
@@ -2348,14 +2356,13 @@ function realQty(){ return isOneSize() ? S.qty : sizeTotal(); }
 /* Before sizes are in, price the estimate (and never below the minimum). */
 function priceQty(){ var q = realQty(); return q > 0 ? q : Math.max(S.est, minQ()); }
 function pricingCfg(qty){
-  var locs = S.phase === 'artwork' ? S.locs.slice() : [defaultLoc(S.method)];
+  var locs = S.locs.length ? S.locs.slice() : [defaultLoc(S.method)];
   var lm = {}; locs.forEach(function(k){ lm[k] = S.method; });
   return {qty: qty == null ? priceQty() : qty, locs: locs, locMethod: lm,
           frontColors: inkFor('front'), backColors: inkFor('back'),
           addons:{neck:false,hem:false,bag:false}, rush:'std', promoDiscount:S.promo};
 }
 function inkFor(key){
-  if(S.phase !== 'artwork') return 1;
   var n = S.inks[key] || 1;
   return Math.max(1, Math.min(E.MAX_INK, n));
 }
@@ -2370,6 +2377,14 @@ function orderTotal(){ var u = unitNow(); if(u == null) return null;
 function defaultLoc(method){ var l = E.locations(S.p, method); return l.length ? l[0].key : 'front'; }
 function basisLabel(){
   var m = S.method;
+  /* Describe the decoration as it is set up now (step 1 decides it). */
+  if(S.locs.length && !S.p._drinkware){
+    var parts = S.locs.map(function(k){ var l = (LOC[k] || {label:k}).label.replace(/ \(.*\)/,'');
+      if(m === 'em') return l + ' embroidery';
+      if(m === 'ht') return l + ' full color';
+      return needsInkCount(k) ? l + ' ' + inkFor(k) + '-color' : l; });
+    return parts.join(' + ');
+  }
   if(S.p._drinkware) return '1-color print';
   if(m === 'em') return (LOC[defaultLoc('em')] || {label:'Front'}).label.replace(/ \(.*\)/,'') + ' embroidery';
   if(m === 'ht') return 'full color front';
@@ -2398,12 +2413,12 @@ function colorBack(c){ var i = c.images || {}; return i.back_flat || i.back_mode
 
 /* ------------------------------------------------------------ chrome */
 function stepper(cur){
-  var defs = [{n:1,label:'Color &amp; Sizes'},{n:2,label:'Artwork'},{n:3,label:'Checkout'}];
+  var defs = [{n:1,label:'Design'},{n:2,label:'Sizes'},{n:3,label:'Checkout'}];
   var out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(s, i){
     var done = s.n < cur, now = s.n === cur;
     var inner = '<span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : s.n) + '</span><span class="nm">' + s.label + '</span>';
-    out += done ? '<button type="button" class="stp done" data-goto="' + (s.n === 1 ? 'sizes' : 'artwork') + '">' + inner + '</button>'
+    out += done ? '<button type="button" class="stp done" data-goto="' + (s.n === 1 ? 'artwork' : 'sizes') + '">' + inner + '</button>'
                 : '<span class="stp ' + (now ? 'now' : '') + '">' + inner + '</span>';
     if(i < defs.length - 1) out += '<span class="rule' + (done ? ' done' : '') + '"></span>';
   });
@@ -2478,7 +2493,7 @@ function wireStrip(){
 /* ------------------------------------------------------------ product card */
 function productCard(overlayHtml, foot, rail){
   var p = S.p, c = S.colors[S.color];
-  var editor = S.phase === 'artwork';
+  var editor = S.phase === 'artwork' || (S.phase === 'sizes' && S.gal == null);
   var fr = S.frame[S.color];
   var frame = editor ? (fr ? (fr + '') : '0.6667') : null;
   /* Zoom past the white border SanMar leaves around the product
@@ -2546,7 +2561,7 @@ function sizeFoot(){
   return '<div class="fhead"><span class="lbl">Sizes' + tip('sizes,minimum') + '</span></div>' +
     '<div class="sizes">' + cells + '</div>' +
     '<div class="sztot' + st + '"><span>Total <i class="szmin">(minimum ' + minQ() + ')</i></span><b class="num">' + a + ' pcs</b></div>' +
-    '<button class="backlink" type="button" data-phase="color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to color</button>';
+    '<button class="backlink" type="button" data-goto="artwork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to design</button>';
 }
 function oneSizeFoot(){
   if(!S.qty) S.qty = Math.max(minQ(), CONFIG.defaultEstimate);
@@ -2557,7 +2572,7 @@ function oneSizeFoot(){
       '<input id="f-qty" type="text" inputmode="numeric" value="' + S.qty + '" aria-label="Quantity">' +
       '<button type="button" data-q="+" aria-label="More">+</button></span></div>' +
     '<div class="sztot ok" style="margin-top:10px"><span>Minimum</span><b class="num">' + minQ() + ' pcs</b></div>' +
-    '<button class="backlink" type="button" data-phase="color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to color</button>';
+    '<button class="backlink" type="button" data-goto="artwork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to design</button>';
 }
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
 
@@ -2635,12 +2650,10 @@ function modePicker(){
     card('later', 'Send my design later', 'Email it after you order.') + '</div>';
 }
 function artReady(){
-  if(realQty() < minQ()) return false;
   if(S.mode === 'later') return true;
   return S.locs.every(function(k){ return !!S.art[k]; });
 }
 function artNote(){
-  if(realQty() < minQ()) return E.methodLabel(S.method) + ' needs at least ' + minQ() + ' pieces. <button type="button" class="linkbtn" data-goto="sizes">Change sizes</button>';
   if(S.mode === 'later') return '';
   var miss = S.locs.filter(function(k){ return !S.art[k]; }).map(function(k){ return LOC[k].label; });
   return miss.length ? 'Upload a design for ' + miss.join(', ') + ', or choose “Send my design later”.' : '';
@@ -2662,6 +2675,7 @@ function overlay(){
 }
 function toolTarget(){ var here = layersFor(S.side); if(S.sel && here.indexOf(S.sel) > -1) return S.sel; return here.length === 1 ? here[0] : null; }
 function tools(){
+  if(!Object.keys(S.art).some(function(k){ return S.art[k] && S.art[k].src; })) return '';   /* nothing to move yet */
   var on = !!toolTarget();
   function b(act, label, path){ return '<button type="button" data-tool="' + act + '"' + (on ? '' : ' disabled') + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">' + path + '</svg>' + label + '</button>'; }
   return '<div class="tools">' + b('center','Center','<path d="M12 3v18M3 12h18"/><rect x="8" y="8" width="8" height="8" rx="1"/>') +
@@ -2813,27 +2827,28 @@ function render(){
   var c = S.colors[S.color];
   var html = '';
   if(S.phase === 'artwork'){
-    html = stepper(2) +
-      '<div class="wrap"><div class="shell solo">' +
+    /* STEP 1 — DESIGN: garment color, decoration, design (or "send later"). */
+    html = stepper(1) +
+      '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
+      '<div class="shell solo">' +
         '<div>' + productCard(overlay(), '', tools() + (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : '')) +
           methodTabs() + locPills() +
-          '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + modePicker() +
+          '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
-          '<div class="undercta">' + artNote() + '</div>' +
-          '<button class="backlink" type="button" data-goto="sizes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to color &amp; sizes</button>' +
+          '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
+          mediaStrip(c) + whyAlive() +
           '<div class="mhelp">' + helpBar() + '</div>' +
         '</div>' +
       '</div></div>' +
-      mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !artReady(), barSub());
+      mbar('Continue to sizes &rarr;', false, barSub());
   }else{
-    var foot = S.phase === 'color' ? colorFoot() : sizeFoot();
-    html = stepper(1) +
-      '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
-      '<div class="shell solo"><div>' + productCard('', foot, '') + mediaStrip(c) + whyAlive() +
-        '<div class="mhelp">' + helpBar() + '</div></div></div></div>' +
-      mbar(S.phase === 'color' ? 'Continue to sizes &rarr;' : 'Continue to artwork &rarr;',
-           S.phase === 'sizes' && !sizesReady(), barSub());
+    /* STEP 2 — SIZES: the designed garment (read-only) + size boxes. */
+    html = stepper(2) +
+      '<div class="wrap">' +
+      '<div class="shell solo locked"><div>' + productCard(overlay(), sizeFoot(), '') +
+        whyAlive() + '<div class="mhelp">' + helpBar() + '</div></div></div></div>' +
+      mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !sizesReady() || !artReady(), barSub());
   }
   root.innerHTML = html;
   wire();
@@ -2854,13 +2869,13 @@ function refreshPrice(){
     var u2 = inp.parentNode.querySelector('u'); if(u2) u2.textContent = up ? '+' + money(up) : '';
   });
   var mc = root.querySelector('[data-mcta]');
-  if(mc && S.phase === 'sizes') mc.disabled = !sizesReady();
+  if(mc && S.phase === 'sizes') mc.disabled = !!S.saving || !sizesReady() || !artReady();
   pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
 }
 
 function go(phase, scroll){
-  S.phase = phase; S.gal = null;
-  if(phase === 'artwork'){ S.side = 'front'; ensureFrame(); }
+  S.phase = phase; S.gal = null; S.sel = null;
+  ensureFrame();
   render();
   if(scroll === 'foot') scrollToEl(root.querySelector('.pcard-foot'));
   else scrollToEl(root.querySelector('.steps'));
@@ -2939,9 +2954,11 @@ function wire(){
   });
   var mc = root.querySelector('[data-mcta]');
   if(mc) mc.onclick = function(){
-    if(S.phase === 'color') go('sizes', 'foot');
-    else if(S.phase === 'sizes'){ if(sizesReady()) go('artwork'); }
-    else if(artReady()) addToCart();
+    if(S.phase === 'artwork'){
+      if(artReady()) go('sizes', 'foot');
+      else { S.nudge = true; render(); scrollToEl(root.querySelector('.modes')); }   /* show what's missing */
+    }
+    else if(sizesReady() && artReady()) addToCart();
   };
   var ap = root.querySelector('[data-allprod]');
   if(ap) ap.onclick = function(e){ e.preventDefault(); nav(productsUrl()); };
@@ -3067,8 +3084,7 @@ function boot(data){
   if(E.isEmbroideryOnly(p)) setMethod('em');
   S.est = Math.max(CONFIG.defaultEstimate, E.minQty(p, pricingCfg(CONFIG.defaultEstimate)));
   if(isOneSize()) S.qty = S.est;
-  var ph = qp('step');
-  S.phase = ph === 'sizes' ? 'sizes' : 'color';
+  S.phase = 'artwork';   /* every visit starts on the Design step */
   subscribeViewport();
   ensureFrame();
   render();

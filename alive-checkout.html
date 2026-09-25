@@ -1083,7 +1083,7 @@ function render(){
   wire(); placeBar(); broadcast();
 }
 function stepper(){
-  var defs = ['Color &amp; Sizes','Artwork','Checkout'], out = '<div class="steps"><div class="steps-in">';
+  var defs = ['Design','Sizes','Checkout'], out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(l, i){
     var done = i < 2;
     out += '<span class="stp ' + (done ? 'done' : 'now') + '"><span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : 3) + '</span><span class="nm">' + l + '</span></span>';
