@@ -860,6 +860,54 @@
 #alive-flow .pcard .strip{padding:14px 0 2px;grid-auto-columns:104px;gap:8px;}
 @media(max-width:559px){ #alive-flow .pcard .strip{grid-auto-columns:84px;} }
 #alive-flow .pcard .strip figure{border-radius:var(--r);}
+/* ---- round 1 (25 Sep): conversion pass ---- */
+/* upload button right on the garment */
+#alive-flow .stage-up{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-width:190px;padding:16px 20px;border-radius:14px;border:2px dashed var(--blue);background:rgba(255,255,255,.94);color:var(--blue);cursor:pointer;
+  box-shadow:0 8px 24px rgba(15,23,42,.18);font-family:var(--disp);}
+#alive-flow .stage-up svg{width:26px;height:26px;}
+#alive-flow .stage-up b{font-size:15px;font-weight:800;}
+#alive-flow .stage-up em{font-style:normal;font-family:var(--body,inherit);font-size:12px;color:var(--text2);}
+#alive-flow .stage-up:hover{background:#fff;border-style:solid;}
+#alive-flow .stage-up:disabled{opacity:.8;cursor:wait;}
+/* print options as one line */
+#alive-flow .optsum{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:12px 14px;margin-top:16px;}
+#alive-flow .optsum .sec-lbl{display:flex;align-items:center;margin:0 0 2px;}
+#alive-flow .optsum b{font-size:14.5px;}
+#alive-flow .optsum .dbtn,#alive-flow .optsdone{min-height:44px;padding:0 18px;}
+#alive-flow .optsbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:4px 14px 14px;margin-top:16px;}
+#alive-flow .optsdone{margin-top:14px;width:100%;}
+#alive-flow .later span{display:block;margin-top:4px;font-size:12.5px;color:var(--text2);}
+/* sizes in their own card + price breaks */
+#alive-flow .sizecard{margin-top:16px;}
+#alive-flow .pbreaks{border-top:1px solid var(--border);margin:16px -16px 0;padding:14px 16px 4px;}
+#alive-flow .pbrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+#alive-flow .pb{display:flex;flex-direction:column;align-items:center;min-width:64px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);}
+#alive-flow .pb i{font-style:normal;font-size:12px;color:var(--text2);font-weight:700;}
+#alive-flow .pb b{font-size:14px;}
+#alive-flow .pb.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
+#alive-flow .pbnudge{margin-top:10px;font-size:13.5px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--r);padding:9px 12px;}
+/* desktop: photo left, choices right */
+@media(min-width:980px){
+  #alive-flow .wrap:has(.shell.dual){max-width:1180px;}
+  #alive-flow .shell.solo.dual{max-width:1140px !important;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr) !important;gap:26px;align-items:start;}
+  #alive-flow .shell.dual .colR > :first-child{margin-top:0;}
+  #alive-flow .shell.dual .sizecard{margin-top:0;}
+}
+/* bigger tap targets + readable step labels */
+#alive-flow .stp .nm{font-size:12px !important;}
+#alive-flow .sides button{min-height:44px;min-width:92px;}
+#alive-flow .allprod{display:inline-flex;align-items:center;min-height:44px;}
+#alive-flow .backlink{min-height:44px;}
+#alive-flow .qi{position:relative;}
+#alive-flow .qi::after{content:"";position:absolute;inset:-13px;}
+#alive-flow .swatches .sw{position:relative;}
+#alive-flow .swatches .sw::after{content:"";position:absolute;inset:-7px;}
+#alive-flow .size{cursor:text;}
+#alive-flow .size input{min-height:40px;}
+#alive-flow .help a{min-height:44px;}
+#alive-flow .hint{font-size:12.5px !important;}
 </style>
 </head>
 <body>
@@ -2214,6 +2262,11 @@ function nav(url){
   window.location.href = url;
 }
 function cartUrl(){ return EMBEDDED ? CONFIG.pages[FLOW].cart : CONFIG.standaloneCart + (FLOW==='stage'?'?flow=stage':''); }
+/* Funnel events: the WordPress page forwards these to GA4, Tag Manager and the Meta pixel. */
+function track(ev, params){ if(!EMBEDDED) return; try{ window.parent.postMessage({type:'alive-track', event:ev, params:params || {}}, '*'); }catch(e){} }
+function gaItem(qty, price){ return {item_id:String(S.p.style), item_name:cleanName(S.p), item_brand:S.p.brand || '', item_variant:(S.colors[S.color] || {}).name || '', price:+(price || 0).toFixed(2), quantity:qty || 1}; }
+var designTracked = false;
+function trackDesign(how){ if(designTracked) return; designTracked = true; track('alive_design_added', {item_id:String(S.p.style), method:S.method, how:how}); }
 function productsUrl(){ return CONFIG.pages[FLOW].products; }
 
 var root = document.getElementById('alive-flow');
@@ -2229,7 +2282,9 @@ if(window.ResizeObserver) new ResizeObserver(broadcast).observe(document.body);
    scrolls, so the new snippet listens for alive-scrollto (y in our document). */
 function scrollToEl(el){
   if(!el) return;
-  var y = Math.max(0, Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - 12));
+  /* Phones: the site's sticky header is taller, so leave more room above the target. */
+  var pad = (window.matchMedia && window.matchMedia('(max-width:899px)').matches) ? 56 : 12;
+  var y = Math.max(0, Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - pad));
   if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-scrollto', y:y}, '*'); }catch(e){} }
   else window.scrollTo({top:y, behavior:'smooth'});
 }
@@ -2605,6 +2660,30 @@ function locPills(){
     return '<button type="button" class="lpill' + (on ? ' on' : '') + '" data-loc="' + k + '">' +
       (on ? '✓ ' : '+ ') + esc(LOC[k].label) + '</button>'; }).join('') + '</div>';
 }
+/* Decoration + print spots as one summary line; "Change" opens the full choices. */
+function optsBlock(){
+  var ms = E.decoMethods(S.p), keys = Object.keys(LOC);
+  var many = ms.length > 1 || keys.length > 1;
+  var where = S.locs.map(function(k){ return LOC[k] ? LOC[k].label : k; }).join(' + ');
+  var what = S.method === 'sp' ? 'Screen print' : S.method === 'ht' ? 'Full color print' : 'Embroidery';
+  if(S.optsOpen && many)
+    return '<div class="optsbox">' + methodTabs() + locPills() + '<button type="button" class="dbtn optsdone" data-opts="0">Done</button></div>';
+  return '<div class="optsum"><div><span class="sec-lbl">Print' + tip('method') + '</span><b>' + esc(what) + ' · ' + esc(where) + '</b></div>' +
+    (many ? '<button type="button" class="dbtn" data-opts="1">Change</button>' : '') + '</div>';
+}
+/* What each quantity break costs per piece, and how far the next saving is. */
+function priceBreaks(){
+  var q = realQty(), mn = minQ(), tiers = [mn, 24, 36, 48, 50, 72, 144, 300].filter(function(t, i, a){ return t >= mn && a.indexOf(t) === i; });
+  var rows = [], last = null;
+  tiers.forEach(function(t){ var u = E.unitPrice(S.p, pricingCfg(t)); if(u != null && (last == null || u < last - 0.004)){ rows.push({q:t, u:u}); last = u; } });
+  if(rows.length < 2) return '';
+  var cur = null, next = null;
+  rows.forEach(function(r){ if(q >= r.q) cur = r; else if(!next) next = r; });
+  var nudge = '';
+  if(q >= mn && next && cur){ nudge = '<div class="pbnudge">Add <b>' + (next.q - q) + ' more</b> and every piece drops to <b>' + money(next.u) + '</b> (save ' + money(cur.u - next.u) + ' each).</div>'; }
+  return '<div class="pbreaks"><div class="fhead"><span class="lbl">Price per piece' + tip('pricing') + '</span><span class="aux">' + esc(basisLabel()) + '</span></div><div class="pbrow">' +
+    rows.map(function(r){ return '<span class="pb' + (cur && cur.q === r.q ? ' on' : '') + '"><i>' + r.q + '+</i><b>' + money(r.u) + '</b></span>'; }).join('') + '</div>' + nudge + '</div>';
+}
 function needsInkCount(k){ return S.method === 'sp' && !S.p._drinkware ? (k !== 'left-sleeve' && k !== 'right-sleeve') : !!S.p._drinkware; }
 function inkSelect(k){
   var cap = S.p._drinkware ? 4 : E.MAX_INK, v = S.inks[k] || 1, o = '';
@@ -2623,7 +2702,8 @@ function locCard(k){
     (needsInkCount(k) ? inkSelect(k) : '<span class="lmeta">' + esc(locMeta(k)) + '</span>') + '</div>';
   var body;
   if(S.mode === 'later'){
-    body = '<div class="later">Artwork to follow — email it after you order.</div>';
+    body = '<div class="later">Artwork to follow — email it after you order.' +
+      (needsInkCount(k) ? ' <span>Set your best guess for ink colors above. We confirm it on your proof.</span>' : '') + '</div>';
   }else if(!d){
     var busy = S.busy === k;
     body = '<button class="slot' + (busy ? ' busy' : '') + '" type="button" data-add="' + k + '"' + (busy ? ' disabled' : '') + '>' +
@@ -2674,6 +2754,16 @@ function overlay(){
       '<img src="' + esc(d.src) + '" alt="">' +
       '<span class="h h-del" data-h="del" title="Remove">&#x2715;</span><span class="h h-rot" data-h="rot" title="Rotate">&#8635;</span><span class="h h-size" data-h="size" title="Resize">&#8690;</span></div>';
   }).join('');
+  /* No design on this side yet: the upload button sits right on the garment. */
+  if(!here.length && S.phase === 'artwork' && S.mode !== 'later'){
+    var k = S.locs.filter(function(x){ return LOC[x] && LOC[x].side === S.side && !S.art[x]; })[0];
+    if(k){
+      var busy = S.busy === k;
+      return '<button type="button" class="stage-up" data-add="' + k + '"' + (busy ? ' disabled' : '') + '>' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>' +
+        '<b>' + (busy ? 'Reading your file…' : 'Upload your design') + '</b><em>' + esc(LOC[k].label) + ' · PNG, JPG, PDF, AI</em></button>';
+    }
+  }
   return layers + '<div class="hint">' + (!here.length ? (S.mode === 'later' ? '' : 'Upload a design below to place it here.')
     : (picked ? 'Drag to move. Corner handles resize and rotate.' : 'Tap your design to move or resize it.')) + '</div>';
 }
@@ -2741,6 +2831,7 @@ function takeFile(k, file){
       /* The detected ink count becomes the default; the customer can change it. */
       if(det.ok && det.count && !det.photoish) S.inks[k] = Math.min(E.MAX_INK, det.count);
       S.busy = null; S.sel = k; if(LOC[k].side) { S.side = LOC[k].side; S.gal = null; }
+      trackDesign('upload');
       render(); upload(k, file);
     };
     im.onerror = function(){
@@ -2876,10 +2967,10 @@ function render(){
     /* STEP 1 — DESIGN: garment color, decoration, design (or "send later"). */
     html = stepper(1) +
       '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
-      '<div class="shell solo">' +
+      '<div class="shell solo dual">' +
         /* Photo, then Front/Back, the gallery right under it, then garment colors. */
-        '<div>' + productCard(overlay(), '', (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : ''), tools() + mediaStrip(c)) +
-          methodTabs() + locPills() +
+        '<div class="colL">' + productCard(overlay(), '', (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : ''), tools() + mediaStrip(c)) + '</div><div class="colR">' +
+          optsBlock() +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
@@ -2893,7 +2984,8 @@ function render(){
     /* STEP 2 — SIZES: the designed garment (read-only) + size boxes. */
     html = stepper(2) +
       '<div class="wrap">' +
-      '<div class="shell solo locked"><div>' + productCard(overlay(), sizeFoot(), '') +
+      '<div class="shell solo dual locked"><div class="colL">' + productCard(overlay(), '', '') + '</div><div class="colR">' +
+        '<div class="pcard sizecard">' + sizeFoot() + priceBreaks() + '</div>' +
         whyAlive() + '<div class="mhelp">' + helpBar() + '</div></div></div></div>' +
       mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !sizesReady() || !artReady(), barSub());
   }
@@ -2915,6 +3007,8 @@ function refreshPrice(){
     var up = E.sizeUpchargePer(S.p, inp.dataset.size, pricingCfg());
     var u2 = inp.parentNode.querySelector('u'); if(u2) u2.textContent = up ? '+' + money(up) : '';
   });
+  var pb = root.querySelector('.pbreaks');
+  if(pb){ var tmp = document.createElement('div'); tmp.innerHTML = priceBreaks(); pb.replaceWith(tmp.firstChild || document.createTextNode('')); }
   var mc = root.querySelector('[data-mcta]');
   if(mc && S.phase === 'sizes') mc.disabled = !!S.saving || !sizesReady() || !artReady();
   pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
@@ -2924,7 +3018,7 @@ function go(phase, scroll){
   S.phase = phase; S.gal = null; S.sel = null;
   ensureFrame();
   render();
-  if(scroll === 'foot') scrollToEl(root.querySelector('.pcard-foot'));
+  if(scroll === 'foot') scrollToEl(root.querySelector('.sizecard') || root.querySelector('.pcard-foot'));
   else scrollToEl(root.querySelector('.steps'));
 }
 
@@ -2974,9 +3068,11 @@ function wire(){
   });
   root.querySelectorAll('[data-ink]').forEach(function(s){ s.onchange = function(){ S.inks[s.dataset.ink] = +s.value; refreshPrice(); }; });
   root.querySelectorAll('[data-mode]').forEach(function(b){
-    b.onclick = function(){ var was = S.mode; S.mode = b.dataset.mode; render(); if(S.mode === 'later' && was !== 'later') laterPrompt(); };
+    b.onclick = function(){ S.mode = b.dataset.mode; if(S.mode === 'later') trackDesign('later'); render(); };
   });
-  root.querySelectorAll('[data-add]').forEach(function(b){ b.onclick = function(){ pickFile(b.dataset.add); }; });
+  root.querySelectorAll('[data-add]').forEach(function(b){ b.onclick = function(e){ e.stopPropagation(); pickFile(b.dataset.add); }; });
+  root.querySelectorAll('.size').forEach(function(t){ t.onclick = function(e){ if(e.target.tagName !== 'INPUT'){ var i = t.querySelector('input'); if(i) i.focus(); } }; });
+  root.querySelectorAll('[data-opts]').forEach(function(b){ b.onclick = function(){ S.optsOpen = b.dataset.opts === '1'; render(); }; });
   root.querySelectorAll('[data-del]').forEach(function(b){ b.onclick = function(){ delete S.art[b.dataset.del]; if(S.sel === b.dataset.del) S.sel = null; render(); }; });
   root.querySelectorAll('[data-bg]').forEach(function(b){ b.onclick = function(){ removeBg(b.dataset.bg); }; });
   root.querySelectorAll('[data-undobg]').forEach(function(b){ b.onclick = function(){ undoBg(b.dataset.undobg); }; });
@@ -3102,7 +3198,8 @@ function addToCartNow(){
     mock: mockForCart()
   };
   if(!CART.addItem(item)){ S.err = 'We could not save your order in this browser. Please call ' + CONFIG.phone + '.'; render(); return; }
-  nav(cartUrl());
+  track('add_to_cart', {currency:'USD', value:+(+item.lineTotal).toFixed(2), items:[gaItem(item.qty, item.unitPrice)]});
+  setTimeout(function(){ nav(cartUrl()); }, EMBEDDED ? 150 : 0);   /* let the page hand the event to GA/Meta first */
 }
 
 /* ------------------------------------------------------------ boot */
@@ -3114,10 +3211,12 @@ function fail(msg){
 }
 function boot(data){
   var want = String(qp('style') || '').trim().toUpperCase();
-  if(!want) return fail('Pick a product to get started.');
+  if(!want){ nav(productsUrl()); return fail('Pick a product to get started.'); }   /* bare /insta-price/ → the product list */
   var rows = Array.isArray(data) ? data : (data.products || []), raw = null, manual = false;
   for(var i = 0; i < rows.length; i++){ if(String(rows[i].style).toUpperCase() === want){ raw = rows[i]; break; } }
   if(!raw){ (window.MANUAL_PRODUCTS || []).forEach(function(m){ if(String(m.style).toUpperCase() === want){ raw = m; manual = true; } }); }
+  /* Per-product loads carry the catalog-wide swatch colour map built at publish time. */
+  if(data && data.colors && typeof COLOR_HEX_MAP === 'object'){ Object.keys(data.colors).forEach(function(k){ if(!COLOR_HEX_MAP[k]) COLOR_HEX_MAP[k] = data.colors[k]; }); }
   if(window.buildHexLookup) buildHexLookup(rows);
   var p = raw && E.prepare(raw, manual);
   if(!p) return fail('We could not find that product just now.');
@@ -3136,11 +3235,31 @@ function boot(data){
   subscribeViewport();
   ensureFrame();
   render();
+  var u0 = unitNow(); track('view_item', {currency:'USD', value:+((u0 || 0)).toFixed(2), items:[gaItem(1, u0)]});
 }
 var CROPS = {};
 var cropsP = fetch(CONFIG.cropsJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS = j || {}; }).catch(function(){});
-fetch(CONFIG.productsJson)
-  .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+/* Speed: load just this product's file (p/<STYLE>.json, ~2 KB gzipped) and the shared
+   swatch colours, written by split-products.py at publish time. Falls back to the full
+   catalog if the per-product file isn't there. Network hiccups get one retry. */
+function getJSON(url, tries){
+  return fetch(url).then(function(r){ if(r.status === 404) return null; if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .catch(function(e){ if((tries || 0) >= 1) throw e; return new Promise(function(res){ setTimeout(res, 800); }).then(function(){ return getJSON(url, 1); }); });
+}
+function loadCatalog(){
+  var want = String(qp('style') || '').trim().toUpperCase();
+  if(!want) return Promise.resolve({products:[]});
+  var key = want.replace(/[^A-Z0-9_-]/g, '_'), base = CONFIG.productsJson.replace(/products\.json.*$/, 'p/');
+  var one = getJSON(base + encodeURIComponent(key) + '.json').catch(function(){ return null; });
+  var cols = getJSON(base + '_colors.json').catch(function(){ return null; });
+  return Promise.all([one, cols]).then(function(r){
+    if(r[0] && r[0].product) return {products:[r[0].product], colors:r[1] || null};
+    var manual = (window.MANUAL_PRODUCTS || []).some(function(m){ return String(m.style).toUpperCase() === want; });
+    if(manual) return {products:[], colors:r[1] || null};
+    return getJSON(CONFIG.productsJson).then(function(d){ if(!d) throw new Error('catalog missing'); return d; });
+  });
+}
+loadCatalog()
   .then(function(data){ return cropsP.then(function(){ return data; }); })
   .then(boot)
   .catch(function(err){ if(window.console) console.error('[Alive product]', err); fail('We could not load this product just now.'); });

@@ -269,6 +269,7 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .deals-grid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
 .allprod-head{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin:26px 0 4px;padding-top:22px;border-top:1px solid var(--border);}
 @media(max-width:820px){.deals-section{margin:0;}.deals-section-head{padding:14px 14px 0;margin:0;font-size:17px;}.deals-grid-inner{grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);margin-top:10px;}.allprod-head{padding:18px 14px 0;margin:0;font-size:17px;}}
+.card-price .card-at{font-size:11px;font-weight:600;color:#6b7280;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -1944,14 +1945,14 @@ function renderGrid(){
         '<span class="card-meta-moq">Minimum 24 pcs &middot; bottle + logo included</span>'
       : '<span class="card-meta-rush">Rush Available</span>'+
         '<span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
-    return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
+    return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
            dealBadge+projStarHtml(it.s)+
            '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
              (brand?'<div class="card-brand">'+brand+'</div>':'')+
              '<div class="card-name">'+displayName+'</div>'+
-             '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
+             '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at 144+</span></div>'+
              saleNoteHtml(_st)+
              '<div class="card-meta">'+metaHtml+'</div>'+
            '</div></a>';
@@ -2032,14 +2033,14 @@ function gbbCardHtml(it){
   var metaHtml=isDw
     ? '<span class="card-meta-rush">All-Inclusive</span><span class="card-meta-moq">Minimum 24 pcs &middot; bottle + logo included</span>'
     : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
-  return '<a class="card" href="https://aliveprintshop.com/insta-price?style='+safeStyle+'" target="_top">'+
+  return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
          '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
          '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
          '<div class="card-info">'+
            (brand?'<div class="card-brand">'+brand+'</div>':'')+
            '<div class="card-name">'+displayName+'</div>'+
-           '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc</div>'+
+           '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at 144+</span></div>'+
            saleNoteHtml(_st)+
            '<div class="card-meta">'+metaHtml+'</div>'+
          '</div></a>';
@@ -2169,7 +2170,7 @@ function computeFromPrice(p,garmentUnit){
 // =====================================================================
 async function loadProducts(){
   try{
-    var res=await fetch(PRODUCTS_JSON_URL,{cache:'no-store'});
+    var res=await fetch(PRODUCTS_JSON_URL);
     if(!res.ok)throw new Error('HTTP '+res.status);
     var data=await res.json();
     var rows=Array.isArray(data)?data:(data.products||[]);

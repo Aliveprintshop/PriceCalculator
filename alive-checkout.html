@@ -336,6 +336,19 @@
 #alive-flow .item-art .mk-l img,#alive-flow .mk-l img{position:static;display:block;width:100%;height:auto;inset:auto;object-fit:initial;}
 #alive-flow .lbox figure.mkbig{background:#fff;max-width:min(520px,92vw);width:100%;}
 #alive-flow .mkbig .mk{width:100%;max-height:70vh;}
+/* ---- round 1 (25 Sep) ---- */
+#alive-flow .rating{text-align:center;font-size:13px;color:var(--text2);margin-top:8px;}
+#alive-flow .rating .stars{color:#f5b301;letter-spacing:1px;}
+#alive-flow .emp-sub{color:var(--text2);font-size:14.5px;margin:10px auto 0;max-width:460px;line-height:1.55;}
+#alive-flow .emp-cats{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px;}
+#alive-flow .emp-cats a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:1.5px solid var(--border2);border-radius:999px;
+  background:#fff;color:var(--text);font-weight:700;font-size:14px;text-decoration:none;}
+#alive-flow .emp-cats a:hover{border-color:var(--blue);color:var(--blue);}
+#alive-flow .item .rm{display:inline-flex;align-items:center;min-height:36px;padding:0 6px;margin-left:2px;}
+#alive-flow .promo-link,#alive-flow .sharebtn{min-height:44px;}
+#alive-flow .qi{position:relative;}
+#alive-flow .qi::after{content:"";position:absolute;inset:-13px;}
+#alive-flow .stp .nm{font-size:12px !important;}
 </style>
 </head>
 <body>
@@ -768,6 +781,10 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(m){ re
 function money(n){ return n==null ? '—' : '$' + (+n).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}); }
 function nav(url){ if(EMBEDDED){ try{ window.top.location.href = url; return; }catch(e){} } window.location.href = url; }
 var root = document.getElementById('alive-flow');
+/* Funnel events: the WordPress page forwards these to GA4, Tag Manager and the Meta pixel. */
+function track(ev, params){ if(!EMBEDDED) return; try{ window.parent.postMessage({type:'alive-track', event:ev, params:params || {}}, '*'); }catch(e){} }
+function gaItems(){ return S.items.map(function(it){ return {item_id:String(it.style), item_name:it.productName || it.style, item_brand:it.brand || '', item_variant:it.color || '', price:+(+it.unitPrice || 0).toFixed(2), quantity:it.qty | 0}; }); }
+function once(key){ try{ if(sessionStorage.getItem(key)) return false; sessionStorage.setItem(key, '1'); }catch(e){} return true; }
 function broadcast(){
   var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
   try{ window.parent.postMessage({type:'alive-resize', height:h, page:'cart'}, '*'); }catch(e){}
@@ -776,7 +793,9 @@ window.addEventListener('load', broadcast); window.addEventListener('resize', br
 if(window.ResizeObserver) new ResizeObserver(broadcast).observe(document.body);
 function scrollToEl(el){
   if(!el) return;
-  var y = Math.max(0, Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - 12));
+  /* Phones: the site's sticky header is taller, so leave more room above the target. */
+  var pad = (window.matchMedia && window.matchMedia('(max-width:899px)').matches) ? 56 : 12;
+  var y = Math.max(0, Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - pad));
   if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-scrollto', y:y}, '*'); }catch(e){} }
   else window.scrollTo({top:y, behavior:'smooth'});
 }
@@ -1094,8 +1113,11 @@ function render(){
   if(S.done){ renderDone(); return; }
   if(S.pay){ renderPay(); return; }
   if(!S.items.length){
-    root.innerHTML = stepper() + '<div class="empty"><h1 style="font-size:22px;font-weight:800;text-transform:uppercase">Your cart is empty</h1>' +
-      '<a class="cta" style="max-width:280px;margin:22px auto 0" href="#" data-products="1">Browse products</a></div>';
+    var cats = [['T-shirts','t-shirts'],['Hoodies','sweatshirts-hoodies'],['Hats','headwear'],['Polos','polos-button-downs'],['Bags','bags'],['Drinkware','drinkware']];
+    root.innerHTML = '<div class="empty"><h1 style="font-size:22px;font-weight:800;text-transform:uppercase">Your cart is empty</h1>' +
+      '<p class="emp-sub">Pick a product, add your design and see your price instantly. No setup fees, proof before we print.</p>' +
+      '<div class="emp-cats">' + cats.map(function(c){ return '<a href="' + esc(CONFIG.pages[FLOW].products + '#' + c[1]) + '" data-navto="1">' + c[0] + '</a>'; }).join('') + '</div>' +
+      '<a class="cta" style="max-width:280px;margin:22px auto 0" href="#" data-products="1">Browse all products</a></div>';
     wire(); broadcast(); return;
   }
   var t = totals(), pickup = S.ship === 'pickup', promo = CART.getPromo();
@@ -1117,6 +1139,7 @@ function render(){
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-submit="1"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting secure checkout…' : 'Pay &amp; place order') + '</button>' +
       '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' +
+      '<div class="rating"><span class="stars">★★★★★</span> <b>5.0</b> from 288+ Google reviews</div>' +
     '</div>';
 
   root.innerHTML = stepper() +
@@ -1215,7 +1238,9 @@ function loadStripe(){
 }
 function clearCart(){ try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); }catch(e){} }
 function paidHere(){
-  var id = S.pay && S.pay.id; closePay(); clearCart();
+  var id = S.pay && S.pay.id, t = totals();
+  if(once('alive_purchase_' + (id || Date.now()))) track('purchase', {transaction_id:id || '', currency:'USD', value:t.grand, shipping:t.ship, items:gaItems()});
+  closePay(); clearCart();
   S.items = []; S.done = {paid:id || true}; render();
 }
 
@@ -1342,6 +1367,7 @@ function wire(){
   root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
   root.querySelectorAll('[data-share]').forEach(function(b){ b.onclick = openShare; });
+  root.querySelectorAll('[data-navto]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-mock]').forEach(function(b){ b.onclick = function(){
     var it = null; S.items.forEach(function(x){ if(x.id === b.dataset.mock) it = x; }); if(!it) return;
     openBox('<figure class="mkbig">' + mockHtml(it.mock) + '<figcaption><span>' + esc(it.productName || it.style) + (it.color ? ' — ' + esc(it.color) : '') + '</span><button type="button" class="x">Close</button></figcaption></figure>', 'lbox');
@@ -1453,6 +1479,9 @@ function submit(){
     .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
     .then(function(res){
       var j = res.j || {};
+      var tt = totals();
+      try{ sessionStorage.setItem('alive_pending_purchase', JSON.stringify({currency:'USD', value:tt.grand, shipping:tt.ship, items:gaItems()})); }catch(e){}
+      track('add_payment_info', {currency:'USD', value:tt.grand, payment_type:'stripe', items:gaItems()});
       if(res.ok && embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
       if(res.ok && j.url){ nav(j.url); return; }
       S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.'); render();
@@ -1477,11 +1506,15 @@ function renderDone(){
     /* A payment method that leaves the page (a bank app) can bring the buyer back
        to this file outside the site — send them to the real cart page. */
     if(!EMBEDDED && /github\.io$/.test(window.location.hostname)){ window.location.replace(CONFIG.pages[FLOW].cart + '?paid=' + encodeURIComponent(qp('paid'))); return; }
+    var pend = null; try{ pend = JSON.parse(sessionStorage.getItem('alive_pending_purchase') || 'null'); }catch(e){}
+    if(pend && once('alive_purchase_' + qp('paid'))){ pend.transaction_id = qp('paid'); track('purchase', pend); }
     clearCart(); S.items = []; S.done = {paid:qp('paid')}; render(); return;
   }
   if(qp('canceled')) S.err = 'Payment was cancelled — your order is still here whenever you’re ready.';
   var code = qp('cart');
-  (code ? loadSharedCart(code) : Promise.resolve()).then(function(){ applyOptions(); render(); });
+  (code ? loadSharedCart(code) : Promise.resolve()).then(function(){ applyOptions(); render();
+    if(S.items.length){ var t = totals(), sig = 'alive_bc_' + S.items.map(function(i){ return i.id + ':' + i.qty; }).join('|');
+      if(once(sig)) track('begin_checkout', {currency:'USD', value:t.total, items:gaItems()}); } });
 })();
 window.__ALIVE_CHECKOUT__ = {S:S, render:render, totals:totals, buildPayload:buildPayload, boxCount:boxCount, encodeCart:encodeCart, decodeCart:decodeCart, shareUrl:shareUrl};
 })();
