@@ -841,6 +841,9 @@
    layer itself (and its handles) captures touch for dragging. */
 #alive-flow .stage-art{touch-action:pan-y pinch-zoom !important;}
 #alive-flow .layer,#alive-flow .layer .h{touch-action:none !important;}
+/* product photo zoomed to the product (crops.json) */
+#alive-flow .stage.cropped{aspect-ratio:var(--ar) !important;height:auto !important;max-height:none !important;margin-left:auto;margin-right:auto;}
+#alive-flow .stage.cropped .stage-art > img{object-fit:fill;}
 </style>
 </head>
 <body>
@@ -2159,6 +2162,7 @@ var E = window.AliveEngine;
 var SITE = 'https://aliveprintshop.com';
 var CONFIG = {
   productsJson: 'https://aliveprintshop.github.io/PriceCalculator/products.json',
+  cropsJson: 'https://aliveprintshop.github.io/PriceCalculator/crops.json',
   /* Hostinger pages. ?flow=stage (set by the staging embed snippet) sends the
      customer through the hidden test pages instead of the live ones. */
   pages: {
@@ -2473,6 +2477,17 @@ function productCard(overlayHtml, foot, rail){
   var editor = S.phase === 'artwork';
   var fr = S.frame[S.color];
   var frame = editor ? (fr ? (fr + '') : '0.6667') : null;
+  /* Zoom past the white border SanMar leaves around the product
+     (crops.json, measured per style). The art box keeps the whole photo's
+     shape, so placement coordinates are unchanged; the stage just shows
+     the part of it where the product is. */
+  var cr = S.gal == null && CROPS[String(p.style).toUpperCase()], box = cr && cr[S.side === 'back' && colorBack(c) ? 'b' : 'f'];
+  var stageStyle = editor ? ' style="aspect-ratio:' + frame + '"' : '', artStyle = '';
+  if(box){
+    var cw = box[2] - box[0], ch = box[3] - box[1], ratio = +(cw * box[4] / ch).toFixed(4), maxH = editor ? 540 : (window.innerWidth < 560 ? 360 : 420);
+    stageStyle = ' style="--ar:' + ratio + ';width:min(100%,' + Math.round(maxH * ratio) + 'px)"';
+    artStyle = ' style="inset:auto;left:' + (-box[0] / cw * 100).toFixed(3) + '%;top:' + (-box[1] / ch * 100).toFixed(3) + '%;width:' + (100 / cw).toFixed(3) + '%;height:' + (100 / ch).toFixed(3) + '%"';
+  }
   var sides = S.gal == null && colorBack(c)
     ? '<div class="sides"><button type="button" data-side="front" class="' + (S.side === 'front' ? 'on' : '') + '">Front</button>' +
       '<button type="button" data-side="back" class="' + (S.side === 'back' ? 'on' : '') + '">Back</button></div>' : '';
@@ -2480,8 +2495,8 @@ function productCard(overlayHtml, foot, rail){
     '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
     '<h2>' + esc(cleanName(p)) + '</h2>' +
     '<div class="style">Style #' + esc(p.style) + (c ? ' — ' + esc(c.name) : '') + '</div>' +
-    '<div class="stage' + (editor ? '' : ' compact') + '"' + (editor ? ' style="aspect-ratio:' + frame + '"' : '') + '>' +
-      '<div class="stage-art" id="f-stage"><img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">' +
+    '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
+      '<div class="stage-art" id="f-stage"' + artStyle + '><img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">' +
       (editor && S.gal == null ? (overlayHtml || '') : '') + '</div></div>' +
     sides + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
   '</div>';
@@ -3038,8 +3053,11 @@ function boot(data){
   ensureFrame();
   render();
 }
+var CROPS = {};
+var cropsP = fetch(CONFIG.cropsJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS = j || {}; }).catch(function(){});
 fetch(CONFIG.productsJson)
   .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(function(data){ return cropsP.then(function(){ return data; }); })
   .then(boot)
   .catch(function(err){ if(window.console) console.error('[Alive product]', err); fail('We could not load this product just now.'); });
 
