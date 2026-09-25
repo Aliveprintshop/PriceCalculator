@@ -304,6 +304,27 @@
   #alive-flow .mo-hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
   #alive-flow .mo-hd b{font-family:var(--disp);font-size:17px;font-weight:800;letter-spacing:-.01em;}
 }
+/* ---- save / share a cart ---- */
+#alive-flow .sharebtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:10px;border:0;background:none;
+  font-family:var(--disp);font-weight:800;font-size:12.5px;color:var(--text2);cursor:pointer;}
+#alive-flow .sharebtn svg{width:15px;height:15px;}
+#alive-flow .sharebtn:hover{color:var(--blue);}
+#alive-flow .sharebox{max-width:460px;}
+#alive-flow .sharerow{display:flex;gap:8px;margin-top:12px;}
+#alive-flow .sharerow input{flex:1;min-width:0;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r);font:inherit;font-size:12.5px;color:var(--text2);background:var(--surface2);}
+#alive-flow .sharerow .dbtn,#alive-flow .shareacts .dbtn{min-height:40px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;}
+#alive-flow .shareacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+#alive-flow .shareacts .dbtn{flex:1;background:#fff;}
+#alive-flow .sharemsg{min-height:18px;font-size:12.5px;font-weight:700;color:var(--green);margin-top:6px;}
+#alive-flow .sharebox .small{font-size:12px;margin-top:12px;}
+#alive-flow .restored{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue-dark);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:13.5px;font-weight:600;}
+/* ---- payment step (Stripe's form sits on this page) ---- */
+#alive-flow .payhd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+#alive-flow .paycard{padding:10px;min-height:420px;}
+#alive-flow .payload{padding:60px 12px;text-align:center;color:var(--text2);font-size:14px;}
+@media(max-width:899px){
+  #alive-flow .paycard{padding:4px;border-radius:var(--r);}
+}
 </style>
 </head>
 <body>
@@ -716,7 +737,15 @@ var CONFIG = {
   payEndpoint: 'https://alive-checkout.austin-662.workers.dev',
   artEndpoint: 'https://alive-artwork.austin-662.workers.dev', maxFileMB: 25,
   ghlWebhook: 'https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53',
-  pages: { live:{products: SITE + '/products/', product: SITE + '/insta-price/'}, stage:{products: SITE + '/products/', product: SITE + '/insta-price-new/'} },
+  pages: { live:{products: SITE + '/products/', product: SITE + '/insta-price/', cart: SITE + '/cart/'},
+           stage:{products: SITE + '/products/', product: SITE + '/insta-price-new/', cart: SITE + '/cart-new/'} },
+  /* Stripe publishable key (public by design). Empty = pay on Stripe's own page. */
+  stripeKey: 'pk_live_fHTXnaxQCr8At0CeD7QJORFd',
+  /* Flat-rate shipping: $45 per box. Pieces that fit in one box, by product type.
+     Mixed orders share boxes (36 tees + 12 hoodies = half + half = 1 box).
+     The checkout Worker holds the same table and charges from it. */
+  shipPerBox: 45,
+  boxCap: {tshirt:72, polo:48, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:50, drinkware:24, other:48},
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   address: '2350 W Cheyenne Ave, North Las Vegas',
   addonImg: {neck:'media/addon-neck.jpg', hem:'media/addon-hem.jpg', bag:'media/addon-bag.jpg'}
@@ -782,7 +811,7 @@ if(window.AliveViewport) window.AliveViewport.subscribe(function(){ placeBar(); 
 var TIPS = {
   turnaround:['Turnaround', '10 business days, Monday to Friday, after you approve your proof. Order before 4 PM and today counts as day one. Rush moves you up the queue. Woven hem tags add 5 business days.'],
   payment:['Payment', 'You pay securely by card through Stripe. We email a proof before anything prints. Custom orders are made for you, so they can’t be returned — but if we get it wrong, we reprint it.'],
-  shipping:['Shipping', 'Pick up free at our North Las Vegas shop, or we ship it. Shipping is billed separately once your order is packed, and we email you the cost first.'],
+  shipping:['Shipping', 'Flat $45 per box, shipped anywhere in the US. A box holds about 72 tees, 48 polos, 24 hoodies or 12 jackets, and mixed orders share boxes. Or pick it up free at our North Las Vegas shop.'],
   tax:['Sales tax', 'Nevada sales tax is added at payment.']
 };
 function tip(keys){ return '<button type="button" class="qi" data-tip="' + keys + '" aria-label="How this works">?</button>'; }
@@ -930,11 +959,25 @@ function applyOptions(){
   CART.setItems(S.items);
 }
 function sum(fn){ return +S.items.reduce(function(t, it){ return t + (fn(it) || 0); }, 0).toFixed(2); }
+/* Boxes: add up each item's share of a box, then round up once. */
+function boxCount(items){
+  var share = (items || S.items).reduce(function(t, it){
+    var cap = CONFIG.boxCap[itemType(it)] || CONFIG.boxCap.other;
+    return t + (it.qty|0) / cap;
+  }, 0);
+  return share > 0 ? Math.ceil(share - 1e-9) : 0;
+}
+function shipInfo(){
+  if(S.ship === 'pickup') return {boxes:0, cost:0};
+  var n = boxCount(); return {boxes:n, cost:n * CONFIG.shipPerBox};
+}
+function boxesText(n){ return n + ' box' + (n === 1 ? '' : 'es'); }
 function totals(){
   var base = sum(function(it){ return priceItem(it, priceable(it) ? null : it.addons, priceable(it) ? 'std' : it.rush).line; });
   var withAdd = sum(function(it){ return priceItem(it, priceable(it) ? S.addon : it.addons, priceable(it) ? 'std' : it.rush).line; });
-  var fin = sum(function(it){ return +it.lineTotal; });
+  var fin = sum(function(it){ return +it.lineTotal; }), sh = shipInfo();
   return {base:base, addons:+(withAdd - base).toFixed(2), rush:+(fin - withAdd).toFixed(2), total:fin,
+          ship:sh.cost, boxes:sh.boxes, grand:+(fin + sh.cost).toFixed(2),
           pieces:S.items.reduce(function(t, it){ return t + (it.qty|0); }, 0)};
 }
 function rushExtra(key){
@@ -1018,6 +1061,7 @@ function missBlock(){
 }
 function render(){
   if(S.done){ renderDone(); return; }
+  if(S.pay){ renderPay(); return; }
   if(!S.items.length){
     root.innerHTML = stepper() + '<div class="empty"><h1 style="font-size:22px;font-weight:800;text-transform:uppercase">Your cart is empty</h1>' +
       '<a class="cta" style="max-width:280px;margin:22px auto 0" href="#" data-products="1">Browse products</a></div>';
@@ -1027,15 +1071,15 @@ function render(){
   var items = S.items.map(itemHtml).join('');
   var summary =
     '<div class="card sorder"><div class="hd"><h2>Your order</h2></div>' + items +
-      '<button class="addmore" type="button" data-products="1">+ Add another product</button></div>' +
+      '<button class="addmore" type="button" data-products="1">+ Add another product</button>' + shareBtn() + '</div>' +
     '<div class="card tot">' +
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       (promo && promo.code ? '<div class="row promo"><span>Promo ' + esc(promo.code) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">applied</b></div>' : '') +
-      '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping') + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : 'Billed separately') + '</b></div>' +
+      '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
-      '<div class="row big"><span>Total</span><span class="v num">' + money(t.total) + '</span></div>' +
+      '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
       (promo && promo.code ? '' : (S.promoOpen
         ? '<div class="promo-in"><input id="co-promo" placeholder="Promo code" autocomplete="off"><button type="button" class="dbtn" data-applypromo="1">Apply</button></div>' + (S.promoErr ? '<div class="perr">' + esc(S.promoErr) + '</div>' : '')
         : '<button type="button" class="linkbtn promo-link" data-openpromo="1">Have a promo code?</button>')) +
@@ -1049,14 +1093,15 @@ function render(){
       '<div>' +
         '<div class="hd"><h1>Checkout</h1></div>' +
         /* Phones: the order sits open at the top (the side column's copy is hidden there). */
-        '<div class="card morder"><div class="hd mo-hd"><h2>Your order</h2><b class="num">' + money(t.total) + '</b></div>' + items +
-          '<button class="addmore" type="button" data-products="1">+ Add another product</button></div>' +
+        (S.restored ? '<div class="restored">We loaded the cart that was shared with you — ' + S.restored + ' ' + (S.restored === 1 ? 'item' : 'items') + '. Check the sizes, then place your order.</div>' : '') +
+        '<div class="card morder"><div class="hd mo-hd"><h2>Your order</h2><b class="num">' + money(t.grand) + '</b></div>' + items +
+          '<button class="addmore" type="button" data-products="1">+ Add another product</button>' + shareBtn() + '</div>' +
         missBlock() +
         '<div class="card"><div class="hd"><h2>Your details</h2></div>' +
           '<div class="fields two">' + field('name','Full name','text','name') + field('email','Email','email','email') + '</div>' +
           '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
-          shipRow('ship', 'Ship it to me', 'Shipping billed separately once packed', 'Quoted') +
+          shipRow('ship', 'Ship it to me', 'Flat $' + CONFIG.shipPerBox + ' per box · your order fits in ' + boxesText(boxCount()), money(boxCount() * CONFIG.shipPerBox)) +
           shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') + '</div>' +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
@@ -1077,11 +1122,146 @@ function render(){
       '</div>' +
       '<div class="side">' + summary + '</div>' +
     '</div></div>' +
-    '<div class="bar"><div class="bar-in"><div><div class="k">Order total</div><div class="v num">' + money(t.total) + '</div>' +
+    '<div class="bar"><div class="bar-in"><div><div class="k">Order total</div><div class="v num">' + money(t.grand) + '</div>' +
       '<div class="s num">' + t.pieces + ' pcs · plus tax</div></div>' +
       '<button class="cta" id="co-submit" type="button"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting…' : 'Pay &amp; place order') + '</button></div></div>';
   wire(); placeBar(); broadcast();
 }
+/* ------------------------------------------------------------ pay on this page (Stripe embedded Checkout) */
+function payTotals(){
+  var t = totals(), pickup = S.ship === 'pickup';
+  return '<div class="card tot">' +
+    '<div class="row"><span>' + t.pieces + ' pieces' + (t.addons ? ' + add-ons' : '') + (t.rush ? ' + rush' : '') + '</span><b class="num">' + money(t.total) + '</b></div>' +
+    '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
+    '<div class="row"><span>Sales tax</span><b class="num">Shown in payment</b></div>' +
+    '<div class="row big"><span>Before tax</span><span class="v num">' + money(t.grand) + '</span></div>' +
+    '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div></div>';
+}
+function renderPay(){
+  if(S.pay.shown) return;                  /* never rebuild: it would tear down Stripe's form */
+  S.pay.shown = true;
+  var t = totals();
+  root.innerHTML = stepper() +
+    '<div class="wrap"><div class="co">' +
+      '<div>' +
+        '<div class="hd payhd"><h1>Payment</h1><button type="button" class="linkbtn" data-payback="1">&larr; Back to your order</button></div>' +
+        '<div class="card paycard"><div id="stripe-pay"><div class="payload">Loading secure payment…</div></div></div>' +
+        '<div class="guar"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>Proof before we print, every time</span></div>' +
+          '<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>100% print guarantee — wrong, we reprint it</span></div></div>' +
+      '</div>' +
+      '<div class="side"><div class="card sorder"><div class="hd"><h2>Your order</h2></div>' + S.items.map(itemHtml).join('') + '</div>' + payTotals() + '</div>' +
+    '</div></div>';
+  root.querySelectorAll('.rm').forEach(function(b){ b.remove(); });
+  var back = root.querySelector('[data-payback]');
+  if(back) back.onclick = function(){ closePay(); render(); scrollToEl(root.querySelector('.steps')); };
+  broadcast(); scrollToEl(root.querySelector('.steps'));
+  var holder = document.getElementById('stripe-pay');
+  loadStripe().then(function(stripe){
+    var init = stripe.createEmbeddedCheckoutPage || stripe.initEmbeddedCheckout;
+    return init.call(stripe, {fetchClientSecret:function(){ return Promise.resolve(S.pay.secret); }, onComplete:paidHere});
+  }).then(function(co){
+    if(!S.pay){ try{ co.destroy(); }catch(e){} return; }
+    S.pay.co = co; holder.innerHTML = ''; co.mount('#stripe-pay'); broadcast();
+  }).catch(function(e){
+    if(window.console) console.error('[Alive checkout] Stripe', e);
+    if(S.pay && S.pay.url){ nav(S.pay.url); return; }   /* fall back to Stripe's own page */
+    holder.innerHTML = '<div class="warn">Secure payment didn’t load. Please refresh, or <a href="' + CONFIG.phoneHref + '">call ' + CONFIG.phone + '</a> and we’ll finish it by phone.</div>';
+    broadcast();
+  });
+}
+function closePay(){ if(S.pay && S.pay.co){ try{ S.pay.co.destroy(); }catch(e){} } S.pay = null; S.busy = false; }
+var stripeP = null;
+function loadStripe(){
+  if(stripeP) return stripeP;
+  stripeP = new Promise(function(res, rej){
+    if(window.Stripe) return res(window.Stripe(CONFIG.stripeKey));
+    var s = document.createElement('script'); s.src = 'https://js.stripe.com/v3/'; s.async = true;
+    s.onload = function(){ window.Stripe ? res(window.Stripe(CONFIG.stripeKey)) : rej(new Error('no Stripe')); };
+    s.onerror = function(){ stripeP = null; rej(new Error('Stripe.js failed to load')); };
+    document.head.appendChild(s);
+  });
+  return stripeP;
+}
+function clearCart(){ try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); }catch(e){} }
+function paidHere(){
+  var id = S.pay && S.pay.id; closePay(); clearCart();
+  S.items = []; S.done = {paid:id || true}; render();
+}
+
+/* ------------------------------------------------------------ save / share a cart */
+function shareBtn(){ return '<button class="sharebtn" type="button" data-share="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>Save or share this cart</button>'; }
+function b64u(bytes){ var s = ''; for(var i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function unb64u(str){ var s = atob(str.replace(/-/g,'+').replace(/_/g,'/')); var b = new Uint8Array(s.length); for(var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
+function pipe(bytes, stream){ return new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer().then(function(a){ return new Uint8Array(a); }); }
+function shareItems(){
+  return S.items.map(function(it){ var c = Object.assign({}, it); delete c.artworkByLocation; delete c.id; return c; });
+}
+function encodeCart(){
+  var raw = new TextEncoder().encode(JSON.stringify({v:1, i:shareItems(), p:CART.getPromo()}));
+  if(typeof CompressionStream === 'undefined') return Promise.resolve('j' + b64u(raw));
+  return pipe(raw, new CompressionStream('deflate-raw')).then(function(z){ return 'z' + b64u(z); })
+    .catch(function(){ return 'j' + b64u(raw); });
+}
+function decodeCart(code){
+  var kind = code.charAt(0), bytes = unb64u(code.slice(1));
+  var p = kind === 'z' ? pipe(bytes, new DecompressionStream('deflate-raw')) : Promise.resolve(bytes);
+  return p.then(function(b){ return JSON.parse(new TextDecoder().decode(b)); });
+}
+function shareUrl(code){ return CONFIG.pages[FLOW].cart + '?cart=' + code; }
+function newId(){ return 'it_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+/* Items from a link are added to what's already in this cart (opening the same link twice changes nothing). */
+function loadSharedCart(code){
+  return decodeCart(code).then(function(d){
+    if(!d || !Array.isArray(d.i)) return;
+    var have = CART.getItems(), sig = function(it){ return JSON.stringify([it.style, it.color, it.sizes, it.locations, it.artworkNote, it.frontColors, it.backColors]); };
+    var seen = {}; have.forEach(function(it){ seen[sig(it)] = 1; });
+    var add = d.i.filter(function(it){ return it && it.style && !seen[sig(it)]; }).map(function(it){ return Object.assign({}, it, {id:newId()}); });
+    if(add.length) CART.setItems(have.concat(add));
+    if(d.p && d.p.code && !CART.getPromo()) CART.setPromo(d.p);
+    S.items = CART.getItems(); S.restored = d.i.length;
+    S.items.forEach(function(it){
+      if(it.rush && E.RUSH_MULT[it.rush] > E.RUSH_MULT[S.rush]) S.rush = it.rush;
+      if(it.addons) ['neck','hem','bag'].forEach(function(k){ if(it.addons[k]) S.addon[k] = true; });
+    });
+  }).catch(function(e){ if(window.console) console.warn('[Alive checkout] shared cart unreadable', e); S.err = 'That cart link didn’t open fully. Please ask for a new link.'; });
+}
+function copyText(txt){
+  if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt).catch(function(){ return legacyCopy(txt); });
+  return legacyCopy(txt);
+}
+function legacyCopy(txt){
+  return new Promise(function(res, rej){
+    var ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); var ok = false; try{ ok = document.execCommand('copy'); }catch(e){} ta.remove(); ok ? res() : rej(new Error('copy'));
+  });
+}
+function openShare(){
+  var t = totals();
+  encodeCart().then(function(code){
+    var url = shareUrl(code);
+    var subject = 'Custom order from Alive Print Shop — ' + t.pieces + ' pieces';
+    var body = 'Here’s the order I put together at Alive Print Shop (' + t.pieces + ' pieces, ' + money(t.total) + ' before shipping and tax). Open the link to see it and check out:\n\n' + url;
+    var canShare = !!(navigator.share && (!navigator.canShare || navigator.canShare({url:url})));
+    var box = openBox('<div class="tb sharebox" role="dialog" aria-modal="true"><h4>Save or share this cart</h4>' +
+      '<p>This link opens this exact cart — products, colors, sizes, artwork and prices — ready to check out. Bookmark it for later, or send it to whoever needs to approve it.</p>' +
+      '<div class="sharerow"><input type="text" readonly value="' + esc(url) + '" aria-label="Cart link"><button type="button" class="dbtn" data-copy="1">Copy link</button></div>' +
+      '<div class="sharemsg" aria-live="polite"></div>' +
+      '<div class="shareacts">' + (canShare ? '<button type="button" class="dbtn" data-native="1">Share…</button>' : '') +
+        '<a class="dbtn" href="mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body) + '" target="_blank" rel="noopener">Email it</a>' +
+        '<a class="dbtn" href="sms:?&body=' + encodeURIComponent('My Alive Print Shop order: ' + url) + '" target="_blank" rel="noopener">Text it</a></div>' +
+      '<p class="small">Prices on the link are checked again when it’s opened.</p>' +
+      '<button type="button" class="x">Done</button></div>', 'tipbox');
+    var msg = box.querySelector('.sharemsg'), inp = box.querySelector('input');
+    inp.onclick = function(){ inp.select(); };
+    box.querySelector('[data-copy]').onclick = function(){
+      copyText(url).then(function(){ msg.textContent = 'Link copied.'; }, function(){ inp.select(); msg.textContent = 'Press Ctrl+C (or ⌘C) to copy.'; });
+    };
+    var nb = box.querySelector('[data-native]');
+    if(nb) nb.onclick = function(){ navigator.share({title:subject, text:'My Alive Print Shop order', url:url}).catch(function(){}); };
+  }).catch(function(){ S.err = 'We couldn’t make a link for this cart. Please try again.'; render(); });
+}
+
 function stepper(){
   var defs = ['Design','Sizes','Checkout'], out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(l, i){
@@ -1128,6 +1308,7 @@ function wire(){
   root.querySelectorAll('[data-readd]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
+  root.querySelectorAll('[data-share]').forEach(function(b){ b.onclick = openShare; });
 }
 
 var REQUIRED = {name:'Please tell us your name', email:'We need an email to send your proof to', phone:'A phone number helps us reach you quickly'};
@@ -1150,7 +1331,7 @@ function shippingText(){
 }
 /* Same fields cart.html sends, so the GoHighLevel workflow mapping keeps working. */
 function buildPayload(){
-  var items = S.items, promo = CART.getPromo(), miss = missingArtwork(), f = S.form;
+  var items = S.items, promo = CART.getPromo(), miss = missingArtwork(), f = S.form, ship = shipInfo();
   var parts = String(f.name||'').trim().split(/\s+/), firstName = parts[0] || '', lastName = parts.slice(1).join(' ');
   var subtotal = +items.reduce(function(s, it){ return s + (+it.lineTotal || 0); }, 0).toFixed(2);
   var savings = +items.reduce(function(s, it){ return s + (+it.promoSavingsTotal || 0); }, 0).toFixed(2);
@@ -1190,7 +1371,8 @@ function buildPayload(){
     '— ORDER (' + items.length + ' ' + (items.length === 1 ? 'item' : 'items') + ', ' + pieces + ' pcs) —\n' + itemsBlock + '\n\n' +
     '— ARTWORK FILES (' + allArt.length + ') —\n' + (allArt.length ? allArt.join('\n') : 'None uploaded') + '\n\n' +
     '— PRICING —\nSubtotal: $' + (subtotal + savings).toFixed(2) + '\n' + (savings > 0 ? 'Promo ' + (promo ? promo.code : '') + ': -$' + savings.toFixed(2) + '\n' : '') +
-    'Total (before tax): $' + subtotal.toFixed(2) + '\nShipping: ' + (S.ship === 'pickup' ? 'Pickup (free)' : 'Bill separately') + '\n\n— CUSTOMER NOTES —\n' + (f.notes || '—');
+    'Products total: $' + subtotal.toFixed(2) + '\nShipping: ' + (S.ship === 'pickup' ? 'Pickup (free)' : '$' + ship.cost.toFixed(2) + ' (' + boxesText(ship.boxes) + ' × $' + CONFIG.shipPerBox + ' flat rate)') +
+    '\nTotal (before tax): $' + (subtotal + ship.cost).toFixed(2) + '\n\n— CUSTOMER NOTES —\n' + (f.notes || '—');
   return {
     firstName:firstName, lastName:lastName, email:f.email, phone:f.phone, company:f.company,
     shippingAddress:shippingText(), orderNotes:f.notes, itemCount:items.length, pieceCount:pieces,
@@ -1199,7 +1381,9 @@ function buildPayload(){
     promoCode:promo ? promo.code : '', promoSavings:'$' + savings.toFixed(2), promoSavingsValue:savings,
     items:JSON.stringify(items.map(function(it){ var c = Object.assign({}, it); delete c.pricingProduct; return c; })),
     itemsSummary:itemsText, itemsBlock:itemsBlock, artworkLinks:allArt.join('\n'), mockupLinks:'', mockupCount:0,
-    artworkHtml:artworkHtml, noteText:noteText, source:'New checkout (product page v3)', submittedAt:submittedAt
+    artworkHtml:artworkHtml, noteText:noteText, source:'New checkout (product page v3)', submittedAt:submittedAt,
+    deliveryMethod:S.ship === 'pickup' ? 'pickup' : 'ship', shippingBoxes:ship.boxes, shippingCost:'$' + ship.cost.toFixed(2), shippingCostValue:ship.cost,
+    orderTotalWithShipping:'$' + (subtotal + ship.cost).toFixed(2)
   };
 }
 function submit(){
@@ -1217,13 +1401,23 @@ function submit(){
   try{ if(navigator.sendBeacon) sent = navigator.sendBeacon(CONFIG.ghlWebhook, fd); }catch(e){}
   if(!sent){ try{ fetch(CONFIG.ghlWebhook, {method:'POST', body:fd, keepalive:true}).catch(function(){}); }catch(e){} }
   S.busy = true; render();
-  var f = S.form;
-  var body = {items:S.items, total:totals().total, orderRef:ref,
-    customer:{name:f.name, email:f.email, phone:f.phone, company:f.company}};
+  var f = S.form, t = totals(), embed = !!CONFIG.stripeKey;
+  if(embed) loadStripe().catch(function(){});   /* warm up while the session is created */
+  var here = window.location.origin + window.location.pathname;
+  var body = {items:S.items, total:t.total, orderRef:ref,
+    customer:{name:f.name, email:f.email, phone:f.phone, company:f.company},
+    /* The Worker recounts boxes itself; these are for the receipt and the note. */
+    shipping:{method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship,
+      address:S.ship === 'pickup' ? null : {line1:f.addr1, line2:f.addr2, city:f.city, state:f.state, postal_code:f.zip, country:'US'}},
+    embedded:embed,
+    returnUrl:here + '?paid={CHECKOUT_SESSION_ID}' + (FLOW === 'stage' ? '&flow=stage' : ''),
+    cartUrl:CONFIG.pages[FLOW].cart};
   fetch(CONFIG.payEndpoint.replace(/\/$/,'') + '/create-session', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)})
     .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
     .then(function(res){
-      if(res.ok && res.j && res.j.url){ nav(res.j.url); return; }
+      var j = res.j || {};
+      if(res.ok && embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
+      if(res.ok && j.url){ nav(j.url); return; }
       S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.'); render();
     })
     .catch(function(){ S.busy = false;
@@ -1243,14 +1437,16 @@ function renderDone(){
 }
 (function boot(){
   if(qp('paid')){
-    try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); }catch(e){}
-    S.items = []; S.done = {paid:qp('paid')}; render(); return;
+    /* A payment method that leaves the page (a bank app) can bring the buyer back
+       to this file outside the site — send them to the real cart page. */
+    if(!EMBEDDED && /github\.io$/.test(window.location.hostname)){ window.location.replace(CONFIG.pages[FLOW].cart + '?paid=' + encodeURIComponent(qp('paid'))); return; }
+    clearCart(); S.items = []; S.done = {paid:qp('paid')}; render(); return;
   }
   if(qp('canceled')) S.err = 'Payment was cancelled — your order is still here whenever you’re ready.';
-  applyOptions();
-  render();
+  var code = qp('cart');
+  (code ? loadSharedCart(code) : Promise.resolve()).then(function(){ applyOptions(); render(); });
 })();
-window.__ALIVE_CHECKOUT__ = {S:S, render:render, totals:totals, buildPayload:buildPayload};
+window.__ALIVE_CHECKOUT__ = {S:S, render:render, totals:totals, buildPayload:buildPayload, boxCount:boxCount, encodeCart:encodeCart, decodeCart:decodeCart, shareUrl:shareUrl};
 })();
 
 </script>
