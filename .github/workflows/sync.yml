@@ -112,7 +112,7 @@ jobs:
           mkdir -p _site/media && if [ -d media ]; then cp -r media/. _site/media/; fi
 
           REQUIRED="products.json index.html"
-          OPTIONAL="alive-pricing-calculator.html alive-pricing-calculator-v2.html cart.html mockup.html design-studio.html project.html deals-config.js deal.html alive-product.html alive-checkout.html"
+          OPTIONAL="alive-pricing-calculator.html alive-pricing-calculator-v2.html cart.html mockup.html design-studio.html project.html deals-config.js deal.html alive-product.html alive-checkout.html crops.json"
 
           for f in $REQUIRED; do
             if [ ! -f "$f" ]; then
