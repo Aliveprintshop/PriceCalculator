@@ -282,6 +282,18 @@
 #alive-flow .ack{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:13px;font-weight:600;}
 #alive-flow .qi{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);background:#fff;
   color:var(--text2);font-family:var(--disp);font-size:10.5px;font-weight:800;line-height:1;margin-left:6px;vertical-align:middle;cursor:pointer;}
+/* the WordPress page draws the footer bar itself (see the embed snippet) */
+#alive-flow.hostbar .bar{display:none !important;}
+#alive-flow .reups{display:grid;gap:8px;margin-top:10px;}
+#alive-flow .reup{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;
+  border:1px solid #fcd34d;border-radius:var(--r);padding:10px 12px;}
+#alive-flow .reup b{display:block;font-size:13.5px;color:var(--text);}
+#alive-flow .reup span{display:block;font-size:12px;color:var(--text2);word-break:break-all;}
+#alive-flow .reup em{display:block;font-style:normal;font-size:12px;color:#b45309;margin-top:2px;}
+#alive-flow .reup-btn{flex:none;background:var(--blue);color:#fff;border:0;border-radius:var(--r);padding:10px 14px;
+  font-family:var(--disp);font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;}
+#alive-flow .reup-btn:disabled{background:var(--border2);cursor:default;}
+#alive-flow .miss .or{margin-top:12px;}
 </style>
 </head>
 <body>
@@ -692,6 +704,7 @@ var E = window.AliveEngine;
 var SITE = 'https://aliveprintshop.com';
 var CONFIG = {
   payEndpoint: 'https://alive-checkout.austin-662.workers.dev',
+  artEndpoint: 'https://alive-artwork.austin-662.workers.dev', maxFileMB: 25,
   ghlWebhook: 'https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53',
   pages: { live:{products: SITE + '/products/'}, stage:{products: SITE + '/products/'} },
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
@@ -722,7 +735,33 @@ function placeOverlay(box){
   if(box && s && EMBEDDED){ box.style.position = 'absolute'; box.style.top = Math.round(s.visTop) + 'px';
     box.style.left = '0'; box.style.width = '100%'; box.style.height = Math.round(Math.max(200, s.visBottom - s.visTop)) + 'px'; }
 }
+/* Host bar: the WordPress snippet draws the bar on the real page (true
+   position:fixed) and relays taps back. Our own bar is the fallback. */
+var HOST = false, lastBar = '';
+function barModel(){
+  var bar = root.querySelector('.bar'); if(!bar) return {show:false};
+  var k = bar.querySelector('.k'), v = bar.querySelector('.v'), sub = bar.querySelector('.s'), b = bar.querySelector('button.cta');
+  var narrow = window.matchMedia ? window.matchMedia('(max-width:899px)').matches : window.innerWidth < 900;
+  return {show:narrow, k:k && k.firstChild ? k.firstChild.textContent : '', v:v ? v.textContent : '', s:sub ? sub.textContent : '',
+          label:b ? b.textContent : '', disabled:!!(b && b.disabled), tip:!!bar.querySelector('.qi')};
+}
+function pushBar(){
+  if(!HOST) return;
+  var m = barModel(), j = JSON.stringify(m); if(j === lastBar) return; lastBar = j;
+  try{ window.parent.postMessage({type:'alive-bar', bar:m}, '*'); }catch(e){}
+}
+window.addEventListener('resize', function(){ pushBar(); });
+window.addEventListener('message', function(e){
+  if(e.source !== window.parent) return;
+  var d = e.data; if(!d || typeof d !== 'object') return;
+  if(d.type === 'alive-host'){ if(!HOST){ HOST = true; root.classList.add('hostbar'); var b = root.querySelector('.bar'); if(b){ b.style.position = ''; b.style.top = ''; } }
+    lastBar = ''; pushBar(); broadcast(); }
+  else if(d.type === 'alive-bar-cta'){ var c = root.querySelector('.bar button.cta'); if(c && !c.disabled) c.click(); }
+  else if(d.type === 'alive-bar-tip'){ var q = root.querySelector('.bar .qi'); if(q) q.click(); }
+});
+if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-hello'}, '*'); }catch(e){} }
 function placeBar(){
+  if(HOST){ pushBar(); return; }
   var bar = root.querySelector('.bar'), s = window.AliveViewport && window.AliveViewport.slice;
   if(!bar) return;
   if(s && EMBEDDED){ bar.style.position = 'absolute'; bar.style.top = Math.round(s.visBottom - bar.offsetHeight) + 'px'; bar.style.bottom = 'auto'; }
@@ -780,8 +819,40 @@ function readyDate(rush){ return addBizDays(productionStart(), E.turnaroundDays(
 var S = {
   items: CART.getItems(), rush:'std', addon:{neck:false, hem:false, bag:false},
   ship:'ship', form:{name:'',email:'',phone:'',company:'',addr1:'',addr2:'',city:'',state:'',zip:'',notes:''},
-  bad:{}, err:'', busy:false, promoOpen:false, promoErr:'', done:null
+  bad:{}, err:'', busy:false, promoOpen:false, promoErr:'', done:null, reup:{}
 };
+/* Re-send an artwork file that didn't reach storage on the product page. */
+function reupload(key){
+  var parts = key.split('|'), id = parts[0], idx = +parts[1];
+  var inp = document.createElement('input'); inp.type = 'file';
+  inp.accept = 'image/*,.pdf,.ai,.eps,.svg,.psd,.zip,application/pdf,application/postscript,application/zip';
+  inp.onchange = function(){
+    var file = inp.files && inp.files[0]; if(!file) return;
+    if(file.size > CONFIG.maxFileMB * 1024 * 1024){ S.reup[key] = 'That file is over ' + CONFIG.maxFileMB + ' MB — please email it instead.'; render(); return; }
+    S.reup[key] = 'busy'; render();
+    function attempt(n){
+      var fd = new FormData(); fd.append('file', file, file.name || 'artwork');
+      return fetch(CONFIG.artEndpoint + '/upload', {method:'POST', body:fd})
+        .then(function(r){ if(r.ok) return r.json(); throw new Error('upload ' + r.status); })
+        .then(function(j){ if(!j || !j.url) throw new Error('no url'); return j; })
+        .catch(function(e){ if(n >= 3) throw e; return new Promise(function(res){ setTimeout(res, n * 1500); }).then(function(){ return attempt(n + 1); }); });
+    }
+    attempt(1).then(function(j){
+      var items = CART.getItems();
+      items.forEach(function(it){
+        if(it.id !== id || !it.artworkFiles || !it.artworkFiles[idx]) return;
+        var f = it.artworkFiles[idx]; f.url = j.url; f.name = file.name || f.name; delete f.pending;
+        if(it.artworkByLocation && f.location) it.artworkByLocation[f.location] = f;
+        var up = it.artworkFiles.filter(function(x){ return x && x.url; }).map(function(x){ return x.location + ': ' + x.url; });
+        if(!it.artworkLater){ it.artworkLink = up.join('\n'); }
+        it.artworkNote = up.join(', ');
+      });
+      CART.setItems(items); S.items = CART.getItems(); delete S.reup[key]; render();
+    }).catch(function(e){ if(window.console) console.error('[Alive checkout] re-upload failed', e);
+      S.reup[key] = 'That didn’t go through. Try again, or email it to us.'; render(); });
+  };
+  inp.click();
+}
 /* Options already on the items (e.g. coming back from Stripe) are where the pickers start. */
 S.items.forEach(function(it){
   if(it.rush && E.RUSH_MULT[it.rush] > E.RUSH_MULT[S.rush]) S.rush = it.rush;
@@ -905,7 +976,7 @@ function shipRow(key, label, sub, amt){
 }
 function missingArtwork(){
   var out = [];
-  S.items.forEach(function(it){ (it.artworkFiles || []).forEach(function(f){ if(f && f.pending && !f.url) out.push({item:it.productName || it.style, location:f.location || 'artwork', name:f.name || ''}); }); });
+  S.items.forEach(function(it){ (it.artworkFiles || []).forEach(function(f, i){ if(f && f.pending && !f.url) out.push({id:it.id, idx:i, item:it.productName || it.style, location:f.location || 'artwork', name:f.name || ''}); }); });
   return out;
 }
 function orderRef(){
@@ -915,9 +986,14 @@ function orderRef(){
 }
 function missBlock(){
   var miss = missingArtwork(); if(!miss.length) return '';
-  return '<div class="card miss"><div class="hd"><h2>We didn’t receive ' + (miss.length === 1 ? 'your artwork file' : miss.length + ' artwork files') + '</h2></div>' +
-    '<p>Your design shows here, but the file never reached our servers. Email it to <a href="mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Artwork for order ' + orderRef()) + '">' + CONFIG.email + '</a> and quote <b>' + esc(orderRef()) + '</b>.</p>' +
-    '<ul>' + miss.map(function(m){ return '<li>' + esc(m.location) + (m.name ? ' — ' + esc(m.name) : '') + '</li>'; }).join('') + '</ul>' +
+  return '<div class="card miss"><div class="hd"><h2>Add your artwork ' + (miss.length === 1 ? 'file' : 'files') + ' again</h2></div>' +
+    '<p>Your design didn’t finish uploading. Add it again here — it only takes a moment.</p>' +
+    '<div class="reups">' + miss.map(function(m){ var key = m.id + '|' + m.idx, busy = S.reup[key] === 'busy';
+      return '<div class="reup"><div><b>' + esc(m.location) + '</b>' + (m.name ? '<span>' + esc(m.name) + '</span>' : '') +
+        (S.reup[key] && S.reup[key] !== 'busy' ? '<em>' + esc(S.reup[key]) + '</em>' : '') + '</div>' +
+        '<button type="button" class="reup-btn" data-reup="' + esc(key) + '"' + (busy ? ' disabled' : '') + '>' + (busy ? 'Uploading…' : 'Upload file') + '</button></div>';
+    }).join('') + '</div>' +
+    '<p class="or">Can’t upload it? Email it to <a href="mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Artwork for order ' + orderRef()) + '">' + CONFIG.email + '</a> and quote <b>' + esc(orderRef()) + '</b>.</p>' +
     '<label class="ack"><input type="checkbox" id="miss-ack"' + (S.missAck ? ' checked' : '') + '> I’ll email my artwork with that reference.</label></div>';
 }
 function render(){
@@ -1027,6 +1103,7 @@ function wire(){
   };
   var cp = root.querySelector('[data-clearpromo]'); if(cp) cp.onclick = function(){ CART.setPromo(null); applyOptions(); render(); };
   var ack = document.getElementById('miss-ack'); if(ack) ack.onchange = function(){ S.missAck = ack.checked; };
+  root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
 }
 

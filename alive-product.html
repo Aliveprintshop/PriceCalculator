@@ -835,6 +835,8 @@
 @media(max-width:560px){#alive-flow .modes{grid-template-columns:1fr;}}
 #alive-flow .qty{display:flex;align-items:center;justify-content:space-between;gap:12px;}
 #alive-flow .qty > span:first-child{font-family:var(--disp);font-size:15px;font-weight:800;}
+/* the WordPress page draws the footer bar itself (see the embed snippet) */
+#alive-flow.hostbar .mbar{display:none !important;}
 </style>
 </head>
 <body>
@@ -2212,6 +2214,7 @@ function scrollToEl(el){
    position:fixed pins to the whole auto-height document inside the embed, so
    we use AliveViewport's measured on-screen slice instead. */
 function placeBar(){
+  if(HOST){ pushBar(); return; }
   var bar = root.querySelector('.mbar'); if(!bar) return;
   var s = window.AliveViewport && window.AliveViewport.slice;
   if(s && EMBEDDED){
@@ -2229,6 +2232,30 @@ function placeOverlay(box){
     box.style.height = Math.round(Math.max(200, s.visBottom - s.visTop)) + 'px';
   }
 }
+/* Host bar: the WordPress snippet draws the footer bar on the real page
+   (true position:fixed, no lag) and relays taps back here. Our own bar is
+   the fallback when the host doesn't answer (old snippets, standalone). */
+var HOST = false, lastBar = '';
+function barModel(){
+  var bar = root.querySelector('.mbar'); if(!bar) return {show:false};
+  var k = bar.querySelector('.k'), v = bar.querySelector('.v'), sub = bar.querySelector('.s'), b = bar.querySelector('button.cta');
+  return {show:true, k:k && k.firstChild ? k.firstChild.textContent : '', v:v ? v.textContent : '', s:sub ? sub.textContent : '',
+          label:b ? b.textContent : '', disabled:!!(b && b.disabled), tip:!!bar.querySelector('.qi')};
+}
+function pushBar(){
+  if(!HOST) return;
+  var m = barModel(), j = JSON.stringify(m); if(j === lastBar) return; lastBar = j;
+  try{ window.parent.postMessage({type:'alive-bar', bar:m}, '*'); }catch(e){}
+}
+window.addEventListener('message', function(e){
+  if(e.source !== window.parent) return;
+  var d = e.data; if(!d || typeof d !== 'object') return;
+  if(d.type === 'alive-host'){ if(!HOST){ HOST = true; root.classList.add('hostbar'); var b = root.querySelector('.mbar'); if(b){ b.style.position = ''; b.style.top = ''; } }
+    lastBar = ''; pushBar(); broadcast(); }
+  else if(d.type === 'alive-bar-cta'){ var c = root.querySelector('.mbar button.cta'); if(c && !c.disabled) c.click(); }
+  else if(d.type === 'alive-bar-tip'){ var q = root.querySelector('.mbar .qi'); if(q) q.click(); }
+});
+if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-hello'}, '*'); }catch(e){} }
 function subscribeViewport(){
   if(window.AliveViewport) window.AliveViewport.subscribe(function(){
     placeBar();
@@ -2674,16 +2701,29 @@ function takeFile(k, file){
   fr.onerror = function(){ S.busy = null; S.err = 'We could not read that file.'; render(); };
   fr.readAsDataURL(file);
 }
+/* Uploads start as soon as a file is picked, retry on a bad connection,
+   and checkout waits for them (see addToCart) so a file is never lost by
+   tapping Continue while it is still on its way. */
 function upload(k, blob, filename){
-  var fd = new FormData();
-  fd.append('file', blob, filename || blob.name || 'artwork');
-  var d0 = S.art[k];
-  return fetch(CONFIG.artEndpoint.replace(/\/+$/,'') + '/upload', {method:'POST', body:fd})
-    .then(function(r){ if(r.ok) return r.json(); throw new Error('upload ' + r.status); })
-    .then(function(j){ if(!j || !j.url) throw new Error('no url');
-      var d = S.art[k]; if(d && d === d0){ d.url = j.url; d.key = j.key || ''; d.uploadFailed = false; render(); } })
+  var d0 = S.art[k]; if(!d0) return Promise.resolve();
+  var name = filename || blob.name || 'artwork';
+  d0.file = blob; d0.fileName = name; d0.uploadFailed = false;
+  function attempt(n){
+    var fd = new FormData(); fd.append('file', blob, name);
+    return fetch(CONFIG.artEndpoint.replace(/\/+$/,'') + '/upload', {method:'POST', body:fd})
+      .then(function(r){ if(r.ok) return r.json(); throw new Error('upload ' + r.status); })
+      .then(function(j){ if(!j || !j.url) throw new Error('no url'); return j; })
+      .catch(function(e){ if(n >= 3) throw e; return new Promise(function(res){ setTimeout(res, n * 1500); }).then(function(){ return attempt(n + 1); }); });
+  }
+  d0.upP = attempt(1)
+    .then(function(j){ d0.url = j.url; d0.key = j.key || ''; d0.uploadFailed = false; if(S.art[k] === d0 && !S.saving) render(); })
     .catch(function(e){ if(window.console) console.error('[Alive artwork] upload failed', e);
-      var d = S.art[k]; if(d && d === d0){ d.uploadFailed = true; render(); } });
+      d0.uploadFailed = true; if(S.art[k] === d0 && !S.saving) render(); });
+  return d0.upP;
+}
+function pendingUploads(){
+  if(S.mode === 'later') return [];
+  return S.locs.filter(function(k){ var d = S.art[k]; return d && !d.url && d.file; });
 }
 var BG_MSG = {_default:'We could not lift the background off this one. Send it as is and our art team will sort it.',
   no_bg:'This one already has a clear background.', too_complex:'Too much going on in the background for an automatic cut-out. Our art team will do it by hand.'};
@@ -2752,7 +2792,7 @@ function render(){
           '<div class="mhelp">' + helpBar() + '</div>' +
         '</div>' +
       '</div></div>' +
-      mbar('Continue to checkout &rarr;', !artReady(), barSub());
+      mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !artReady(), barSub());
   }else{
     var foot = S.phase === 'color' ? colorFoot() : sizeFoot();
     html = stepper(1) +
@@ -2774,6 +2814,7 @@ function refreshPrice(){
   var u = unitNow();
   if(mv) mv.textContent = u == null ? 'Min ' + minQ() + ' pcs' : money(u);
   if(ms) ms.textContent = barSub();
+  pushBar();
   var a = sizeTotal(), tot = root.querySelector('.sztot');
   if(tot && !isOneSize()){ tot.querySelector('b').textContent = a + ' pcs'; tot.classList.toggle('ok', a >= minQ()); tot.classList.toggle('off', a > 0 && a < minQ()); }
   root.querySelectorAll('[data-size]').forEach(function(inp){
@@ -2898,6 +2939,19 @@ function pricingProduct(){
   return keep;
 }
 function addToCart(){
+  if(S.saving) return;
+  var pend = pendingUploads();
+  if(pend.length){
+    S.saving = true; render();
+    pend.forEach(function(k){ var d = S.art[k]; if(d.uploadFailed || !d.upP) upload(k, d.file, d.fileName); });
+    var all = Promise.all(pend.map(function(k){ return S.art[k].upP; }));
+    var cap = new Promise(function(res){ setTimeout(res, 120000); });
+    Promise.race([all, cap]).then(function(){ S.saving = false; addToCartNow(); });
+    return;
+  }
+  addToCartNow();
+}
+function addToCartNow(){
   var q = realQty(), cfg = pricingCfg(q), sizes = isOneSize() ? sizesForTotal() : JSON.parse(JSON.stringify(S.sizes));
   var pp = E.unitPrice(S.p, cfg);
   if(pp == null){ S.err = 'Minimum order is ' + minQ() + ' pieces.'; render(); return; }
