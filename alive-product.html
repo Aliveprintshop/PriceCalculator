@@ -3211,7 +3211,12 @@ function fail(msg){
 }
 function boot(data){
   var want = String(qp('style') || '').trim().toUpperCase();
-  if(!want){ nav(productsUrl()); return fail('Pick a product to get started.'); }   /* bare /insta-price/ → the product list */
+  if(!want){
+    /* bare /insta-price/ → the product list, but never inside the WordPress/Elementor editor or a preview */
+    var editing = /(^|[?&])(action=elementor|elementor-preview|preview(_id)?=|preview_nonce)/.test(window.location.search);
+    if(!editing) nav(productsUrl());
+    return fail('Pick a product to get started.');
+  }
   var rows = Array.isArray(data) ? data : (data.products || []), raw = null, manual = false;
   for(var i = 0; i < rows.length; i++){ if(String(rows[i].style).toUpperCase() === want){ raw = rows[i]; break; } }
   if(!raw){ (window.MANUAL_PRODUCTS || []).forEach(function(m){ if(String(m.style).toUpperCase() === want){ raw = m; manual = true; } }); }
