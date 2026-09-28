@@ -908,6 +908,12 @@
 #alive-flow .size input{min-height:40px;}
 #alive-flow .help a{min-height:44px;}
 #alive-flow .hint{font-size:12.5px !important;}
+/* Ink-count notes and prompt (28 Sep 2026) */
+#alive-flow .dnote.ok{color:var(--green,#16a34a);}
+#alive-flow .dnote .linkbtn{font-size:inherit;}
+#alive-flow .tipbox .lp-sw{display:flex;gap:5px;margin:4px 0 12px;}
+#alive-flow .tipbox .lp-sw i{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.2);display:block;}
+#alive-flow .tipbox .lp-full{display:block;width:100%;margin:10px 0 0;padding:12px 14px;border:0;border-radius:10px;background:#1b6cce;color:#fff;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -2018,7 +2024,7 @@ var AliveBgRemove=(function(){
 })();
 
 var AliveArtColors=(function(){
-  var DEF={sample:180,quantBits:5,mergeDist:44,minShare:0.012,blendDist:30,
+  var DEF={sample:600,edgeTol:30,minInterior:0.12,needN:3,coverDist:40,minCover:0.9,quantBits:5,mergeDist:44,minShare:0.012,blendDist:30,
            blendMaxRatio:0.45,fineBits:2,toneSpread:45,alphaMin:128,dropBackground:true};
   function d2(a,b){var r=a[0]-b[0],g=a[1]-b[1],bb=a[2]-b[2];return r*r+g*g+bb*bb;}
   function seg(p,a,b){
@@ -2051,15 +2057,30 @@ var AliveArtColors=(function(){
     try{ctx.drawImage(img,0,0,cw,ch);}catch(e){return {ok:false,reason:'draw'};}
     var dat;try{dat=ctx.getImageData(0,0,cw,ch).data;}catch(e){return {ok:false,reason:'tainted'};}
     var bg=o.dropBackground?bgOf(dat,cw,ch,o.alphaMin):null;
-    var sh=8-o.quantBits,bu={},fine={},art=0,tr=0;
+    /* v2 (28 Sep 2026): count colors from "interior" pixels only — pixels whose
+       four neighbours are the same color. Anti-aliased edges and JPEG ringing sit
+       on edges, so they no longer read as extra colors or as a photo. Falls back
+       to every pixel when the art is too thin to have an interior. */
+    var et=o.edgeTol*o.edgeTol, am=o.alphaMin, allArt=0, inner=new Uint8Array(cw*ch), nIn=0, nCore=0;
+    function isArt(j){ if(dat[j+3]<am)return false; return !(bg&&d2([dat[j],dat[j+1],dat[j+2]],bg)<324); }
+    function near(j,i){ if(dat[j+3]<am)return false; var r=dat[j]-dat[i],g=dat[j+1]-dat[i+1],b=dat[j+2]-dat[i+2]; return r*r+g*g+b*b<et; }
+    for(var yy=0;yy<ch;yy++)for(var xx=0;xx<cw;xx++){
+      var ii=(yy*cw+xx)*4; if(!isArt(ii))continue; allArt++;
+      if(xx>0&&yy>0&&xx<cw-1&&yy<ch-1){var nb=(near(ii-4,ii)?1:0)+(near(ii+4,ii)?1:0)+(near(ii-cw*4,ii)?1:0)+(near(ii+cw*4,ii)?1:0);if(nb>=o.needN){inner[yy*cw+xx]=nb===4?2:1;nIn++;if(nb===4)nCore++;}}
+    }
+    var useInner=nIn>=Math.max(40,allArt*o.minInterior), useCore=nCore>=Math.max(40,allArt*o.minInterior);
+    var sh=8-o.quantBits,bu={},fine={},art=0,artF=0,tr=0;
     for(var i=0;i<dat.length;i+=4){
       if(dat[i+3]<o.alphaMin){tr++;continue;}
+      if(useInner&&!inner[i>>2])continue;
       var r=dat[i],g=dat[i+1],b=dat[i+2];
       if(bg&&d2([r,g,b],bg)<324)continue;
       var key=(r>>sh)+'_'+(g>>sh)+'_'+(b>>sh),e=bu[key];
       if(e){e.n++;e.r+=r;e.g+=g;e.b+=b;}else bu[key]={n:1,r:r,g:g,b:b};
+      art++;
+      if(useCore&&inner[i>>2]!==2)continue;
       var fb=o.fineBits,fk=(r>>fb)+'_'+(g>>fb)+'_'+(b>>fb);
-      fine[fk]=(fine[fk]||0)+1; art++;
+      fine[fk]=(fine[fk]||0)+1; artF++;
     }
     if(!art)return {ok:false,reason:'empty'};
     var list=[];for(var q in bu){var E=bu[q];list.push({n:E.n,rgb:[E.r/E.n,E.g/E.n,E.b/E.n]});}
@@ -2095,12 +2116,12 @@ var AliveArtColors=(function(){
     solid.sort(function(a,b){return b.n-a.n;});
     var fc=[];for(var f2 in fine)fc.push(fine[f2]);
     fc.sort(function(a,b){return b-a;});
-    var acc=0,t90=0,need=art*0.9;
+    var acc=0,t90=0,need=artF*0.9;
     for(var fi=0;fi<fc.length;fi++){acc+=fc[fi];t90++;if(acc>=need)break;}
     var photo=(t90>o.toneSpread&&solid.length>=3)||solid.length>16;
     return {ok:true,count:photo?null:solid.length,photoish:photo,tones90:t90,
       colors:solid.slice(0,12).map(function(c){return {hex:hex(c.rgb),share:c.n/art};}),
-      backgroundDropped:!!bg,hasTransparency:tr>0};
+      backgroundDropped:!!bg,hasTransparency:tr>0,interior:useInner};
   }
   return {detect:detect};
 })();
@@ -2685,6 +2706,42 @@ function priceBreaks(){
     rows.map(function(r){ return '<span class="pb' + (cur && cur.q === r.q ? ' on' : '') + '"><i>' + r.q + '+</i><b>' + money(r.u) + '</b></span>'; }).join('') + '</div>' + nudge + '</div>';
 }
 function needsInkCount(k){ return S.method === 'sp' && !S.p._drinkware ? (k !== 'left-sleeve' && k !== 'right-sleeve') : !!S.p._drinkware; }
+/* Ink colors for an uploaded design (28 Sep 2026).
+   Counted automatically when the file is a flat logo; when it can't be counted
+   (a photo, shading, or a PDF/AI/EPS we can't read here) the customer is asked,
+   so a design never sits at the 1-color price by accident. */
+function applyDetect(k, det){
+  var d = S.art[k]; if(!d) return;
+  d.inkAuto = 0; d.inkAsk = '';
+  if(det && det.ok && det.count && !det.photoish){ S.inks[k] = Math.min(E.MAX_INK, det.count); d.inkAuto = S.inks[k]; return; }
+  d.inkAsk = d.noPreview ? 'file' : (det && det.ok && det.photoish) ? 'photo' : 'unknown';
+  var guess = det && det.ok && det.colors ? det.colors.length : 0;
+  S.inks[k] = Math.max(1, Math.min(S.p && S.p._drinkware ? 4 : E.MAX_INK, guess || 1));
+}
+function inkPending(k){ var d = S.art[k]; return S.mode !== 'later' && needsInkCount(k) && !!(d && d.inkAsk); }
+function askInksIfNeeded(k){ if(inkPending(k)) setTimeout(function(){ inkPrompt(k); }, 60); }
+function inkPrompt(k){
+  var d = S.art[k]; if(!d || !needsInkCount(k)) return;
+  var cap = S.p._drinkware ? 4 : E.MAX_INK, v = S.inks[k] || 1, o = '';
+  for(var i = 1; i <= cap; i++) o += '<option value="' + i + '"' + (i === v ? ' selected' : '') + '>' + i + ' color' + (i > 1 ? 's' : '') + '</option>';
+  var why = d.inkAsk === 'file' ? 'We can’t read ' + esc((d.name.split('.').pop() || 'this').toUpperCase()) + ' files in the browser, so we couldn’t count the colors in your design.'
+    : d.inkAsk === 'photo' ? 'Your design has shading or lots of colors, so we couldn’t count the ink colors automatically.'
+    : 'We couldn’t count the colors in your design automatically.';
+  var full = d.inkAsk === 'photo' && E.decoMethods(S.p).indexOf('ht') > -1;
+  var sw = (d.colors || []).slice(0, 8).map(function(x){ return '<i style="background:' + esc(x.hex || x) + '"></i>'; }).join('');
+  var box = openBox('<div class="tb" role="dialog" aria-modal="true"><h4>How many ink colors are in your design?</h4>' +
+    '<p>' + why + ' Screen printing is priced by ink colors — the shirt color doesn’t count.</p>' +
+    (sw ? '<div class="lp-sw inks">' + sw + '</div>' : '') +
+    '<label class="lp-row"><span>' + esc(LOC[k].label) + '</span><select data-lpink="' + k + '">' + o + '</select></label>' +
+    '<p class="lp-note">We confirm it on your proof. If it’s different, the price may change and we’ll check with you before anything prints.</p>' +
+    '<button type="button" class="x lp-ok">Use ' + '<span data-lpn>' + v + '</span> color' + (v > 1 ? 's' : '') + '</button>' +
+    (full ? '<button type="button" class="lp-full">Print it in full color instead — any number of colors</button>' : '') + '</div>', 'tipbox');
+  var sel = box.querySelector('[data-lpink]');
+  sel.onchange = function(){ var n = +sel.value; box.querySelector('.lp-ok').innerHTML = 'Use ' + n + ' color' + (n > 1 ? 's' : ''); };
+  box.querySelector('.lp-ok').addEventListener('click', function(){ S.inks[k] = +sel.value; d.inkAsk = ''; d.inkSet = true; render(); });
+  var fb = box.querySelector('.lp-full');
+  if(fb) fb.addEventListener('click', function(){ box.remove(); d.inkAsk = ''; setMethod('ht'); render(); });
+}
 function inkSelect(k){
   var cap = S.p._drinkware ? 4 : E.MAX_INK, v = S.inks[k] || 1, o = '';
   for(var i = 1; i <= cap; i++) o += '<option value="' + i + '"' + (i === v ? ' selected' : '') + '>' + i + ' color' + (i > 1 ? 's' : '') + '</option>';
@@ -2716,8 +2773,11 @@ function locCard(k){
       '<div><h4>' + esc(d.name) + '</h4><div class="dmeta">' + (inks && S.method === 'sp' ? '<span class="inks">' + inks + '</span>' : '') + '<span>' + status + '</span></div></div>' +
       '<div class="dacts"><button class="dbtn" type="button" data-add="' + k + '">Change</button>' +
       '<button class="dx" type="button" data-del="' + k + '" aria-label="Remove">&#x2715;</button></div></div>' +
-      (d.photoish && S.method === 'sp' && E.decoMethods(S.p).indexOf('ht') > -1
-        ? '<div class="dnote warn">This looks like a photo or has lots of colors. <button type="button" class="linkbtn" data-method="ht">Switch to Full color</button> for the best result.</div>' : '') +
+      (inkPending(k)
+        ? '<div class="dnote warn">We couldn’t count the colors in this file. <button type="button" class="linkbtn" data-askink="' + k + '">Choose ink colors</button>' +
+          (d.photoish && E.decoMethods(S.p).indexOf('ht') > -1 ? ' or <button type="button" class="linkbtn" data-method="ht">switch to Full color</button>' : '') + '</div>'
+        : (needsInkCount(k) && d.inkAuto && S.inks[k] === d.inkAuto
+          ? '<div class="dnote ok">We counted ' + d.inkAuto + ' ink color' + (d.inkAuto > 1 ? 's' : '') + ' in your design and priced it that way. Not right? Change it above.</div>' : '')) +
       (d.noPreview ? '<div class="dnote">We can’t preview this file type here. It’s attached and our art team will place it.</div>'
         : (!d.src ? '' : (d.bgRemoved ? '<button class="bgbtn" type="button" data-undobg="' + k + '">Put the background back</button>'
           : '<button class="bgbtn" type="button" data-bg="' + k + '"' + (d.bgBusy ? ' disabled' : '') + '>' + (d.bgBusy ? 'Working…' : 'Remove background') + '</button>'))) +
@@ -2735,12 +2795,14 @@ function modePicker(){
 }
 function artReady(){
   if(S.mode === 'later') return true;
-  return S.locs.every(function(k){ return !!S.art[k]; });
+  return S.locs.every(function(k){ return !!S.art[k] && !inkPending(k); });
 }
 function artNote(){
   if(S.mode === 'later') return '';
   var miss = S.locs.filter(function(k){ return !S.art[k]; }).map(function(k){ return LOC[k].label; });
-  return miss.length ? 'Upload a design for ' + miss.join(', ') + ', or choose “Send my design later”.' : '';
+  if(miss.length) return 'Upload a design for ' + miss.join(', ') + ', or choose “Send my design later”.';
+  var ask = S.locs.filter(inkPending).map(function(k){ return LOC[k].label; });
+  return ask.length ? 'Tell us how many ink colors are in your ' + ask.join(' and ') + ' design.' : '';
 }
 
 /* placement editor (ported from the demo, which ported it from v2) */
@@ -2828,15 +2890,16 @@ function takeFile(k, file){
       try{ det = AliveArtColors.detect(im); }catch(e){}
       S.art[k] = {name:file.name, src:src, thumb:thumbFrom(im), colors:(det.ok && det.colors) || [], photoish:!!(det.ok && det.photoish),
                   url:'', key:'', uploadFailed:false, bgRemoved:false, bgBusy:false, bgMsg:'', place:defaultPlace(k)};
-      /* The detected ink count becomes the default; the customer can change it. */
-      if(det.ok && det.count && !det.photoish) S.inks[k] = Math.min(E.MAX_INK, det.count);
+      /* The detected ink count sets the price; if we can't count it, we ask. */
+      applyDetect(k, det);
       S.busy = null; S.sel = k; if(LOC[k].side) { S.side = LOC[k].side; S.gal = null; }
       trackDesign('upload');
-      render(); upload(k, file);
+      render(); upload(k, file); askInksIfNeeded(k);
     };
     im.onerror = function(){
       S.art[k] = {name:file.name, src:'', thumb:'', colors:[], photoish:false, url:'', key:'', uploadFailed:false, noPreview:true, place:defaultPlace(k)};
-      S.busy = null; render(); upload(k, file);
+      applyDetect(k, null);
+      S.busy = null; render(); upload(k, file); askInksIfNeeded(k);
     };
     im.src = src;
   };
@@ -2878,11 +2941,12 @@ function removeBg(k){
       var r; try{ r = AliveBgRemove.run(im); }catch(e){ r = {ok:false}; }
       d.bgBusy = false;
       if(!r || !r.ok){ d.bgMsg = BG_MSG[r && r.reason] || BG_MSG._default; render(); return; }
-      d.bgPrev = {src:d.src, thumb:d.thumb, colors:d.colors, photoish:d.photoish, ink:S.inks[k]};
+      d.bgPrev = {src:d.src, thumb:d.thumb, colors:d.colors, photoish:d.photoish, ink:S.inks[k], inkAuto:d.inkAuto, inkAsk:d.inkAsk};
       d.src = r.dataUrl; d.bgRemoved = true;
       var im2 = new Image();
       im2.onload = function(){ var det = {ok:false}; try{ det = AliveArtColors.detect(im2); }catch(e){}
-        if(det.ok){ d.colors = det.colors || []; d.photoish = !!det.photoish; if(det.count && !det.photoish) S.inks[k] = Math.min(E.MAX_INK, det.count); }
+        if(det.ok){ d.colors = det.colors || []; d.photoish = !!det.photoish;
+          if(det.count && !det.photoish){ S.inks[k] = Math.min(E.MAX_INK, det.count); d.inkAuto = S.inks[k]; d.inkAsk = ''; } }
         d.thumb = thumbFrom(im2); render(); };
       im2.src = r.dataUrl;
     };
@@ -2894,6 +2958,7 @@ function undoBg(k){
   var d = S.art[k]; if(!d || !d.bgPrev) return;
   d.src = d.bgPrev.src; d.thumb = d.bgPrev.thumb; d.colors = d.bgPrev.colors; d.photoish = d.bgPrev.photoish;
   if(d.bgPrev.ink) S.inks[k] = d.bgPrev.ink;
+  d.inkAuto = d.bgPrev.inkAuto || 0; d.inkAsk = d.bgPrev.inkAsk || '';
   d.bgRemoved = false; d.bgPrev = null; d.bgMsg = ''; render();
 }
 
@@ -3066,7 +3131,10 @@ function wire(){
       else { S.locs.push(k); if(S.mode === 'later' && needsInkCount(k)) setTimeout(laterPrompt, 0); }
       render(); };
   });
-  root.querySelectorAll('[data-ink]').forEach(function(s){ s.onchange = function(){ S.inks[s.dataset.ink] = +s.value; refreshPrice(); }; });
+  root.querySelectorAll('[data-ink]').forEach(function(s){ s.onchange = function(){
+    var k = s.dataset.ink, d = S.art[k]; S.inks[k] = +s.value;
+    if(d && (d.inkAsk || (d.inkAuto && d.inkAuto !== S.inks[k]))){ d.inkAsk = ''; d.inkSet = true; render(); } else refreshPrice(); }; });
+  root.querySelectorAll('[data-askink]').forEach(function(b){ b.onclick = function(){ inkPrompt(b.dataset.askink); }; });
   root.querySelectorAll('[data-mode]').forEach(function(b){
     b.onclick = function(){ S.mode = b.dataset.mode; if(S.mode === 'later') trackDesign('later'); render(); };
   });
@@ -3099,9 +3167,12 @@ function wire(){
   if(mc) mc.onclick = function(){
     if(S.phase === 'artwork'){
       if(artReady()) go('sizes', 'foot');
-      else { S.nudge = true; render(); scrollToEl(root.querySelector('.modes')); }   /* show what's missing */
+      else { var pk = S.locs.filter(function(k){ return S.art[k]; }).filter(inkPending)[0];
+        if(pk && S.locs.every(function(k){ return !!S.art[k]; })){ inkPrompt(pk); return; }
+        S.nudge = true; render(); scrollToEl(root.querySelector('.modes')); }   /* show what's missing */
     }
     else if(sizesReady() && artReady()) addToCart();
+    else { var pk2 = S.locs.filter(inkPending)[0]; if(pk2) inkPrompt(pk2); }
   };
   var ap = root.querySelector('[data-allprod]');
   if(ap) ap.onclick = function(e){ e.preventDefault(); nav(productsUrl()); };
