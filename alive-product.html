@@ -2722,6 +2722,7 @@ function inkPending(k){ var d = S.art[k]; return S.mode !== 'later' && needsInkC
 function askInksIfNeeded(k){ if(inkPending(k)) setTimeout(function(){ inkPrompt(k); }, 60); }
 function inkPrompt(k){
   var d = S.art[k]; if(!d || !needsInkCount(k)) return;
+  if(root.querySelector('.tipbox[data-keep="' + k + '"]')) return;   /* already open */
   var cap = S.p._drinkware ? 4 : E.MAX_INK, v = S.inks[k] || 1, o = '';
   for(var i = 1; i <= cap; i++) o += '<option value="' + i + '"' + (i === v ? ' selected' : '') + '>' + i + ' color' + (i > 1 ? 's' : '') + '</option>';
   var why = d.inkAsk === 'file' ? 'We can’t read ' + esc((d.name.split('.').pop() || 'this').toUpperCase()) + ' files in the browser, so we couldn’t count the colors in your design.'
@@ -2736,6 +2737,7 @@ function inkPrompt(k){
     '<p class="lp-note">We confirm it on your proof. If it’s different, the price may change and we’ll check with you before anything prints.</p>' +
     '<button type="button" class="x lp-ok">Use ' + '<span data-lpn>' + v + '</span> color' + (v > 1 ? 's' : '') + '</button>' +
     (full ? '<button type="button" class="lp-full">Print it in full color instead — any number of colors</button>' : '') + '</div>', 'tipbox');
+  box.setAttribute('data-keep', k);
   var sel = box.querySelector('[data-lpink]');
   sel.onchange = function(){ var n = +sel.value; box.querySelector('.lp-ok').innerHTML = 'Use ' + n + ' color' + (n > 1 ? 's' : ''); };
   box.querySelector('.lp-ok').addEventListener('click', function(){ S.inks[k] = +sel.value; d.inkAsk = ''; d.inkSet = true; render(); });
@@ -3054,7 +3056,10 @@ function render(){
         whyAlive() + '<div class="mhelp">' + helpBar() + '</div></div></div></div>' +
       mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !sizesReady() || !artReady(), barSub());
   }
+  /* An open ink-color question survives a redraw (e.g. when the upload finishes). */
+  var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); });
   root.innerHTML = html;
+  keep.forEach(function(b){ root.appendChild(b); });
   wire();
   placeBar();
   broadcast();
