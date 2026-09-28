@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T21:25:49.280630+00:00",
+  "generated_at": "2026-09-28T21:56:47.476210+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -211,7 +211,7 @@
       "_notes": "Per location. No color surcharge."
     }
   },
-  "product_count": 3101,
+  "product_count": 3100,
   "products": [
     {
       "style": "108084",
@@ -19132,6 +19132,41 @@
         }
       ],
       "source": "sanmar"
+    },
+    {
+      "style": "31-069",
+      "name": "OTTO CAP 5 Panel Mid Profile Baseball Cap",
+      "brand": "OTTO CAP",
+      "category": "Caps",
+      "subcategory": "Baseball Caps",
+      "description": "65/35 polyester/cotton twill. Structured firm front panel. Mid profile. Pre-curved visor. Adjustable snapback. One size fits most.",
+      "case_price": 5.05,
+      "case_sale_price": null,
+      "sale_start_date": null,
+      "sale_end_date": null,
+      "msrp": null,
+      "piece_weight_lbs": 0.2,
+      "product_status": "Regular",
+      "discontinued": false,
+      "available_sizes": [
+        "OSFA"
+      ],
+      "size_upcharges": {},
+      "colors": [
+        {
+          "name": "Black",
+          "code": "003",
+          "hex": "#000000",
+          "images": {
+            "front_model": "https://aliveprintshop.github.io/PriceCalculator/media/otto-31069-black-front.jpg",
+            "back_model": "https://aliveprintshop.github.io/PriceCalculator/media/otto-31069-black-back.jpg",
+            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/otto-31069-black-front.jpg",
+            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/otto-31069-black-back.jpg",
+            "side_model": null
+          }
+        }
+      ],
+      "source": "custom"
     },
     {
       "style": "312",
@@ -204286,88 +204321,6 @@
         }
       ],
       "source": "sanmar"
-    },
-    {
-      "style": "LOCAL-001",
-      "name": "Local Supplier Trucker Hat",
-      "brand": "Local Supplier",
-      "category": "Caps",
-      "subcategory": "Trucker Hat",
-      "description": "Foam-front, mesh-back, snapback.",
-      "case_price": 6.5,
-      "case_sale_price": null,
-      "sale_start_date": null,
-      "sale_end_date": null,
-      "msrp": 12.0,
-      "piece_weight_lbs": 0.15,
-      "product_status": "Regular",
-      "discontinued": false,
-      "available_sizes": [
-        "OS"
-      ],
-      "size_upcharges": {},
-      "colors": [
-        {
-          "name": "Black",
-          "code": "BK",
-          "hex": "#000000",
-          "images": {
-            "front_model": "https://example.com/local-001-black-front.jpg",
-            "back_model": "https://example.com/local-001-black-back.jpg",
-            "front_flat": null,
-            "back_flat": null,
-            "side_model": null
-          }
-        },
-        {
-          "name": "White",
-          "code": "WH",
-          "hex": "#FFFFFF",
-          "images": {
-            "front_model": "https://example.com/local-001-white-front.jpg",
-            "back_model": null,
-            "front_flat": null,
-            "back_flat": null,
-            "side_model": null
-          }
-        }
-      ],
-      "source": "custom"
-    },
-    {
-      "style": "LOCAL-002",
-      "name": "Seasonal Clearance Tote",
-      "brand": "Local Supplier",
-      "category": "Bags",
-      "subcategory": "Tote",
-      "description": "Canvas tote, 12oz. Limited time pricing.",
-      "case_price": 4.95,
-      "case_sale_price": 3.5,
-      "sale_start_date": "2026-04-15",
-      "sale_end_date": "2026-05-15",
-      "msrp": 9.99,
-      "piece_weight_lbs": 0.4,
-      "product_status": "Regular",
-      "discontinued": false,
-      "available_sizes": [
-        "OS"
-      ],
-      "size_upcharges": {},
-      "colors": [
-        {
-          "name": "Navy",
-          "code": "NVY",
-          "hex": "#1B2C55",
-          "images": {
-            "front_model": "https://example.com/local-002-navy-front.jpg",
-            "back_model": null,
-            "front_flat": null,
-            "back_flat": null,
-            "side_model": null
-          }
-        }
-      ],
-      "source": "custom"
     },
     {
       "style": "LOE322",
