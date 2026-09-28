@@ -303,7 +303,7 @@ root.AliveEngine={
   var PRODUCTS = [
     {key:'tshirt', label:'T Shirt', style:'NL6210', brand:'Next Level Apparel', noun:'shirt', img:'media/landing/shirt-black-crop.webp', methods:['sp','ht']},
     {key:'hoodie', label:'Hoodie',  style:'18500',  brand:'Gildan',             noun:'hoodie', img:'media/landing/hoodie-black-crop.webp', methods:['sp','em']},
-    {key:'hat',    label:'Hat',     style:'31-069', brand:'OTTO CAP',           noun:'hat',    img:'media/landing/hat-black-crop.webp', methods:['em','ht']}
+    {key:'hat',    label:'Hat',     style:'31-069', brand:'OTTO CAP',           noun:'hat',    img:'https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-F.medium.jpg', methods:['em','ht']}
   ];
   var MLABEL = {sp:'Screen Print', em:'Embroidery', ht:'Full Color'};
   var MNOTE  = {sp:'1-color front print', em:'Embroidered front logo', ht:'Full-color front print'};
@@ -312,6 +312,7 @@ root.AliveEngine={
   function money(n){ return '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function cur(){ return PRODUCTS[S.p]; }
+  function imgUrl(pr){ return /^https?:/.test(pr.img) ? pr.img : BASE + pr.img; }
   function track(name, params){
     try{ if(window.gtag) window.gtag('event', name, params); }catch(e){}
     try{ (window.dataLayer = window.dataLayer || []).push(Object.assign({event:name}, params)); }catch(e){}
@@ -357,7 +358,7 @@ root.AliveEngine={
   /* ---- markup ---- */
   function tile(pr, i){
     return '<button type="button" class="alp-tile" role="radio" aria-checked="' + (i === S.p) + '" data-p="' + i + '">' +
-      '<img src="' + BASE + pr.img + '" alt="" width="100" height="80" loading="eager"><span>' + esc(pr.label) + '</span>' +
+      '<img src="' + imgUrl(pr) + '" alt="" width="100" height="80" loading="eager"><span>' + esc(pr.label) + '</span>' +
       '<span class="alp-check" aria-hidden="true">&#10003;</span></button>';
   }
   function decoBtns(){
@@ -383,7 +384,7 @@ root.AliveEngine={
           '<p class="alp-err" id="alp-err" role="alert" hidden></p>' +
           '<ul class="alp-perks"><li>No setup fees</li><li>Proof before we print</li><li>100% print guarantee</li></ul></div>' +
       '</div>' +
-      '<figure class="alp-fig"><div class="alp-photo"><img data-photo src="' + BASE + pr.img + '" alt="" width="600" height="620"></div>' +
+      '<figure class="alp-fig"><div class="alp-photo"><img data-photo src="' + imgUrl(pr) + '" alt="" width="600" height="620"></div>' +
         '<figcaption class="alp-cap" data-cap aria-live="polite"></figcaption></figure></div>';
     wire(); update();
   }
@@ -396,7 +397,7 @@ root.AliveEngine={
     root.querySelector('[data-decos]').innerHTML = decoBtns();
     root.querySelectorAll('[data-m]').forEach(function(b){ b.onclick = function(){ S.m = b.getAttribute('data-m'); update(); }; });
     var img = root.querySelector('[data-photo]');
-    if(img.getAttribute('src') !== BASE + pr.img) img.src = BASE + pr.img;
+    if(img.getAttribute('src') !== imgUrl(pr)) img.src = imgUrl(pr);
     img.alt = 'Black ' + pr.brand + ' ' + pr.style + ' ' + pr.noun;
     root.querySelector('[data-cap]').textContent = pr.brand + ' · ' + pr.style + ' · ' + CONFIG.color;
     root.querySelector('[data-minus]').disabled = !validQty() || +qtyEl().value <= CONFIG.min;
