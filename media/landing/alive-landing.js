@@ -307,7 +307,7 @@ root.AliveEngine={
   ];
   var MLABEL = {sp:'Screen Print', em:'Embroidery', ht:'Full Color'};
   var MNOTE  = {sp:'1-color front print', em:'Embroidered front logo', ht:'Full-color front print'};
-  var S = {p:0, qty:CONFIG.min, m:'sp', data:{}, err:''};
+  var S = {p:0, qty:36, m:'sp', data:{}, err:''};
 
   function money(n){ return '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
