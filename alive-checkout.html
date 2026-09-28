@@ -927,6 +927,11 @@ S.items.forEach(function(it){
   if(it.rush && E.RUSH_MULT[it.rush] > E.RUSH_MULT[S.rush]) S.rush = it.rush;
   if(it.addons) ['neck','hem','bag'].forEach(function(k){ if(it.addons[k]) S.addon[k] = true; });
 });
+/* Dollar-off codes live in Stripe (it counts uses and stops the code at its limit).
+   The Worker checks them; the amount is only shown here, Stripe applies it. */
+function stripePromo(){ var p = CART.getPromo(); return p && p.code && p.stripe ? p : null; }
+function promoOff(pre){ var p = stripePromo(); if(!p) return 0;
+  var o = p.amountOff ? +p.amountOff : (p.percentOff ? pre * p.percentOff / 100 : 0); return +Math.min(pre, o).toFixed(2); }
 function promoDiscount(){ var p = CART.getPromo(); return p && p.code && E.PROMO_CODES[p.code] ? E.PROMO_CODES[p.code] : 0; }
 /* Items made on the new product page carry their pricing product and can be
    re-priced. Items from the old calculator keep the price and options they
@@ -1005,9 +1010,9 @@ function boxesText(n){ return n + ' box' + (n === 1 ? '' : 'es'); }
 function totals(){
   var base = sum(function(it){ return priceItem(it, priceable(it) ? null : it.addons, priceable(it) ? 'std' : it.rush).line; });
   var withAdd = sum(function(it){ return priceItem(it, priceable(it) ? S.addon : it.addons, priceable(it) ? 'std' : it.rush).line; });
-  var fin = sum(function(it){ return +it.lineTotal; }), sh = shipInfo();
+  var fin = sum(function(it){ return +it.lineTotal; }), sh = shipInfo(), off = promoOff(fin + sh.cost);
   return {base:base, addons:+(withAdd - base).toFixed(2), rush:+(fin - withAdd).toFixed(2), total:fin,
-          ship:sh.cost, boxes:sh.boxes, grand:+(fin + sh.cost).toFixed(2),
+          ship:sh.cost, boxes:sh.boxes, off:off, grand:+(fin + sh.cost - off).toFixed(2),
           pieces:S.items.reduce(function(t, it){ return t + (it.qty|0); }, 0)};
 }
 function rushExtra(key){
@@ -1129,7 +1134,7 @@ function render(){
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
-      (promo && promo.code ? '<div class="row promo"><span>Promo ' + esc(promo.code) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">applied</b></div>' : '') +
+      (promo && promo.code ? '<div class="row promo"><span>Promo ' + esc(promo.code) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : 'applied') + '</b></div>' : '') +
       '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
@@ -1187,6 +1192,7 @@ function payTotals(){
   return '<div class="card tot">' +
     '<div class="row"><span>' + t.pieces + ' pieces' + (t.addons ? ' + add-ons' : '') + (t.rush ? ' + rush' : '') + '</span><b class="num">' + money(t.total) + '</b></div>' +
     '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
+    (t.off ? '<div class="row promo"><span>Promo ' + esc(stripePromo().code) + '</span><b class="num">−' + money(t.off) + '</b></div>' : '') +
     '<div class="row"><span>Sales tax</span><b class="num">Shown in payment</b></div>' +
     '<div class="row big"><span>Before tax</span><span class="v num">' + money(t.grand) + '</span></div>' +
     '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div></div>';
@@ -1358,9 +1364,20 @@ function wire(){
   var ap = root.querySelector('[data-applypromo]');
   if(ap) ap.onclick = function(){
     var code = String((document.getElementById('co-promo') || {}).value || '').trim().toUpperCase();
-    if(!E.PROMO_CODES[code]){ S.promoErr = 'That code isn’t valid.'; render(); return; }
-    CART.setPromo({code:code, discount:E.PROMO_CODES[code]}); S.promoErr = ''; applyOptions(); render();
+    if(!code){ S.promoErr = 'Enter a promo code.'; render(); return; }
+    if(E.PROMO_CODES[code]){ CART.setPromo({code:code, discount:E.PROMO_CODES[code]}); S.promoErr = ''; applyOptions(); render(); return; }
+    ap.disabled = true; ap.textContent = 'Checking…';
+    fetch(CONFIG.payEndpoint.replace(/\/$/,'') + '/promo?code=' + encodeURIComponent(code))
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(!j || !j.ok){ S.promoErr = (j && j.error) || 'That code isn’t valid.'; render(); return; }
+        if(j.minimum && totals().grand < j.minimum){ S.promoErr = 'That code needs an order of ' + money(j.minimum) + ' or more.'; render(); return; }
+        CART.setPromo({code:j.code, stripe:true, amountOff:j.amountOff || 0, percentOff:j.percentOff || 0, minimum:j.minimum || 0});
+        S.promoErr = ''; track('promo_applied', {coupon:j.code}); render();
+      })
+      .catch(function(){ S.promoErr = 'We couldn’t check that code. Please try again.'; render(); });
   };
+  var pin = document.getElementById('co-promo'); if(pin) pin.onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); if(ap) ap.click(); } };
   var cp = root.querySelector('[data-clearpromo]'); if(cp) cp.onclick = function(){ CART.setPromo(null); applyOptions(); render(); };
   var ack = document.getElementById('miss-ack'); if(ack) ack.onchange = function(){ S.missAck = ack.checked; };
   root.querySelectorAll('[data-readd]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
@@ -1398,6 +1415,7 @@ function buildPayload(){
   var parts = String(f.name||'').trim().split(/\s+/), firstName = parts[0] || '', lastName = parts.slice(1).join(' ');
   var subtotal = +items.reduce(function(s, it){ return s + (+it.lineTotal || 0); }, 0).toFixed(2);
   var savings = +items.reduce(function(s, it){ return s + (+it.promoSavingsTotal || 0); }, 0).toFixed(2);
+  var sp = stripePromo(), spOff = promoOff(subtotal + ship.cost);
   var pieces = items.reduce(function(s, it){ return s + (it.qty|0); }, 0);
   function sizesOf(it){ return it.sizes ? Object.keys(it.sizes).map(function(k){ return k + ':' + it.sizes[k]; }).join(', ') : ''; }
   var itemsText = items.map(function(it, i){
@@ -1435,18 +1453,19 @@ function buildPayload(){
     '— ARTWORK FILES (' + allArt.length + ') —\n' + (allArt.length ? allArt.join('\n') : 'None uploaded') + '\n\n' +
     '— PRICING —\nSubtotal: $' + (subtotal + savings).toFixed(2) + '\n' + (savings > 0 ? 'Promo ' + (promo ? promo.code : '') + ': -$' + savings.toFixed(2) + '\n' : '') +
     'Products total: $' + subtotal.toFixed(2) + '\nShipping: ' + (S.ship === 'pickup' ? 'Pickup (free)' : '$' + ship.cost.toFixed(2) + ' (' + boxesText(ship.boxes) + ' × $' + CONFIG.shipPerBox + ' flat rate)') +
-    '\nTotal (before tax): $' + (subtotal + ship.cost).toFixed(2) + '\n\n— CUSTOMER NOTES —\n' + (f.notes || '—');
+    (spOff ? '\nPromo ' + sp.code + ' ($' + spOff.toFixed(2) + ' off, applied in Stripe): -$' + spOff.toFixed(2) : '') +
+    '\nTotal (before tax): $' + (subtotal + ship.cost - spOff).toFixed(2) + '\n\n— CUSTOMER NOTES —\n' + (f.notes || '—');
   return {
     firstName:firstName, lastName:lastName, email:f.email, phone:f.phone, company:f.company,
     shippingAddress:shippingText(), orderNotes:f.notes, itemCount:items.length, pieceCount:pieces,
     cartSubtotal:'$' + (subtotal + savings).toFixed(2), cartTotal:'$' + subtotal.toFixed(2), cartTotalValue:subtotal,
     totalPrice:'$' + subtotal.toFixed(2), totalPriceValue:subtotal,
-    promoCode:promo ? promo.code : '', promoSavings:'$' + savings.toFixed(2), promoSavingsValue:savings,
+    promoCode:promo ? promo.code : '', promoSavings:'$' + (savings + spOff).toFixed(2), promoSavingsValue:+(savings + spOff).toFixed(2),
     items:JSON.stringify(items.map(function(it){ var c = Object.assign({}, it); delete c.pricingProduct; delete c.mock; return c; })),
     itemsSummary:itemsText, itemsBlock:itemsBlock, artworkLinks:allArt.join('\n'), mockupLinks:'', mockupCount:0,
     artworkHtml:artworkHtml, noteText:noteText, source:'New checkout (product page v3)', submittedAt:submittedAt,
     deliveryMethod:S.ship === 'pickup' ? 'pickup' : 'ship', shippingBoxes:ship.boxes, shippingCost:'$' + ship.cost.toFixed(2), shippingCostValue:ship.cost,
-    orderTotalWithShipping:'$' + (subtotal + ship.cost).toFixed(2)
+    orderTotalWithShipping:'$' + (subtotal + ship.cost - spOff).toFixed(2)
   };
 }
 function submit(){
@@ -1472,7 +1491,7 @@ function submit(){
     /* The Worker recounts boxes itself; these are for the receipt and the note. */
     shipping:{method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship,
       address:S.ship === 'pickup' ? null : {line1:f.addr1, line2:f.addr2, city:f.city, state:f.state, postal_code:f.zip, country:'US'}},
-    embedded:embed,
+    embedded:embed, promoCode:stripePromo() ? stripePromo().code : '',
     returnUrl:here + '?paid={CHECKOUT_SESSION_ID}' + (FLOW === 'stage' ? '&flow=stage' : ''),
     cartUrl:CONFIG.pages[FLOW].cart};
   fetch(CONFIG.payEndpoint.replace(/\/$/,'') + '/create-session', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)})
@@ -1484,7 +1503,8 @@ function submit(){
       track('add_payment_info', {currency:'USD', value:tt.grand, payment_type:'stripe', items:gaItems()});
       if(res.ok && embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
       if(res.ok && j.url){ nav(j.url); return; }
-      S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.'); render();
+      if(j.promoError){ CART.setPromo(null); S.promoOpen = true; S.promoErr = j.error || 'That code can’t be used.'; }
+      S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.') + (j.promoError ? ' We removed the code — your total is updated.' : ''); render();
     })
     .catch(function(){ S.busy = false;
       S.err = 'We couldn’t reach our payment service. Your order details reached us — <a href="' + CONFIG.phoneHref + '">call ' + CONFIG.phone + '</a> and we’ll finish it by phone.'; render(); });
