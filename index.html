@@ -284,6 +284,12 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
   .sort-label{display:none !important;}
   .sort-select{min-height:36px !important;padding:6px 28px 6px 10px !important;font-size:13px !important;}
 }
+
+/* Phones inside the WordPress page: the page draws a pinned copy of search/Filters/chips
+   (see the products embed) and drives this list; our own copies are hidden. */
+@media(max-width:820px){
+  body.gridhost .toolbar, body.gridhost .cat-chip-row{display:none !important;}
+}
 </style>
 </head>
 <body>
@@ -2354,6 +2360,43 @@ window.addEventListener('message',function(e){
   document.addEventListener('load',function(e){
     if(e.target && e.target.tagName==='IMG')broadcastHeight();
   },true);
+})();
+</script>
+
+<script>
+/* ---- Pinned search/filter bar on phones (28 Sep 2026) ----
+   The products page in WordPress draws the search box, Filters button and category
+   chips itself (so they can stay pinned under the header while the page scrolls) and
+   sends us what the shopper types or taps. We report the chips and filter count back. */
+(function(){
+  if(window.parent === window) return;
+  var HOST = false;
+  function model(){
+    var chips = [].slice.call(document.querySelectorAll('#cat-chip-row .cat-chip')).map(function(b, i){
+      return {i:i, label:b.textContent.trim(), active:b.classList.contains('active'), more:b.classList.contains('more-chip')};
+    });
+    var badge = document.getElementById('filt-badge'), q = document.getElementById('page-search');
+    return {chips:chips, badge:(badge && !badge.classList.contains('zero')) ? badge.textContent.trim() : '', q:q ? q.value : ''};
+  }
+  var last = '';
+  function push(){ if(!HOST) return; var m = model(), j = JSON.stringify(m); if(j === last) return; last = j;
+    try{ window.parent.postMessage({type:'alive-gridmodel', model:m}, '*'); }catch(e){} }
+  window.addEventListener('message', function(e){
+    if(e.source !== window.parent) return;
+    var d = e.data || {};
+    if(d.type === 'alive-gridhost'){ HOST = true; document.body.classList.add('gridhost'); last = ''; push(); }
+    else if(d.type === 'alive-grid-search'){ var s = document.getElementById('page-search'); if(s){ s.value = d.q || ''; onPageSearch(); } push(); }
+    else if(d.type === 'alive-grid-chip'){ var c = document.querySelectorAll('#cat-chip-row .cat-chip')[d.i | 0]; if(c) c.click(); setTimeout(push, 50); }
+    else if(d.type === 'alive-grid-filters'){ openSidebarFromChip(); try{ window.parent.postMessage({type:'alive-scrolltop'}, '*'); }catch(x){} setTimeout(push, 50); }
+  });
+  function watch(){
+    var host = document.getElementById('cat-chip-row'), badge = document.getElementById('filt-badge');
+    if(window.MutationObserver){ var mo = new MutationObserver(push);
+      if(host) mo.observe(host, {childList:true, subtree:true, attributes:true, attributeFilter:['class']});
+      if(badge) mo.observe(badge, {childList:true, characterData:true, subtree:true, attributes:true}); }
+  }
+  watch();
+  try{ window.parent.postMessage({type:'alive-gridready'}, '*'); }catch(e){}
 })();
 </script>
 </body>
