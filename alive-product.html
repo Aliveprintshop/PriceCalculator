@@ -914,6 +914,9 @@
 #alive-flow .tipbox .lp-sw{display:flex;gap:5px;margin:4px 0 12px;}
 #alive-flow .tipbox .lp-sw i{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.2);display:block;}
 #alive-flow .tipbox .lp-full{display:block;width:100%;margin:10px 0 0;padding:12px 14px;border:0;border-radius:10px;background:#1b6cce;color:#fff;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;}
+/* Upload button pulse when arriving from /start with "Upload your design" */
+@keyframes alivePulse{0%{box-shadow:0 0 0 0 rgba(27,108,206,.55);}70%{box-shadow:0 0 0 14px rgba(27,108,206,0);}100%{box-shadow:0 0 0 0 rgba(27,108,206,0);}}
+#alive-flow .stage-up.pulse,#alive-flow .slot.pulse{animation:alivePulse 1.4s ease-out 3;}
 </style>
 </head>
 <body>
@@ -3310,12 +3313,17 @@ function boot(data){
   if(promo && promo.code && E.PROMO_CODES[promo.code]) S.promo = E.PROMO_CODES[promo.code];
   setMethod(E.decoMethods(p)[0]);
   if(E.isEmbroideryOnly(p)) setMethod('em');
+  /* Hand-off from the /start landing page: ?method=sp|ht|em&qty=48&intent=upload */
+  var wm = qp('method'); if(wm && E.decoMethods(p).indexOf(wm) > -1) setMethod(wm);
   S.est = Math.max(CONFIG.defaultEstimate, E.minQty(p, pricingCfg(CONFIG.defaultEstimate)));
+  var wq = parseInt(qp('qty'), 10);
+  if(wq > 0 && wq < 100000) S.est = Math.max(wq, E.minQty(p, pricingCfg(wq)));
   if(isOneSize()) S.qty = S.est;
   S.phase = 'artwork';   /* every visit starts on the Design step */
   subscribeViewport();
   ensureFrame();
   render();
+  if(qp('intent') === 'upload') setTimeout(function(){ var u = root.querySelector('.stage-up, .slot[data-add]'); if(u){ scrollToEl(u); u.classList.add('pulse'); } }, 400);
   var u0 = unitNow(); track('view_item', {currency:'USD', value:+((u0 || 0)).toFixed(2), items:[gaItem(1, u0)]});
 }
 var CROPS = {};
