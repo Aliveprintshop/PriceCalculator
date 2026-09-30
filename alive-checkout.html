@@ -1168,11 +1168,13 @@ function render(){
           '<div class="fields two" style="margin-top:14px">' + field('city','City','text','address-level2') + field('state','State','text','address-level1') + '</div>' +
           '<div class="fields" style="margin-top:14px;max-width:200px">' + field('zip','ZIP code','text','postal-code',' inputmode="numeric"') + '</div>') +
         '</div>' +
-        (ADDONS.some(function(a){ return addonPieces(a) > 0; })
-          ? '<div class="card"><div class="hd"><h2>Finish it properly</h2></div><div class="ships">' + ADDONS.map(addonRow).join('') + '</div></div>' : '') +
+        /* Turnaround sits above the add-ons: the date is the decision customers
+           care about most, so it must be the first thing after the address. */
         '<div class="card"><div class="hd"><h2 class="h2t">Need it sooner?' + tip('turnaround') + '</h2></div><div class="ships">' +
           rushRow('std', 'Standard — ' + E.turnaroundDays('std', false) + ' business days') + rushRow('rush', '7 business day rush') + rushRow('super', '5 business day rush') +
         '</div></div>' +
+        (ADDONS.some(function(a){ return addonPieces(a) > 0; })
+          ? '<div class="card"><div class="hd"><h2>Finish it properly</h2></div><div class="ships">' + ADDONS.map(addonRow).join('') + '</div></div>' : '') +
         '<div class="card"><div class="hd"><h2>Anything else?</h2></div><div class="fields">' + field('notes','Notes for your order <span>(optional)</span>','textarea','') + '</div></div>' +
         '<div class="guar"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>No setup fees and no screen charges</span></div>' +
           '<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>Proof before we print, every time</span></div>' +
