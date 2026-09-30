@@ -888,6 +888,25 @@
 #alive-flow .pb b{font-size:14px;}
 #alive-flow .pb.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
 #alive-flow .pbnudge{margin-top:10px;font-size:13.5px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--r);padding:9px 12px;}
+/* turnaround picker on the sizes step */
+#alive-flow .tapick{border-top:1px solid var(--border);margin:16px -16px 0;padding:14px 16px 4px;}
+#alive-flow .tarow{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+#alive-flow .ta{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:56px;
+  padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);cursor:pointer;}
+#alive-flow .ta:hover{border-color:var(--border2);}
+#alive-flow .ta.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
+#alive-flow .ta .tamark{flex-shrink:0;width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);background:#fff;position:relative;}
+#alive-flow .ta.on .tamark{border-color:var(--blue);background:var(--blue);}
+#alive-flow .ta.on .tamark:after{content:'';position:absolute;inset:4px;border-radius:50%;background:#fff;}
+#alive-flow .ta .tamid{flex:1;min-width:0;}
+#alive-flow .ta .tanm{display:block;font-family:var(--disp);font-size:13.5px;font-weight:800;color:var(--text);}
+#alive-flow .ta .tadays{display:block;font-size:12.5px;color:var(--text2);margin-top:1px;}
+#alive-flow .ta .taend{flex-shrink:0;text-align:right;}
+#alive-flow .ta .tadate{display:block;font-family:var(--disp);font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;}
+#alive-flow .ta .tafee{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-top:1px;white-space:nowrap;}
+#alive-flow .ta.on .tafee{color:var(--blue);}
+#alive-flow .ta[data-rush="std"] .tafee{color:var(--green);}
+#alive-flow .tanote{margin-top:10px;font-size:12.5px;color:var(--text3);}
 /* desktop: photo left, choices right */
 @media(min-width:980px){
   #alive-flow .wrap:has(.shell.dual){max-width:1180px;}
@@ -2391,7 +2410,7 @@ var TIPS = {
   includes: ['What the price includes', 'The garment and your decoration as set up on this page — print spots, ink colors or embroidery. Change any of them and the price updates right away. No setup or screen fees.'],
   minimum:  ['Minimum order', 'Screen print: 24 pieces. Embroidery: 12. Full color: 10. Mix sizes however you like — your sizes add up to your total.'],
   sizes:    ['Sizes', '2XL and up use more fabric, so they cost a little more. The extra shows under each size.'],
-  turnaround:['Turnaround', '10 business days, Monday to Friday. Order before 4 PM and today counts as day one. Rush options (7 or 5 days) are at checkout.'],
+  turnaround:['Turnaround', 'Standard is 10 business days, Monday to Friday. Order before 4 PM Las Vegas time and today counts as day one. Rush (7 days) and Super Rush (5 days) are priced right here — the date shown is when your order leaves our shop, so add transit time on top.'],
   artwork:  ['Artwork', 'AI, EPS, PDF, SVG, PSD, PNG, JPG or ZIP, up to 25 MB each. We confirm ink colors and placement on your proof. Nothing prints until you approve it.'],
   method:   ['Decoration', 'Screen print: bold, durable, best value at 24+ and priced by ink colors. Full color: any number of colors or photos, great for small runs. Embroidery: stitched, premium, priced per location.'],
   colors:   ['Ink colors', 'Screen printing is priced by the number of ink colors in your design. The shirt color does not count. Not sure? Pick your best guess — we confirm it on your proof before anything prints.']
@@ -2419,7 +2438,7 @@ var S = {
   raw:null, p:null, colors:[], color:0, side:'front', gal:null, frame:{},
   phase:'artwork', sizes:{}, qty:0, est:CONFIG.defaultEstimate,
   method:null, locs:[], inks:{}, art:{}, mode:'now', sel:null, busy:null, err:'',
-  promo:0
+  promo:0, rush:'std'
 };
 var LOC = {};  /* key -> location record for the current method */
 
@@ -2462,8 +2481,10 @@ function pricingCfg(qty){
   var lm = {}; locs.forEach(function(k){ lm[k] = S.method; });
   return {qty: qty == null ? priceQty() : qty, locs: locs, locMethod: lm,
           frontColors: inkFor('front'), backColors: inkFor('back'),
-          addons:{neck:false,hem:false,bag:false}, rush:'std', promoDiscount:S.promo};
+          addons:{neck:false,hem:false,bag:false}, rush:S.rush || 'std', promoDiscount:S.promo};
 }
+/* A cfg at a named speed, for pricing the rush cards against the current setup. */
+function cfgAtRush(key){ var c = pricingCfg(); c.rush = key; return c; }
 function inkFor(key){
   var n = S.inks[key] || 1;
   return Math.max(1, Math.min(E.MAX_INK, n));
@@ -2553,7 +2574,7 @@ function barSub(){
   var q = realQty(), t = orderTotal();
   if(!q) return 'About ' + priceQty() + ' pcs · ' + basisLabel();
   if(q < minQ()) return q + ' pcs · minimum ' + minQ();
-  return money(t) + ' total · ' + q + ' pcs';
+  return money(t) + ' total · ' + q + ' pcs' + (S.rush && S.rush !== 'std' ? ' · ' + TA_NAME[S.rush] : '');
 }
 
 /* ------------------------------------------------------------ gallery */
@@ -2679,6 +2700,76 @@ function oneSizeFoot(){
       '<button type="button" data-q="+" aria-label="More">+</button></span></div>' +
     '<div class="sztot ok" style="margin-top:10px"><span>Minimum</span><b class="num">' + minQ() + ' pcs</b></div>' +
     '<button class="backlink" type="button" data-goto="artwork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to design</button>';
+}
+/* --------------------------------------------------- turnaround (step 2)
+   Production is counted in business days from the shop's own clock, not the
+   visitor's: a 4 PM order from New York is 1 PM here and still makes the
+   cutoff. Counting is INCLUSIVE, so ordering before the cutoff on a business
+   day makes today production day 1. Weekends are always skipped; put real
+   holiday closures in CLOSED_DATES ('YYYY-MM-DD') and every date below moves
+   with them. Checked against Austin's example: Tue 22 Sep 2026, 10 AM,
+   10 business days -> Monday, October 5. */
+var SHOP_TZ = 'America/Los_Angeles', CUTOFF_HOUR = 16, CLOSED_DATES = [];
+var TA_KEYS = ['std','rush','super'];
+var TA_NAME = {std:'Standard', rush:'Rush', super:'Super Rush'};
+function shopNow(){
+  var d = new Date();
+  try{
+    var p = {};
+    new Intl.DateTimeFormat('en-US', {timeZone:SHOP_TZ, year:'numeric', month:'numeric',
+      day:'numeric', hour:'numeric', hour12:false}).formatToParts(d)
+      .forEach(function(x){ p[x.type] = x.value; });
+    return new Date(+p.year, +p.month - 1, +p.day, +p.hour % 24);
+  }catch(e){ return d; }   /* no Intl: fall back to the visitor's clock */
+}
+function isoDay(d){
+  var m = d.getMonth() + 1, y = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (y < 10 ? '0' : '') + y;
+}
+function isClosed(d){ var g = d.getDay(); return g === 0 || g === 6 || CLOSED_DATES.indexOf(isoDay(d)) > -1; }
+function nextBiz(d){ while(isClosed(d)) d.setDate(d.getDate() + 1); return d; }
+/* Inclusive: addBizDays(start, 1) === start. */
+function addBizDays(from, n){
+  var d = nextBiz(new Date(from.getTime()));
+  for(var i = 1; i < n; i++){ d.setDate(d.getDate() + 1); nextBiz(d); }
+  return d;
+}
+function shipReady(days){
+  var n = shopNow(), d = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  if(n.getHours() >= CUTOFF_HOUR) d.setDate(d.getDate() + 1);
+  return addBizDays(nextBiz(d), days);
+}
+function taDate(key){ return shipReady(E.turnaroundDays(key, false)); }
+function fmtDay(d){
+  try{ return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'}); }
+  catch(e){ return (d.getMonth() + 1) + '/' + d.getDate(); }
+}
+function taLabel(key){ return TA_NAME[key] + ' (' + E.turnaroundDays(key, false) + ' business days)'; }
+/* What the extra speed costs, given everything already chosen on this page. */
+function taFee(key){
+  if(key === 'std') return 'Included';
+  var pct = Math.round(((E.RUSH_MULT[key] || 1) - 1) * 100);
+  var out = '+' + pct + '%';
+  if(realQty() > 0){
+    var base = E.lineTotal(S.p, cfgAtRush('std'), sizesForTotal());
+    var up   = E.lineTotal(S.p, cfgAtRush(key),  sizesForTotal());
+    if(base != null && up != null && up > base) out += ' · ' + money(up - base);
+  }
+  return out;
+}
+function taFoot(){
+  var cards = TA_KEYS.map(function(k){
+    return '<button type="button" class="ta' + (S.rush === k ? ' on' : '') + '" data-rush="' + k + '"' +
+      ' aria-pressed="' + (S.rush === k ? 'true' : 'false') + '">' +
+      '<span class="tamark" aria-hidden="true"></span>' +
+      '<span class="tamid"><span class="tanm">' + TA_NAME[k] + '</span>' +
+        '<span class="tadays">' + E.turnaroundDays(k, false) + ' business days</span></span>' +
+      '<span class="taend"><span class="tadate" data-tadate="' + k + '">' + fmtDay(taDate(k)) + '</span>' +
+        '<span class="tafee" data-tafee="' + k + '">' + taFee(k) + '</span></span></button>';
+  }).join('');
+  return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span>' +
+    '<span class="aux">Ships by</span></div><div class="tarow">' + cards + '</div>' +
+    '<div class="tanote">Dates are when your order leaves our shop. Transit time is on top.</div></div>';
 }
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
 
@@ -3078,7 +3169,7 @@ function render(){
     html = stepper(2) +
       '<div class="wrap">' +
       '<div class="shell solo dual locked"><div class="colL">' + productCard(overlay(), '', '') + '</div><div class="colR">' +
-        '<div class="pcard sizecard">' + sizeFoot() + priceBreaks() + '</div>' +
+        '<div class="pcard sizecard">' + sizeFoot() + priceBreaks() + taFoot() + '</div>' +
         whyAlive() + '<div class="mhelp">' + helpBar() + '</div></div></div></div>' +
       mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !sizesReady() || !artReady(), barSub());
   }
@@ -3105,6 +3196,9 @@ function refreshPrice(){
   });
   var pb = root.querySelector('.pbreaks');
   if(pb){ var tmp = document.createElement('div'); tmp.innerHTML = priceBreaks(); pb.replaceWith(tmp.firstChild || document.createTextNode('')); }
+  /* the rush cards price against the sizes being typed, so refresh them in place too */
+  root.querySelectorAll('[data-tafee]').forEach(function(el){ el.textContent = taFee(el.dataset.tafee); });
+  root.querySelectorAll('[data-tadate]').forEach(function(el){ el.textContent = fmtDay(taDate(el.dataset.tadate)); });
   var mc = root.querySelector('[data-mcta]');
   if(mc && S.phase === 'sizes') mc.disabled = !!S.saving || !sizesReady() || !artReady();
   pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
@@ -3145,6 +3239,17 @@ function wire(){
       var v = inp.value.replace(/\D/g,'').slice(0,5); if(inp.value !== v) inp.value = v;
       var n = parseInt(v,10) || 0; if(n) S.sizes[inp.dataset.size] = n; else delete S.sizes[inp.dataset.size];
       inp.parentNode.classList.toggle('has', !!n); refreshPrice();
+    };
+  });
+  root.querySelectorAll('[data-rush]').forEach(function(b){
+    b.onclick = function(){
+      if(S.rush === b.dataset.rush) return;
+      S.rush = b.dataset.rush;
+      root.querySelectorAll('[data-rush]').forEach(function(o){
+        var on = o.dataset.rush === S.rush;
+        o.classList.toggle('on', on); o.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      refreshPrice();   /* in place: re-rendering here would drop the caret in a size box */
     };
   });
   root.querySelectorAll('[data-q]').forEach(function(b){
@@ -3286,8 +3391,8 @@ function addToCartNow(){
     frontColors: (lm.front === 'sp' || (S.p._drinkware && lm.front)) ? inkFor('front') : null,
     backColors: lm.back === 'sp' ? inkFor('back') : null,
     qty: q, sizes: sizes,
-    addons: {neck:false, hem:false, bag:false}, addonList: [], rush: 'std',
-    turnaroundLabel: 'Standard (10 business days)',
+    addons: {neck:false, hem:false, bag:false}, addonList: [], rush: S.rush || 'std',
+    turnaroundLabel: taLabel(S.rush || 'std'),
     artworkLink: S.mode === 'later' ? 'Customer will email artwork after checkout.' : files.filter(function(f){ return f.url; }).map(function(f){ return f.location + ': ' + f.url; }).join('\n'),
     artworkFiles: files, artworkByLocation: byLoc,
     artworkNote: files.filter(function(f){ return f.url; }).map(function(f){ return f.location + ': ' + f.url; }).join(', '),
