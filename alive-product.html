@@ -792,6 +792,8 @@
 #alive-flow .allprod{display:inline-block;margin:16px 0 0;font-family:var(--disp);font-size:12.5px;font-weight:700;
   color:var(--text2);text-decoration:none;}
 #alive-flow .allprod:hover{color:var(--blue);}
+/* Sizes step: "Back to design" sits where "All products" sits on step 1. */
+#alive-flow button.allprod{background:none;border:0;padding:0;cursor:pointer;gap:6px;}
 #alive-flow .shell.solo{padding-top:12px;}
 #alive-flow .bv{display:inline-block;background:#16a34a;color:#fff;font-size:9px;font-weight:800;letter-spacing:.04em;
   padding:2px 7px;border-radius:999px;vertical-align:middle;margin-left:6px;}
@@ -2687,8 +2689,7 @@ function sizeFoot(){
   var a = sizeTotal(), st = a === 0 ? '' : (a >= minQ() ? ' ok' : ' off');
   return '<div class="fhead"><span class="lbl">Sizes' + tip('sizes,minimum') + '</span></div>' +
     '<div class="sizes">' + cells + '</div>' +
-    '<div class="sztot' + st + '"><span>Total <i class="szmin">(minimum ' + minQ() + ')</i></span><b class="num">' + a + ' pcs</b></div>' +
-    '<button class="backlink" type="button" data-goto="artwork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to design</button>';
+    '<div class="sztot' + st + '"><span>Total <i class="szmin">(minimum ' + minQ() + ')</i></span><b class="num">' + a + ' pcs</b></div>';
 }
 function oneSizeFoot(){
   if(!S.qty) S.qty = Math.max(minQ(), CONFIG.defaultEstimate);
@@ -2698,8 +2699,7 @@ function oneSizeFoot(){
       '<button type="button" data-q="-" aria-label="Fewer"' + (S.qty <= minQ() ? ' disabled' : '') + '>&minus;</button>' +
       '<input id="f-qty" type="text" inputmode="numeric" value="' + S.qty + '" aria-label="Quantity">' +
       '<button type="button" data-q="+" aria-label="More">+</button></span></div>' +
-    '<div class="sztot ok" style="margin-top:10px"><span>Minimum</span><b class="num">' + minQ() + ' pcs</b></div>' +
-    '<button class="backlink" type="button" data-goto="artwork"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to design</button>';
+    '<div class="sztot ok" style="margin-top:10px"><span>Minimum</span><b class="num">' + minQ() + ' pcs</b></div>';
 }
 /* --------------------------------------------------- turnaround (step 2)
    Production is counted in business days from the shop's own clock, not the
@@ -3168,6 +3168,7 @@ function render(){
     /* STEP 2 — SIZES: the designed garment (read-only) + size boxes. */
     html = stepper(2) +
       '<div class="wrap">' +
+      '<button type="button" class="allprod" data-goto="artwork">&larr; Back to design</button>' +
       '<div class="shell solo dual locked"><div class="colL">' + productCard(overlay(), '', '') + '</div><div class="colR">' +
         '<div class="pcard sizecard">' + sizeFoot() + priceBreaks() + taFoot() + '</div>' +
         whyAlive() + '<div class="mhelp">' + helpBar() + '</div></div></div></div>' +
