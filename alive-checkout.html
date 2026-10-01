@@ -954,10 +954,12 @@ function addonFits(key, it){
   return t !== 'hat' && t !== 'beanie' && t !== 'bag';
 }
 function hemApplies(){ return S.items.some(function(it){ return priceable(it) && addonFits('hem', it); }); }
+/* Printed inside label and woven hem tag were pulled from the menu (Austin,
+   1 Oct 2026). The engine still prices all three, and cfgFor() still reads
+   neck/hem, so an older cart that carries them keeps costing the right amount —
+   they just can't be chosen here any more. */
 var ADDONS = [
-  {key:'neck', label:'Printed inside label', sub:'Your brand inside the collar', rate:function(q){ return E.ADDON.neck; }},
-  {key:'hem',  label:'Woven hem tag', sub:'Sewn into the hem', note:'Adds 5 business days', rate:function(q){ return E.hemRate(q); }},
-  {key:'bag',  label:'Fold and poly bag', sub:'Folded and bagged, ready to hand out', rate:function(q){ return E.ADDON.bag; }}
+  {key:'bag',  label:'Individually folded and poly bagged', sub:'Folded and bagged, ready to hand out', rate:function(q){ return E.ADDON.bag; }}
 ];
 function cfgFor(it, addons, rush){
   var a = {neck:false, hem:false, bag:false};
@@ -1150,7 +1152,7 @@ function render(){
   root.innerHTML = stepper() +
     '<div class="wrap"><div class="co">' +
       '<div>' +
-        '<div class="hd"><h1>Checkout</h1></div>' +
+        /* The stepper already says Checkout — the h1 just repeated it. */
         /* Phones: the order sits open at the top (the side column's copy is hidden there). */
         (S.restored ? '<div class="restored">We loaded the cart that was shared with you — ' + S.restored + ' ' + (S.restored === 1 ? 'item' : 'items') + '. Check the sizes, then place your order.</div>' : '') +
         '<div class="card morder"><div class="hd mo-hd"><h2>Your order</h2><b class="num">' + money(t.grand) + '</b></div>' + items +
@@ -1176,10 +1178,8 @@ function render(){
         (ADDONS.some(function(a){ return addonPieces(a) > 0; })
           ? '<div class="card"><div class="hd"><h2>Finish it properly</h2></div><div class="ships">' + ADDONS.map(addonRow).join('') + '</div></div>' : '') +
         '<div class="card"><div class="hd"><h2>Anything else?</h2></div><div class="fields">' + field('notes','Notes for your order <span>(optional)</span>','textarea','') + '</div></div>' +
-        '<div class="guar"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>No setup fees and no screen charges</span></div>' +
-          '<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>Proof before we print, every time</span></div>' +
-          '<div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><span>100% print guarantee — wrong, we reprint it</span></div></div>' +
-        '<div class="card" style="margin-top:18px">' + helpBar() + '</div>' +
+        /* Guarantee lines and the help bar removed (Austin, 1 Oct 2026). The
+           same three promises still sit under the Pay button in the summary. */
       '</div>' +
       '<div class="side">' + summary + '</div>' +
     '</div></div>' +

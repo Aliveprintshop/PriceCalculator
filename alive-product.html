@@ -864,13 +864,19 @@
 #alive-flow .pcard .strip figure{border-radius:var(--r);}
 /* ---- round 1 (25 Sep): conversion pass ---- */
 /* upload button right on the garment */
-#alive-flow .stage-up{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:4px;
-  min-width:190px;padding:16px 20px;border-radius:14px;border:2px dashed var(--blue);background:rgba(255,255,255,.94);color:var(--blue);cursor:pointer;
-  box-shadow:0 8px 24px rgba(15,23,42,.18);font-family:var(--disp);}
-#alive-flow .stage-up svg{width:26px;height:26px;}
-#alive-flow .stage-up b{font-size:15px;font-weight:800;}
-#alive-flow .stage-up em{font-style:normal;font-family:var(--body,inherit);font-size:12px;color:var(--text2);}
-#alive-flow .stage-up:hover{background:#fff;border-style:solid;}
+/* The upload box sits on the garment rather than floating over it as a solid
+   white card: a dashed outline and a light scrim, tinted for the garment. */
+#alive-flow .stage-up{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:5px;
+  min-width:200px;padding:20px 24px;border-radius:16px;cursor:pointer;font-family:var(--disp);
+  border:2px dashed rgba(255,255,255,.85);background:rgba(10,14,22,.26);color:#fff;
+  -webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px);}
+#alive-flow .stage-up svg{width:28px;height:28px;color:#7cb2f5;}
+#alive-flow .stage-up b{font-size:16px;font-weight:800;}
+#alive-flow .stage-up em{font-style:normal;font-family:var(--body,inherit);font-size:12.5px;color:rgba(255,255,255,.82);}
+#alive-flow .stage-up.on-light{border-color:rgba(15,23,42,.42);background:rgba(255,255,255,.52);color:var(--ink);}
+#alive-flow .stage-up.on-light svg{color:var(--blue);}
+#alive-flow .stage-up.on-light em{color:var(--text2);}
+#alive-flow .stage-up:hover{border-style:solid;border-color:var(--blue);}
 #alive-flow .stage-up:disabled{opacity:.8;cursor:wait;}
 /* print options as one line */
 #alive-flow .optsum{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--border);
@@ -953,6 +959,28 @@
 #alive-flow .gcard .pcard-foot{border-top:0;margin-top:0;padding-top:0;}
 /* Four rows of swatches, then "show all" — a 112-colour cap otherwise makes
    this block nine rows tall and stretches the whole step. */
+/* ---- blurb, rating, product details ----------------------------------- */
+#alive-flow .blurb{margin:7px 0 0;font-size:14px;color:var(--text);line-height:1.45;}
+#alive-flow .revline{display:inline-flex;align-items:center;gap:7px;margin-top:8px;text-decoration:none;
+  font-family:var(--disp);font-size:13px;color:var(--text2);}
+#alive-flow .revline b{font-size:13.5px;font-weight:800;color:var(--text);}
+#alive-flow .revline:hover b,#alive-flow .revline:hover span{color:var(--blue);}
+#alive-flow .stars{display:inline-flex;gap:2px;}
+#alive-flow .stars .st svg{width:15px;height:15px;display:block;}
+#alive-flow .stars .st.full svg{fill:var(--blue);}
+#alive-flow .stars .st.none svg{fill:#d7dce3;}
+#alive-flow .stars .st.half svg{fill:#d7dce3;}
+#alive-flow .stars .st.half{position:relative;}
+#alive-flow .stars .st.half::before{content:"";position:absolute;inset:0;width:50%;overflow:hidden;
+  background:var(--blue);-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z'/></svg>") left center/15px 15px no-repeat;
+  mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z'/></svg>") left center/15px 15px no-repeat;}
+#alive-flow .detacc{border:0;border-top:1px solid var(--border);border-radius:0;margin:16px -16px 0;padding:0 16px;background:none;}
+#alive-flow .detacc .dspec{margin:0 0 12px;font-size:13.5px;line-height:1.55;color:var(--text2);}
+#alive-flow .dfacts{margin:0;display:grid;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+#alive-flow .dfacts > div{display:flex;gap:12px;justify-content:space-between;align-items:baseline;background:var(--surface);padding:9px 12px;}
+#alive-flow .dfacts dt{font-size:12.5px;color:var(--text2);}
+#alive-flow .dfacts dd{margin:0;font-family:var(--disp);font-size:12.5px;font-weight:700;text-align:right;}
+#alive-flow .dnote2{margin:10px 0 0;font-size:12.5px;color:var(--text3);}
 /* ---- accordions on the sizes step ------------------------------------- */
 #alive-flow .acc{border:0;}
 #alive-flow .acc > summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
@@ -965,7 +993,8 @@
   border-right:2px solid var(--text3);border-bottom:2px solid var(--text3);transform:rotate(45deg) translate(-2px,-2px);
   transition:transform .15s ease;}
 #alive-flow .acc[open] > summary::after{transform:rotate(-135deg) translate(-2px,-2px);}
-#alive-flow .acc > summary:hover .lbl{color:var(--blue);}
+/* No colour change on hover: these read as section headers, not buttons.
+   The chevron and the cursor already say they open. */
 #alive-flow .acc .accbody{padding-bottom:12px;}
 /* inside the size card: full-bleed divider, like the old price-break block */
 #alive-flow .sizecard .pbacc{border-top:1px solid var(--border);margin:16px -16px 0;padding:0 16px;}
@@ -2368,6 +2397,12 @@ var CONFIG = {
   standaloneCart: 'alive-checkout.html',     /* used when opened directly on github.io */
   artEndpoint: 'https://alive-artwork.austin-662.workers.dev',
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
+  /* Shop-wide Google rating shown on every product. ONE place to keep it
+     honest — these must be the real figures from the Google Business Profile.
+     NOTE: the checkout currently says 5.0 from 288+; one of the two is stale.
+     tech-notes-google-reviews.md has the build for refreshing this nightly
+     into reviews.json instead of typing it. */
+  reviews: {rating: 4.8, count: 295, href: 'https://www.google.com/search?q=Alive+Print+Shop+North+Las+Vegas+reviews'},
   maxFileMB: 25,
   defaultEstimate: 50,
   media: [
@@ -2510,7 +2545,7 @@ var S = {
   method:null, locs:[], inks:{}, art:{}, mode:'now', sel:null, busy:null, err:'',
   promo:0, rush:'std',
   /* sizes-step accordions, all shut to start: entering sizes is the job there */
-  accPrice:false, accGuar:false, accHelp:false
+  accPrice:false, accGuar:false, accHelp:false, accDetails:false
 };
 var LOC = {};  /* key -> location record for the current method */
 
@@ -2694,6 +2729,80 @@ function wireStrip(){
    match the CSS cap on an uncropped stage (both live behind min-width:980px);
    the old 540 below that, where the photo has the full width to itself. */
 function EDITOR_MAX_H_fn(){ return window.innerWidth >= 980 ? 400 : 540; }
+/* ---------------------------------------------- product blurb + reviews */
+/* One short line saying who the piece is for. Written from the category plus
+   price position inside that category, because 3,100 products can't each have
+   a hand-written line. Override a specific style in BLURB_BY_STYLE. */
+var BLURB_BY_CAT = {
+  'T-Shirts':           'tee for teams, staff, and events',
+  'Sweatshirts/Fleece': 'warm layer for staff, teams, and giveaways',
+  'Polos/Knits':        'collared look for staff and front of house',
+  'Caps':               'finishing touch for crews, events, and merch',
+  'Bags':               'bag for events, welcome kits, and swag',
+  'Outerwear':          'outer layer for crews working outside',
+  'Activewear':         'moisture-wicking pick for teams and training',
+  'Woven Shirts':       'dressed-up shirt for staff and front of house',
+  'Workwear':           'hard-wearing pick for crews on the job',
+  'Bottoms':            'comfortable bottoms for teams and staff',
+  "Women's":            "women's cut for staff, teams, and events",
+  'Youth':              'youth size for school teams and events',
+  'Infant & Toddler':   'little size for family and community events',
+  'Tall':               'tall fit for staff and teams',
+  'Accessories':        'small extra for events and welcome kits',
+  'Personal Protection':'safety piece for crews on site'
+};
+var BLURB_BY_STYLE = {
+  'NL6210': 'An everyday tee for teams, staff, and events.',
+  '5000':   'The classic heavyweight tee — our best value in bulk.',
+  '18500':  'A heavyweight hoodie that holds up wash after wash.',
+  '112':    'The trucker cap everyone asks for, built to be embroidered.'
+};
+function blurb(p){
+  var hit = BLURB_BY_STYLE[String(p.style).toUpperCase()];
+  if(hit) return hit;
+  var base = BLURB_BY_CAT[p.category];
+  if(!base) return '';
+  /* "Premium" / "A good basic" from where it sits on price, not invented. */
+  var c = p.case_price, lead = 'A dependable';
+  if(c != null && !isNaN(c)){ lead = c >= 18 ? 'A premium' : c <= 5 ? 'A good basic' : 'A solid'; }
+  return lead + ' ' + base + '.';
+}
+function stars(r){
+  var out = '';
+  for(var i = 1; i <= 5; i++){
+    var fill = r >= i ? 'full' : (r >= i - 0.5 ? 'half' : 'none');
+    out += '<span class="st ' + fill + '"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/></svg></span>';
+  }
+  return '<span class="stars" aria-hidden="true">' + out + '</span>';
+}
+function reviewLine(){
+  var r = CONFIG.reviews; if(!r || !r.rating) return '';
+  return '<a class="revline" href="' + esc(r.href || '#') + '" target="_blank" rel="noopener"' +
+    ' aria-label="Rated ' + r.rating + ' out of 5 from ' + r.count + ' Google reviews">' +
+    stars(r.rating) + '<b>' + r.rating + '</b><span>&middot; ' + r.count + ' Google reviews</span></a>';
+}
+/* Everything we hold on the piece itself. The spec line is SanMar's own copy,
+   synced nightly in products.json — no extra API call. Measured size charts
+   are NOT in that feed; add them to sync-sanmar.py to show a real table. */
+function detailsAcc(p){
+  var sz = p.available_sizes || [], up = p.size_upcharges || {};
+  var upKeys = Object.keys(up).filter(function(k){ return up[k]; });
+  var facts = [];
+  if(p.brand) facts.push(['Brand', p.brand]);
+  facts.push(['Style', String(p.style)]);
+  if(sz.length) facts.push(['Sizes', sz.length === 1 ? sz[0] : sz[0] + ' – ' + sz[sz.length - 1]]);
+  if(upKeys.length) facts.push(['Extended sizes', upKeys.map(function(k){ return k + ' +' + money(up[k]); }).join(' · ')]);
+  if(p.piece_weight_lbs) facts.push(['Weight', p.piece_weight_lbs + ' lb each']);
+  var desc = String(p.description || '').trim();
+  return '<details class="acc card detacc"' + (S.accDetails ? ' open' : '') + ' data-acc="accDetails">' +
+    '<summary><span class="lbl">Product details &amp; size guide</span></summary>' +
+    '<div class="accbody">' +
+      (desc ? '<p class="dspec">' + esc(desc) + '</p>' : '') +
+      '<dl class="dfacts">' + facts.map(function(f){
+        return '<div><dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') + '</dl>' +
+      '<p class="dnote2">Not sure on sizing? Call ' + esc(CONFIG.phone) + ' and we will talk it through.</p>' +
+    '</div></details>';
+}
 function productCard(overlayHtml, foot, rail, strip){
   var EDITOR_MAX_H = EDITOR_MAX_H_fn();
   var p = S.p, c = S.colors[S.color];
@@ -2720,6 +2829,8 @@ function productCard(overlayHtml, foot, rail, strip){
     '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee || /^5000B?$/i.test(String(p.style)) ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
     '<h2>' + esc(cleanName(p)) + '</h2>' +
     '<div class="style">Style #' + esc(p.style) + (c ? ' — ' + esc(c.name) : '') + '</div>' +
+    /* Blurb and rating only on the design step; step 2 is about sizes. */
+    (S.phase === 'artwork' ? (blurb(p) ? '<p class="blurb">' + esc(blurb(p)) + '</p>' : '') + reviewLine() : '') +
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
       '<div class="stage-art" id="f-stage"' + artStyle + '><img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">' +
       (editor && S.gal == null ? (overlayHtml || '') : '') + '</div></div>' +
@@ -3016,6 +3127,18 @@ function artNote(){
 
 /* placement editor (ported from the demo, which ported it from v2) */
 function layersFor(side){ return S.locs.filter(function(k){ return S.art[k] && S.art[k].src && LOC[k] && LOC[k].side === side; }); }
+/* Relative luminance of the chosen garment colour (sRGB, 0 = black, 1 = white).
+   Anything under 0.6 gets the light-on-dark treatment. */
+function garmentIsDark(){
+  var c = S.colors[S.color] || {}, hx = String(c.hex || '').replace('#','');
+  if(hx.length === 3) hx = hx[0]+hx[0]+hx[1]+hx[1]+hx[2]+hx[2];
+  if(hx.length !== 6) return true;
+  var n = parseInt(hx, 16);
+  if(isNaN(n)) return true;
+  var r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+  var f = function(v){ return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return (0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)) < 0.6;
+}
 function overlay(){
   var here = layersFor(S.side);
   var picked = !!S.sel && here.indexOf(S.sel) > -1;
@@ -3036,7 +3159,11 @@ function overlay(){
          button on the brim. defaultPlace() is in the same photo coordinates the
          placed layer uses, so the button is now a true preview. */
       var up = defaultPlace(k);
-      return '<button type="button" class="stage-up" data-add="' + k + '"' + (busy ? ' disabled' : '') +
+      /* The box sits ON the garment, so its contrast follows the garment:
+         white type over a dark scrim on dark colours, dark type over a light
+         one on pale colours. Mid greys fall to the dark treatment. */
+      var tone = garmentIsDark() ? ' on-dark' : ' on-light';
+      return '<button type="button" class="stage-up' + tone + '" data-add="' + k + '"' + (busy ? ' disabled' : '') +
         ' style="left:' + (up.cx * 100).toFixed(2) + '%;top:' + (up.cy * 100).toFixed(2) + '%">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>' +
         '<b>' + (busy ? 'Reading your file…' : 'Upload your design') + '</b><em>' + esc(LOC[k].label) + ' · PNG, JPG, PDF, AI</em></button>';
@@ -3250,7 +3377,7 @@ function render(){
       '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
       '<div class="shell solo dual">' +
         /* Photo, then Front/Back, the gallery right under it, then garment colors. */
-        '<div class="colL">' + productCard(overlay(), '', '', tools() + mediaStrip(c)) + '</div><div class="colR">' +
+        '<div class="colL">' + productCard(overlay(), '', detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
           optsBlock() +
           (artColorFoot() ? '<div class="pcard gcard"><div class="pcard-foot">' + artColorFoot() + '</div></div>' : '') +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
