@@ -896,20 +896,12 @@
 #alive-flow .pb b{font-size:14px;}
 #alive-flow .pb.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
 #alive-flow .pbnudge{margin-top:10px;font-size:13.5px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--r);padding:9px 12px;}
-/* turnaround, shown for information — the choice itself is at checkout */
+/* turnaround: a stated fact, not a control — no card, no border, no hover */
 #alive-flow .tapick{border-top:1px solid var(--border);margin:16px -16px 0;padding:14px 16px 4px;}
-#alive-flow .tarow{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-#alive-flow .tainfo{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;
-  padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);}
-#alive-flow .tainfo.lead{border-color:var(--blue);background:var(--blue-light);}
-#alive-flow .tainfo .tamid{flex:1;min-width:0;}
-#alive-flow .tainfo .tanm{display:block;font-family:var(--disp);font-size:13.5px;font-weight:800;color:var(--text);}
-#alive-flow .tainfo .tadays{display:block;font-size:12.5px;color:var(--text2);margin-top:1px;}
-#alive-flow .tainfo .taend{flex-shrink:0;text-align:right;}
-#alive-flow .tainfo .tadate{display:block;font-family:var(--disp);font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;}
-#alive-flow .tainfo .tafee{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-top:1px;white-space:nowrap;}
-#alive-flow .tainfo.lead .tafee{color:var(--green);}
-#alive-flow .tanote{margin-top:10px;font-size:12.5px;color:var(--text3);line-height:1.5;}
+#alive-flow .taline{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 14px;margin-top:6px;}
+#alive-flow .taline .tastd{font-family:var(--disp);font-size:14px;font-weight:800;color:var(--text);}
+#alive-flow .taline .tadate{font-family:var(--disp);font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;}
+#alive-flow .tanote{margin-top:8px;font-size:12.5px;color:var(--text3);line-height:1.5;}
 /* desktop: photo left, choices right */
 @media(min-width:980px){
   #alive-flow .wrap:has(.shell.dual){max-width:1180px;}
@@ -2950,17 +2942,13 @@ function taFee(key){
    expect and what the upgrades cost, without a second control to disagree
    with the one at checkout. */
 function taFoot(){
-  var rows = TA_KEYS.map(function(k){
-    var pct = k === 'std' ? 'Included' : '+' + Math.round(((E.RUSH_MULT[k] || 1) - 1) * 100) + '%';
-    return '<div class="tainfo' + (k === 'std' ? ' lead' : '') + '">' +
-      '<span class="tamid"><span class="tanm">' + TA_NAME[k] + '</span>' +
-        '<span class="tadays">' + E.turnaroundDays(k, false) + ' business days</span></span>' +
-      '<span class="taend"><span class="tadate" data-tadate="' + k + '">' + fmtDay(taDate(k)) + '</span>' +
-        '<span class="tafee">' + pct + '</span></span></div>';
-  }).join('');
-  return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span>' +
-    '<span class="aux">Ships by</span></div><div class="tarow">' + rows + '</div>' +
-    '<div class="tanote">Standard unless you upgrade at checkout — one turnaround covers the whole order. ' +
+  /* One plain line, not three card-shaped rows — those still read as buttons
+     even with the click handlers gone. Standard only; the rush upgrade is a
+     checkout decision because one turnaround covers the whole order. */
+  return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span></div>' +
+    '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false) + ' business days</span>' +
+      '<span class="tadate" data-tadate="std">Ships by ' + fmtDay(taDate('std')) + '</span></div>' +
+    '<div class="tanote">Need it sooner? Upgrade to a rush order at checkout. ' +
     'Dates are when it leaves our shop; transit is on top.</div></div>';
 }
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
@@ -3430,7 +3418,9 @@ function refreshPrice(){
     /* replaceWith drops the node, so its toggle listener goes with it */
     if(fresh && fresh.getAttribute) fresh.addEventListener('toggle', function(){ S.accPrice = fresh.open; });
   }
-  root.querySelectorAll('[data-tadate]').forEach(function(el){ el.textContent = fmtDay(taDate(el.dataset.tadate)); });
+  /* keep the "Ships by" prefix the markup carries — a bare date here would
+     silently strip it on the first keystroke in a size box */
+  root.querySelectorAll('[data-tadate]').forEach(function(el){ el.textContent = 'Ships by ' + fmtDay(taDate(el.dataset.tadate)); });
   var mc = root.querySelector('[data-mcta]');
   if(mc && S.phase === 'sizes') mc.disabled = !!S.saving || !sizesReady() || !artReady();
   pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
