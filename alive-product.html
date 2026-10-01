@@ -896,25 +896,20 @@
 #alive-flow .pb b{font-size:14px;}
 #alive-flow .pb.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
 #alive-flow .pbnudge{margin-top:10px;font-size:13.5px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--r);padding:9px 12px;}
-/* turnaround picker on the sizes step */
+/* turnaround, shown for information — the choice itself is at checkout */
 #alive-flow .tapick{border-top:1px solid var(--border);margin:16px -16px 0;padding:14px 16px 4px;}
 #alive-flow .tarow{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-#alive-flow .ta{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:56px;
-  padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);cursor:pointer;}
-#alive-flow .ta:hover{border-color:var(--border2);}
-#alive-flow .ta.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
-#alive-flow .ta .tamark{flex-shrink:0;width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);background:#fff;position:relative;}
-#alive-flow .ta.on .tamark{border-color:var(--blue);background:var(--blue);}
-#alive-flow .ta.on .tamark:after{content:'';position:absolute;inset:4px;border-radius:50%;background:#fff;}
-#alive-flow .ta .tamid{flex:1;min-width:0;}
-#alive-flow .ta .tanm{display:block;font-family:var(--disp);font-size:13.5px;font-weight:800;color:var(--text);}
-#alive-flow .ta .tadays{display:block;font-size:12.5px;color:var(--text2);margin-top:1px;}
-#alive-flow .ta .taend{flex-shrink:0;text-align:right;}
-#alive-flow .ta .tadate{display:block;font-family:var(--disp);font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;}
-#alive-flow .ta .tafee{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-top:1px;white-space:nowrap;}
-#alive-flow .ta.on .tafee{color:var(--blue);}
-#alive-flow .ta[data-rush="std"] .tafee{color:var(--green);}
-#alive-flow .tanote{margin-top:10px;font-size:12.5px;color:var(--text3);}
+#alive-flow .tainfo{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;
+  padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);}
+#alive-flow .tainfo.lead{border-color:var(--blue);background:var(--blue-light);}
+#alive-flow .tainfo .tamid{flex:1;min-width:0;}
+#alive-flow .tainfo .tanm{display:block;font-family:var(--disp);font-size:13.5px;font-weight:800;color:var(--text);}
+#alive-flow .tainfo .tadays{display:block;font-size:12.5px;color:var(--text2);margin-top:1px;}
+#alive-flow .tainfo .taend{flex-shrink:0;text-align:right;}
+#alive-flow .tainfo .tadate{display:block;font-family:var(--disp);font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;}
+#alive-flow .tainfo .tafee{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-top:1px;white-space:nowrap;}
+#alive-flow .tainfo.lead .tafee{color:var(--green);}
+#alive-flow .tanote{margin-top:10px;font-size:12.5px;color:var(--text3);line-height:1.5;}
 /* desktop: photo left, choices right */
 @media(min-width:980px){
   #alive-flow .wrap:has(.shell.dual){max-width:1180px;}
@@ -2543,7 +2538,7 @@ var S = {
   raw:null, p:null, colors:[], color:0, side:'front', gal:null, frame:{},
   phase:'artwork', sizes:{}, qty:0, est:CONFIG.defaultEstimate,
   method:null, locs:[], inks:{}, art:{}, mode:'now', sel:null, busy:null, err:'',
-  promo:0, rush:'std',
+  promo:0, rush:'std', editId:null,
   /* sizes-step accordions, all shut to start: entering sizes is the job there */
   accPrice:false, accGuar:false, accHelp:false, accDetails:false
 };
@@ -2588,7 +2583,8 @@ function pricingCfg(qty){
   var lm = {}; locs.forEach(function(k){ lm[k] = S.method; });
   return {qty: qty == null ? priceQty() : qty, locs: locs, locMethod: lm,
           frontColors: inkFor('front'), backColors: inkFor('back'),
-          addons:{neck:false,hem:false,bag:false}, rush:S.rush || 'std', promoDiscount:S.promo};
+          /* Always standard here: the rush is chosen once, at checkout. */
+          addons:{neck:false,hem:false,bag:false}, rush:'std', promoDiscount:S.promo};
 }
 /* A cfg at a named speed, for pricing the rush cards against the current setup. */
 function cfgAtRush(key){ var c = pricingCfg(); c.rush = key; return c; }
@@ -2681,7 +2677,7 @@ function barSub(){
   var q = realQty(), t = orderTotal();
   if(!q) return 'About ' + priceQty() + ' pcs · ' + basisLabel();
   if(q < minQ()) return q + ' pcs · minimum ' + minQ();
-  return money(t) + ' total · ' + q + ' pcs' + (S.rush && S.rush !== 'std' ? ' · ' + TA_NAME[S.rush] : '');
+  return money(t) + ' total · ' + q + ' pcs';
 }
 
 /* ------------------------------------------------------------ gallery */
@@ -2948,19 +2944,24 @@ function taFee(key){
   }
   return out;
 }
+/* Turnaround is shown here but CHOSEN at checkout (Austin, 1 Oct 2026): one
+   order gets one turnaround, and the order only exists at checkout, so the
+   binding choice has to live there. This block tells the customer what to
+   expect and what the upgrades cost, without a second control to disagree
+   with the one at checkout. */
 function taFoot(){
-  var cards = TA_KEYS.map(function(k){
-    return '<button type="button" class="ta' + (S.rush === k ? ' on' : '') + '" data-rush="' + k + '"' +
-      ' aria-pressed="' + (S.rush === k ? 'true' : 'false') + '">' +
-      '<span class="tamark" aria-hidden="true"></span>' +
+  var rows = TA_KEYS.map(function(k){
+    var pct = k === 'std' ? 'Included' : '+' + Math.round(((E.RUSH_MULT[k] || 1) - 1) * 100) + '%';
+    return '<div class="tainfo' + (k === 'std' ? ' lead' : '') + '">' +
       '<span class="tamid"><span class="tanm">' + TA_NAME[k] + '</span>' +
         '<span class="tadays">' + E.turnaroundDays(k, false) + ' business days</span></span>' +
       '<span class="taend"><span class="tadate" data-tadate="' + k + '">' + fmtDay(taDate(k)) + '</span>' +
-        '<span class="tafee" data-tafee="' + k + '">' + taFee(k) + '</span></span></button>';
+        '<span class="tafee">' + pct + '</span></span></div>';
   }).join('');
   return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span>' +
-    '<span class="aux">Ships by</span></div><div class="tarow">' + cards + '</div>' +
-    '<div class="tanote">Dates are when your order leaves our shop. Transit time is on top.</div></div>';
+    '<span class="aux">Ships by</span></div><div class="tarow">' + rows + '</div>' +
+    '<div class="tanote">Standard unless you upgrade at checkout — one turnaround covers the whole order. ' +
+    'Dates are when it leaves our shop; transit is on top.</div></div>';
 }
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
 
@@ -3398,7 +3399,7 @@ function render(){
         accBlock('accGuar', 'Your design is in good hands', whyAlive(), 'ghacc') +
         accBlock('accHelp', 'Need a hand?', helpBar(), 'helpacc') +
         '</div></div></div>' +
-      mbar(S.saving ? 'Uploading your artwork&hellip;' : 'Continue to checkout &rarr;', S.saving || !sizesReady() || !artReady(), barSub());
+      mbar(S.saving ? 'Uploading your artwork&hellip;' : (S.editId ? 'Save changes &rarr;' : 'Continue to checkout &rarr;'), S.saving || !sizesReady() || !artReady(), barSub());
   }
   /* An open ink-color question survives a redraw (e.g. when the upload finishes). */
   var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); });
@@ -3429,8 +3430,6 @@ function refreshPrice(){
     /* replaceWith drops the node, so its toggle listener goes with it */
     if(fresh && fresh.getAttribute) fresh.addEventListener('toggle', function(){ S.accPrice = fresh.open; });
   }
-  /* the rush cards price against the sizes being typed, so refresh them in place too */
-  root.querySelectorAll('[data-tafee]').forEach(function(el){ el.textContent = taFee(el.dataset.tafee); });
   root.querySelectorAll('[data-tadate]').forEach(function(el){ el.textContent = fmtDay(taDate(el.dataset.tadate)); });
   var mc = root.querySelector('[data-mcta]');
   if(mc && S.phase === 'sizes') mc.disabled = !!S.saving || !sizesReady() || !artReady();
@@ -3487,17 +3486,6 @@ function wire(){
     if(S.swOpen || swg.scrollHeight > swg.clientHeight + 20) swb.hidden = false;
     swb.onclick = function(){ S.swOpen = !S.swOpen; render(); };
   }
-  root.querySelectorAll('[data-rush]').forEach(function(b){
-    b.onclick = function(){
-      if(S.rush === b.dataset.rush) return;
-      S.rush = b.dataset.rush;
-      root.querySelectorAll('[data-rush]').forEach(function(o){
-        var on = o.dataset.rush === S.rush;
-        o.classList.toggle('on', on); o.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-      refreshPrice();   /* in place: re-rendering here would drop the caret in a size box */
-    };
-  });
   root.querySelectorAll('[data-q]').forEach(function(b){
     b.onclick = function(){ var st = S.qty < 100 ? 6 : (S.qty < 500 ? 12 : 50);
       S.qty = b.dataset.q === '+' ? S.qty + st : Math.max(minQ(), S.qty - st); render(); };
@@ -3580,6 +3568,19 @@ var CART = {
     items.push(item);
     try{ localStorage.setItem(this.K_ITEMS, JSON.stringify(items)); }catch(e){ return null; }
     return item;
+  },
+  /* Editing from checkout comes back through here: keep the id and the position
+     in the cart so the line doesn't jump or duplicate. */
+  replaceItem:function(id, item){
+    var items = this.getItems(), i = -1;
+    items.forEach(function(it, n){ if(it.id === id) i = n; });
+    if(i < 0) return this.addItem(item);
+    item.id = id;
+    item.addedAt = items[i].addedAt || new Date().toISOString();
+    item.editedAt = new Date().toISOString();
+    items[i] = item;
+    try{ localStorage.setItem(this.K_ITEMS, JSON.stringify(items)); }catch(e){ return null; }
+    return item;
   }
 };
 /* Just the fields the pricing engine needs, so checkout can re-price when
@@ -3637,8 +3638,8 @@ function addToCartNow(){
     frontColors: (lm.front === 'sp' || (S.p._drinkware && lm.front)) ? inkFor('front') : null,
     backColors: lm.back === 'sp' ? inkFor('back') : null,
     qty: q, sizes: sizes,
-    addons: {neck:false, hem:false, bag:false}, addonList: [], rush: S.rush || 'std',
-    turnaroundLabel: taLabel(S.rush || 'std'),
+    addons: {neck:false, hem:false, bag:false}, addonList: [], rush: 'std',
+    turnaroundLabel: taLabel('std'),
     artworkLink: S.mode === 'later' ? 'Customer will email artwork after checkout.' : files.filter(function(f){ return f.url; }).map(function(f){ return f.location + ': ' + f.url; }).join('\n'),
     artworkFiles: files, artworkByLocation: byLoc,
     artworkNote: files.filter(function(f){ return f.url; }).map(function(f){ return f.location + ': ' + f.url; }).join(', '),
@@ -3648,11 +3649,70 @@ function addToCartNow(){
     lineTotal: E.lineTotal(S.p, cfg, sizes),
     promoCodeAtAdd: promo && promo.code ? promo.code : '', promoDiscountAtAdd: S.promo || 0,
     pricingProduct: pricingProduct(), source: 'product-page-v3',
-    mock: mockForCart()
+    mock: mockForCart(),
+    /* Everything needed to reopen this line in the editor exactly as it was.
+       Artwork is referenced by its uploaded URL, so nothing bulky goes into
+       localStorage and the design comes back on the spot it was placed. */
+    edit: {
+      color: S.color, method: S.method, locs: S.locs.slice(), inks: JSON.parse(JSON.stringify(S.inks)),
+      mode: S.mode, side: S.side, sizes: JSON.parse(JSON.stringify(S.sizes)), qty: S.qty, est: S.est,
+      art: (function(){
+        var out = {};
+        S.locs.forEach(function(k){
+          var d = S.art[k]; if(!d) return;
+          out[k] = {name:d.name, url:d.url || '', key:d.key || '', place:d.place,
+                    colors:d.colors || [], photoish:!!d.photoish, noPreview:!!d.noPreview,
+                    inkAuto:d.inkAuto || 0, bgRemoved:!!d.bgRemoved};
+        });
+        return out;
+      })()
+    }
   };
-  if(!CART.addItem(item)){ S.err = 'We could not save your order in this browser. Please call ' + CONFIG.phone + '.'; render(); return; }
-  track('add_to_cart', {currency:'USD', value:+(+item.lineTotal).toFixed(2), items:[gaItem(item.qty, item.unitPrice)]});
+  var saved = S.editId ? CART.replaceItem(S.editId, item) : CART.addItem(item);
+  if(!saved){ S.err = 'We could not save your order in this browser. Please call ' + CONFIG.phone + '.'; render(); return; }
+  if(!S.editId) track('add_to_cart', {currency:'USD', value:+(+item.lineTotal).toFixed(2), items:[gaItem(item.qty, item.unitPrice)]});
   setTimeout(function(){ nav(cartUrl()); }, EMBEDDED ? 150 : 0);   /* let the page hand the event to GA/Meta first */
+}
+
+/* Rebuild the editor from the snapshot a cart line carries. Only fields we
+   actually stored are touched, so a line written before this existed (no
+   `edit` key) simply opens as a fresh configuration of the same style. */
+function restoreForEdit(){
+  var id = String(qp('edit') || '').trim();
+  if(!id) return;
+  var it = null;
+  CART.getItems().forEach(function(x){ if(x.id === id) it = x; });
+  if(!it || String(it.style).toUpperCase() !== String(S.p.style).toUpperCase()) return;
+  S.editId = id;
+  var e = it.edit;
+  if(e){
+    if(e.method && E.decoMethods(S.p).indexOf(e.method) > -1) setMethod(e.method);
+    if(typeof e.color === 'number' && S.colors[e.color]) S.color = e.color;
+    if(e.locs && e.locs.length){
+      var keep = e.locs.filter(function(k){ return LOC[k]; });
+      if(keep.length) S.locs = keep;
+    }
+    if(e.inks) S.inks = e.inks;
+    if(e.mode) S.mode = e.mode;
+    if(e.side) S.side = e.side;
+    if(e.sizes) S.sizes = e.sizes;
+    if(e.qty) S.qty = e.qty;
+    if(e.est) S.est = e.est;
+    if(e.art) Object.keys(e.art).forEach(function(k){
+      if(!LOC[k]) return;
+      var a = e.art[k];
+      /* src comes from the uploaded copy, so the design redraws where it was. */
+      S.art[k] = {name:a.name, src:a.url || '', thumb:a.url || '', colors:a.colors || [],
+                  photoish:!!a.photoish, url:a.url || '', key:a.key || '', uploadFailed:false,
+                  noPreview:!!a.noPreview, place:a.place || defaultPlace(k),
+                  inkAuto:a.inkAuto || 0, inkSet:true, bgRemoved:!!a.bgRemoved};
+    });
+  }else{
+    /* Pre-snapshot line: carry across what the display fields can tell us. */
+    if(it.sizes) S.sizes = JSON.parse(JSON.stringify(it.sizes));
+    if(it.color) S.colors.forEach(function(c, j){ if(c.name === it.color) S.color = j; });
+  }
+  if(String(qp('step') || '') === 'sizes') S.phase = 'sizes';
 }
 
 /* ------------------------------------------------------------ boot */
@@ -3694,6 +3754,10 @@ function boot(data){
   if(wq > 0 && wq < 100000) S.est = Math.max(wq, E.minQty(p, pricingCfg(wq)));
   if(isOneSize()) S.qty = S.est;
   S.phase = 'artwork';   /* every visit starts on the Design step */
+  /* ?edit=<cart item id> reopens a line from checkout exactly as it was, and
+     ?step=sizes drops straight onto the size grid. Saving replaces that line
+     rather than adding a second one. */
+  restoreForEdit();
   subscribeViewport();
   ensureFrame();
   render();

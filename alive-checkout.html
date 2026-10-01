@@ -115,6 +115,12 @@
 #alive-flow .item .line .amt{font-family:var(--disp);font-size:16px;font-weight:800;}
 #alive-flow .item .rm{font-size:12px;color:var(--text3);text-decoration:underline;background:none;}
 #alive-flow .item .rm:hover{color:var(--amber);}
+#alive-flow .item .line > span:first-child{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;}
+#alive-flow .item .iacts{display:flex;flex-wrap:wrap;gap:0 14px;margin:2px 0 0;width:100%;}
+#alive-flow .item .iacts .rm{margin-left:0;padding-left:0;}
+#alive-flow .item .iacts a.rm:hover{color:var(--blue);}
+#alive-flow .row.due{border-top:1px dashed var(--border);margin-top:2px;padding-top:10px;}
+#alive-flow .row.due b{color:var(--green);}
 #alive-flow .empty{text-align:center;padding:40px 20px;color:var(--text2);}
 
 /* ---- form ------------------------------------------------------------ */
@@ -1024,6 +1030,12 @@ function rushExtra(key){
 }
 function addonPieces(a){ return S.items.reduce(function(t, it){ return t + (priceable(it) && addonFits(a.key, it) ? (it.qty|0) : 0); }, 0); }
 
+/* Back into the flow on this exact line. ?edit= restores it and makes the
+   final button save over it instead of adding a second one. */
+function editUrl(it, step){
+  return CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(it.style || '') +
+    '&edit=' + encodeURIComponent(it.id || '') + (step === 'sizes' ? '&step=sizes' : '');
+}
 /* ------------------------------------------------------------ render */
 var LOC_LABEL = {'front':'Front','back':'Back','left-sleeve':'Left sleeve','right-sleeve':'Right sleeve','left-chest':'Left chest',
   'right-chest':'Right chest','front-center':'Front center','left-side':'Left side','right-side':'Right side'};
@@ -1046,7 +1058,10 @@ function itemHtml(it){
       (it.artworkLater ? '<div>Artwork: <b>you’ll email it after ordering</b></div>' : '') +
     '</dl>' +
     (staleDeal(it) ? '<div class="stale">Our pricing on this item has changed. Please remove it and add it again to see today’s price. <a href="' + esc(CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(it.style || '')) + '" data-readd="1">Add it again &rarr;</a></div>' : '') +
-    '<div class="line"><span>' + (it.qty|0) + ' pcs · ' + money(it.unitPrice) + '/pc <button class="rm" type="button" data-rm="' + esc(it.id) + '">Remove</button></span>' +
+    '<div class="line"><span>' + (it.qty|0) + ' pcs · ' + money(it.unitPrice) + '/pc' +
+      '<span class="iacts"><a class="rm" href="' + esc(editUrl(it, 'artwork')) + '" data-edit="1">Edit design</a>' +
+      '<a class="rm" href="' + esc(editUrl(it, 'sizes')) + '" data-edit="1">Edit sizes</a>' +
+      '<button class="rm" type="button" data-rm="' + esc(it.id) + '">Remove</button></span></span>' +
       '<span class="amt num">' + money(it.lineTotal) + '</span></div></div></div>';
 }
 /* The garment with the customer's artwork, rebuilt from where they placed it
@@ -1140,6 +1155,7 @@ function render(){
       '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
+      '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
       (promo && promo.code ? '' : (S.promoOpen
         ? '<div class="promo-in"><input id="co-promo" placeholder="Promo code" autocomplete="off"><button type="button" class="dbtn" data-applypromo="1">Apply</button></div>' + (S.promoErr ? '<div class="perr">' + esc(S.promoErr) + '</div>' : '')
         : '<button type="button" class="linkbtn promo-link" data-openpromo="1">Have a promo code?</button>')) +
@@ -1385,6 +1401,7 @@ function wire(){
   var cp = root.querySelector('[data-clearpromo]'); if(cp) cp.onclick = function(){ CART.setPromo(null); applyOptions(); render(); };
   var ack = document.getElementById('miss-ack'); if(ack) ack.onchange = function(){ S.missAck = ack.checked; };
   root.querySelectorAll('[data-readd]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
+  root.querySelectorAll('[data-edit]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
   root.querySelectorAll('[data-share]').forEach(function(b){ b.onclick = openShare; });
