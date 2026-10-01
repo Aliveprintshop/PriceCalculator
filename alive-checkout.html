@@ -1146,7 +1146,9 @@ function render(){
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-submit="1"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting secure checkout…' : 'Pay &amp; place order') + '</button>' +
       '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' +
-      '<div class="rating"><span class="stars">★★★★★</span> <b>5.0</b> from 288+ Google reviews</div>' +
+      /* Real figures off the Google Business Profile, 1 Oct 2026. Keep this in
+         step with CONFIG.reviews on the product page — both are typed in. */
+      '<div class="rating"><span class="stars">★★★★★</span> <b>4.9</b> from 295 Google reviews</div>' +
     '</div>';
 
   root.innerHTML = stepper() +

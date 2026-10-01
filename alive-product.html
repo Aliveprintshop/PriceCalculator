@@ -2399,10 +2399,10 @@ var CONFIG = {
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   /* Shop-wide Google rating shown on every product. ONE place to keep it
      honest — these must be the real figures from the Google Business Profile.
-     NOTE: the checkout currently says 5.0 from 288+; one of the two is stale.
-     tech-notes-google-reviews.md has the build for refreshing this nightly
-     into reviews.json instead of typing it. */
-  reviews: {rating: 4.8, count: 295, href: 'https://www.google.com/search?q=Alive+Print+Shop+North+Las+Vegas+reviews'},
+     Read off the profile on 1 Oct 2026: 4.9 from 295 reviews. The checkout
+     uses the same pair. tech-notes-google-reviews.md has the build for
+     refreshing this nightly into reviews.json instead of typing it. */
+  reviews: {rating: 4.9, count: 295, href: 'https://www.google.com/search?q=Alive+Print+Shop+North+Las+Vegas+reviews'},
   maxFileMB: 25,
   defaultEstimate: 50,
   media: [
@@ -2770,7 +2770,8 @@ function blurb(p){
 function stars(r){
   var out = '';
   for(var i = 1; i <= 5; i++){
-    var fill = r >= i ? 'full' : (r >= i - 0.5 ? 'half' : 'none');
+    /* Round the way Google does: 4.9 shows five solid stars, not four and a half. */
+    var fill = r >= i - 0.25 ? 'full' : (r >= i - 0.75 ? 'half' : 'none');
     out += '<span class="st ' + fill + '"><svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/></svg></span>';
   }
   return '<span class="stars" aria-hidden="true">' + out + '</span>';
