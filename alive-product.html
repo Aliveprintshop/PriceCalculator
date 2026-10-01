@@ -916,6 +916,43 @@
   #alive-flow .shell.dual .colR > :first-child{margin-top:0;}
   #alive-flow .shell.dual .sizecard{margin-top:0;}
 }
+/* Step 1 layout (1 Oct 2026): the two columns are content-sized and used to end
+   ragged — the left ran ~175px longer than the right on a tee, ~197px on a cap.
+   Garment colors now live in the right column (next to the controls the customer
+   is actually using), and the grid stretches so both columns finish on the same
+   line. The leftover height is split evenly around the photo rather than dumped
+   at the bottom. The stage keeps its aspect-ratio, so artwork placement
+   coordinates are untouched. */
+@media(min-width:980px){
+  #alive-flow .shell.solo.dual{align-items:stretch !important;}
+  #alive-flow .shell.dual .colR{display:flex;flex-direction:column;}
+  #alive-flow .shell.dual .colR .mhelp{margin-top:auto;}
+  #alive-flow .shell.dual .colL{display:flex;flex-direction:column;}
+  #alive-flow .shell.dual .colL .pcard{flex:1;display:flex;flex-direction:column;padding-bottom:16px;}
+  /* The photo is capped so the left column lands close to the right one and the
+     whole step stays near the fold. A CROPPED stage is sized by the inline width
+     productCard() writes from EDITOR_MAX_H — capping its height here instead
+     would fight its aspect-ratio and stretch the garment (object-fit:fill), so
+     this rule deliberately skips it. */
+  #alive-flow .shell.dual .colL .stage:not(.cropped){max-height:400px !important;}
+  #alive-flow .shell.dual .colL .stage{margin-block:auto;}
+  /* The upload box grows to take up the slack, so the right column reaches the
+     same bottom line as the photo instead of the photo being cut down further. */
+  #alive-flow .shell.dual .colR .lcards{flex:1;}
+  #alive-flow .shell.dual .colR .lcard{display:flex;flex-direction:column;}
+  #alive-flow .shell.dual .colR .lcard .slot{flex:1;}
+  #alive-flow .shell.dual .colR .lcard .later{flex:1;display:flex;flex-direction:column;justify-content:center;}
+}
+#alive-flow .gcard{margin-top:16px;}
+#alive-flow .gcard .pcard-foot{border-top:0;margin-top:0;padding-top:0;}
+/* Four rows of swatches, then "show all" — a 112-colour cap otherwise makes
+   this block nine rows tall and stretches the whole step. */
+/* Four whole rows: 4x30px swatches + 3x8px gaps + the row's own 3/8px padding.
+   Anything other than a row boundary slices the bottom row in half. */
+#alive-flow .artsw.clipped{max-height:155px;overflow:hidden;}
+#alive-flow .swmore{display:block;margin:10px 0 2px;padding:0;background:none;border:0;cursor:pointer;
+  font-family:var(--disp);font-size:12px;font-weight:700;color:var(--blue);}
+#alive-flow .swmore[hidden]{display:none;}
 /* bigger tap targets + readable step labels */
 #alive-flow .stp .nm{font-size:12px !important;}
 #alive-flow .sides button{min-height:44px;min-width:92px;}
@@ -2620,7 +2657,12 @@ function wireStrip(){
 }
 
 /* ------------------------------------------------------------ product card */
+/* Photo cap for the placement editor. 400 on the desktop two-column layout, to
+   match the CSS cap on an uncropped stage (both live behind min-width:980px);
+   the old 540 below that, where the photo has the full width to itself. */
+function EDITOR_MAX_H_fn(){ return window.innerWidth >= 980 ? 400 : 540; }
 function productCard(overlayHtml, foot, rail, strip){
+  var EDITOR_MAX_H = EDITOR_MAX_H_fn();
   var p = S.p, c = S.colors[S.color];
   var editor = S.phase === 'artwork' || (S.phase === 'sizes' && S.gal == null);
   var fr = S.frame[S.color];
@@ -2632,7 +2674,9 @@ function productCard(overlayHtml, foot, rail, strip){
   var cr = S.gal == null && CROPS[String(p.style).toUpperCase()], box = cr && cr[S.side === 'back' && colorBack(c) ? 'b' : 'f'];
   var stageStyle = editor ? ' style="aspect-ratio:' + frame + '"' : '', artStyle = '';
   if(box){
-    var cw = box[2] - box[0], ch = box[3] - box[1], ratio = +(cw * box[4] / ch).toFixed(4), maxH = editor ? 540 : (window.innerWidth < 560 ? 360 : 420);
+    /* EDITOR_MAX_H keeps the cropped stage's WIDTH in step with the CSS cap on
+       an uncropped one. Change the two together or the garment stretches. */
+    var cw = box[2] - box[0], ch = box[3] - box[1], ratio = +(cw * box[4] / ch).toFixed(4), maxH = editor ? EDITOR_MAX_H : (window.innerWidth < 560 ? 360 : 420);
     stageStyle = ' style="--ar:' + ratio + ';width:min(100%,' + Math.round(maxH * ratio) + 'px)"';
     artStyle = ' style="inset:auto;left:' + (-box[0] / cw * 100).toFixed(3) + '%;top:' + (-box[1] / ch * 100).toFixed(3) + '%;width:' + (100 / cw).toFixed(3) + '%;height:' + (100 / ch).toFixed(3) + '%"';
   }
@@ -2676,7 +2720,9 @@ function artColorFoot(){
   }).join('');
   return '<div class="fhead"><span class="lbl">Garment color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b></span>' +
     '<span class="aux">' + S.colors.length + ' colors</span></div>' +
-    '<div class="swatches artsw" id="f-artsw">' + sw + '</div>';
+    '<div class="swatches artsw' + (S.swOpen ? '' : ' clipped') + '" id="f-artsw">' + sw + '</div>' +
+    '<button type="button" class="swmore" data-swmore="1" hidden>' +
+      (S.swOpen ? 'Show fewer' : 'Show all ' + S.colors.length + ' colors') + '</button>';
 }
 function sizeFoot(){
   if(isOneSize()) return oneSizeFoot();
@@ -2940,7 +2986,14 @@ function overlay(){
     var k = S.locs.filter(function(x){ return LOC[x] && LOC[x].side === S.side && !S.art[x]; })[0];
     if(k){
       var busy = S.busy === k;
-      return '<button type="button" class="stage-up" data-add="' + k + '"' + (busy ? ' disabled' : '') + '>' +
+      /* Sit on the spot the artwork will actually land on. The CSS default
+         (50%/40% of the photo) only looked right on garments that fill their
+         flat: a cap occupies the top ~40% of a 2:3 SanMar frame, so 40% put the
+         button on the brim. defaultPlace() is in the same photo coordinates the
+         placed layer uses, so the button is now a true preview. */
+      var up = defaultPlace(k);
+      return '<button type="button" class="stage-up" data-add="' + k + '"' + (busy ? ' disabled' : '') +
+        ' style="left:' + (up.cx * 100).toFixed(2) + '%;top:' + (up.cy * 100).toFixed(2) + '%">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>' +
         '<b>' + (busy ? 'Reading your file…' : 'Upload your design') + '</b><em>' + esc(LOC[k].label) + ' · PNG, JPG, PDF, AI</em></button>';
     }
@@ -3153,14 +3206,13 @@ function render(){
       '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
       '<div class="shell solo dual">' +
         /* Photo, then Front/Back, the gallery right under it, then garment colors. */
-        '<div class="colL">' + productCard(overlay(), '', (artColorFoot() ? '<div class="pcard-foot">' + artColorFoot() + '</div>' : ''), tools() + mediaStrip(c)) + '</div><div class="colR">' +
+        '<div class="colL">' + productCard(overlay(), '', '', tools() + mediaStrip(c)) + '</div><div class="colR">' +
           optsBlock() +
+          (artColorFoot() ? '<div class="pcard gcard"><div class="pcard-foot">' + artColorFoot() + '</div></div>' : '') +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
           '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
-          whyAlive() +
-          '<div class="mhelp">' + helpBar() + '</div>' +
         '</div>' +
       '</div></div>' +
       mbar('Continue to sizes &rarr;', false, barSub());
@@ -3242,6 +3294,14 @@ function wire(){
       inp.parentNode.classList.toggle('has', !!n); refreshPrice();
     };
   });
+  /* "Show all N colors" appears only when the grid actually overflows four rows. */
+  var swg = document.getElementById('f-artsw'), swb = root.querySelector('[data-swmore]');
+  if(swg && swb){
+    /* 20px of slack: don't offer "show all" when only the grid's own padding
+       is clipped — the link should mean a real row is hidden. */
+    if(S.swOpen || swg.scrollHeight > swg.clientHeight + 20) swb.hidden = false;
+    swb.onclick = function(){ S.swOpen = !S.swOpen; render(); };
+  }
   root.querySelectorAll('[data-rush]').forEach(function(b){
     b.onclick = function(){
       if(S.rush === b.dataset.rush) return;
