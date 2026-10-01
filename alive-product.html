@@ -226,13 +226,13 @@
 #alive-flow .size input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 #alive-flow .size input:focus{outline:none;}
 #alive-flow .size u{display:block;text-decoration:none;font-size:10px;font-weight:700;
-  color:var(--amber);min-height:13px;}
+  color:var(--text2);min-height:13px;}   /* was amber — an upcharge is a fact, not a warning */
 #alive-flow .sztot{display:flex;justify-content:space-between;align-items:center;gap:12px;
   background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);
   padding:11px 14px;margin-top:11px;font-size:13.5px;}
 #alive-flow .sztot b{font-family:var(--disp);font-size:17px;font-weight:800;}
 #alive-flow .sztot.ok b{color:var(--green);}
-#alive-flow .sztot.off b{color:var(--amber);}
+#alive-flow .sztot.off b{color:var(--text);}   /* not amber: being short of the minimum is not an error */
 #alive-flow .sztot .szmin{font-style:normal;color:var(--text3);font-size:12px;}
 #alive-flow .autofill{background:none;font-size:12px;color:var(--blue);text-decoration:underline;}
 
@@ -896,16 +896,60 @@
 #alive-flow .pb b{font-size:14px;}
 #alive-flow .pb.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
 #alive-flow .pbnudge{margin-top:10px;font-size:13.5px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--r);padding:9px 12px;}
-/* the 24-piece minimum: an instruction, not a scolding */
+/* The 24-piece minimum. Deliberately NOT amber: at 10 pieces the customer has
+   made no mistake, and a warning colour tells them they have. Neutral card,
+   blue accent — "here is how this works", not "something is wrong". */
 #alive-flow .minwrap:empty{display:none;}
-#alive-flow .minwarn{margin-top:10px;font-size:13.5px;line-height:1.55;color:#92400e;
-  background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--r);padding:10px 12px;}
-#alive-flow .minwarn b{font-weight:800;color:#78350f;}
-#alive-flow .minwhy{color:#a16207;}
-#alive-flow .minalt{margin-top:7px;padding-top:7px;border-top:1px solid #fde68a;}
-#alive-flow .minalt .linkbtn{font-size:inherit;color:#1b6cce;}
-#alive-flow .minwarn.flash{animation:aliveMinFlash 1.3s ease-out 2;}
-@keyframes aliveMinFlash{0%{box-shadow:0 0 0 0 rgba(180,83,9,.45);}70%{box-shadow:0 0 0 12px rgba(180,83,9,0);}100%{box-shadow:0 0 0 0 rgba(180,83,9,0);}}
+#alive-flow .minbox{margin-top:11px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r);padding:13px 14px;}
+#alive-flow .minhd{display:flex;gap:9px;align-items:center;}
+#alive-flow .minico{width:19px;height:19px;flex:0 0 19px;color:var(--blue);}
+#alive-flow .minico.lg{width:21px;height:21px;flex:0 0 21px;}
+#alive-flow .minico.g{color:var(--text2);}
+#alive-flow .minhd h4{font-family:var(--disp);font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.005em;}
+#alive-flow .minsub{font-size:12.5px;color:var(--text2);margin:2px 0 0 30px;line-height:1.5;}
+#alive-flow .minbar{height:8px;border-radius:99px;background:#e4e9f0;overflow:hidden;margin-top:11px;}
+#alive-flow .minbar>i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--blue),#3f9bea);transition:width .25s ease;}
+#alive-flow .minscale{display:flex;justify-content:space-between;font-size:11.5px;
+  color:var(--text2);margin-top:5px;font-weight:700;}
+#alive-flow .mincards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px;}
+#alive-flow .mincards.one{grid-template-columns:1fr;}
+/* Stacked on a phone, so nothing needs aligning — drop the desktop spacer
+   and tighten the cards, or the box eats most of a screen. */
+@media(max-width:620px){
+  #alive-flow .mincards{grid-template-columns:1fr;}
+  #alive-flow .minmore[aria-hidden]{display:none;}
+  #alive-flow .mincard{padding:11px;}
+  #alive-flow .minpr{font-size:17.5px;}
+  #alive-flow .mintot{margin-bottom:9px;}
+}
+#alive-flow .mincard{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);
+  padding:12px;position:relative;display:flex;flex-direction:column;}
+#alive-flow .mincard.pick{border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,206,.1);}
+#alive-flow .mintag{position:absolute;top:-9px;left:11px;background:var(--blue);color:#fff;
+  font-family:var(--disp);font-size:9.5px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;padding:3px 7px;border-radius:99px;}
+#alive-flow .mincline{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+#alive-flow .mincline h5{font-family:var(--disp);font-size:14.5px;font-weight:800;color:var(--text);}
+#alive-flow .minmeth{font-size:12px;color:var(--text2);margin-bottom:8px;}
+#alive-flow .minpr{font-family:var(--disp);font-size:19px;font-weight:800;color:var(--text);line-height:1.1;}
+#alive-flow .minpr span{font-size:12px;font-weight:700;color:var(--text3);}
+#alive-flow .mintot{font-size:12px;color:var(--text2);margin-bottom:10px;}
+#alive-flow .minact{margin-top:auto;}
+#alive-flow .mincta{display:block;width:100%;background:var(--blue);color:#fff;border-radius:var(--r);
+  padding:11px 14px;font-family:var(--disp);font-weight:800;font-size:13.5px;text-align:center;}
+#alive-flow .mincta:hover{background:var(--blue-dark);}
+#alive-flow .minghost{display:block;width:100%;background:#fff;border:1.5px solid var(--border2);
+  border-radius:var(--r);padding:10px 14px;font-family:var(--disp);font-weight:800;font-size:13px;
+  color:var(--text);text-align:center;}
+#alive-flow .minghost:hover{border-color:var(--blue);color:var(--blue);}
+#alive-flow .minmore{display:block;width:100%;text-align:center;margin-top:7px;
+  font-size:12px;color:var(--text2);}
+#alive-flow .minmore b{color:var(--green);}
+#alive-flow .minmore:hover{color:var(--blue);text-decoration:underline;}
+#alive-flow .minbox.flash{animation:aliveMinFlash 1.3s ease-out 2;}
+@keyframes aliveMinFlash{0%{box-shadow:0 0 0 0 rgba(27,108,206,.4);}70%{box-shadow:0 0 0 12px rgba(27,108,206,0);}100%{box-shadow:0 0 0 0 rgba(27,108,206,0);}}
 /* turnaround: a stated fact, not a control — no card, no border, no hover */
 #alive-flow .tapick{border-top:1px solid var(--border);margin:16px -16px 0;padding:14px 16px 4px;}
 #alive-flow .taline{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 14px;margin-top:6px;}
@@ -2975,6 +3019,12 @@ function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
    going grey and silent, and — because 24 is screen printing's minimum and
    not the shop's — a smaller order is offered the decoration that can run
    it (full color at 10, embroidery at 12) instead of a dead end. */
+var SHIRT_PATH = '<path d="M8.5 3.5 4 6l1.4 3.9 2.4-.8V20.5h8.4V9.1l2.4.8L20 6l-4.5-2.5a3.5 3.5 0 0 1-7 0Z"/>';
+var SHIRT_SVG = '<svg class="minico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + SHIRT_PATH + '</svg>';
+var SHIRT_SVG_LG = '<svg class="minico lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + SHIRT_PATH + '</svg>';
+var PALETTE_SVG = '<svg class="minico g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="M12 3.2c-5 0-9 3.9-9 8.8a8.8 8.8 0 0 0 8.8 8.8c1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.1 0-1 .8-1.8 1.8-1.8h1.4c3 0 5.2-2.2 5.2-5.1 0-3.9-4-6.6-9-6.6Z"/>' +
+  '<circle cx="7.4" cy="12.2" r="1.05"/><circle cx="9.6" cy="8.3" r="1.05"/><circle cx="14.2" cy="7.7" r="1.05"/></svg>';
 function minGap(){ return Math.max(0, minQ() - realQty()); }
 function minForMethod(m){
   var loc = defaultLoc(m), lm = {}; lm[loc] = m;
@@ -3000,21 +3050,105 @@ function altMethodFor(q){
 }
 function methodWord(m){ return m === 'sp' ? 'screen print' : m === 'ht' ? 'full color print' : 'embroidery'; }
 function methodTab(m){ return m === 'sp' ? 'Screen print' : m === 'ht' ? 'Full color' : 'Embroidery'; }
+/* The size split a quick-add would produce: the shortfall lands on the size
+   they have already used most, so "Add 14 more" never scatters pieces into
+   sizes nobody asked for. Used for pricing the card before it is tapped. */
+function bumpSize(){
+  var keys = S.p.available_sizes || [];
+  var best = null, bestN = -1;
+  keys.forEach(function(k){ var n = +S.sizes[k] || 0; if(n > bestN){ bestN = n; best = k; } });
+  return best || keys[0];
+}
+function projSizes(target){
+  if(isOneSize()){ var o = {}; o[(S.p.available_sizes || ['OSFA'])[0] || 'OSFA'] = target; return o; }
+  var out = {}, k;
+  for(k in S.sizes) out[k] = +S.sizes[k] || 0;
+  var b = bumpSize(); if(!b) return out;
+  out[b] = (out[b] || 0) + (target - realQty());
+  return out;
+}
+/* Order total at a hypothetical quantity, size upcharges and all. */
+function totalAt(target){ return E.lineTotal(S.p, pricingCfg(target), projSizes(target)); }
+function totalAtMethod(m){
+  var loc = defaultLoc(m), lm = {}; lm[loc] = m;
+  var c = pricingCfg(); c.locs = [loc]; c.locMethod = lm;
+  return E.lineTotal(S.p, c, sizesForTotal());
+}
+/* The next price break past the minimum, for the quiet second offer. */
+function nextBreak(){
+  var mn = minQ(), brs = [];
+  try{ brs = E.priceBreaks(S.p, pricingCfg(mn)) || []; }catch(e){ return null; }
+  var u0 = E.unitPrice(S.p, pricingCfg(mn));
+  for(var i = 0; i < brs.length; i++){
+    if(brs[i] > mn){
+      var u = E.unitPrice(S.p, pricingCfg(brs[i]));
+      if(u != null && u0 != null && u < u0 - 0.004) return {q:brs[i], u:u, save:u0 - u};
+      }
+  }
+  return null;
+}
 function minBody(){
   var gap = minGap(), q = realQty(), mn = minQ();
   if(!gap) return '';
   if(q === 0 && !S.minTried) return '';   /* no scolding before they've typed */
-  var head = q === 0
-    ? 'Enter your sizes above &mdash; <b>' + mn + ' pieces</b> is the minimum for ' + esc(methodWord(S.method)) + '.'
-    : 'Add <b>' + gap + ' more</b> to reach the <b>' + mn + '-piece</b> ' + esc(methodWord(S.method)) + ' minimum.';
-  var why = S.method === 'sp'
-    ? ' <span class="minwhy">Each color is set up by hand, so ' + mn + ' is where the price works.</span>' : '';
+
+  var head = q === 0 ? 'Start with ' + mn + ' pieces' : gap + ' more to go';
+  var why = 'Screen printing starts at ' + mn +
+    (S.method === 'sp' ? ' &mdash; each color is set up by hand, so ' + mn + ' is where the price works.' : '.');
+  if(S.method !== 'sp') why = esc(methodTab(S.method)) + ' starts at ' + mn + ' pieces.';
+
+  /* Progress: the bar is the only thing that answers "how close am I". */
+  var pct = Math.max(3, Math.min(100, Math.round(q / mn * 1000) / 10));
+  var bar = '<div class="minbar"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="minscale"><span>' + q + ' now</span><span>' + mn + ' minimum</span></div>';
+
+  /* Card one: get to the minimum. The button does the typing. */
+  var uMin = E.unitPrice(S.p, pricingCfg(mn)), tMin = totalAt(mn);
+  var nb = nextBreak();
+  var more = nb ? '<button type="button" class="minmore" data-bump="' + nb.q + '">or ' + nb.q +
+    ' for <b>' + money(nb.u) + '</b> each</button>' : '';
+  var c1 = '<div class="mincard pick"><span class="mintag">Best per piece</span>' +
+    '<div class="mincline">' + SHIRT_SVG + '<h5>Order ' + mn + '</h5></div>' +
+    '<div class="minmeth">' + esc(methodTab(S.method)) + (q ? ' &middot; add ' + gap + ' more' : '') + '</div>' +
+    '<div class="minpr num">' + money(uMin) + ' <span>each</span></div>' +
+    '<div class="mintot num">' + money(tMin) + ' total</div>' +
+    '<div class="minact"><button type="button" class="mincta" data-bump="' + mn + '">Add ' +
+      (q ? gap + ' more' : mn + ' pieces') + '</button>' + more + '</div></div>';
+
+  /* Card two: only when another decoration can actually run this quantity. */
   var a = q > 0 ? altMethodFor(q) : null;
-  var alt = a ? '<div class="minalt">Only need ' + q + '? <b>' + esc(methodTab(a.m)) + '</b> starts at ' + a.min +
-    ' pieces' + (a.u == null ? '' : ' &mdash; ' + money(a.u) + ' each at ' + q) +
-    '. <button type="button" class="linkbtn" data-method="' + a.m + '">Switch to ' + esc(methodTab(a.m)) +
-    '</button> &mdash; your design and sizes stay put.</div>' : '';
-  return '<div class="minwarn">' + head + why + alt + '</div>';
+  var c2 = '';
+  if(a){
+    var tAlt = totalAtMethod(a.m);
+    c2 = '<div class="mincard">' +
+      '<div class="mincline">' + PALETTE_SVG + '<h5>Keep ' + q + '</h5></div>' +
+      '<div class="minmeth">' + esc(methodTab(a.m)) + ' &middot; starts at ' + a.min + '</div>' +
+      '<div class="minpr num">' + (a.u == null ? '&mdash;' : money(a.u)) + ' <span>each</span></div>' +
+      '<div class="mintot num">' + (tAlt == null ? '&nbsp;' : money(tAlt) + ' total') + '</div>' +
+      '<div class="minact"><button type="button" class="minghost" data-method="' + a.m + '">Switch to ' +
+        esc(methodTab(a.m)) + '</button><span class="minmore" aria-hidden="true" style="visibility:hidden">.</span></div></div>';
+  }
+
+  return '<div class="minbox">' +
+    '<div class="minhd">' + SHIRT_SVG_LG + '<h4>' + esc(head) + '</h4></div>' +
+    '<div class="minsub">' + why + '</div>' + bar +
+    '<div class="mincards' + (c2 ? '' : ' one') + '">' + c1 + c2 + '</div></div>';
+}
+/* Quick-add: write the shortfall into the size grid so the customer does not
+   have to. It tops up the size they have used most (10 in M -> 24 in M), or
+   drops the lot into the first size when the grid is empty. Still editable
+   afterwards: a head start, not a decision. */
+function bumpTo(target){
+  var cur = realQty();
+  if(!(target > cur)) return;
+  if(isOneSize()) S.qty = target;
+  else {
+    var b = bumpSize(); if(!b) return;
+    S.sizes[b] = (+S.sizes[b] || 0) + (target - cur);
+  }
+  S.minTried = false;
+  render();
+  scrollToEl(root.querySelector('.sizecard'));
 }
 /* The footer button's words and state, so render() and refreshPrice() agree. */
 function mctaState(){
@@ -3494,12 +3628,15 @@ function refreshPrice(){
   /* keep the "Ships by" prefix the markup carries — a bare date here would
      silently strip it on the first keystroke in a size box */
   root.querySelectorAll('[data-tadate]').forEach(function(el){ el.textContent = 'Ships by ' + fmtDay(taDate(el.dataset.tadate)); });
-  /* the minimum box follows the running total, and re-binds its switch link */
+  /* the minimum box follows the running total, and re-binds its own buttons */
   var mw = root.querySelector('.minwrap');
   if(mw){
     mw.innerHTML = minBody();
     mw.querySelectorAll('[data-method]').forEach(function(b){
       b.onclick = function(){ setMethod(b.dataset.method); render(); };
+    });
+    mw.querySelectorAll('[data-bump]').forEach(function(b){
+      b.onclick = function(){ bumpTo(+b.dataset.bump); };
     });
   }
   var mc = root.querySelector('[data-mcta]');
@@ -3566,6 +3703,7 @@ function wire(){
           qi.onchange = qi.onblur = function(){ S.qty = Math.max(minQ(), parseInt(qi.value,10) || minQ()); render(); }; }
   wireStrip();
   root.querySelectorAll('[data-method]').forEach(function(b){ b.onclick = function(){ setMethod(b.dataset.method); render(); }; });
+  root.querySelectorAll('[data-bump]').forEach(function(b){ b.onclick = function(){ bumpTo(+b.dataset.bump); }; });
   root.querySelectorAll('[data-loc]').forEach(function(b){
     b.onclick = function(){ var k = b.dataset.loc, i = S.locs.indexOf(k);
       if(i > -1){ if(S.locs.length > 1){ S.locs.splice(i,1); delete S.art[k]; } }
@@ -3619,7 +3757,7 @@ function wire(){
       if(!artReady()) return;
       /* under the minimum: show the box (even with an empty grid) and go to it */
       S.minTried = true; render();
-      var w = root.querySelector('.minwarn');
+      var w = root.querySelector('.minbox');
       if(w) w.classList.add('flash');
       scrollToEl(w || root.querySelector('.sizecard'));
     }
