@@ -942,6 +942,12 @@
   #alive-flow .shell.dual .colR .lcard{display:flex;flex-direction:column;}
   #alive-flow .shell.dual .colR .lcard .slot{flex:1;}
   #alive-flow .shell.dual .colR .lcard .later{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  /* The "Upload a design for Front…" note is lifted out of the flow so the two
+     cards finish on the same line. It hangs just below the right card instead of
+     shortening it, which is what made the bottom edges disagree. */
+  #alive-flow .shell.dual .colR{position:relative;}
+  #alive-flow .shell.dual .colR .undercta{position:absolute;top:100%;left:0;right:0;margin:8px 0 0;}
+  #alive-flow .shell.solo.dual{padding-bottom:42px;}
 }
 #alive-flow .gcard{margin-top:16px;}
 #alive-flow .gcard .pcard-foot{border-top:0;margin-top:0;padding-top:0;}
