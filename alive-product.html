@@ -896,6 +896,16 @@
 #alive-flow .pb b{font-size:14px;}
 #alive-flow .pb.on{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 1px var(--blue);}
 #alive-flow .pbnudge{margin-top:10px;font-size:13.5px;color:#166534;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--r);padding:9px 12px;}
+/* the 24-piece minimum: an instruction, not a scolding */
+#alive-flow .minwrap:empty{display:none;}
+#alive-flow .minwarn{margin-top:10px;font-size:13.5px;line-height:1.55;color:#92400e;
+  background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--r);padding:10px 12px;}
+#alive-flow .minwarn b{font-weight:800;color:#78350f;}
+#alive-flow .minwhy{color:#a16207;}
+#alive-flow .minalt{margin-top:7px;padding-top:7px;border-top:1px solid #fde68a;}
+#alive-flow .minalt .linkbtn{font-size:inherit;color:#1b6cce;}
+#alive-flow .minwarn.flash{animation:aliveMinFlash 1.3s ease-out 2;}
+@keyframes aliveMinFlash{0%{box-shadow:0 0 0 0 rgba(180,83,9,.45);}70%{box-shadow:0 0 0 12px rgba(180,83,9,0);}100%{box-shadow:0 0 0 0 rgba(180,83,9,0);}}
 /* turnaround: a stated fact, not a control — no card, no border, no hover */
 #alive-flow .tapick{border-top:1px solid var(--border);margin:16px -16px 0;padding:14px 16px 4px;}
 #alive-flow .taline{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 14px;margin-top:6px;}
@@ -2531,6 +2541,9 @@ var S = {
   phase:'artwork', sizes:{}, qty:0, est:CONFIG.defaultEstimate,
   method:null, locs:[], inks:{}, art:{}, mode:'now', sel:null, busy:null, err:'',
   promo:0, rush:'std', editId:null,
+  /* set once a customer taps Continue while under the minimum, so the
+     minimum box stays put with the grid still empty (never shown on arrival) */
+  minTried:false,
   /* sizes-step accordions, all shut to start: entering sizes is the job there */
   accPrice:false, accGuar:false, accHelp:false, accDetails:false
 };
@@ -2667,8 +2680,9 @@ function mbar(label, disabled, sub){
 }
 function barSub(){
   var q = realQty(), t = orderTotal();
-  if(!q) return 'About ' + priceQty() + ' pcs · ' + basisLabel();
-  if(q < minQ()) return q + ' pcs · minimum ' + minQ();
+  /* before any sizes are in, the bar sets the expectation rather than guessing */
+  if(!q) return minQ() + ' piece minimum · ' + basisLabel();
+  if(q < minQ()) return q + ' pcs · add ' + minGap() + ' to reach ' + minQ();
   return money(t) + ' total · ' + q + ' pcs';
 }
 
@@ -2868,7 +2882,8 @@ function sizeFoot(){
   var a = sizeTotal(), st = a === 0 ? '' : (a >= minQ() ? ' ok' : ' off');
   return '<div class="fhead"><span class="lbl">Sizes' + tip('sizes,minimum') + '</span></div>' +
     '<div class="sizes">' + cells + '</div>' +
-    '<div class="sztot' + st + '"><span>Total <i class="szmin">(minimum ' + minQ() + ')</i></span><b class="num">' + a + ' pcs</b></div>';
+    '<div class="sztot' + st + '"><span>Total <i class="szmin">(minimum ' + minQ() + ')</i></span><b class="num">' + a + ' pcs</b></div>' +
+    '<div class="minwrap">' + minBody() + '</div>';
 }
 function oneSizeFoot(){
   if(!S.qty) S.qty = Math.max(minQ(), CONFIG.defaultEstimate);
@@ -2952,6 +2967,64 @@ function taFoot(){
     'Dates are when it leaves our shop; transit is on top.</div></div>';
 }
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
+
+/* ------------------------------------------------- the minimum (24 pcs)
+   The screen print minimum is a wall a customer hits with no warning, so
+   three things happen at once: the box names the number of pieces to ADD
+   (not the rule), the footer button carries the same instruction instead of
+   going grey and silent, and — because 24 is screen printing's minimum and
+   not the shop's — a smaller order is offered the decoration that can run
+   it (full color at 10, embroidery at 12) instead of a dead end. */
+function minGap(){ return Math.max(0, minQ() - realQty()); }
+function minForMethod(m){
+  var loc = defaultLoc(m), lm = {}; lm[loc] = m;
+  return E.minQty(S.p, {qty:minQ(), locs:[loc], locMethod:lm});
+}
+/* The cheapest-minimum decoration this product can run at the quantity typed. */
+function altMethodFor(q){
+  if(!S.p || S.p._drinkware) return null;
+  var best = null;
+  E.decoMethods(S.p).forEach(function(m){
+    if(m === S.method) return;
+    var mn = minForMethod(m);
+    if(q >= mn && (best == null || mn < best.min)) best = {m:m, min:mn};
+  });
+  /* Carry the per-piece price too: a customer who switches and only then sees
+     a different number feels switched on, so the number goes in the offer. */
+  if(best){
+    var loc = defaultLoc(best.m), lm = {}; lm[loc] = best.m;
+    best.u = E.unitPrice(S.p, {qty:q, locs:[loc], locMethod:lm, frontColors:inkFor('front'),
+      backColors:inkFor('back'), addons:{neck:false,hem:false,bag:false}, rush:'std', promoDiscount:S.promo});
+  }
+  return best;
+}
+function methodWord(m){ return m === 'sp' ? 'screen print' : m === 'ht' ? 'full color print' : 'embroidery'; }
+function methodTab(m){ return m === 'sp' ? 'Screen print' : m === 'ht' ? 'Full color' : 'Embroidery'; }
+function minBody(){
+  var gap = minGap(), q = realQty(), mn = minQ();
+  if(!gap) return '';
+  if(q === 0 && !S.minTried) return '';   /* no scolding before they've typed */
+  var head = q === 0
+    ? 'Enter your sizes above &mdash; <b>' + mn + ' pieces</b> is the minimum for ' + esc(methodWord(S.method)) + '.'
+    : 'Add <b>' + gap + ' more</b> to reach the <b>' + mn + '-piece</b> ' + esc(methodWord(S.method)) + ' minimum.';
+  var why = S.method === 'sp'
+    ? ' <span class="minwhy">Each color is set up by hand, so ' + mn + ' is where the price works.</span>' : '';
+  var a = q > 0 ? altMethodFor(q) : null;
+  var alt = a ? '<div class="minalt">Only need ' + q + '? <b>' + esc(methodTab(a.m)) + '</b> starts at ' + a.min +
+    ' pieces' + (a.u == null ? '' : ' &mdash; ' + money(a.u) + ' each at ' + q) +
+    '. <button type="button" class="linkbtn" data-method="' + a.m + '">Switch to ' + esc(methodTab(a.m)) +
+    '</button> &mdash; your design and sizes stay put.</div>' : '';
+  return '<div class="minwarn">' + head + why + alt + '</div>';
+}
+/* The footer button's words and state, so render() and refreshPrice() agree. */
+function mctaState(){
+  if(S.saving) return {label:'Uploading your artwork&hellip;', off:true};
+  var done = S.editId ? 'Save changes &rarr;' : 'Continue to checkout &rarr;';
+  if(!artReady()) return {label:done, off:true};
+  if(sizesReady()) return {label:done, off:false};
+  /* Live, not grey: the button says what is missing and takes them to it. */
+  return {label: realQty() === 0 ? 'Add sizes to continue' : 'Add ' + minGap() + ' more to continue', off:false};
+}
 
 /* ------------------------------------------------------------ ARTWORK */
 function setMethod(m){
@@ -3387,7 +3460,7 @@ function render(){
         accBlock('accGuar', 'Your design is in good hands', whyAlive(), 'ghacc') +
         accBlock('accHelp', 'Need a hand?', helpBar(), 'helpacc') +
         '</div></div></div>' +
-      mbar(S.saving ? 'Uploading your artwork&hellip;' : (S.editId ? 'Save changes &rarr;' : 'Continue to checkout &rarr;'), S.saving || !sizesReady() || !artReady(), barSub());
+      mbar(mctaState().label, mctaState().off, barSub());
   }
   /* An open ink-color question survives a redraw (e.g. when the upload finishes). */
   var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); });
@@ -3421,8 +3494,16 @@ function refreshPrice(){
   /* keep the "Ships by" prefix the markup carries — a bare date here would
      silently strip it on the first keystroke in a size box */
   root.querySelectorAll('[data-tadate]').forEach(function(el){ el.textContent = 'Ships by ' + fmtDay(taDate(el.dataset.tadate)); });
+  /* the minimum box follows the running total, and re-binds its switch link */
+  var mw = root.querySelector('.minwrap');
+  if(mw){
+    mw.innerHTML = minBody();
+    mw.querySelectorAll('[data-method]').forEach(function(b){
+      b.onclick = function(){ setMethod(b.dataset.method); render(); };
+    });
+  }
   var mc = root.querySelector('[data-mcta]');
-  if(mc && S.phase === 'sizes') mc.disabled = !!S.saving || !sizesReady() || !artReady();
+  if(mc && S.phase === 'sizes'){ var st = mctaState(); mc.innerHTML = st.label; mc.disabled = st.off; }
   pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
 }
 
@@ -3532,7 +3613,16 @@ function wire(){
         S.nudge = true; render(); scrollToEl(root.querySelector('.modes')); }   /* show what's missing */
     }
     else if(sizesReady() && artReady()) addToCart();
-    else { var pk2 = S.locs.filter(inkPending)[0]; if(pk2) inkPrompt(pk2); }
+    else {
+      var pk2 = S.locs.filter(inkPending)[0];
+      if(pk2){ inkPrompt(pk2); return; }
+      if(!artReady()) return;
+      /* under the minimum: show the box (even with an empty grid) and go to it */
+      S.minTried = true; render();
+      var w = root.querySelector('.minwarn');
+      if(w) w.classList.add('flash');
+      scrollToEl(w || root.querySelector('.sizecard'));
+    }
   };
   var ap = root.querySelector('[data-allprod]');
   if(ap) ap.onclick = function(e){ e.preventDefault(); nav(productsUrl()); };
