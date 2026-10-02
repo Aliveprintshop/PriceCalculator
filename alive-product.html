@@ -2446,12 +2446,19 @@ var CONFIG = {
   reviews: {rating: 4.9, count: 295, href: 'https://www.google.com/search?q=Alive+Print+Shop+North+Las+Vegas+reviews'},
   maxFileMB: 25,
   defaultEstimate: 50,
+  /* Real finished work. Every file is a 900x900 square — the strip crops to a
+     square tile, and tapping one swaps it into the full product stage, so
+     anything smaller goes soft there. Replacing a photo: new filename, not a
+     new file at the old name, or browsers keep serving the old one. */
+  /* Order matters: tee, hoodie, hat, then the rest. Most customers arrive for
+     a t-shirt, so the first tile should be the thing they came for. */
   media: [
-    {img:'media/work-press.jpg',     alt:'Screen printing press laying down ink'},
-    {img:'media/work-caps.jpg',      alt:'Embroidered rope caps on the rack'},
-    {img:'media/work-rhinestone.jpg',alt:'Rhinestone transfer on a hoodie'},
-    {img:'media/work-puff.jpg',      alt:'Raised puff print on a sweatshirt'},
-    {img:'media/work-3dpuff.jpg',    alt:'3D puff embroidery on a cap'}
+    {img:'media/work-reeds-tees.jpg',    alt:'Screen printed tees with a full-color front'},
+    {img:'media/work-bodie-hoodie.jpg',  alt:'Screen printed hoodie, white on charcoal'},
+    {img:'media/work-social-caps.jpg',   alt:'Embroidered caps in camo and natural'},
+    {img:'media/work-hailmary-tee.jpg',  alt:'Screen printed tee, two colors on black'},
+    {img:'media/work-spartan-patch.jpg', alt:'Leather patch beanies in black, tan and olive'},
+    {img:'media/work-healthyher-emb.jpg',alt:'Embroidered cap and puffer vest'}
   ]
 };
 
