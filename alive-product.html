@@ -510,6 +510,16 @@
    moves, which cancels the pointermove stream and the strip never scrolls. */
 #alive-flow .strip img{-webkit-user-drag:none;user-drag:none;user-select:none;}
 #alive-flow .strip > *{scroll-snap-align:start;}
+/* Scroll affordance on the right edge of the photo strip. */
+#alive-flow .stripwrap{position:relative;}
+#alive-flow .stripnext{position:absolute;right:0;top:16px;bottom:4px;width:52px;border:0;padding:0;
+  display:grid;place-items:center;cursor:pointer;color:var(--text);
+  background:linear-gradient(90deg,rgba(255,255,255,0) 0%,#fff 62%);
+  transition:opacity .18s ease;}
+#alive-flow .stripnext svg{width:20px;height:20px;background:#fff;border:1px solid var(--border);
+  border-radius:50%;padding:5px;box-shadow:0 2px 8px rgba(15,17,23,.14);box-sizing:content-box;}
+#alive-flow .stripnext:hover svg{border-color:var(--blue);color:var(--blue);}
+#alive-flow .stripwrap.atend .stripnext{opacity:0;pointer-events:none;}
 #alive-flow .strip figure{aspect-ratio:1/1;border-radius:var(--r-lg);overflow:hidden;position:relative;
   background:var(--surface2);border:1px solid var(--border);}
 #alive-flow .strip img{width:100%;height:100%;object-fit:cover;}
@@ -2453,10 +2463,10 @@ var CONFIG = {
   /* Order matters: tee, hoodie, hat, then the rest. Most customers arrive for
      a t-shirt, so the first tile should be the thing they came for. */
   media: [
-    {img:'media/work-reeds-tees.jpg',    alt:'Screen printed tees with a full-color front'},
+    {img:'media/work-hailmary-tee.jpg',  alt:'Screen printed tee, two colors on black'},
     {img:'media/work-bodie-hoodie.jpg',  alt:'Screen printed hoodie, white on charcoal'},
     {img:'media/work-social-caps.jpg',   alt:'Embroidered caps in camo and natural'},
-    {img:'media/work-hailmary-tee.jpg',  alt:'Screen printed tee, two colors on black'},
+    {img:'media/work-reeds-tees.jpg',    alt:'Screen printed tees with a full-color front'},
     {img:'media/work-spartan-patch.jpg', alt:'Leather patch beanies in black, tan and olive'},
     {img:'media/work-healthyher-emb.jpg',alt:'Embroidered cap and puffer vest'}
   ]
@@ -2752,15 +2762,33 @@ function heroImage(c){
   return (S.side === 'back' && b) ? b : colorFront(c);
 }
 function mediaStrip(c){
-  return '<div class="strip" id="f-strip">' + galleryItems(c).map(function(m){
+  var tiles = galleryItems(c).map(function(m){
     var key = m.kind === 'view' ? 'view:' + m.side : 'media:' + m.i;
     var on = m.kind === 'view' ? (S.gal == null && S.side === m.side) : S.gal === m.i;
     return '<button type="button" class="gtile' + (on ? ' on' : '') + '" data-gal="' + key + '" aria-label="' + esc(m.alt) + '">' +
       '<figure><img src="' + esc(m.img) + '" alt="' + esc(m.alt) + '" loading="lazy"></figure></button>';
-  }).join('') + '</div>';
+  }).join('');
+  /* The strip scrolls, and nothing on screen says so — a customer sees five
+     tiles and assumes that is all there is. The arrow is the affordance;
+     wireStrip() hides it once there is nothing further to scroll to. */
+  return '<div class="stripwrap" id="f-stripwrap"><div class="strip" id="f-strip">' + tiles + '</div>' +
+    '<button type="button" class="stripnext" id="f-stripnext" aria-label="Show more photos">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>' +
+    '</button></div>';
 }
 function wireStrip(){
   var row = document.getElementById('f-strip'); if(!row) return;
+  /* Scroll affordance: the arrow steps the strip along and disappears at the
+     end, so it never points at nothing. */
+  var wrap = document.getElementById('f-stripwrap'), nextBtn = document.getElementById('f-stripnext');
+  function syncArrow(){
+    if(!wrap) return;
+    var atEnd = row.scrollLeft >= row.scrollWidth - row.clientWidth - 4;
+    wrap.classList.toggle('atend', atEnd || row.scrollWidth <= row.clientWidth + 4);
+  }
+  if(nextBtn) nextBtn.onclick = function(){ row.scrollBy({left: Math.round(row.clientWidth * 0.7), behavior:'smooth'}); };
+  row.addEventListener('scroll', syncArrow, {passive:true});
+  setTimeout(syncArrow, 60);
   var down = false, moved = 0, x0 = 0, left0 = 0;
   row.addEventListener('dragstart', function(e){ e.preventDefault(); });
   row.addEventListener('pointerdown', function(e){ if(e.pointerType === 'touch') return;
@@ -2869,6 +2897,16 @@ function productCard(overlayHtml, foot, rail, strip){
      the part of it where the product is. */
   var cr = S.gal == null && CROPS[String(p.style).toUpperCase()], box = cr && cr[S.side === 'back' && colorBack(c) ? 'b' : 'f'];
   var stageStyle = editor ? ' style="aspect-ratio:' + frame + '"' : '', artStyle = '';
+  /* No crop box — a gallery photo, or one of the two styles with no crop data.
+     The stage's only child is absolutely positioned, so inside the flex card it
+     has no intrinsic width: aspect-ratio alone collapses it to 0x0 and the
+     photo vanishes. Give it an explicit width the same way a cropped stage
+     gets one. Work photos are square; a garment flat keeps its own ratio. */
+  if(!box){
+    var r0 = S.gal != null ? 1 : (parseFloat(frame) || 0.6667);
+    var mh0 = editor ? EDITOR_MAX_H : (window.innerWidth < 560 ? 340 : 380);
+    stageStyle = ' style="aspect-ratio:' + r0 + ';width:min(100%,' + Math.round(mh0 * r0) + 'px)"';
+  }
   if(box){
     /* EDITOR_MAX_H keeps the cropped stage's WIDTH in step with the CSS cap on
        an uncropped one. Change the two together or the garment stretches. */
