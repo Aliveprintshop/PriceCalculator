@@ -1,0 +1,89 @@
+name: Publish site on push
+
+# Deploys the site whenever a human pushes a change to main — no SanMar sync,
+# no manual "Run workflow". The nightly sync keeps its own publish step, so
+# this one steps aside when the push came from the bot (see the `if` below),
+# and shares the sanmar-sync concurrency group so the two never deploy at once.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - '**.js'
+      - 'crops.json'
+      - 'media/**'
+      - 'split-products.py'
+      - '.github/workflows/publish.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sanmar-sync      # same group as the nightly: they queue, never collide
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # The nightly sync publishes its own result; without this, its products.json
+    # push would trigger a second, redundant deploy right behind it.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Identical to the staging step in sync.yml. Keep the two in step: if a new
+      # page is added to the site it must be listed in BOTH or it publishes from
+      # the nightly and vanishes on the next push (or the other way round).
+      - name: Stage Pages artifact
+        run: |
+          mkdir -p _site/media && if [ -d media ]; then cp -r media/. _site/media/; fi
+
+          REQUIRED="products.json index.html"
+          OPTIONAL="alive-pricing-calculator.html alive-pricing-calculator-v2.html cart.html mockup.html design-studio.html project.html deals-config.js deal.html alive-product.html alive-checkout.html crops.json"
+
+          for f in $REQUIRED; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required file $f is missing — refusing to publish an incomplete site"
+              exit 1
+            fi
+            cp "$f" "_site/$f"
+          done
+
+          for f in $OPTIONAL; do
+            if [ -f "$f" ]; then
+              cp "$f" "_site/$f"
+            else
+              echo "::warning::$f not found — skipping it; the rest of the site still publishes"
+            fi
+          done
+
+          if [ -f split-products.py ]; then
+            python split-products.py products.json _site/p || echo "::warning::split-products.py failed — product page will use products.json"
+          fi
+
+          echo "Staged for Pages: $(ls _site | tr '\n' ' ')"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
