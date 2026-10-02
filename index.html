@@ -145,6 +145,31 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .card-badge.seller{background:var(--blue);}
 .card-badge.popular{background:#d97706;}
 .card-badge.sale{background:#C8322B;}
+/* Featured-pick tags. Each says WHY this one is on screen. */
+.card-badge.soft{background:#7c3aed;}
+.card-badge.heavy{background:#0f766e;}
+/* ── Load more: the first view is small on purpose; this reveals the rest ── */
+.loadmore-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:26px 16px 6px;}
+.loadmore{display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--border2);
+  border-radius:999px;padding:13px 26px;font-family:'Montserrat',sans-serif;font-size:14.5px;font-weight:800;
+  color:var(--text);cursor:pointer;transition:border-color .12s,color .12s,box-shadow .12s;}
+.loadmore:hover{border-color:var(--blue);color:var(--blue);box-shadow:0 4px 14px rgba(27,108,206,.14);}
+.loadmore .lm-count{font-family:'Open Sans',sans-serif;font-size:12.5px;font-weight:700;color:#fff;
+  background:var(--blue);border-radius:999px;padding:3px 10px;}
+.loadmore-note{font-size:12.5px;color:var(--text3);}
+/* Opening view: a complete block, no half-empty row.
+   Desktop = four across. Phone = lead pick full width, other two beside it. */
+@media(min-width:821px){
+  .grid.featfirst{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+@media(max-width:820px){
+  .grid.featfirst .card:first-child{grid-column:1/-1;}
+  .grid.featfirst .card:first-child .card-img{aspect-ratio:16/11;}
+}
+@media(max-width:820px){
+  .loadmore-wrap{background:var(--surface);padding:22px 14px 18px;}
+  .loadmore{width:100%;justify-content:center;}
+}
 .card-sale-note{display:inline-block;align-self:flex-start;margin-top:5px;background:#FDECEC;color:#B42318;font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:0.02em;line-height:1.2;padding:4px 8px;border-radius:999px;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
@@ -525,7 +550,7 @@ function quickPickCategory(label){
   _cats.clear();
   if(!wasActive)_cats.add(label);
   _industry=null;_dealsMode=false;
-  _page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
+  _page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();
   // Scroll up so the product grid is visible after a category tap.
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -618,6 +643,52 @@ var CARHARTT_PINNED=["CT106923","CT107106","CT106972","CT106577","CT104597","CT1
 // NOT to the polo page or Shop-By-Industry views, which keep their own
 // curated ordering. Edit this list to change what leads the page.
 // =====================================================================
+/* =====================================================================
+   FEATURED PICKS — what a customer sees FIRST in a category.
+   507 hoodies is a wall; four good ones with a reason attached is a choice.
+   The grid opens with just these (3 on a phone, 4 on desktop) and everything
+   else waits behind "Load more".
+   Order here is the order on screen. `tag` is the badge; it overrides the
+   automatic Best Seller / Most Popular badges for that card.
+   To feature a category, add its bucket label (the sidebar name) and up to
+   four styles. A category with no entry simply leads with its normal sort.
+   ===================================================================== */
+var FEATURED={
+  'Sweatshirts & Hoodies':[
+    {s:'18500',  tag:'Best Value'},
+    {s:'DT1101', tag:'Most Popular'},
+    {s:'DT7800', tag:'Supersoft'},
+    {s:'NL9307', tag:'Heavy Weight'}
+  ]
+};
+/* Badge colour per tag. Anything not listed gets the default green. */
+var FEATURED_TAG_CLASS={
+  'Best Value':'',
+  'Most Popular':'popular',
+  'Supersoft':'soft',
+  'Heavy Weight':'heavy'
+};
+function featuredList(){
+  if(_search||_industry||_gbb||_dealsMode)return null;
+  if(_brands.size||_colors.size)return null;
+  if(_sort!=='featured')return null;
+  if(_cats.size!==1)return null;
+  return FEATURED[Array.from(_cats)[0]]||null;
+}
+function featuredTag(style){
+  var list=featuredList();if(!list)return null;
+  var up=String(style||'').toUpperCase();
+  for(var i=0;i<list.length;i++) if(String(list[i].s).toUpperCase()===up) return list[i].tag;
+  return null;
+}
+/* How many cards the first view shows: 3 on a phone, 4 on desktop. */
+function firstBatch(){
+  var narrow=window.matchMedia&&window.matchMedia('(max-width:820px)').matches;
+  return narrow?3:4;
+}
+var LOAD_STEP=12;     /* each "Load more" tap adds this many */
+var _shown=0;         /* 0 = not yet sized; set on the first render of a view */
+
 var TOP_PICKS=['18500','NL6210','799802','112','5000','NKDH7709','TM1MU411'];
 
 // =====================================================================
@@ -1784,7 +1855,7 @@ function setPage(n){
 }
 function setPerPage(v){
   _perPage=parseInt(v,10)||48;
-  _page=1;
+  _page=1;_shown=0;
   renderGrid();
 }
 
@@ -1856,6 +1927,11 @@ function renderGrid(){
     order.forEach(function(it,i){poloAssort.set(it,i);});
   }
 
+  // Rank within this category's featured list (999 = not featured).
+  var _featOrder={};
+  (featuredList()||[]).forEach(function(f,i){ _featOrder[String(f.s).toUpperCase()]=i; });
+  function featRank(it){ var r=_featOrder[(it.s||'').toUpperCase()]; return r==null?999:r; }
+
   // User-selected sort (price / name) overrides ALL curated ordering.
   if(_sort==='price-asc'||_sort==='price-desc'||_sort==='name-asc'){
     rows.sort(function(a,b){
@@ -1889,6 +1965,9 @@ function renderGrid(){
       var sa=_searchScore(a),sb=_searchScore(b);
       if(sa!==sb)return sb-sa;
     }
+    // The category's featured picks lead, in the order they are listed above.
+    var fa=featRank(a),fb=featRank(b);
+    if(fa!==fb)return fa-fb;
     // Top picks lead the grid in their listed order.
     var tpa=topPickRank(a),tpb=topPickRank(b);
     if(tpa!==tpb)return tpa-tpb;
@@ -1928,11 +2007,12 @@ function renderGrid(){
     renderPagination(0);
     return;
   }
-  // Clamp page if filters changed
-  var pages=totalPages(rows.length);
-  if(_page>pages)_page=1;
-  var startIdx=(_page-1)*_perPage;
-  var pageRows=rows.slice(startIdx,startIdx+_perPage);
+  /* Progressive reveal instead of 48-at-a-time pagination. The first view is
+     deliberately small — 4 cards on desktop, 3 on a phone — and "Load more"
+     adds LOAD_STEP at a time. A customer who knows what they want never waits
+     for 507 cards to render; one who wants to browse taps once. */
+  if(!_shown)_shown=firstBatch();
+  var pageRows=rows.slice(0,_shown);
   var cards=pageRows.map(function(it){
     var p=it._full;
     // When color filters are active, show the image for the FIRST color that
@@ -1956,7 +2036,10 @@ function renderGrid(){
     // One badge per card. Best Value (the Gildan 5000 deal) wins if both apply.
     var _st=(it.s||'').toUpperCase();
     var dealBadge='';
+    var _ftag=featuredTag(_st);
     if(saleFor(_st))dealBadge=saleBadgeHtml(_st);
+    /* A featured pick wears its own reason — that tag is why it is on screen. */
+    else if(_ftag)dealBadge='<span class="card-badge '+(FEATURED_TAG_CLASS[_ftag]||'')+'">'+escAttr(_ftag)+'</span>';
     else if(p&&p._bestValue)dealBadge='<span class="card-badge">&#9733; Best Value</span>';
     else if(BADGE_BEST_SELLER.indexOf(_st)>-1)dealBadge='<span class="card-badge seller">Best Seller</span>';
     else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
@@ -1993,8 +2076,22 @@ function renderGrid(){
   }
   // On the hidden #deals slug, show the deals block first (page 1), then the full catalog below.
   if(_dealsMode&&_page===1){cards.unshift(dealsSectionHtml());}
+  /* "Load more" lives inside the grid so it spans every column and sits
+     directly under the last card, wherever the breakpoint put it. */
+  var left=rows.length-pageRows.length;
+  if(left>0){
+    cards.push('<div class="loadmore-wrap">'+
+      '<button type="button" class="loadmore" onclick="loadMore()">Load more'+
+      '<span class="lm-count">'+left.toLocaleString()+' more</span></button>'+
+      '<div class="loadmore-note">Showing '+pageRows.length+' of '+rows.length.toLocaleString()+'</div></div>');
+  }
+  /* The opening view is a complete block, never a row with a hole in it:
+     four across on desktop, and on a phone the lead pick goes full width with
+     the other two beside each other. Only while the first batch is all there
+     is — once "Load more" is tapped the grid returns to its normal flow. */
+  host.classList.toggle('featfirst', pageRows.length===firstBatch() && rows.length>=firstBatch());
   host.innerHTML=cards.join('');
-  renderPagination(rows.length);
+  renderPagination(0);   /* progressive reveal replaces the page links */
   // Re-broadcast iframe height now that the grid has changed.
   if(typeof window.aliveBroadcastHeight==='function')window.aliveBroadcastHeight();
 }
@@ -2002,19 +2099,19 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){_industry=null;_gbb=null;_dealsMode=false;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearCategories(){_cats.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function toggleBrand(name){_industry=null;_gbb=null;_dealsMode=false;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
-function clearBrands(){_brands.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
+function toggleCategory(label){_industry=null;_gbb=null;_dealsMode=false;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleBrand(name){_industry=null;_gbb=null;_dealsMode=false;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
+function clearBrands(){_brands.clear();_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 // Shop By Industry: single-select. Selecting one clears category/brand filters and shows only its curated list.
 function toggleIndustry(label){
   _dealsMode=false;
   if(_industry===label){_industry=null;}
   else{_industry=label;_gbb=null;_cats.clear();_brands.clear();}
-  _page=1;
+  _page=1;_shown=0;
   renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
 }
-function clearIndustry(){_industry=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
+function clearIndustry(){_industry=null;_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
 
 // ── Good / Better / Best: sidebar list, grid view, single-select toggle ──
 function _gbbStyleIndex(){var m={};for(var i=0;i<ITEMS.length;i++)m[(ITEMS[i].s||'').toUpperCase()]=ITEMS[i];return m;}
@@ -2137,24 +2234,30 @@ function toggleGbb(label){
   _dealsMode=false;
   if(_gbb===label){_gbb=null;}
   else{_gbb=label;_cats.clear();_brands.clear();_colors.clear();_industry=null;_search='';var sb=document.getElementById('page-search');if(sb)sb.value='';}
-  _page=1;
+  _page=1;_shown=0;
   renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
   var grid=document.getElementById('page-grid');if(grid&&_gbb)grid.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function clearGbb(){_gbb=null;_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
+function clearGbb(){_gbb=null;_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();}
 // Spotlight click: exit industry view and show ALL of the promoted brand.
 function spotlightBrand(brand){
   _industry=null;_gbb=null;_dealsMode=false;_cats.clear();_brands.clear();if(brand)_brands.add(brand);_search='';
   var sb=document.getElementById('page-search');if(sb)sb.value='';
-  _page=1;
+  _page=1;_shown=0;
   renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();
   var grid=document.getElementById('page-grid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function toggleColor(key){_industry=null;_gbb=null;_dealsMode=false;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearColors(){_colors.clear();_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();}
-function changeSort(v){_sort=v||'featured';_page=1;renderGrid();}
+function toggleColor(key){_industry=null;_gbb=null;_dealsMode=false;if(_colors.has(key))_colors.delete(key);else _colors.add(key);_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function clearColors(){_colors.clear();_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();}
+function changeSort(v){_sort=v||'featured';_page=1;_shown=0;renderGrid();}
+/* Reveal the next batch in place. No scroll jump: the cards they were looking
+   at stay exactly where they were and the new ones appear underneath. */
+function loadMore(){
+  _shown=(_shown||firstBatch())+LOAD_STEP;
+  renderGrid();
+}
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
-function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search){_industry=null;_gbb=null;_dealsMode=false;}_page=1;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();}
+function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search){_industry=null;_gbb=null;_dealsMode=false;}_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();}
 (function(){ try{ if(window.innerWidth<=820){ var ps=document.getElementById('page-search'); if(ps) ps.placeholder='Search products or brands'; } }catch(e){} })();
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
 
@@ -2314,7 +2417,7 @@ window.addEventListener('message',function(e){
       }
     }
   }
-  _page=1;
+  _page=1;_shown=0;
   projLoad();projSyncBar();
   renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();
 },false);
