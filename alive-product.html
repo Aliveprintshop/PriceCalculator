@@ -520,6 +520,16 @@
   border-radius:50%;padding:5px;box-shadow:0 2px 8px rgba(15,17,23,.14);box-sizing:content-box;}
 #alive-flow .stripnext:hover svg{border-color:var(--blue);color:var(--blue);}
 #alive-flow .stripwrap.atend .stripnext{opacity:0;pointer-events:none;}
+/* Photo area: fixed height, so the page does not jump when the photo changes. */
+#alive-flow .stagebox{display:flex;align-items:center;justify-content:center;}
+#alive-flow .stagebox .stage{margin-top:0;}
+/* What the customer is looking at — product view, or work we have printed. */
+/* One line, always — a caption that wraps to two lines on a long description
+   changes the card height, which is the shift this was added to prevent. */
+#alive-flow .stripcap{height:33px;display:flex;align-items:center;gap:5px;overflow:hidden;
+  padding:9px 2px 0;font-size:12.5px;color:var(--text2);white-space:nowrap;}
+#alive-flow .stripcap b{font-family:var(--disp);font-size:12px;font-weight:800;color:var(--text);flex:0 0 auto;}
+#alive-flow .stripcap .capt{overflow:hidden;text-overflow:ellipsis;min-width:0;}
 #alive-flow .strip figure{aspect-ratio:1/1;border-radius:var(--r-lg);overflow:hidden;position:relative;
   background:var(--surface2);border:1px solid var(--border);}
 #alive-flow .strip img{width:100%;height:100%;object-fit:cover;}
@@ -2605,6 +2615,9 @@ var S = {
   /* set once a customer taps Continue while under the minimum, so the
      minimum box stays put with the grid still empty (never shown on arrival) */
   minTried:false,
+  /* gallery: remembered strip scroll position, and the garment stage height
+     the whole photo area is pinned to so swapping photos never resizes it */
+  stripX:0, stageH:0,
   /* sizes-step accordions, all shut to start: entering sizes is the job there */
   accPrice:false, accGuar:false, accHelp:false, accDetails:false
 };
@@ -2774,7 +2787,21 @@ function mediaStrip(c){
   return '<div class="stripwrap" id="f-stripwrap"><div class="strip" id="f-strip">' + tiles + '</div>' +
     '<button type="button" class="stripnext" id="f-stripnext" aria-label="Show more photos">' +
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>' +
-    '</button></div>';
+    '</button></div>' + stripCaption(c);
+}
+/* Says what the customer is looking at. Without it the work photos read as
+   more views of THIS garment, which they are not. Always rendered, with a
+   min-height in CSS, so the text swapping never moves the page. */
+function stripCaption(c){
+  var items = galleryItems(c), cur = null;
+  items.forEach(function(m){
+    if(m.kind === 'media' && S.gal === m.i) cur = m;
+    else if(m.kind === 'view' && S.gal == null && S.side === m.side) cur = m;
+  });
+  var lab, txt;
+  if(cur && cur.kind === 'media'){ lab = 'Our recent work'; txt = cur.alt; }
+  else { lab = 'This product'; txt = (cur ? cur.alt : 'Front') + ' view'; }
+  return '<div class="stripcap"><b>' + esc(lab) + '</b><span class="capt">&middot; ' + esc(txt) + '</span></div>';
 }
 function wireStrip(){
   var row = document.getElementById('f-strip'); if(!row) return;
@@ -2787,7 +2814,11 @@ function wireStrip(){
     wrap.classList.toggle('atend', atEnd || row.scrollWidth <= row.clientWidth + 4);
   }
   if(nextBtn) nextBtn.onclick = function(){ row.scrollBy({left: Math.round(row.clientWidth * 0.7), behavior:'smooth'}); };
-  row.addEventListener('scroll', syncArrow, {passive:true});
+  /* render() rebuilds the strip, so without this the scroll position resets to
+     the first tile every time one is tapped — the customer scrolls to photo 6,
+     taps it, and is thrown back to the start. */
+  row.scrollLeft = S.stripX || 0;
+  row.addEventListener('scroll', function(){ S.stripX = row.scrollLeft; syncArrow(); }, {passive:true});
   setTimeout(syncArrow, 60);
   var down = false, moved = 0, x0 = 0, left0 = 0;
   row.addEventListener('dragstart', function(e){ e.preventDefault(); });
@@ -2914,18 +2945,24 @@ function productCard(overlayHtml, foot, rail, strip){
     stageStyle = ' style="--ar:' + ratio + ';width:min(100%,' + Math.round(maxH * ratio) + 'px)"';
     artStyle = ' style="inset:auto;left:' + (-box[0] / cw * 100).toFixed(3) + '%;top:' + (-box[1] / ch * 100).toFixed(3) + '%;width:' + (100 / cw).toFixed(3) + '%;height:' + (100 / ch).toFixed(3) + '%"';
   }
-  var sides = S.gal == null && colorBack(c)
-    ? '<div class="sides"><button type="button" data-side="front" class="' + (S.side === 'front' ? 'on' : '') + '">Front</button>' +
-      '<button type="button" data-side="back" class="' + (S.side === 'back' ? 'on' : '') + '">Back</button></div>' : '';
+  /* Front/Back stays on screen even while a work photo is showing — it is how
+     you get back to the garment, and letting it vanish shifted everything
+     below it by its own height every time a gallery tile was tapped. */
+  var sides = colorBack(c)
+    ? '<div class="sides"><button type="button" data-side="front" class="' + (S.gal == null && S.side === 'front' ? 'on' : '') + '">Front</button>' +
+      '<button type="button" data-side="back" class="' + (S.gal == null && S.side === 'back' ? 'on' : '') + '">Back</button></div>' : '';
   return '<div class="pcard">' +
     '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee || /^5000B?$/i.test(String(p.style)) ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
     '<h2>' + esc(cleanName(p)) + '</h2>' +
     '<div class="style">Style #' + esc(p.style) + (c ? ' — ' + esc(c.name) : '') + '</div>' +
     /* Blurb and rating only on the design step; step 2 is about sizes. */
     (S.phase === 'artwork' ? (blurb(p) ? '<p class="blurb">' + esc(blurb(p)) + '</p>' : '') + reviewLine() : '') +
+    /* The stage box holds a locked height (see lockStageHeight) so swapping
+       between the garment and a square work photo never resizes the page. */
+    '<div class="stagebox" id="f-stagebox"' + (S.stageH ? ' style="min-height:' + S.stageH + 'px"' : '') + '>' +
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
       '<div class="stage-art" id="f-stage"' + artStyle + '><img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">' +
-      (editor && S.gal == null ? (overlayHtml || '') : '') + '</div></div>' +
+      (editor && S.gal == null ? (overlayHtml || '') : '') + '</div></div></div>' +
     sides + (strip || '') + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
   '</div>';
 }
@@ -3645,9 +3682,24 @@ function render(){
   var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); });
   root.innerHTML = html;
   keep.forEach(function(b){ root.appendChild(b); });
+  lockStageHeight();
   wire();
   placeBar();
   broadcast();
+}
+
+/* Measure the garment stage once and pin the photo area to it. A square work
+   photo is shorter than a 2:3 garment flat on a narrow screen, so without this
+   the card grows and shrinks as the customer taps through the strip. Measured
+   rather than hard-coded: every style has its own crop ratio. */
+function lockStageHeight(){
+  var boxEl = document.getElementById('f-stagebox'); if(!boxEl) return;
+  var st = boxEl.querySelector('.stage'); if(!st) return;
+  if(S.gal == null){
+    var h = Math.round(st.getBoundingClientRect().height);
+    if(h > 80) S.stageH = h;
+  }
+  if(S.stageH) boxEl.style.minHeight = S.stageH + 'px';
 }
 
 function refreshPrice(){
