@@ -380,7 +380,6 @@ root.AliveEngine={
         '<div class="alp-sec alp-decos"><span class="alp-lbl" id="alp-dl">Decoration</span><div class="alp-row" role="radiogroup" aria-labelledby="alp-dl" data-decos>' + decoBtns() + '</div></div>' +
         '<div class="alp-price loading" aria-live="polite" data-price></div>' +
         '<div class="alp-acts"><button type="button" class="alp-go" data-go="design">Start Designing <span aria-hidden="true">&rarr;</span></button>' +
-          '<div class="alp-up">Already have artwork? <button type="button" data-go="upload">Upload your design <span aria-hidden="true">&rarr;</span></button></div>' +
           '<p class="alp-err" id="alp-err" role="alert" hidden></p>' +
           '<ul class="alp-perks"><li>No setup fees</li><li>Proof before we print</li><li>100% print guarantee</li></ul></div>' +
       '</div>' +
