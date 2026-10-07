@@ -569,6 +569,10 @@
 #alive-calc .swatch-label{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
 #alive-calc .swatch-label span{color:var(--text);text-transform:none;letter-spacing:normal;font-weight:700;}
 #alive-calc .swatch-grid{display:flex;flex-wrap:wrap;gap:6px;}
+@media(max-width:640px){
+  #alive-calc .swatch-grid{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:4px;scrollbar-width:thin;}
+  #alive-calc .swatch-grid .swatch{flex:0 0 auto;width:36px;height:36px;scroll-snap-align:start;}
+}
 #alive-calc .swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;outline:none;transition:transform 0.1s, box-shadow 0.1s;flex-shrink:0;}
 #alive-calc .swatch:hover{transform:scale(1.15);box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 #alive-calc .swatch.active{border-color:var(--blue)!important;box-shadow:0 0 0 2px var(--surface), 0 0 0 4px var(--blue);}
