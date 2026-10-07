@@ -1070,7 +1070,11 @@
 #alive-flow .acc.ghacc .gh h3,#alive-flow .acc.helpacc .help .cap{display:none;}
 /* Four whole rows: 4x30px swatches + 3x8px gaps + the row's own 3/8px padding.
    Anything other than a row boundary slices the bottom row in half. */
-#alive-flow .artsw.clipped{max-height:155px;overflow:hidden;}
+#alive-flow .artsw.clipped{max-height:155px;overflow-x:auto;overflow-y:hidden;}
+@media(max-width:699px){
+  .pcard-foot{position:relative;}
+  .pcard-foot::after{content:'';position:absolute;right:0;bottom:8px;width:24px;height:41px;pointer-events:none;background:linear-gradient(to right,rgba(255,255,255,0),#fff);}
+}
 #alive-flow .swmore{display:block;margin:10px 0 2px;padding:0;background:none;border:0;cursor:pointer;
   font-family:var(--disp);font-size:12px;font-weight:700;color:var(--blue);}
 #alive-flow .swmore[hidden]{display:none;}
