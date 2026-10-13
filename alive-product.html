@@ -2616,6 +2616,8 @@ var S = {
   phase:'artwork', sizes:{}, qty:0, est:CONFIG.defaultEstimate,
   method:null, locs:[], inks:{}, art:{}, mode:'now', sel:null, busy:null, err:'',
   promo:0, rush:'std', editId:null,
+  /* side -> URL of the saved mockup composite (see saveAllMockups) */
+  mockups:{},
   /* set once a customer taps Continue while under the minimum, so the
      minimum box stays put with the grid still empty (never shown on arrival) */
   minTried:false,
@@ -3639,7 +3641,7 @@ function mockSide(side){
   var layers = layersFor(side).map(function(k){
     var d = S.art[k], p = d.place;
     var plain = !d.bgRemoved && /\.(png|jpe?g|webp|gif|svg)$/i.test(d.name || '') ? (d.url || '') : '';
-    return {src:d.prev || d.thumb || '', url:plain, cx:+p.cx.toFixed(4), cy:+p.cy.toFixed(4), w:+p.w.toFixed(4), rot:+(+p.rot || 0).toFixed(2)};
+    return {k:k, src:d.prev || d.thumb || '', url:plain, cx:+p.cx.toFixed(4), cy:+p.cy.toFixed(4), w:+p.w.toFixed(4), rot:+(+p.rot || 0).toFixed(2)};
   });
   return {side:side, img:img, ar:box ? box[4] : (S.frame[S.color] || 2/3), crop:box ? box.slice(0, 4) : null, layers:layers};
 }
@@ -3649,6 +3651,166 @@ function mockForCart(){
     if(layersFor('back').length) return mockSide('back');
   }
   return mockSide('front');
+}
+
+/* ------------------------------------------------- saved mockup composite
+   `mock` above is a recipe: the cart redraws the garment and the artwork as two
+   layers. That is fine on screen but leaves nothing on the server, so from
+   25 Sep 2026 (when this flow replaced the v2 calculator, which did upload one)
+   no mockup was saved at all — 0 in October against 294 artwork uploads. The
+   code below rebuilds the composite as a real PNG and uploads it, so the order
+   record, the work order and the recovery emails all have a picture to show.
+
+   GEOMETRY — the part that must not be approximated.
+   On screen `.stage-art` holds BOTH the garment photo and the artwork layers,
+   and the crop is applied to that whole container:
+
+       left: -box[0]/cw * 100%   width:  100/cw %
+       top:  -box[1]/ch * 100%   height: 100/ch %       cw = box[2]-box[0] etc.
+
+   So a layer's cx/cy/w are fractions of the FULL UNCROPPED photo. The crop is a
+   window onto an already-composited picture. We therefore composite at full
+   photo size and crop LAST. Cropping the garment first and then placing the art
+   on it would shift every design — worse than saving no mockup at all.
+
+   CROSS-ORIGIN: SanMar photos taint the canvas and make toBlob() throw. The v2
+   calculator routed the garment through wsrv.nl, which returns permissive CORS
+   headers; that is reused here because it is proven (7,237 mockups) and needs
+   no deploy of our own. Freshly uploaded artwork is a data: URL and is drawn
+   directly at full resolution; artwork rehydrated from a saved cart line is an
+   https URL, so it goes through the same proxy. */
+function mockProxy(u){
+  return 'https://wsrv.nl/?url=' + encodeURIComponent(u) + '&output=png';
+}
+function loadImg(src, crossOrigin){
+  return new Promise(function(resolve, reject){
+    var im = new Image();
+    if(crossOrigin) im.crossOrigin = 'anonymous';
+    im.onload = function(){ resolve(im); };
+    im.onerror = function(){ reject(new Error('image load failed: ' + String(src).slice(0, 80))); };
+    im.src = src;
+  });
+}
+/* Best source for one artwork layer: the original data: URL when we still hold
+   it (full resolution, no CORS), otherwise the stored copy through the proxy.
+   `prev` is only 360px, so it is the last resort. */
+function layerSrc(L){
+  var d = L.k && S.art ? S.art[L.k] : null;
+  if(d && /^data:/i.test(String(d.src || ''))) return {src:d.src, cors:false};
+  var remote = (d && d.url) || L.url || '';
+  if(/^https?:/i.test(remote)) return {src:mockProxy(remote), cors:true};
+  if(/^data:/i.test(String(L.src || ''))) return {src:L.src, cors:false};
+  if(/^https?:/i.test(String(L.src || ''))) return {src:mockProxy(L.src), cors:true};
+  return null;
+}
+/* Composite one side into a PNG blob. Resolves null when there is nothing to
+   draw, and never rejects — a failed mockup must not break checkout. */
+function renderMockup(side, maxW){
+  var m = mockSide(side);
+  if(!m || !m.img || !m.layers || !m.layers.length) return Promise.resolve(null);
+
+  maxW = maxW || 1100;
+  var ar = +m.ar || (2 / 3);                 /* photo width / height */
+  var crop = m.crop;                         /* [x0,y0,x1,y1] fractions, or null */
+  var cw = crop ? (crop[2] - crop[0]) : 1;
+  var ch = crop ? (crop[3] - crop[1]) : 1;
+  if(!(cw > 0) || !(ch > 0)){ crop = null; cw = 1; ch = 1; }
+
+  /* Size the FULL photo canvas so the cropped output lands near maxW. */
+  var W0 = Math.round(maxW / cw);
+  if(W0 > 3000) W0 = 3000;
+  var H0 = Math.max(1, Math.round(W0 / ar));
+
+  return loadImg(mockProxy(m.img), true).then(function(g){
+    var cv = document.createElement('canvas');
+    cv.width = W0; cv.height = H0;
+    var cx = cv.getContext('2d');
+    cx.fillStyle = '#ffffff';
+    cx.fillRect(0, 0, W0, H0);
+    cx.drawImage(g, 0, 0, W0, H0);
+
+    /* Sequentially, so stacking order matches the screen. */
+    return m.layers.reduce(function(chain, L){
+      return chain.then(function(){
+        var pick = layerSrc(L);
+        if(!pick) return;
+        return loadImg(pick.src, pick.cors).then(function(im){
+          var w = (+L.w || 0) * W0;
+          if(!(w > 0)) return;
+          var h = w * ((im.naturalHeight / im.naturalWidth) || 1);
+          cx.save();
+          cx.translate((+L.cx || 0.5) * W0, (+L.cy || 0.5) * H0);
+          cx.rotate(((+L.rot || 0) * Math.PI) / 180);
+          cx.drawImage(im, -w / 2, -h / 2, w, h);
+          cx.restore();
+        })['catch'](function(){ /* one unreadable layer must not lose the mockup */ });
+      });
+    }, Promise.resolve()).then(function(){
+      var out = cv;
+      if(crop){
+        var sx = Math.round(crop[0] * W0), sy = Math.round(crop[1] * H0);
+        var sw = Math.max(1, Math.round(cw * W0)), sh = Math.max(1, Math.round(ch * H0));
+        out = document.createElement('canvas');
+        out.width = sw; out.height = sh;
+        out.getContext('2d').drawImage(cv, sx, sy, sw, sh, 0, 0, sw, sh);
+      }
+      return new Promise(function(resolve){
+        try{ out.toBlob(function(b){ resolve(b || null); }, 'image/png'); }
+        catch(e){ resolve(null); }       /* tainted canvas — the proxy failed */
+      });
+    });
+  })['catch'](function(){ return null; });
+}
+/* Upload a mockup blob and hand back its URL. Mirrors upload() but stands
+   alone, because a mockup belongs to no single S.art entry. */
+function uploadMockup(blob, side){
+  if(!blob) return Promise.resolve(null);
+  function attempt(n){
+    var fd = new FormData();
+    fd.append('file', blob, 'mockup-proof.png');
+    return fetch(CONFIG.artEndpoint.replace(/\/+$/, '') + '/upload', {method:'POST', body:fd})
+      .then(function(r){ if(r.ok) return r.json(); throw new Error('upload ' + r.status); })
+      .then(function(j){ if(!j || !j.url) throw new Error('no url'); return j; })
+      ['catch'](function(e){
+        if(n >= 3) throw e;
+        return new Promise(function(res){ setTimeout(res, n * 1500); }).then(function(){ return attempt(n + 1); });
+      });
+  }
+  return attempt(1)
+    .then(function(j){ return {url:j.url, key:j.key || '', side:side}; })
+    ['catch'](function(e){
+      if(window.console) console.error('[Alive mockup] upload failed', e);
+      return null;
+    });
+}
+/* Cached on the design state, so stepping back and forth does not re-upload and
+   so the work is usually finished by the time Add to cart is tapped. */
+var _mockCache = {};
+function mockStateKey(side){
+  var m = mockSide(side);
+  if(!m || !m.layers || !m.layers.length) return '';
+  return side + '|' + m.img + '|' + m.layers.map(function(L){
+    return [L.k, String(L.src).slice(-40), L.cx, L.cy, L.w, L.rot].join(',');
+  }).join(';');
+}
+function saveMockup(side){
+  var key = mockStateKey(side);
+  if(!key) return Promise.resolve(null);
+  if(_mockCache[key]) return _mockCache[key];
+  _mockCache[key] = renderMockup(side)
+    .then(function(b){ return uploadMockup(b, side); })
+    .then(function(res){
+      if(res && res.url){ S.mockups = S.mockups || {}; S.mockups[side] = res.url; }
+      return res;
+    });
+  return _mockCache[key];
+}
+/* Every side that currently carries a design. Returns null when there is
+   nothing to save, so callers can keep their synchronous fast path. */
+function saveAllMockups(){
+  var sides = ['front', 'back'].filter(function(s){ return layersFor(s).length; });
+  if(!sides.length) return null;
+  return Promise.all(sides.map(saveMockup)).then(function(r){ return r.filter(Boolean); });
 }
 function render(){
   ensurePreviews();
@@ -3746,6 +3908,10 @@ function refreshPrice(){
 }
 
 function go(phase, scroll){
+  /* Start building and uploading the mockup the moment the customer leaves the
+     design step, so it is already done when they add to cart. Fire and forget —
+     it must never hold up moving on. */
+  if(phase !== 'artwork' && S.phase === 'artwork'){ try{ saveAllMockups(); }catch(e){} }
   S.phase = phase; S.gal = null; S.sel = null;
   ensureFrame();
   render();
@@ -3912,16 +4078,19 @@ function pricingProduct(){
 }
 function addToCart(){
   if(S.saving) return;
-  var pend = pendingUploads();
+  var pend = pendingUploads(), waits = [];
+  /* Normally already finished — go() kicks it off on leaving the design step —
+     in which case saveMockup hands back the cached promise and this is free. */
+  var mockP = null; try{ mockP = saveAllMockups(); }catch(e){ mockP = null; }
+  if(mockP) waits.push(mockP);
   if(pend.length){
-    S.saving = true; render();
     pend.forEach(function(k){ var d = S.art[k]; if(d.uploadFailed || !d.upP) upload(k, d.file, d.fileName); });
-    var all = Promise.all(pend.map(function(k){ return S.art[k].upP; }));
-    var cap = new Promise(function(res){ setTimeout(res, 120000); });
-    Promise.race([all, cap]).then(function(){ S.saving = false; addToCartNow(); });
-    return;
+    waits.push(Promise.all(pend.map(function(k){ return S.art[k].upP; })));
   }
-  addToCartNow();
+  if(!waits.length){ addToCartNow(); return; }
+  S.saving = true; render();
+  var cap = new Promise(function(res){ setTimeout(res, 120000); });
+  Promise.race([Promise.all(waits), cap]).then(function(){ S.saving = false; addToCartNow(); });
 }
 function addToCartNow(){
   var q = realQty(), cfg = pricingCfg(q), sizes = isOneSize() ? sizesForTotal() : JSON.parse(JSON.stringify(S.sizes));
@@ -3969,6 +4138,10 @@ function addToCartNow(){
     promoCodeAtAdd: promo && promo.code ? promo.code : '', promoDiscountAtAdd: S.promo || 0,
     pricingProduct: pricingProduct(), source: 'product-page-v3',
     mock: mockForCart(),
+    /* `mock` is the recipe the cart redraws on screen; these are the saved
+       composites on the server, for the order record and the proof email. */
+    mockupUrl: (S.mockups && (S.mockups[S.side] || S.mockups.front || S.mockups.back)) || '',
+    mockupUrls: S.mockups ? JSON.parse(JSON.stringify(S.mockups)) : {},
     /* Everything needed to reopen this line in the editor exactly as it was.
        Artwork is referenced by its uploaded URL, so nothing bulky goes into
        localStorage and the design comes back on the spot it was placed. */
@@ -4111,7 +4284,9 @@ loadCatalog()
   .catch(function(err){ if(window.console) console.error('[Alive product]', err); fail('We could not load this product just now.'); });
 
 /* test hook */
-window.__ALIVE_PRODUCT__ = {S:S, render:render, addToCart:addToCart, go:go};
+window.__ALIVE_PRODUCT__ = {S:S, render:render, addToCart:addToCart, go:go,
+  takeFile:takeFile, layersFor:layersFor, mockSide:mockSide, mockForCart:mockForCart,
+  renderMockup:renderMockup, saveAllMockups:saveAllMockups};
 })();
 
 </script>

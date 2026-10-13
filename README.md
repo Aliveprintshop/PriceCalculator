@@ -133,9 +133,14 @@ Go to **Actions → Sync SanMar catalog nightly → Run workflow**. Useful after
 
 ### "Authentication failed" in the sync log
 
-- Double-check `274869` is your **customer number** (not your sanmar.com username)
-- Double-check `ijKvzk1CfFTOt8` is the **FTP password** (not the sanmar.com password)
+- Double-check the `SANMAR_FTP_USER` secret is your **customer number** (not your sanmar.com username)
+- Double-check the `SANMAR_FTP_PASSWORD` secret is the **FTP password** (not the sanmar.com password)
 - If you've never used SanMar's FTP before, call integration support to activate the account
+
+> Never paste the actual customer number or password into this file. It is a
+> public repository, and anything committed here stays in the git history even
+> after it is edited out. Both values live only in
+> **Settings → Secrets and variables → Actions**.
 
 ### "SDL file not found"
 
