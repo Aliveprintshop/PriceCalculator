@@ -752,6 +752,289 @@ root.AliveEngine={
 </script>
 <script>
 /* =====================================================================
+   ORDERS CLIENT — writes the order to the orders Worker between the Stripe
+   session being created and the customer being sent to pay.
+
+   Inlined on purpose. Loaded from a URL, the ability to take payment would
+   depend on the orders Worker being up at the exact moment someone is paying.
+   Source of truth: alive-orders/integration/alive-orders-client.js
+   ===================================================================== */
+/* Checkout → orders Worker.
+   Drop this into alive-checkout.html (or load it before the submit handler).
+
+   SEQUENCING, which differs from the original design note and matters:
+   the Stripe session id does not exist until /create-session returns, so the
+   order cannot be written before that call. It is written immediately after it
+   and BEFORE the customer is sent to pay — which is the property we actually
+   need. An abandoned checkout still leaves a complete order record. */
+
+(function (root) {
+  'use strict';
+
+  var ORDERS_ENDPOINT = 'https://alive-orders.austin-662.workers.dev/api/orders';
+  var STASH_KEY = 'alive_unsent_orders';
+  var TIMEOUT_MS = 6000;
+
+  /* ---- map the cart's shape to the orders API ------------------------- */
+
+  var LOC_LABEL = {
+    'front': 'Front', 'back': 'Back',
+    'left-sleeve': 'Left sleeve', 'right-sleeve': 'Right sleeve',
+    'left-chest': 'Left chest', 'right-chest': 'Right chest'
+  };
+
+  var TURNAROUNDS = ['std', 'rush', 'super'];
+
+  /* The most urgent turnaround on the cart, which is what the page prices and
+     displays when items disagree. */
+  function firstRush(items) {
+    var rank = { std: 0, rush: 1, super: 2 }, best = null;
+    (items || []).forEach(function (it) {
+      var r = it && it.rush;
+      if (TURNAROUNDS.indexOf(r) > -1 && (best === null || rank[r] > rank[best])) best = r;
+    });
+    return best;
+  }
+
+  function inksFor(it, loc) {
+    if (it.decoMethod !== 'sp') return null;
+    if (loc === 'front') return (it.frontColors | 0) || 1;
+    if (loc === 'back') return (it.backColors | 0) || 1;
+    return 1;
+  }
+
+  function buildItem(it) {
+    var sizes = {}, qty = 0;
+    Object.keys(it.sizes || {}).forEach(function (k) {
+      var n = it.sizes[k] | 0;
+      if (n > 0) { sizes[k] = n; qty += n; }
+    });
+
+    /* The per-size upcharges the engine already computed, turned into the
+       priced tiers the dashboard shows (XS–XL / 2XL / 3XL). */
+    var base = +(+it.unitPrice).toFixed(2);
+    var per = it.sizeUpchargePerSize || {};
+    var upcharges = Object.keys(per).filter(function (sz) { return sizes[sz]; }).map(function (sz) {
+      var up = +(+per[sz]).toFixed(2);
+      return { size: sz, qty: sizes[sz], upcharge: up, unit_price: +(base + up).toFixed(2) };
+    });
+
+    /* Recompute the line from the tiers so it always agrees with itself —
+       the Worker rejects a line that doesn't. */
+    var upQty = upcharges.reduce(function (s, u) { return s + u.qty; }, 0);
+    var lineTotal = +((qty - upQty) * base +
+      upcharges.reduce(function (s, u) { return s + u.qty * u.unit_price; }, 0)).toFixed(2);
+
+    var locs = (it.locations || []).slice();
+    if (!locs.length) locs = ['front'];
+
+    return {
+      sku: it.style,
+      product_name: [it.brand, it.productName].filter(Boolean).join(' '),
+      color: it.color,
+      deco_method: it.decoLabel || it.decoMethod,
+      qty_total: qty,
+      sizes: sizes,
+      base_unit_price: base,
+      upcharges: upcharges,
+      addons: (it.addonList || []).slice(),
+      line_total: lineTotal,
+      imprints: locs.map(function (loc) {
+        return {
+          location: LOC_LABEL[loc] || loc,
+          deco_method: it.decoLabel || it.decoMethod,
+          ink_colors: inksFor(it, loc),
+          stitches: it.decoMethod === 'em' ? (it.stitches || null) : null,
+          width_in: null, height_in: null
+        };
+      }),
+      _lineTotalFromCart: +(+it.lineTotal).toFixed(2)
+    };
+  }
+
+  function buildFiles(items) {
+    var out = [];
+    items.forEach(function (it, i) {
+      (it.artworkFiles || []).forEach(function (a) {
+        if (!a || !a.url) return;
+        out.push({
+          kind: 'artwork', line_no: i + 1,
+          location: LOC_LABEL[a.location] || a.location || null,
+          filename: a.name || a.filename || a.url.split('/').pop(),
+          url: a.url, r2_key: a.key || null,
+          bytes: a.bytes || a.size || null, mime: a.mime || a.type || null
+        });
+      });
+      /* Mockups. The product page saves the composite to R2 when the customer
+         leaves the artwork step and puts the URLs on the cart item as
+         `mockupUrls` ({front:url, back:url}) with `mockupUrl` as the preferred
+         one. An earlier version of this file looked for `it.mockupFiles[]`,
+         which the cart has never written — so mockups silently never reached
+         the dashboard, which is the whole reason staff could not see a proof.
+         mockupFiles is still read first in case it ever appears. */
+      var seenMock = {};
+      function pushMock(url, side) {
+        if (!url || seenMock[url]) return;
+        seenMock[url] = 1;
+        out.push({
+          kind: 'mockup', line_no: i + 1,
+          location: LOC_LABEL[side] || side || null,
+          filename: [it.style || 'item', side || 'front', 'mockup.png'].join('-'),
+          url: url, bytes: null, mime: 'image/png'
+        });
+      }
+      (it.mockupFiles || []).forEach(function (m) { if (m) pushMock(m.url, m.location); });
+      var urls = it.mockupUrls || {};
+      Object.keys(urls).forEach(function (side) { pushMock(urls[side], side); });
+      pushMock(it.mockupUrl, it.side || 'front');
+    });
+    return out;
+  }
+
+  /* ---- the payload ---------------------------------------------------- */
+  function buildOrderPayload(ctx) {
+    var f = ctx.form, t = ctx.totals, ship = ctx.shipping || {};
+    var items = ctx.items.map(buildItem);
+
+    var subtotal = +items.reduce(function (s, it) { return s + it.line_total; }, 0).toFixed(2);
+    var shippingCost = ship.method === 'pickup' ? 0 : +(+(t.ship || 0)).toFixed(2);
+
+    /* TAX IS NOT KNOWN HERE, and that is not a bug to paper over. The cart
+       shows "Sales tax: at payment" because Stripe calculates Nevada tax on the
+       hosted payment page, after this call. So tax goes in as 0 and the Stripe
+       webhook writes the real figure onto the order.
+
+       Which is why the webhook no longer flags on `charged != stored total`:
+       that comparison is short by the tax on every single order, so it would
+       have flagged all of them and made the alert meaningless. It compares
+       pre-tax figures instead. Do not "fix" tax by guessing a rate here —
+       Stripe is the only thing that knows it. */
+    var tax = +(+(t.tax || 0)).toFixed(2);
+
+    /* The Stripe-level promo (ALIVE50 and friends). `totals().off` is the
+       dollar amount the cart showed and the Worker re-checks before it goes on
+       the Checkout Session, so it is the same number Stripe discounts.
+       Per-item percent-of-markup codes (promoSavingsTotal) are NOT this: those
+       are already inside each line_total and must not be counted twice. */
+    var discount = +(+(ctx.discount != null ? ctx.discount : (t.off || 0))).toFixed(2);
+    if (!(discount > 0)) discount = 0;
+    /* Never claim more off than there is to take off; the Worker rejects that
+       and a rejected order is worse than a slightly generous-looking record. */
+    var cap = +(subtotal + shippingCost).toFixed(2);
+    if (discount > cap) discount = cap;
+
+    items.forEach(function (it) { delete it._lineTotalFromCart; });
+
+    return {
+      customer_name: f.name,
+      customer_email: f.email,
+      customer_phone: f.phone || null,
+      company: f.company || null,
+      delivery_method: ship.method === 'pickup' ? 'pickup' : 'ship',
+      ship_name: ship.method === 'pickup' ? null : f.name,
+      ship_addr1: ship.method === 'pickup' ? null : f.addr1,
+      ship_addr2: ship.method === 'pickup' ? null : (f.addr2 || null),
+      ship_city: ship.method === 'pickup' ? null : f.city,
+      ship_state: ship.method === 'pickup' ? null : f.state,
+      ship_zip: ship.method === 'pickup' ? null : f.zip,
+      /* The cart's turnaround lives on S.rush (the "Need it sooner?" picker)
+         and is copied onto each re-priceable item as `it.rush` — there is no
+         `it.turnaround`, which is what an earlier version of the patch read, so
+         every rush order would have been recorded as standard and shown the
+         shop a due date five days too late. */
+      turnaround: TURNAROUNDS.indexOf(ctx.turnaround) > -1 ? ctx.turnaround
+                : TURNAROUNDS.indexOf(firstRush(ctx.items)) > -1 ? firstRush(ctx.items)
+                : 'std',
+      subtotal: subtotal,
+      discount: discount,
+      tax: tax,
+      shipping: shippingCost,
+      total: +(subtotal - discount + tax + shippingCost).toFixed(2),
+      promo_code: ctx.promoCode || null,
+      stripe_session_id: ctx.stripeSessionId,
+      customer_note: f.notes || null,
+      items: items,
+      files: buildFiles(ctx.items)
+    };
+  }
+
+  /* ---- send, with a stash for anything that doesn't get through -------- */
+  function stash(payload) {
+    try {
+      var q = JSON.parse(localStorage.getItem(STASH_KEY) || '[]');
+      q.push({ at: Date.now(), payload: payload });
+      localStorage.setItem(STASH_KEY, JSON.stringify(q.slice(-20)));
+    } catch (e) { /* private mode: nothing to do */ }
+  }
+
+  function send(payload) {
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = ctrl && setTimeout(function () { ctrl.abort(); }, TIMEOUT_MS);
+
+    return fetch(ORDERS_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      if (timer) clearTimeout(timer);
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error(j.error + (j.details ? ': ' + j.details.join('; ') : ''));
+        return j;
+      });
+    });
+  }
+
+  /* Retry any order a previous visit could not deliver. Safe to call often —
+     the Worker keys on stripe_session_id, so a replay can't duplicate. */
+  function flushStash() {
+    var q;
+    try { q = JSON.parse(localStorage.getItem(STASH_KEY) || '[]'); } catch (e) { return; }
+    if (!q.length) return;
+    localStorage.removeItem(STASH_KEY);
+    q.forEach(function (row) {
+      send(row.payload).catch(function () { stash(row.payload); });
+    });
+  }
+
+  /* ---- what the checkout page calls ----------------------------------- */
+  /* Returns a promise that always resolves. A failure here must never stop a
+     customer paying: losing the sale is worse than a recoverable data gap,
+     and the payload is stashed, the shop alerted, and the nightly
+     reconciliation job compares Stripe against the orders table. */
+  function recordOrder(ctx) {
+    var payload;
+    try {
+      payload = buildOrderPayload(ctx);
+    } catch (e) {
+      try { console.error('[alive-orders] could not build payload', e); } catch (_) {}
+      return Promise.resolve({ ok: false, error: 'build failed: ' + e.message });
+    }
+
+    return send(payload).then(function (j) {
+      try { console.log('[alive-orders] recorded order #' + j.order_no); } catch (_) {}
+      return { ok: true, order_no: j.order_no, due_date: j.due_date };
+    }).catch(function (e) {
+      stash(payload);
+      try { console.error('[alive-orders] write failed, stashed for retry', e); } catch (_) {}
+      return { ok: false, error: e.message };
+    });
+  }
+
+  root.AliveOrders = {
+    recordOrder: recordOrder,
+    flushStash: flushStash,
+    buildOrderPayload: buildOrderPayload,
+    ENDPOINT: ORDERS_ENDPOINT
+  };
+
+  if (typeof window !== 'undefined') {
+    try { window.addEventListener('load', flushStash); } catch (e) {}
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* =====================================================================
    ALIVE PRINT SHOP — CHECKOUT (replaces /cart)
    Reads the shared cart (localStorage alive_cart_items_v1, same key as
    the v2 calculator and cart.html). Rush and finishing add-ons are chosen
@@ -1522,8 +1805,31 @@ function submit(){
       var tt = totals();
       try{ sessionStorage.setItem('alive_pending_purchase', JSON.stringify({currency:'USD', value:tt.grand, shipping:tt.ship, items:gaItems()})); }catch(e){}
       track('add_payment_info', {currency:'USD', value:tt.grand, payment_type:'stripe', items:gaItems()});
-      if(res.ok && embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
-      if(res.ok && j.url){ nav(j.url); return; }
+      if(res.ok && j.id){
+        /* Record the order before the customer goes to pay. recordOrder never
+           rejects and never blocks payment: on failure it stashes the payload
+           and retries on the next page load, the customer pays regardless, and
+           the shop is alerted. Losing a sale is worse than a recoverable gap.
+
+           The `||` fallback is not belt-and-braces. Without it, anything that
+           stops the client existing turns this into a TypeError INSIDE the
+           payment path and nobody can check out. */
+        var AO = window.AliveOrders || {recordOrder:function(){ return Promise.resolve({ok:false}); }};
+        return AO.recordOrder({
+          items: S.items,
+          form: S.form,
+          totals: tt,                                    /* .ship and .off */
+          shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
+          turnaround: S.rush,                            /* std | rush | super */
+          discount: tt.off,                              /* the Stripe-level promo */
+          promoCode: stripePromo() ? stripePromo().code : '',
+          stripeSessionId: j.id
+        }).then(function(rec){
+          if(rec && rec.ok) S.orderNo = rec.order_no;
+          if(embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
+          if(j.url){ nav(j.url); return; }
+        });
+      }
       if(j.promoError){ CART.setPromo(null); S.promoOpen = true; S.promoErr = j.error || 'That code can’t be used.'; }
       S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.') + (j.promoError ? ' We removed the code — your total is updated.' : ''); render();
     })
