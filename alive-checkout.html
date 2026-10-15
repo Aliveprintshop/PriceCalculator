@@ -1179,6 +1179,13 @@ var S = {
   ship:'ship', form:{name:'',email:'',phone:'',company:'',addr1:'',addr2:'',city:'',state:'',zip:'',notes:''},
   bad:{}, err:'', busy:false, promoOpen:false, promoErr:'', done:null, reup:{}
 };
+/* If they asked us to email them their mockup on the product page, we already
+   have their address — prefilling it means that earlier ask SAVED them a step
+   rather than costing them one. Same localStorage key the product page writes. */
+try{
+  var remembered = localStorage.getItem('alive_email');
+  if(remembered && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(remembered)) S.form.email = remembered;
+}catch(e){}
 /* Re-send an artwork file that didn't reach storage on the product page. */
 function reupload(key){
   var parts = key.split('|'), id = parts[0], idx = +parts[1];
