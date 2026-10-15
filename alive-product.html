@@ -609,6 +609,28 @@
 #alive-flow .hint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11.5px;
   color:var(--text3);pointer-events:none;}
 @media(max-width:400px){#alive-flow .tools button{width:54px;}}
+/* ---- save-design dialog ------------------------------------------------
+   Opened from the Save tool beside Center/Bigger/Smaller. It is the explicit,
+   findable way to keep a design — the inline proof line still does the capture
+   on its own, so this is a second door onto the same room, never a second ask:
+   if the address is already known this opens straight on the saved state with
+   the link in hand. */
+#alive-flow .savewrap{position:fixed;inset:0;z-index:60;background:rgba(15,17,23,.5);display:flex;align-items:center;justify-content:center;padding:18px}
+#alive-flow .savebox{position:relative;width:100%;max-width:372px;background:#fff;border-radius:16px;padding:24px 20px 18px;box-shadow:0 18px 50px rgba(15,17,23,.3);text-align:center}
+#alive-flow .savebox h3{margin:0 0 6px;font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink,#0f1117)}
+#alive-flow .savebox p{margin:0 0 14px;font-size:13px;color:var(--muted,#6a7280);line-height:1.5}
+#alive-flow .savebox .thumb{width:104px;height:104px;object-fit:contain;margin:0 auto 12px;display:block;border:1px solid var(--line,#e5e9ef);border-radius:12px;background:#fff}
+#alive-flow .savebox input{width:100%;padding:11px 12px;border:1px solid var(--line,#d8dee6);border-radius:10px;font:inherit;font-size:15px;background:#fff;margin:0 0 10px;color:var(--ink,#0f1117)}
+#alive-flow .savebox input:focus{outline:none;border-color:var(--blue,#1b6cce);box-shadow:0 0 0 3px rgba(27,108,206,.14)}
+#alive-flow .savebox .go{width:100%;padding:12px;border:0;border-radius:10px;background:var(--ink,#0f1117);color:#fff;font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+#alive-flow .savebox .go:disabled{opacity:.55;cursor:default}
+#alive-flow .savebox .fine{margin:11px 0 0;font-size:11.5px}
+#alive-flow .savebox .bad{margin:-2px 0 10px;font-size:12.5px;color:#c2384a;font-weight:600}
+#alive-flow .savebox .x{position:absolute;top:7px;right:8px;width:30px;height:30px;border:0;background:none;font-size:21px;line-height:1;color:var(--muted,#6a7280);cursor:pointer;padding:0}
+#alive-flow .savebox .lrow{display:flex;gap:7px;margin:0 0 12px}
+#alive-flow .savebox .lrow input{margin:0;font-size:12.5px}
+#alive-flow .savebox .lrow button{flex:0 0 auto;width:auto;padding:0 14px;border:1px solid var(--line,#d8dee6);border-radius:10px;background:#fff;font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+#alive-flow .savebox .tick{display:block;margin:0 auto 9px}
 
 /* ---- order recap ----------------------------------------------------- */
 /* The recap sits in the 268px control panel now, where three columns squeezed
@@ -2641,7 +2663,7 @@ var S = {
   mockups:{},
   /* "email me this mockup": the typed address survives a redraw, and the card
      switches to a thank-you once it has been sent. */
-  capEmail:'', capState:'idle', capErr:'', draftToken:'', capSent:'', capShowLink:false, capT:null,
+  capEmail:'', capState:'idle', capErr:'', draftToken:'', capSent:'', capShowLink:false, capT:null, saveOpen:false, saveErr:'',
   /* set once a customer taps Continue while under the minimum, so the
      minimum box stays put with the grid still empty (never shown on arrival) */
   minTried:false,
@@ -3536,9 +3558,9 @@ function claimArtwork(email){
 
 /* Commits the address. Safe to call repeatedly — a blur, an Enter and the idle
    timer all land here, and it no-ops once the same address has been saved. */
-function capSend(){
+function capSend(emailArg){
   var el = document.getElementById('capmail');
-  var email = ((el && el.value) || S.capEmail || '').trim();
+  var email = (emailArg || (el && el.value) || S.capEmail || '').trim();
   S.capEmail = email;
 
   if(!emailOk(email)){
@@ -3550,6 +3572,10 @@ function capSend(){
 
   S.capState = 'sending';
   capStatus('Saving\u2026', '');
+  /* The inline line reports itself through capStatus without a redraw, to keep
+     the caret. The dialog has a button that has to go disabled, so that one
+     does need the redraw. */
+  if(S.saveOpen) render();
 
   /* CLAIM FIRST, AND ON ITS OWN.
      Putting the name on the artwork is the thing that matters, and it must not
@@ -3712,8 +3738,64 @@ function tools(){
   function b(act, label, path){ return '<button type="button" data-tool="' + act + '"' + (on ? '' : ' disabled') + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">' + path + '</svg>' + label + '</button>'; }
   return '<div class="tools">' + b('center','Center','<path d="M12 3v18M3 12h18"/><rect x="8" y="8" width="8" height="8" rx="1"/>') +
     b('zoomin','Bigger','<circle cx="11" cy="11" r="7"/><path d="M11 8v6M8 11h6M20 20l-3.5-3.5"/>') +
-    b('zoomout','Smaller','<circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-3.5-3.5"/>') + '</div>';
+    b('zoomout','Smaller','<circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-3.5-3.5"/>') +
+    /* Save is NOT gated on having a layer selected the way the placement tools
+       are — it acts on the whole design, not on one piece of art. */
+    '<button type="button" data-tool="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">' +
+      '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-7H7v7M7 3v5h7"/>' +
+    '</svg>Save</button>' + '</div>';
 }
+/* The dialog. Three states, and the one that matters is the middle one: if we
+   already have the address — from this session's proof line or from a previous
+   order — nobody is asked for it twice. They get the link. */
+function saveBox(){
+  if(!S.saveOpen) return '';
+  var mk = (S.mockups && (S.mockups[S.side] || S.mockups.front || S.mockups.back)) || '';
+  var thumb = mk ? '<img class="thumb" src="' + esc(mk) + '" alt="Your design">' : '';
+  var x = '<button type="button" class="x" data-saveclose="1" aria-label="Close">&times;</button>';
+
+  if(S.capState === 'sent'){
+    return '<div class="savewrap" data-saveclose="1"><div class="savebox" role="dialog" aria-modal="true" aria-label="Design saved">' + x +
+      '<svg class="tick" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="#bfe3cb"/><path d="M17 9l-6 6-3-3"/></svg>' +
+      '<h3>Design saved</h3>' +
+      thumb +
+      '<p>It&rsquo;s on file under <b>' + esc(S.capEmail) + '</b>. Keep this link &mdash; it brings the design back exactly as it is now.</p>' +
+      (S.resumeUrl
+        ? '<div class="lrow"><input id="capurl" readonly value="' + esc(S.resumeUrl) + '" aria-label="Link back to your design" onclick="this.select()">' +
+          '<button type="button" data-savecopy="1">' + (S.capCopied ? 'Copied' : 'Copy') + '</button></div>'
+        : '') +
+      '<button type="button" class="go" data-saveclose="1">Done</button>' +
+    '</div></div>';
+  }
+
+  var busy = S.capState === 'sending';
+  return '<div class="savewrap" data-saveclose="1"><div class="savebox" role="dialog" aria-modal="true" aria-label="Save your design">' + x +
+    '<h3>Save your design</h3>' +
+    thumb +
+    '<p>Leave your email and we&rsquo;ll keep this design on file. You&rsquo;ll get a link that brings it straight back, on any device.</p>' +
+    (S.saveErr ? '<div class="bad">' + esc(S.saveErr) + '</div>' : '') +
+    '<input type="email" id="savemail" placeholder="your@email.com" autocomplete="email" inputmode="email" ' +
+      'value="' + esc(S.capEmail) + '" aria-label="Your email address">' +
+    '<button type="button" class="go" data-savego="1"' + (busy ? ' disabled' : '') + '>' +
+      (busy ? 'Saving\u2026' : 'Save my design') + '</button>' +
+    '<p class="fine">We proof every job before it prints. We may email you about this design. Nothing else.</p>' +
+  '</div></div>';
+}
+
+function saveGo(){
+  var el = document.getElementById('savemail');
+  var email = ((el && el.value) || S.capEmail || '').trim();
+  S.capEmail = email;
+  if(!emailOk(email)){
+    S.saveErr = 'That email does not look right.';
+    render();
+    var f = document.getElementById('savemail'); if(f) f.focus();
+    return;
+  }
+  S.saveErr = '';
+  capSend(email);
+}
+
 function applyLayerStyle(key){
   var el = root.querySelector('.layer[data-layer="' + key + '"]'), d = S.art[key];
   if(!el || !d) return;
@@ -4085,7 +4167,7 @@ function render(){
           '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
         '</div>' +
       '</div></div>' +
-      mbar('Continue to sizes &rarr;', false, barSub());
+      mbar('Continue to sizes &rarr;', false, barSub()) + saveBox();
   }else{
     /* STEP 2 — SIZES: the designed garment (read-only) + size boxes. */
     html = stepper(2) +
@@ -4284,12 +4366,50 @@ function wire(){
     });
   });
   root.querySelectorAll('[data-tool]').forEach(function(b){
-    b.onclick = function(){ var k = toolTarget(), d = k && S.art[k]; if(!d) return;
+    b.onclick = function(){
+      if(b.dataset.tool === 'save'){
+        S.saveOpen = true; S.saveErr = ''; S.capCopied = false; render();
+        var sm = document.getElementById('savemail'); if(sm){ sm.focus(); sm.select(); }
+        return;
+      }
+      var k = toolTarget(), d = k && S.art[k]; if(!d) return;
       if(b.dataset.tool === 'center'){ d.place.cx = 0.5; d.place.rot = 0; }
       else if(b.dataset.tool === 'zoomin') d.place.w = Math.min(1.6, d.place.w * 1.12);
       else d.place.w = Math.max(0.03, d.place.w / 1.12);
       applyLayerStyle(k); };
   });
+  /* The dialog. Clicking the backdrop closes it, clicking the panel must not —
+     the backdrop carries data-saveclose and the panel swallows the click. */
+  root.querySelectorAll('[data-saveclose]').forEach(function(b){
+    b.onclick = function(e){ if(e.target !== b) return; S.saveOpen = false; render(); };
+  });
+  /* Escape closes it. Bound once on the document, not per render. */
+  if(!window.__aliveSaveEsc){
+    window.__aliveSaveEsc = true;
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && S.saveOpen){ S.saveOpen = false; render(); }
+    });
+  }
+  var sp = root.querySelector('.savebox');
+  if(sp) sp.onclick = function(e){ e.stopPropagation(); };
+  var sg = root.querySelector('[data-savego]');
+  if(sg) sg.onclick = function(){ saveGo(); };
+  var smi = document.getElementById('savemail');
+  if(smi){
+    smi.oninput = function(){ S.capEmail = smi.value; };
+    smi.onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); saveGo(); } };
+  }
+  var scp = root.querySelector('[data-savecopy]');
+  if(scp) scp.onclick = function(){
+    var f = document.getElementById('capurl'); if(!f) return;
+    f.select();
+    var done = function(){ S.capCopied = true; render(); };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(f.value).then(done, done); return; }
+      document.execCommand('copy');
+    }catch(e){}
+    done();
+  };
   var mc = root.querySelector('[data-mcta]');
   if(mc) mc.onclick = function(){
     if(S.phase === 'artwork'){
