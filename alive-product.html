@@ -609,6 +609,7 @@
 #alive-flow .hint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11.5px;
   color:var(--text3);pointer-events:none;}
 @media(max-width:400px){#alive-flow .tools button{width:54px;}}
+}
 /* ---- save-design dialog ------------------------------------------------
    Opened from the Save tool beside Center/Bigger/Smaller. It is the explicit,
    findable way to keep a design — the inline proof line still does the capture
@@ -1146,21 +1147,30 @@
 /* ---- email capture (the mockup they can show someone) --------------------
    Deliberately quiet: a dashed card, not a banner. It sits beside Continue,
    never in front of it. Anyone ready to buy should be able to ignore it. */
-#alive-flow .proofq{margin:12px 0 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line,#d8dee6);border-radius:11px;background:#fbfcfe}
-#alive-flow .proofq label{font-size:13.5px;font-weight:650;color:var(--ink,#0f1117);white-space:nowrap}
-#alive-flow .proofq input{flex:1 1 165px;min-width:0;padding:9px 11px;border:1px solid var(--line,#d8dee6);border-radius:9px;font:inherit;font-size:15px;background:#fff}
-#alive-flow .proofq input:focus{outline:none;border-color:var(--blue,#1b6cce);box-shadow:0 0 0 3px rgba(27,108,206,.14)}
-#alive-flow .proofq .st{font-size:12.5px;color:var(--muted,#6a7280);white-space:nowrap}
-#alive-flow .proofq .st.ok{color:#16a34a;font-weight:650}
-#alive-flow .proofq .st.no{color:#c2384a;font-weight:600}
-#alive-flow .proofq .why{flex:1 1 100%;margin:0;font-size:11.5px;color:var(--muted,#6a7280);line-height:1.4}
-#alive-flow .proofq.need{border-color:#e0a9b3;background:#fdf6f7;box-shadow:0 0 0 3px rgba(194,56,74,.08)}
-#alive-flow .proofd{margin:11px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted,#6a7280)}
-#alive-flow .proofd svg{flex:none}
-#alive-flow .proofd b{color:var(--ink,#0f1117);font-weight:650}
-#alive-flow .proofd button{background:none;border:0;padding:0;width:auto;font:inherit;font-size:12.5px;color:var(--blue,#1b6cce);text-decoration:underline;cursor:pointer}
-#alive-flow .proofd input{flex:1 1 100%;min-width:0;margin-top:2px;padding:7px 9px;border:1px solid var(--line,#d8dee6);border-radius:8px;font:inherit;font-size:12.5px;background:#fff;color:var(--ink,#0f1117)}
 @media(max-width:560px){#alive-flow .proofq label{flex:1 1 100%}}
+/* ---- mobile density pass (15 Oct 2026) ---------------------------------
+   90% of this traffic is a phone. Everything below buys vertical space back
+   without shrinking a single tap target below 44px. */
+#alive-flow .tools{flex-wrap:wrap;row-gap:6px;}
+#alive-flow .tools button{line-height:1.15;}
+/* The two mode cards stop explaining themselves once a design is on the
+   garment: the sub-line goes, the padding tightens, ~70px comes back. */
+#alive-flow .modes.tight .mode{padding:10px 12px;align-items:center;}
+#alive-flow .modes.tight .mode em{display:none;}
+@media(max-width:560px){
+  #alive-flow .steps-in{padding:11px 10px 10px;}
+  #alive-flow .allprod{margin-top:10px;}
+  #alive-flow .shell{padding-top:8px;}
+  #alive-flow .sec-lbl{margin:14px 0 7px;}
+  #alive-flow .optsum{margin-top:12px;padding:10px 12px;}
+  #alive-flow .lcards{margin-top:9px;}
+  #alive-flow .lcard{padding:11px 12px;}
+  #alive-flow .mode{padding:11px 12px;}
+  #alive-flow .modes{gap:8px;}
+  #alive-flow .proofq{margin-top:10px;padding:9px 11px;}
+  #alive-flow .pcard{padding-bottom:10px;}
+  #alive-flow .pcard-foot{padding-top:10px;}
+
 </style>
 </head>
 <body>
@@ -3430,9 +3440,10 @@ function locCard(k){
           (d.photoish && E.decoMethods(S.p).indexOf('ht') > -1 ? ' or <button type="button" class="linkbtn" data-method="ht">switch to Full color</button>' : '') + '</div>'
         : (needsInkCount(k) && d.inkAuto && S.inks[k] === d.inkAuto
           ? '<div class="dnote ok">We counted ' + d.inkAuto + ' ink color' + (d.inkAuto > 1 ? 's' : '') + ' in your design and priced it that way. Not right? Change it above.</div>' : '')) +
-      (d.noPreview ? '<div class="dnote">We can’t preview this file type here. It’s attached and our art team will place it.</div>'
-        : (!d.src ? '' : (d.bgRemoved ? '<button class="bgbtn" type="button" data-undobg="' + k + '">Put the background back</button>'
-          : '<button class="bgbtn" type="button" data-bg="' + k + '"' + (d.bgBusy ? ' disabled' : '') + '>' + (d.bgBusy ? 'Working…' : 'Remove background') + '</button>'))) +
+      /* The Remove background button used to live here. It is now a tool beside
+         Center/Bigger/Smaller, where it is visible without scrolling. Only the
+         result message stays in the card. */
+      (d.noPreview ? '<div class="dnote">We can’t preview this file type here. It’s attached and our art team will place it.</div>' : '') +
       (d.bgMsg ? '<div class="dnote warn">' + esc(d.bgMsg) + '</div>' : '');
   }
   return '<div class="lcard' + (S.sel === k ? ' on' : '') + '" data-card="' + k + '">' + head + body + '</div>';
@@ -3442,7 +3453,11 @@ function modePicker(){
     return '<button class="mode' + (S.mode === key ? ' on' : '') + '" type="button" data-mode="' + key + '"><span class="radio"><i></i></span>' +
       '<span><b>' + esc(title) + '</b><em>' + esc(sub) + '</em></span></button>';
   }
-  return '<div class="modes">' + card('now', 'Upload my design', 'Place it on the ' + noun() + '.') +
+  /* Once artwork is actually on the garment these two cards are explaining a
+     choice that has already been made, so they shrink to single lines and give
+     the height back. */
+  var done = S.mode !== 'later' && S.locs.some(function(k){ return S.art[k] && S.art[k].src; });
+  return '<div class="modes' + (done ? ' tight' : '') + '">' + card('now', 'Upload my design', 'Place it on the ' + noun() + '.') +
     card('later', 'Send my design later', 'Email it after you order.') + '</div>';
 }
 
@@ -3457,13 +3472,6 @@ function modePicker(){
    for anything extra. This card exists only for the people who are not ready,
    and the moment it gets in a buyer's way it stops earning its place. */
 
-/* Does this design carry artwork the customer actually handed us? That is the
-   only case that needs an address: "send my design later" has no file to put a
-   name on and no proof to send yet. */
-function proofNeeded(){
-  if(S.mode === 'later') return false;
-  return S.locs.some(function(k){ var d = S.art[k]; return !!(d && (d.src || d.file || d.url)); });
-}
 function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim()); }
 function proofDone(){ return S.capState === 'sent' && emailOk(S.capEmail); }
 
@@ -3477,41 +3485,17 @@ function capStatus(txt, cls){
   el.className = 'st' + (cls ? ' ' + cls : '');
 }
 
-function capCard(){
-  if(!proofNeeded()) return '';
+/* THE EMAIL IS OPT-IN, BY DECISION — 15 Oct 2026.
+   An inline "where should we send your proof?" line used to sit here and was
+   required before Continue would advance. It was removed deliberately: the
+   Save tool now owns the question, and nothing forces it.
 
-  /* ASKED ONCE, WHERE IT COSTS NOTHING.
-     The file is uploading and the mockup is drawing — a second or two the
-     customer is already spending watching the shirt appear. So: one line, one
-     field, no button. The design is claimed the moment the address is valid,
-     which means there is no "save" step to explain AND someone who wanders off
-     mid-session still arrives in the artwork dashboard with a name on them.
-
-     It is framed as the proof because that is what it is for. Every customer
-     expects a proof before we print; asking where to send it is part of the
-     job, not a favour they are doing us. The earlier version of this sold the
-     idea with a heading, a paragraph and fine print — all of which existed
-     only because it was pitched as an optional extra. */
-  if(proofDone()){
-    return '<div class="proofd">' +
-      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-      '<span>Proof goes to <b>' + esc(S.capEmail) + '</b></span>' +
-      '<button type="button" data-capedit="1">Change</button>' +
-      (S.resumeUrl ? '<button type="button" data-caplink="1">' + (S.capShowLink ? 'Hide link' : 'Get my link') + '</button>' : '') +
-      (S.capShowLink && S.resumeUrl
-        ? '<input id="capurl" readonly value="' + esc(S.resumeUrl) + '" aria-label="Link back to your design" onclick="this.select()">'
-        : '') +
-    '</div>';
-  }
-
-  return '<div class="proofq' + (S.nudge ? ' need' : '') + '">' +
-    '<label for="capmail">Where should we send your proof?</label>' +
-    '<input type="email" id="capmail" placeholder="your@email.com" autocomplete="email" ' +
-      'inputmode="email" value="' + esc(S.capEmail) + '" aria-label="Your email address">' +
-    '<span class="st" id="capst"></span>' +
-    '<p class="why">We proof every job before it prints, and we keep this design on file so you can pick it back up.</p>' +
-  '</div>';
-}
+   The cost is known and was accepted. Opt-in capture on this page measured
+   10 addresses against 625 uploads in the first half of October, and four of
+   those ten were test uploads. Expect most artwork in the staff dashboard to
+   arrive with nobody attached to it. If that becomes a problem, putting the
+   ask back is a few lines: restore a proof line in render() and re-add the
+   check in the Continue handler in wire(). */
 
 function designSnapshot(){
   var out = {};
@@ -3740,6 +3724,19 @@ function tools(){
   return '<div class="tools">' + b('center','Center','<path d="M12 3v18M3 12h18"/><rect x="8" y="8" width="8" height="8" rx="1"/>') +
     b('zoomin','Bigger','<circle cx="11" cy="11" r="7"/><path d="M11 8v6M8 11h6M20 20l-3.5-3.5"/>') +
     b('zoomout','Smaller','<circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-3.5-3.5"/>') +
+    /* Background removal was buried in the upload card, below the fold on a
+       phone, where almost nobody found it. It belongs with the other things you
+       do TO the artwork. Unlike Save it does need a target, so it only appears
+       when there is a previewable layer to act on. */
+    (function(){
+      var k = toolTarget(), d = k && S.art[k];
+      if(!d || !d.src || d.noPreview) return '';
+      var ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M4 21h16"/><path d="m14.6 3.6 5.8 5.8-8.2 8.2H6.6l-2.9-2.9a2 2 0 0 1 0-2.8z"/></svg>';
+      if(d.bgRemoved) return '<button type="button" data-tool="undobg">' + ico + 'Undo BG</button>';
+      return '<button type="button" data-tool="bg"' + (d.bgBusy ? ' disabled' : '') + '>' + ico +
+        (d.bgBusy ? 'Working' : 'Remove BG') + '</button>';
+    })() +
     /* Save is NOT gated on having a layer selected the way the placement tools
        are — it acts on the whole design, not on one piece of art. */
     '<button type="button" data-tool="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">' +
@@ -4196,12 +4193,17 @@ function render(){
       '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
       '<div class="shell solo dual">' +
         /* Photo, then Front/Back, the gallery right under it, then garment colors. */
-        '<div class="colL">' + productCard(overlay(), '', detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
-          optsBlock() +
-          (artColorFoot() ? '<div class="pcard gcard"><div class="pcard-foot">' + artColorFoot() + '</div></div>' : '') +
+        /* ORDER, AND WHY — 90% of this traffic is a phone, where the two
+           columns stack and this reads top to bottom.
+             garment colours moved INTO the product card, directly under the
+             gallery, because choosing the shirt belongs with looking at it;
+             Print moved to the BOTTOM, because the method and location are
+             already correct for almost everyone and it was sitting between the
+             customer and the one thing they came to do. */
+        '<div class="colL">' + productCard(overlay(), artColorFoot(), detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
-          capCard() +
+          optsBlock() +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
           '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
         '</div>' +
@@ -4317,30 +4319,6 @@ function wire(){
   /* Email capture. The typed value is kept on S so a redraw (a colour tap, an
      upload finishing) cannot wipe what someone is halfway through typing —
      and it is NOT re-rendered on every keystroke, which would steal focus. */
-  var cm = document.getElementById('capmail');
-  if(cm){
-    /* No save button: typing IS the action. The commit happens on blur, on
-       Enter, or after a pause long enough that they have clearly finished —
-       1.2s, so "a@b.co" on the way to "a@b.com" does not save early. The value
-       lives on S so a redraw (a colour tap, an upload finishing) cannot wipe
-       what someone is halfway through typing. */
-    cm.oninput = function(){
-      S.capEmail = cm.value;
-      clearTimeout(S.capT);
-      capStatus('', '');
-      if(emailOk(cm.value)) S.capT = setTimeout(capSend, 1200);
-    };
-    cm.onblur = function(){ clearTimeout(S.capT); capSend(); };
-    cm.onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); cm.blur(); } };
-    if(S.nudge) cm.focus();
-  }
-  var ce = root.querySelector('[data-capedit]');
-  if(ce) ce.onclick = function(){
-    S.capState = 'idle'; S.capShowLink = false; render();
-    var f = document.getElementById('capmail'); if(f){ f.focus(); f.select(); }
-  };
-  var cl = root.querySelector('[data-caplink]');
-  if(cl) cl.onclick = function(){ S.capShowLink = !S.capShowLink; render(); };
   root.querySelectorAll('[data-phase]').forEach(function(b){ b.onclick = function(){ go(b.dataset.phase, 'foot'); }; });
   root.querySelectorAll('[data-goto]').forEach(function(b){ b.onclick = function(){ go(b.dataset.goto, b.dataset.goto === 'sizes' ? 'foot' : null); }; });
   root.querySelectorAll('[data-size]').forEach(function(inp){
@@ -4406,6 +4384,11 @@ function wire(){
   });
   root.querySelectorAll('[data-tool]').forEach(function(b){
     b.onclick = function(){
+      if(b.dataset.tool === 'bg' || b.dataset.tool === 'undobg'){
+        var bk = toolTarget(); if(!bk) return;
+        if(b.dataset.tool === 'bg') removeBg(bk); else undoBg(bk);
+        return;
+      }
       if(b.dataset.tool === 'save'){
         S.saveOpen = true; S.saveErr = ''; S.capCopied = false; render();
         var sm = document.getElementById('savemail'); if(sm){ sm.focus(); sm.select(); }
@@ -4452,15 +4435,6 @@ function wire(){
   var mc = root.querySelector('[data-mcta]');
   if(mc) mc.onclick = function(){
     if(S.phase === 'artwork'){
-      /* An uploaded design without an address is the thing we are trying to
-         stop existing, so this is where it is stopped: after the mockup, with
-         the field on screen and already focused. Never at upload time — that
-         asks before anything has been delivered, and loses the upload. */
-      if(artReady() && proofNeeded() && !proofDone()){
-        S.nudge = true; render();
-        scrollToEl(root.querySelector('.proofq'));
-        return;
-      }
       if(artReady()) go('sizes', 'foot');
       else { var pk = S.locs.filter(function(k){ return S.art[k]; }).filter(inkPending)[0];
         if(pk && S.locs.every(function(k){ return !!S.art[k]; })){ inkPrompt(pk); return; }
