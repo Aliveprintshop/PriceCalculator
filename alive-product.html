@@ -1176,6 +1176,27 @@
   #alive-flow .pcard{padding-bottom:10px;}
   #alive-flow .pcard-foot{padding-top:10px;}
 
+/* ---- details accordion inset ------------------------------------------
+   `.detacc` was written as a full-bleed divider (margin:16px -16px 0, no
+   border, no radius) but `.acc.card` is declared later and wins on border,
+   radius and background. The result was a rounded bordered box still carrying
+   the -16px pull, so it hung past the product card's padding and sat almost
+   against the card's own edge. Keep the card look, drop the pull. */
+#alive-flow .detacc{margin:12px 0 0;border-radius:var(--r-lg);}
+/* ---- the sticky bar, on a phone ---------------------------------------
+   It measured 98px tall at 390px wide, purely because both halves wrapped:
+   "Continue to sizes →" onto two lines and "24 piece minimum · Front 1-color"
+   onto two more. Every pixel of that height is reserved space at the bottom of
+   the page, so the wrapping was costing ~26px of blank band on every screen.
+   Nothing here shrinks a tap target: the CTA keeps a 48px minimum. */
+@media(max-width:560px){
+  #alive-flow .mbar-in{gap:10px;padding:8px 12px;}
+  #alive-flow .mbar .cta{padding:0 12px;min-height:48px;font-size:12px;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center;}
+  #alive-flow .mbar .v{font-size:18px;line-height:1.15;}
+  #alive-flow .mbar .k{font-size:9px;}
+  #alive-flow .mbar .s{font-size:10.5px;white-space:nowrap;line-height:1.3;}
+}
 </style>
 </head>
 <body>
@@ -3761,7 +3782,7 @@ function saveBox(){
   var x = '<button type="button" class="x" data-saveclose="1" aria-label="Close">&times;</button>';
 
   if(S.capState === 'sent'){
-    return '<div class="savewrap" data-saveclose="1"><div class="savebox" role="dialog" aria-modal="true" aria-label="Design saved">' + x +
+    return '<div class="savewrap" data-saveclose="1" style="position:fixed;inset:0;z-index:60"><div class="savebox" style="position:absolute" role="dialog" aria-modal="true" aria-label="Design saved">' + x +
       '<svg class="tick" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="#bfe3cb"/><path d="M17 9l-6 6-3-3"/></svg>' +
       '<h3>Design saved</h3>' +
       thumb +
@@ -3775,7 +3796,7 @@ function saveBox(){
   }
 
   var busy = S.capState === 'sending';
-  return '<div class="savewrap" data-saveclose="1"><div class="savebox" role="dialog" aria-modal="true" aria-label="Save your design">' + x +
+  return '<div class="savewrap" data-saveclose="1" style="position:fixed;inset:0;z-index:60"><div class="savebox" style="position:absolute" role="dialog" aria-modal="true" aria-label="Save your design">' + x +
     '<h3>Save your design</h3>' +
     thumb +
     '<p>Leave your email and we&rsquo;ll keep this design on file. You&rsquo;ll get a link that brings it straight back, on any device.</p>' +
@@ -3850,8 +3871,29 @@ function placeSaveBox(){
     top  = b.bottom + GAP;
     if(top + h + M > vh) top = b.top - GAP - h;      /* no room below — go above */
   }
-  box.style.left = Math.round(Math.max(M, Math.min(left, vw - w - M))) + 'px';
-  box.style.top  = Math.round(Math.max(M, Math.min(top,  vh - h - M))) + 'px';
+  left = Math.max(M, Math.min(left, vw - w - M));
+  top  = Math.max(M, Math.min(top,  vh - h - M));
+
+  /* PLACE, THEN CORRECT.
+     left/top above are viewport coordinates, because that is what
+     getBoundingClientRect() returns. What the box's own offsets are measured
+     FROM is its containing block, and that is not reliably the viewport: an
+     ancestor carrying a transform, filter or `contain` becomes the containing
+     block even for position:fixed descendants. Trying to derive the offset
+     analytically got this wrong on the live page — the panel was told
+     top:264px and painted at -50px.
+
+     So do not derive it. Set the value, measure where the box actually landed,
+     and shift by the difference. Two reflows, and correct whatever the
+     containing block turns out to be. */
+  box.style.left = Math.round(left) + 'px';
+  box.style.top  = Math.round(top)  + 'px';
+  var got = box.getBoundingClientRect();
+  var dx = left - got.left, dy = top - got.top;
+  if(Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5){
+    box.style.left = Math.round(left + dx) + 'px';
+    box.style.top  = Math.round(top  + dy) + 'px';
+  }
 }
 
 function saveGo(){
@@ -4341,6 +4383,18 @@ function ensureFrame(){
   i.src = colorFront(c);
 }
 
+/* The page reserves space at the bottom so the sticky price bar never covers
+   the last line of content. That reserve was a hardcoded 92px while the bar is
+   84px on a wide screen and 98px on a phone — too much on one, too little on
+   the other, and the leftover reads as a dead band. Measure it instead. */
+function fitBarSpace(){
+  if(!root) return;
+  var bar = root.querySelector('.mbar');
+  if(!bar){ root.style.paddingBottom = ''; return; }
+  var h = Math.round(bar.getBoundingClientRect().height);
+  if(h > 0) root.style.paddingBottom = (h + 6) + 'px';
+}
+
 function wire(){
   root.querySelectorAll('[data-color]').forEach(function(b){
     b.onclick = function(){
@@ -4447,6 +4501,11 @@ function wire(){
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape' && S.saveOpen){ S.saveOpen = false; render(); }
     });
+  }
+  fitBarSpace();
+  if(!window.__aliveBarFit){
+    window.__aliveBarFit = true;
+    window.addEventListener('resize', function(){ fitBarSpace(); if(S.saveOpen) placeSaveBox(); });
   }
   var sp = root.querySelector('.savebox');
   if(sp){ sp.onclick = function(e){ e.stopPropagation(); }; placeSaveBox(); fillSaveThumb(); }
