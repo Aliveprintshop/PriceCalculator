@@ -1123,20 +1123,21 @@
 /* ---- email capture (the mockup they can show someone) --------------------
    Deliberately quiet: a dashed card, not a banner. It sits beside Continue,
    never in front of it. Anyone ready to buy should be able to ignore it. */
-#alive-flow .ecap{margin:14px 0 0;border:1px dashed var(--line,#d8dee6);border-radius:12px;padding:13px 14px;background:#fbfcfe}
-#alive-flow .ecap.sent{border-style:solid;border-color:#bfe3cb;background:#f2fbf5}
-#alive-flow .ecap h4{margin:0 0 3px;font-size:14px;font-weight:700;letter-spacing:-.01em}
-#alive-flow .ecap p{margin:0 0 9px;font-size:12.5px;color:var(--muted,#6a7280);line-height:1.45}
-#alive-flow .ecap .row{display:flex;gap:7px;flex-wrap:wrap}
-#alive-flow .ecap input{flex:1 1 180px;min-width:0;padding:10px 11px;border:1px solid var(--line,#d8dee6);border-radius:9px;font:inherit;font-size:15px;background:#fff}
-#alive-flow .ecap input:focus{outline:none;border-color:var(--blue,#1b6cce);box-shadow:0 0 0 3px rgba(27,108,206,.14)}
-#alive-flow .ecap button{flex:0 0 auto;white-space:nowrap;width:auto;padding:10px 15px;border:0;border-radius:9px;background:var(--ink,#0f1117);color:#fff;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
-#alive-flow .ecap button:disabled{opacity:.55;cursor:default}
-#alive-flow .ecap .fine{margin:8px 0 0;font-size:11.5px;color:var(--muted,#6a7280)}
-#alive-flow .ecap .ok{display:flex;gap:9px;align-items:flex-start}
-#alive-flow .ecap .ok svg{flex:none;margin-top:1px}
-#alive-flow .ecap .bad{margin:8px 0 0;font-size:12.5px;color:#c2384a;font-weight:600}
-@media(max-width:560px){#alive-flow .ecap button{flex:1 1 100%}}
+#alive-flow .proofq{margin:12px 0 0;display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line,#d8dee6);border-radius:11px;background:#fbfcfe}
+#alive-flow .proofq label{font-size:13.5px;font-weight:650;color:var(--ink,#0f1117);white-space:nowrap}
+#alive-flow .proofq input{flex:1 1 165px;min-width:0;padding:9px 11px;border:1px solid var(--line,#d8dee6);border-radius:9px;font:inherit;font-size:15px;background:#fff}
+#alive-flow .proofq input:focus{outline:none;border-color:var(--blue,#1b6cce);box-shadow:0 0 0 3px rgba(27,108,206,.14)}
+#alive-flow .proofq .st{font-size:12.5px;color:var(--muted,#6a7280);white-space:nowrap}
+#alive-flow .proofq .st.ok{color:#16a34a;font-weight:650}
+#alive-flow .proofq .st.no{color:#c2384a;font-weight:600}
+#alive-flow .proofq .why{flex:1 1 100%;margin:0;font-size:11.5px;color:var(--muted,#6a7280);line-height:1.4}
+#alive-flow .proofq.need{border-color:#e0a9b3;background:#fdf6f7;box-shadow:0 0 0 3px rgba(194,56,74,.08)}
+#alive-flow .proofd{margin:11px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted,#6a7280)}
+#alive-flow .proofd svg{flex:none}
+#alive-flow .proofd b{color:var(--ink,#0f1117);font-weight:650}
+#alive-flow .proofd button{background:none;border:0;padding:0;width:auto;font:inherit;font-size:12.5px;color:var(--blue,#1b6cce);text-decoration:underline;cursor:pointer}
+#alive-flow .proofd input{flex:1 1 100%;min-width:0;margin-top:2px;padding:7px 9px;border:1px solid var(--line,#d8dee6);border-radius:8px;font:inherit;font-size:12.5px;background:#fff;color:var(--ink,#0f1117)}
+@media(max-width:560px){#alive-flow .proofq label{flex:1 1 100%}}
 </style>
 </head>
 <body>
@@ -2640,7 +2641,7 @@ var S = {
   mockups:{},
   /* "email me this mockup": the typed address survives a redraw, and the card
      switches to a thank-you once it has been sent. */
-  capEmail:'', capState:'idle', capErr:'', draftToken:'',
+  capEmail:'', capState:'idle', capErr:'', draftToken:'', capSent:'', capShowLink:false, capT:null,
   /* set once a customer taps Continue while under the minimum, so the
      minimum box stays put with the grid still empty (never shown on arrival) */
   minTried:false,
@@ -3433,47 +3434,59 @@ function modePicker(){
    for anything extra. This card exists only for the people who are not ready,
    and the moment it gets in a buyer's way it stops earning its place. */
 
-function capReady(){
-  /* Nothing to email until there is a design on the garment. */
-  return S.mode !== 'later' && artReady() && layersFor('front').concat(layersFor('back')).length > 0;
+/* Does this design carry artwork the customer actually handed us? That is the
+   only case that needs an address: "send my design later" has no file to put a
+   name on and no proof to send yet. */
+function proofNeeded(){
+  if(S.mode === 'later') return false;
+  return S.locs.some(function(k){ var d = S.art[k]; return !!(d && (d.src || d.file || d.url)); });
+}
+function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim()); }
+function proofDone(){ return S.capState === 'sent' && emailOk(S.capEmail); }
+
+/* Write the saving/saved state straight into the status span instead of
+   re-rendering. A render() mid-typing would blow away the focus and the caret,
+   which is the exact thing that makes an inline field feel broken. */
+function capStatus(txt, cls){
+  var el = document.getElementById('capst');
+  if(!el) return;
+  el.textContent = txt || '';
+  el.className = 'st' + (cls ? ' ' + cls : '');
 }
 
 function capCard(){
-  if(!capReady()) return '';
+  if(!proofNeeded()) return '';
 
-  /* WHAT THIS PROMISES IS WHAT IT DOES.
-     There is no email being sent — the GHL sequence is on hold and no provider
-     is wired. So the card offers the one thing we can actually deliver: the
-     design kept on file, and the link to it handed over on the spot. An earlier
-     draft of this card said "we'll email you this mockup", which with nothing
-     sending would have been a straight lie to the customer. */
-  if(S.capState === 'sent'){
-    var link = S.resumeUrl || '';
-    return '<div class="ecap sent"><div class="ok">' +
-      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-      '<div style="flex:1;min-width:0"><h4>Saved</h4>' +
-      '<p style="margin:0 0 7px">This design is on file under ' + esc(S.capEmail) + '. ' +
-      'Keep the link — it brings everything back exactly as it is now.</p>' +
-      (link
-        ? '<div class="row"><input id="capurl" readonly value="' + esc(link) + '" aria-label="Link back to your design" onclick="this.select()">' +
-          '<button type="button" data-capcopy="1">' + (S.capCopied ? 'Copied' : 'Copy') + '</button></div>'
+  /* ASKED ONCE, WHERE IT COSTS NOTHING.
+     The file is uploading and the mockup is drawing — a second or two the
+     customer is already spending watching the shirt appear. So: one line, one
+     field, no button. The design is claimed the moment the address is valid,
+     which means there is no "save" step to explain AND someone who wanders off
+     mid-session still arrives in the artwork dashboard with a name on them.
+
+     It is framed as the proof because that is what it is for. Every customer
+     expects a proof before we print; asking where to send it is part of the
+     job, not a favour they are doing us. The earlier version of this sold the
+     idea with a heading, a paragraph and fine print — all of which existed
+     only because it was pitched as an optional extra. */
+  if(proofDone()){
+    return '<div class="proofd">' +
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+      '<span>Proof goes to <b>' + esc(S.capEmail) + '</b></span>' +
+      '<button type="button" data-capedit="1">Change</button>' +
+      (S.resumeUrl ? '<button type="button" data-caplink="1">' + (S.capShowLink ? 'Hide link' : 'Get my link') + '</button>' : '') +
+      (S.capShowLink && S.resumeUrl
+        ? '<input id="capurl" readonly value="' + esc(S.resumeUrl) + '" aria-label="Link back to your design" onclick="this.select()">'
         : '') +
-      '</div></div></div>';
+    '</div>';
   }
 
-  return '<div class="ecap">' +
-    '<h4>Want to come back to this?</h4>' +
-    '<p>Leave your email and we&rsquo;ll keep this design on file. You&rsquo;ll get a link ' +
-    'that brings it straight back &mdash; useful if someone else has to sign off before you order.</p>' +
-    '<div class="row">' +
-      '<input type="email" id="capmail" placeholder="your@email.com" autocomplete="email" ' +
-        'inputmode="email" value="' + esc(S.capEmail) + '" aria-label="Your email address">' +
-      '<button type="button" data-cap="1"' + (S.capState === 'sending' ? ' disabled' : '') + '>' +
-        (S.capState === 'sending' ? 'Saving…' : 'Save my design') + '</button>' +
-    '</div>' +
-    (S.capErr ? '<div class="bad">' + esc(S.capErr) + '</div>' : '') +
-    '<p class="fine">We keep your design so we can pick it up with you, and we may ' +
-    'email you about this one. Nothing else.</p>' +
+  return '<div class="proofq' + (S.nudge ? ' need' : '') + '">' +
+    '<label for="capmail">Where should we send your proof?</label>' +
+    '<input type="email" id="capmail" placeholder="your@email.com" autocomplete="email" ' +
+      'inputmode="email" value="' + esc(S.capEmail) + '" aria-label="Your email address">' +
+    '<span class="st" id="capst"></span>' +
+    '<p class="why">We proof every job before it prints, and we keep this design on file so you can pick it back up.</p>' +
   '</div>';
 }
 
@@ -3500,34 +3513,54 @@ function designSnapshot(){
    upload belongs to. First write wins there, so re-saving never relabels a file
    that already belongs to someone. */
 function claimArtwork(email){
-  var keys = [];
-  S.locs.forEach(function(k){ var d = S.art && S.art[k]; if(d && d.url) keys.push(d.url); });
-  if(S.mockups){ ['front','back'].forEach(function(sd){ if(S.mockups[sd]) keys.push(S.mockups[sd]); }); }
-  if(!keys.length) return;
-  fetch(CONFIG.artEndpoint.replace(/\/+$/, '') + '/claim', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ email: email, keys: keys })
-  })['catch'](function(){ /* the capture already succeeded; this is a label */ });
+  /* The address is usually typed while the file is still on its way, so wait
+     for whatever uploads are in flight before asking for their keys. Without
+     this the claim fires against an empty list and the dashboard shows the
+     upload with nobody attached — the one failure this whole feature exists
+     to prevent. Called again later for the mockups; first write wins on the
+     Worker, so claiming twice is free. */
+  var waits = [];
+  S.locs.forEach(function(k){ var d = S.art[k]; if(d && d.upP) waits.push(d.upP['catch'](function(){})); });
+  return Promise.all(waits).then(function(){
+    var keys = [];
+    S.locs.forEach(function(k){ var d = S.art && S.art[k]; if(d && d.url) keys.push(d.url); });
+    if(S.mockups){ ['front','back'].forEach(function(sd){ if(S.mockups[sd]) keys.push(S.mockups[sd]); }); }
+    if(!keys.length) return;
+    return fetch(CONFIG.artEndpoint.replace(/\/+$/, '') + '/claim', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email: email, keys: keys })
+    })['catch'](function(){ /* the label is best-effort; never block the customer */ });
+  });
 }
 
+/* Commits the address. Safe to call repeatedly — a blur, an Enter and the idle
+   timer all land here, and it no-ops once the same address has been saved. */
 function capSend(){
   var el = document.getElementById('capmail');
   var email = ((el && el.value) || S.capEmail || '').trim();
   S.capEmail = email;
 
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    S.capErr = 'That email does not look right.';
-    render();
-    var f = document.getElementById('capmail'); if(f) f.focus();
+  if(!emailOk(email)){
+    capStatus(email ? 'Check that address' : '', email ? 'no' : '');
     return;
   }
+  if(S.capState === 'sending') return;
+  if(S.capState === 'sent' && email === S.capSent) return;
 
-  S.capErr = ''; S.capState = 'sending'; render();
+  S.capState = 'sending';
+  capStatus('Saving\u2026', '');
 
-  /* The mockup is the whole point of the email, so wait for it — but not for
-     ever. If the composite cannot be made we still save the draft, because an
-     email with a resume link beats no email at all. */
+  /* CLAIM FIRST, AND ON ITS OWN.
+     Putting the name on the artwork is the thing that matters, and it must not
+     wait on the mockup composite, which can take seconds and can fail outright.
+     A customer who types their address and then closes the tab still shows up
+     in the dashboard attached to their files. */
+  try{ claimArtwork(email); }catch(e){}
+  try{ localStorage.setItem('alive_email', email); }catch(e){}
+
+  /* The draft is what the resume link points at, so it does want the mockup —
+     but not for ever. */
   var wait = Promise.resolve(null);
   try{ wait = saveAllMockups() || Promise.resolve(null); }catch(e){}
   var capped = Promise.race([
@@ -3536,6 +3569,9 @@ function capSend(){
   ]);
 
   capped.then(function(){
+    /* Second pass, now that the mockups exist and have keys of their own. */
+    try{ claimArtwork(email); }catch(e){}
+
     var first = null;
     S.locs.forEach(function(k){ if(!first && S.art[k] && S.art[k].url) first = S.art[k].url; });
     var c = S.colors[S.color] || {};
@@ -3565,23 +3601,22 @@ function capSend(){
   }).then(function(j){
     S.draftToken = (j && j.token) || '';
     S.resumeUrl = (j && j.resume_url) || '';
-    S.capState = 'sent';
-    /* Tell the artwork Worker whose design this is, so staff see the address
-       next to the upload in the artwork dashboard. Separate from the draft on
-       purpose: the draft is the design, this is just the label on the files.
-       Fire and forget — a failed claim must never cost us the capture. */
-    try{ claimArtwork(email); }catch(e){}
-    /* Remembered so checkout can prefill it. The ask then SAVES a returning
-       customer a step instead of costing them one. */
-    try{ localStorage.setItem('alive_email', email); }catch(e){}
+    capDone(email);
     try{ track('generate_lead', {currency:'USD', value:+((unitNow() || 0) * (S.qty || S.est || 0)).toFixed(2)}); }catch(e){}
-    render();
   })['catch'](function(e){
-    S.capState = 'idle';
-    S.capErr = 'We could not send that just now. Try again, or call ' + CONFIG.phone + '.';
+    /* The draft failed, so there is no resume link to offer. The address is
+       already claimed against the artwork, which is the part that matters, so
+       this is NOT shown to the customer as a failure — there is nothing for
+       them to retry and nothing they asked for that did not happen. */
     if(window.console) console.error('[alive draft]', e);
-    render();
+    S.resumeUrl = '';
+    capDone(email);
   });
+}
+
+function capDone(email){
+  S.capState = 'sent'; S.capSent = email; S.capErr = ''; S.nudge = false;
+  render();
 }
 
 /* ---- resuming from the link in the email -------------------------------
@@ -3762,7 +3797,12 @@ function upload(k, blob, filename){
       .catch(function(e){ if(n >= 3) throw e; return new Promise(function(res){ setTimeout(res, n * 1500); }).then(function(){ return attempt(n + 1); }); });
   }
   d0.upP = attempt(1)
-    .then(function(j){ d0.url = j.url; d0.key = j.key || ''; d0.uploadFailed = false; if(S.art[k] === d0 && !S.saving) render(); })
+    .then(function(j){ d0.url = j.url; d0.key = j.key || ''; d0.uploadFailed = false;
+      /* Someone who has ordered before already told us their address, so never
+         ask twice: claim this upload against it silently and the field is
+         simply never shown. */
+      if(emailOk(S.capEmail) && S.capState === 'idle'){ try{ capSend(); }catch(e){} }
+      if(S.art[k] === d0 && !S.saving) render(); })
     .catch(function(e){ if(window.console) console.error('[Alive artwork] upload failed', e);
       d0.uploadFailed = true; if(S.art[k] === d0 && !S.saving) render(); });
   return d0.upP;
@@ -4158,30 +4198,28 @@ function wire(){
      and it is NOT re-rendered on every keystroke, which would steal focus. */
   var cm = document.getElementById('capmail');
   if(cm){
-    cm.oninput = function(){ S.capEmail = cm.value; if(S.capErr){ S.capErr = ''; } };
-    cm.onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); capSend(); } };
+    /* No save button: typing IS the action. The commit happens on blur, on
+       Enter, or after a pause long enough that they have clearly finished —
+       1.2s, so "a@b.co" on the way to "a@b.com" does not save early. The value
+       lives on S so a redraw (a colour tap, an upload finishing) cannot wipe
+       what someone is halfway through typing. */
+    cm.oninput = function(){
+      S.capEmail = cm.value;
+      clearTimeout(S.capT);
+      capStatus('', '');
+      if(emailOk(cm.value)) S.capT = setTimeout(capSend, 1200);
+    };
+    cm.onblur = function(){ clearTimeout(S.capT); capSend(); };
+    cm.onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); cm.blur(); } };
+    if(S.nudge) cm.focus();
   }
-  /* Copy the resume link. Clipboard API needs a secure context and can be
-     refused, so fall back to selecting the field — the input is readonly and
-     already selects on click, which works everywhere. */
-  var cpy = root.querySelector('[data-capcopy]');
-  if(cpy) cpy.onclick = function(){
-    var f = document.getElementById('capurl');
-    if(!f) return;
-    f.select();
-    var done = function(){ S.capCopied = true; render(); };
-    try{
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(f.value).then(done, function(){ done(); });
-        return;
-      }
-      document.execCommand('copy');
-    }catch(e){}
-    done();
+  var ce = root.querySelector('[data-capedit]');
+  if(ce) ce.onclick = function(){
+    S.capState = 'idle'; S.capShowLink = false; render();
+    var f = document.getElementById('capmail'); if(f){ f.focus(); f.select(); }
   };
-
-  var cb = root.querySelector('[data-cap]');
-  if(cb) cb.onclick = function(){ capSend(); };
+  var cl = root.querySelector('[data-caplink]');
+  if(cl) cl.onclick = function(){ S.capShowLink = !S.capShowLink; render(); };
   root.querySelectorAll('[data-phase]').forEach(function(b){ b.onclick = function(){ go(b.dataset.phase, 'foot'); }; });
   root.querySelectorAll('[data-goto]').forEach(function(b){ b.onclick = function(){ go(b.dataset.goto, b.dataset.goto === 'sizes' ? 'foot' : null); }; });
   root.querySelectorAll('[data-size]').forEach(function(inp){
@@ -4255,6 +4293,15 @@ function wire(){
   var mc = root.querySelector('[data-mcta]');
   if(mc) mc.onclick = function(){
     if(S.phase === 'artwork'){
+      /* An uploaded design without an address is the thing we are trying to
+         stop existing, so this is where it is stopped: after the mockup, with
+         the field on screen and already focused. Never at upload time — that
+         asks before anything has been delivered, and loses the upload. */
+      if(artReady() && proofNeeded() && !proofDone()){
+        S.nudge = true; render();
+        scrollToEl(root.querySelector('.proofq'));
+        return;
+      }
       if(artReady()) go('sizes', 'foot');
       else { var pk = S.locs.filter(function(k){ return S.art[k]; }).filter(inkPending)[0];
         if(pk && S.locs.every(function(k){ return !!S.art[k]; })){ inkPrompt(pk); return; }
