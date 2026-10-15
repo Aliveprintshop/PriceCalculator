@@ -4261,9 +4261,17 @@ function saveAllMockups(){
   if(!sides.length) return null;
   return Promise.all(sides.map(saveMockup)).then(function(r){ return r.filter(Boolean); });
 }
+/* The breakpoint the two-column CSS uses. Kept in JS as well because the two
+   layouts are different DOM, not just different CSS — colours move between
+   columns, which no amount of `order` can do. */
+var TWO_COL_PX = 980;
+var _twoColNow = null;
+
 function render(){
   ensurePreviews();
   var c = S.colors[S.color];
+  var twoCol = window.innerWidth >= TWO_COL_PX;
+  _twoColNow = twoCol;
   var html = '';
   if(S.phase === 'artwork'){
     /* STEP 1 — DESIGN: garment color, decoration, design (or "send later"). */
@@ -4271,17 +4279,22 @@ function render(){
       '<div class="wrap"><a class="allprod" href="' + esc(productsUrl()) + '" data-allprod="1">&larr; All products</a>' +
       '<div class="shell solo dual">' +
         /* Photo, then Front/Back, the gallery right under it, then garment colors. */
-        /* ORDER, AND WHY — 90% of this traffic is a phone, where the two
-           columns stack and this reads top to bottom.
-             garment colours moved INTO the product card, directly under the
-             gallery, because choosing the shirt belongs with looking at it;
-             Print moved to the BOTTOM, because the method and location are
-             already correct for almost everyone and it was sitting between the
-             customer and the one thing they came to do. */
-        '<div class="colL">' + productCard(overlay(), artColorFoot(), detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
+        /* TWO ORDERS, ONE RENDER.
+           Phone (one column, 90% of traffic): garment colours sit INSIDE the
+           product card under the gallery, because choosing the shirt belongs
+           with looking at it, and Print drops to the BOTTOM — it is already
+           correct for almost everyone and was standing between the customer
+           and the thing they came to do.
+           Desktop (two columns, >=980px — the same breakpoint the CSS uses):
+           that reshuffle buys nothing, because the right column is beside the
+           photo rather than below it. So desktop keeps the original: Print,
+           then colours, then the design. */
+        '<div class="colL">' + productCard(overlay(), twoCol ? '' : artColorFoot(), detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
+          (twoCol ? optsBlock() : '') +
+          (twoCol && artColorFoot() ? '<div class="pcard gcard"><div class="pcard-foot">' + artColorFoot() + '</div></div>' : '') +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
           '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
-          optsBlock() +
+          (twoCol ? '' : optsBlock()) +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
           '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
         '</div>' +
@@ -4505,7 +4518,12 @@ function wire(){
   fitBarSpace();
   if(!window.__aliveBarFit){
     window.__aliveBarFit = true;
-    window.addEventListener('resize', function(){ fitBarSpace(); if(S.saveOpen) placeSaveBox(); });
+    window.addEventListener('resize', function(){
+      /* Crossing the breakpoint changes which column things live in, so the
+         markup has to be rebuilt — a CSS reflow cannot move them. */
+      if((window.innerWidth >= TWO_COL_PX) !== _twoColNow){ render(); return; }
+      fitBarSpace(); if(S.saveOpen) placeSaveBox();
+    });
   }
   var sp = root.querySelector('.savebox');
   if(sp){ sp.onclick = function(e){ e.stopPropagation(); }; placeSaveBox(); fillSaveThumb(); }
