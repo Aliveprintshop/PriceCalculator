@@ -609,7 +609,6 @@
 #alive-flow .hint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11.5px;
   color:var(--text3);pointer-events:none;}
 @media(max-width:400px){#alive-flow .tools button{width:54px;}}
-}
 /* ---- save-design dialog ------------------------------------------------
    Opened from the Save tool beside Center/Bigger/Smaller. It is the explicit,
    findable way to keep a design — the inline proof line still does the capture
@@ -1175,6 +1174,7 @@
   #alive-flow .modes{gap:8px;}
   #alive-flow .pcard{padding-bottom:10px;}
   #alive-flow .pcard-foot{padding-top:10px;}
+}
 
 /* ---- details accordion inset ------------------------------------------
    `.detacc` was written as a full-bleed divider (margin:16px -16px 0, no
@@ -1197,6 +1197,22 @@
   #alive-flow .mbar .k{font-size:9px;}
   #alive-flow .mbar .s{font-size:10.5px;white-space:nowrap;line-height:1.3;}
 }
+/* ---- gallery clips -----------------------------------------------------
+   Vyper's treatment: the clip just plays, with one control. No scrub bar, no
+   volume, no fullscreen — there is no audio track and nothing to scrub to. */
+#alive-flow .stage .vidbtn{position:absolute;top:10px;right:10px;z-index:4;width:38px;height:38px;
+  border:0;border-radius:50%;background:rgba(15,17,23,.55);color:#fff;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+#alive-flow .stage .vidbtn:hover{background:rgba(15,17,23,.72);}
+#alive-flow .stage .vidbtn svg{width:17px;height:17px;display:block;}
+/* The tile says it is a clip before anyone taps it. */
+#alive-flow .gtile figure{position:relative;}
+#alive-flow .gtile .vbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:26px;height:26px;border-radius:50%;background:rgba(15,17,23,.56);color:#fff;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;}
+#alive-flow .gtile .vbadge svg{width:13px;height:13px;display:block;margin-left:1px;}
+#alive-flow .gtile.vid figure{background:#000;}
+#alive-flow .gtile.vid img{object-fit:cover;}
 </style>
 </head>
 <body>
@@ -2557,6 +2573,14 @@ var CONFIG = {
   /* Order matters: tee, hoodie, hat, then the rest. Most customers arrive for
      a t-shirt, so the first tile should be the thing they came for. */
   media: [
+    /* A `video` makes the item a clip: `img` is then its poster frame, used for
+       the strip tile and as the first paint while the file loads. The files
+       carry NO audio track — not muted, absent — which is both smaller and the
+       only way autoplay is reliably permitted. */
+    {img:'media/work-real-people.jpg',      video:'media/work-real-people.mp4',      alt:'Real people, real care'},
+    {img:'media/work-pantone-matching.jpg', video:'media/work-pantone-matching.mp4', alt:'Pantone color matching'},
+    {img:'media/work-design-review.jpg',    video:'media/work-design-review.mp4',    alt:'Professional design review'},
+    {img:'media/work-ink-cracking.jpg',     video:'media/work-ink-cracking.mp4',     alt:'Ink that will not crack'},
     {img:'media/work-hailmary-tee.jpg',  alt:'Screen printed tee, two colors on black'},
     {img:'media/work-bodie-hoodie.jpg',  alt:'Screen printed hoodie, white on charcoal'},
     {img:'media/work-social-caps.jpg',   alt:'Embroidered caps in camo and natural'},
@@ -2701,6 +2725,9 @@ var S = {
   /* "email me this mockup": the typed address survives a redraw, and the card
      switches to a thank-you once it has been sent. */
   capEmail:'', capState:'idle', capErr:'', draftToken:'', capSent:'', capShowLink:false, capT:null, saveOpen:false, saveErr:'',
+  /* gallery clips: paused by the viewer, and where they were up to, so a
+     redraw (a colour tap) does not restart the video from zero */
+  vidPaused:false, vidT:0, vidI:null,
   /* set once a customer taps Continue while under the minimum, so the
      minimum box stays put with the grid still empty (never shown on arrival) */
   minTried:false,
@@ -2855,9 +2882,42 @@ function galleryItems(c){
   var f = colorFront(c), b = colorBack(c);
   if(f) out.push({kind:'view', side:'front', img:f, alt:'Front'});
   if(b) out.push({kind:'view', side:'back', img:b, alt:'Back'});
-  CONFIG.media.forEach(function(m, i){ out.push({kind:'media', i:i, img:m.img, alt:m.alt}); });
+  CONFIG.media.forEach(function(m, i){ out.push({kind:'media', i:i, img:m.img, alt:m.alt, video:m.video || ''}); });
   return out;
 }
+/* Someone who has asked their system not to animate things gets the poster and
+   a play button instead of motion they did not choose. */
+function prefersStill(){
+  try{ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  catch(e){ return false; }
+}
+function currentClip(){
+  var m = (S.gal != null) ? CONFIG.media[S.gal] : null;
+  return (m && m.video) ? m : null;
+}
+/* The hero: a photo, or the clip playing the way Vyper does it — muted, looped,
+   inline, no browser chrome, one control. */
+function heroMedia(c, p){
+  var m = currentClip();
+  if(!m) return '<img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">';
+  var still = S.vidPaused || prefersStill();
+  /* A media fragment carries the resume point in the URL itself, so the browser
+     starts there. Waiting for loadedmetadata and then seeking is a race the
+     redraw usually wins — it played from zero while the seek was still queued. */
+  var frag = (S.vidI === S.gal && S.vidT > 0.3) ? ('#t=' + S.vidT.toFixed(2)) : '';
+  return '<video id="f-hero-vid" src="' + esc(m.video) + frag + '" poster="' + esc(m.img) + '" ' +
+    (still ? '' : 'autoplay ') + 'muted loop playsinline preload="metadata" ' +
+    'aria-label="' + esc(m.alt) + '"></video>';
+}
+var PLAY_SVG  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
+var PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.4" height="14" rx="1"/><rect x="13.6" y="5" width="3.4" height="14" rx="1"/></svg>';
+function heroVidBtn(){
+  if(!currentClip()) return '';
+  var still = S.vidPaused || prefersStill();
+  return '<button type="button" class="vidbtn" data-vidtoggle="1" aria-label="' +
+    (still ? 'Play' : 'Pause') + '">' + (still ? PLAY_SVG : PAUSE_SVG) + '</button>';
+}
+
 function heroImage(c){
   if(S.gal != null) return CONFIG.media[S.gal].img;
   var b = colorBack(c);
@@ -2867,8 +2927,9 @@ function mediaStrip(c){
   var tiles = galleryItems(c).map(function(m){
     var key = m.kind === 'view' ? 'view:' + m.side : 'media:' + m.i;
     var on = m.kind === 'view' ? (S.gal == null && S.side === m.side) : S.gal === m.i;
-    return '<button type="button" class="gtile' + (on ? ' on' : '') + '" data-gal="' + key + '" aria-label="' + esc(m.alt) + '">' +
-      '<figure><img src="' + esc(m.img) + '" alt="' + esc(m.alt) + '" loading="lazy"></figure></button>';
+    return '<button type="button" class="gtile' + (on ? ' on' : '') + (m.video ? ' vid' : '') + '" data-gal="' + key + '" aria-label="' + esc(m.alt) + (m.video ? ' (video)' : '') + '">' +
+      '<figure><img src="' + esc(m.img) + '" alt="' + esc(m.alt) + '" loading="lazy">' +
+      (m.video ? '<i class="vbadge">' + PLAY_SVG + '</i>' : '') + '</figure></button>';
   }).join('');
   /* The strip scrolls, and nothing on screen says so — a customer sees five
      tiles and assumes that is all there is. The arrow is the affordance;
@@ -2921,6 +2982,8 @@ function wireStrip(){
   root.querySelectorAll('[data-gal]').forEach(function(b){
     b.onclick = function(){ var p = b.dataset.gal.split(':');
       if(p[0] === 'view'){ S.gal = null; S.side = p[1]; } else S.gal = +p[1];
+      /* a different tile is a different clip: start it from the top, playing */
+      S.vidT = 0; S.vidPaused = false;
       render(); };
   });
 }
@@ -3050,8 +3113,8 @@ function productCard(overlayHtml, foot, rail, strip){
        between the garment and a square work photo never resizes the page. */
     '<div class="stagebox" id="f-stagebox"' + (S.stageH ? ' style="min-height:' + S.stageH + 'px"' : '') + '>' +
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
-      '<div class="stage-art" id="f-stage"' + artStyle + '><img src="' + esc(heroImage(c)) + '" alt="' + esc(cleanName(p)) + '">' +
-      (editor && S.gal == null ? (overlayHtml || '') : '') + '</div></div></div>' +
+      '<div class="stage-art" id="f-stage"' + artStyle + '>' + heroMedia(c, p) +
+      (editor && S.gal == null ? (overlayHtml || '') : '') + '</div>' + heroVidBtn() + '</div></div>' +
     sides + (strip || '') + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
   '</div>';
 }
@@ -4515,6 +4578,56 @@ function wire(){
       if(e.key === 'Escape' && S.saveOpen){ S.saveOpen = false; render(); }
     });
   }
+  /* KEEPING A CLIP'S PLACE ACROSS A REDRAW.
+     render() rebuilds the markup, so the <video> element is new every time and
+     would restart from zero — tap a garment colour while a clip is playing and
+     it jumps back to the first frame. Remember where it was and put it back. */
+  var hv = document.getElementById('f-hero-vid');
+  if(hv){
+    /* Seeking needs metadata. On a freshly created element readyState is 0 and
+       setting currentTime is dropped, so wait for it when it is not ready. */
+    var want = (S.vidI === S.gal) ? S.vidT : 0;
+    S.vidI = S.gal;
+    var seek = function(){ if(want > 0){ try{ hv.currentTime = want; }catch(e){} } };
+    if(hv.readyState >= 1) seek(); else hv.onloadedmetadata = seek;
+    hv.ontimeupdate = function(){ S.vidT = hv.currentTime || 0; };
+    if(!S.vidPaused && !prefersStill()){
+      var pr = hv.play();
+      if(pr && pr['catch']) pr['catch'](function(){});
+      /* DO NOT TRUST THE PROMISE. Browsers disagree on whether a blocked
+         autoplay rejects, which error name it uses, or whether it simply does
+         nothing at all — the last of those is what this build does, so a
+         catch-only fallback never fired and left a frozen first frame with a
+         Pause button on it. Ask the only question that has one answer
+         everywhere: a moment later, is it actually moving? `paused` goes false
+         the instant play() is accepted, buffering or not, so a still-true
+         value here means it genuinely did not start. */
+      setTimeout(function(){
+        var v = document.getElementById('f-hero-vid');
+        if(v && v.paused && !S.vidPaused){ S.vidPaused = true; render(); }
+      }, 800);
+    }
+  }
+  var vb = root.querySelector('[data-vidtoggle]');
+  if(vb) vb.onclick = function(){
+    /* Act on the element that is already there. Going through render() would
+       throw the <video> away and build a new one, which reloads the file and
+       loses the position — a pause button that stutters the thing it is
+       pausing. Only the icon needs to change. */
+    var v = document.getElementById('f-hero-vid');
+    if(!v) return;
+    /* Decide from what the video is DOING, not from our flag. The control also
+       shows Play when autoplay was declined or the viewer asked for reduced
+       motion — in those cases the flag is still false, so flipping it would
+       "pause" something that was never running. */
+    var willPlay = v.paused;
+    S.vidPaused = !willPlay;
+    if(willPlay){ var p2 = v.play(); if(p2 && p2['catch']) p2['catch'](function(){}); }
+    else v.pause();
+    vb.innerHTML = S.vidPaused ? PLAY_SVG : PAUSE_SVG;
+    vb.setAttribute('aria-label', S.vidPaused ? 'Play' : 'Pause');
+  };
+
   fitBarSpace();
   if(!window.__aliveBarFit){
     window.__aliveBarFit = true;
