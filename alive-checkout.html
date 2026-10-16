@@ -960,6 +960,18 @@ root.AliveEngine={
       shipping: shippingCost,
       total: +(subtotal - discount + tax + shippingCost).toFixed(2),
       promo_code: ctx.promoCode || null,
+      /* The cart's own reference, stable across every trip to the payment
+         page. Without it the Worker's only duplicate guard is the Stripe
+         session id — and backing out of payment and checking out again mints
+         a NEW session, so that guard could never fire on the case that
+         actually happens. On 16 Oct 2026 Canyon Springs came through twice,
+         once standard and once with Super Rush, and landed as two orders. */
+      order_ref: ctx.orderRef || null,
+      /* What the 7-day (x1.15) or 5-day (x1.25) multiplier added. Rush has
+         never been a line item — it is folded into every unit price — so the
+         shop could see "Super Rush" on an order but never how much of the
+         total was rush. */
+      rush_fee: +(+(ctx.rushFee || 0)).toFixed(2),
       stripe_session_id: ctx.stripeSessionId,
       customer_note: f.notes || null,
       items: items,
@@ -1494,10 +1506,30 @@ function missingArtwork(){
   S.items.forEach(function(it){ (it.artworkFiles || []).forEach(function(f, i){ if(f && f.pending && !f.url) out.push({id:it.id, idx:i, item:it.productName || it.style, location:f.location || 'artwork', name:f.name || ''}); }); });
   return out;
 }
+/* The cart's reference. One per cart, NOT one per checkout attempt — it is
+   what lets the Worker update the same order when somebody backs out of
+   payment and comes round again.
+
+   localStorage, not sessionStorage: a customer who closes the tab, thinks it
+   over and comes back is the ordinary abandoned-cart story, and under
+   sessionStorage they would have come back as a second order. It is cleared
+   the moment an order is paid for (see clearOrderRef), so the next order is
+   genuinely a new one.
+
+   Both stores throw in a private window, so every access is wrapped. A
+   browser that will not keep it simply behaves the way everything did before
+   this existed. */
 function orderRef(){
-  var r = null; try{ r = sessionStorage.getItem('alive_order_ref'); }catch(e){}
-  if(!r){ r = 'AP-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase(); try{ sessionStorage.setItem('alive_order_ref', r); }catch(e){} }
+  var r = null; try{ r = localStorage.getItem('alive_order_ref'); }catch(e){}
+  if(!r){ try{ r = sessionStorage.getItem('alive_order_ref'); }catch(e){} }
+  if(!r){ r = 'AP-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase(); }
+  try{ localStorage.setItem('alive_order_ref', r); }catch(e){}
+  try{ sessionStorage.setItem('alive_order_ref', r); }catch(e){}
   return r;
+}
+function clearOrderRef(){
+  try{ localStorage.removeItem('alive_order_ref'); }catch(e){}
+  try{ sessionStorage.removeItem('alive_order_ref'); }catch(e){}
 }
 function missBlock(){
   var miss = missingArtwork(); if(!miss.length) return '';
@@ -1647,7 +1679,7 @@ function paidHere(){
   var id = S.pay && S.pay.id, t = totals();
   if(once('alive_purchase_' + (id || Date.now()))) track('purchase', {transaction_id:id || '', currency:'USD', value:t.grand, shipping:t.ship, items:gaItems()});
   closePay(); clearCart();
-  S.items = []; S.done = {paid:id || true}; render();
+  S.items = []; S.done = {paid:id || true}; clearOrderRef(); render();
 }
 
 /* ------------------------------------------------------------ save / share a cart */
@@ -2164,6 +2196,8 @@ function submit(){
           totals: tt,                                    /* .ship and .off */
           shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
           turnaround: S.rush,                            /* std | rush | super */
+          orderRef: ref,                                 /* one row per cart, not per attempt */
+          rushFee: S.rush === 'std' ? 0 : rushExtra(S.rush),
           discount: tt.off,                              /* the Stripe-level promo */
           promoCode: stripePromo() ? stripePromo().code : '',
           stripeSessionId: j.id
@@ -2199,7 +2233,7 @@ function renderDone(){
     if(!EMBEDDED && /github\.io$/.test(window.location.hostname)){ window.location.replace(CONFIG.pages[FLOW].cart + '?paid=' + encodeURIComponent(qp('paid'))); return; }
     var pend = null; try{ pend = JSON.parse(sessionStorage.getItem('alive_pending_purchase') || 'null'); }catch(e){}
     if(pend && once('alive_purchase_' + qp('paid'))){ pend.transaction_id = qp('paid'); track('purchase', pend); }
-    clearCart(); S.items = []; S.done = {paid:qp('paid')}; render(); return;
+    clearCart(); S.items = []; S.done = {paid:qp('paid')}; clearOrderRef(); render(); return;
   }
   if(qp('canceled')) S.err = 'Payment was cancelled — your order is still here whenever you’re ready.';
   var code = qp('cart');
