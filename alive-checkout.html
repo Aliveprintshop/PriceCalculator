@@ -771,9 +771,18 @@ root.AliveEngine={
 (function (root) {
   'use strict';
 
-  var ORDERS_ENDPOINT = 'https://alive-orders.austin-662.workers.dev/api/orders';
+  var ORDERS_BASE = 'https://alive-orders.austin-662.workers.dev';
+  var ORDERS_ENDPOINT = ORDERS_BASE + '/api/orders';
+  var FAILED_ENDPOINT = ORDERS_BASE + '/api/order-write-failed';
   var STASH_KEY = 'alive_unsent_orders';
   var TIMEOUT_MS = 6000;
+  /* Attempt delays. One six-second try was not enough: a phone on bad signal
+     times out, the payload goes to localStorage, the customer pays on Stripe's
+     page and never returns to this one — so the retry-on-next-load never
+     happens and the order is simply gone. Three tries across ~9 seconds costs
+     a customer on a good connection nothing (the first try wins) and saves the
+     one on a bad connection. */
+  var RETRY_DELAYS_MS = [0, 1200, 3000];
 
   /* ---- map the cart's shape to the orders API ------------------------- */
 
@@ -967,7 +976,7 @@ root.AliveEngine={
     } catch (e) { /* private mode: nothing to do */ }
   }
 
-  function send(payload) {
+  function attempt(payload) {
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = ctrl && setTimeout(function () { ctrl.abort(); }, TIMEOUT_MS);
 
@@ -979,10 +988,73 @@ root.AliveEngine={
     }).then(function (r) {
       if (timer) clearTimeout(timer);
       return r.json().then(function (j) {
-        if (!r.ok) throw new Error(j.error + (j.details ? ': ' + j.details.join('; ') : ''));
+        if (!r.ok) {
+          var e = new Error(j.error + (j.details ? ': ' + j.details.join('; ') : ''));
+          /* 422 is the Worker saying the payload itself is wrong. Sending the
+             identical bytes again cannot change that answer, so retrying only
+             delays the customer's payment. Anything else — a timeout, a dropped
+             connection, a 5xx — is worth another go. */
+          e.permanent = (r.status === 422 || r.status === 400);
+          throw e;
+        }
         return j;
       });
+    }, function (e) {
+      if (timer) clearTimeout(timer);
+      throw e;
     });
+  }
+
+  /* Try, wait, try again. Resolves with the Worker's reply or rejects with the
+     last error. */
+  function send(payload, delays) {
+    var queue = (delays || RETRY_DELAYS_MS).slice();
+
+    function run() {
+      var wait = queue.shift();
+      return new Promise(function (res) { setTimeout(res, wait || 0); })
+        .then(function () { return attempt(payload); })
+        .catch(function (e) {
+          if (e.permanent || !queue.length) throw e;
+          return run();
+        });
+    }
+    return run();
+  }
+
+  /* Last resort, and the one that actually covers the lost-order case: a
+     beacon is handed to the browser, which delivers it on its own schedule
+     and keeps trying AFTER this page is gone. fetch(keepalive) and a plain
+     fetch both die with the navigation to Stripe; sendBeacon does not. The
+     order endpoint takes a normal JSON POST, and a Blob with an explicit type
+     is how sendBeacon sends one without tripping a CORS preflight it cannot
+     answer. */
+  function beacon(url, payload) {
+    try {
+      if (!navigator.sendBeacon) return false;
+      var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      return !!navigator.sendBeacon(url, blob);
+    } catch (e) { return false; }
+  }
+
+  /* Tell the shop the write failed, so it is on the dashboard in seconds
+     rather than only in this customer's console where nobody will ever see
+     it. Never throws, never blocks, never shown to the customer. */
+  function reportFailure(payload, message) {
+    var note = {
+      session_id: payload.stripe_session_id,
+      email: payload.customer_email,
+      name: payload.customer_name,
+      total: payload.total,
+      error: String(message || 'unknown')
+    };
+    if (beacon(FAILED_ENDPOINT, note)) return;
+    try {
+      fetch(FAILED_ENDPOINT, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(note), keepalive: true
+      })['catch'](function () {});
+    } catch (e) {}
   }
 
   /* Retry any order a previous visit could not deliver. Safe to call often —
@@ -1015,9 +1087,27 @@ root.AliveEngine={
       try { console.log('[alive-orders] recorded order #' + j.order_no); } catch (_) {}
       return { ok: true, order_no: j.order_no, due_date: j.due_date };
     }).catch(function (e) {
+      /* Three things happen here, and all three matter, because the next thing
+         this customer does is leave for Stripe's payment page:
+
+           1. the payload is handed to the browser as a beacon, which keeps
+              trying to deliver it after this page is unloaded — the only
+              mechanism that survives the redirect;
+           2. it is stashed, so a customer who DOES come back retries it;
+           3. the shop is told, so the failure is visible today rather than
+              whenever someone phones up asking about their order.
+
+         And behind all of it, the Worker's ten-minute Stripe sweep rebuilds
+         any paid session that still has no order. Four independent chances,
+         because the customer only gets one. */
+      var viaBeacon = beacon(ORDERS_ENDPOINT, payload);
       stash(payload);
-      try { console.error('[alive-orders] write failed, stashed for retry', e); } catch (_) {}
-      return { ok: false, error: e.message };
+      reportFailure(payload, e.message);
+      try {
+        console.error('[alive-orders] write failed' +
+          (viaBeacon ? ', queued as a beacon' : '') + ', stashed for retry', e);
+      } catch (_) {}
+      return { ok: false, error: e.message, beacon: viaBeacon };
     });
   }
 
@@ -1779,12 +1869,240 @@ function buildPayload(){
     orderTotalWithShipping:'$' + (subtotal + ship.cost - spOff).toFixed(2)
   };
 }
+
+/* =====================================================================
+   SAVE A MOCKUP THAT WAS NEVER SAVED
+   ---------------------------------------------------------------------
+   The mockup on screen is a RECIPE, not a file: `it.mock` is the garment
+   photo plus artwork layers with their own cx/cy/w/rot, redrawn live by the
+   browser every time. Turning it into a PNG on the server is a separate
+   operation, and it only ever happened in two places, both on
+   alive-product.html — leaving the Design step, and Add to cart.
+
+   So any route to payment that does not pass back through those produces an
+   order with no mockup. The clearest case, and not a rare one: a customer
+   builds a design, saves or shares the cart, comes back days later, opens
+   checkout and pays. Checkout draws the picture perfectly well from the
+   recipe and writes nothing. Order 700004 (Molly Hanna) is exactly this.
+
+   Checkout already holds the recipe. So it can close the gap itself: render
+   the composite here and upload it, for any line that has a recipe and no
+   saved mockup. The URL goes back on the cart line, where the orders client
+   already looks for it.
+
+   Nothing here may ever block a sale. Every path resolves, failures are
+   swallowed, and the work runs alongside /create-session rather than in
+   front of it.
+   ===================================================================== */
+
+/* Same image proxy the product page uses, so a cross-origin garment photo can
+   be drawn into a canvas without tainting it. */
+/* ------------------------------------------------------- design fingerprint
+   A short, stable id for WHAT THE CUSTOMER SAW: the garment photo, the crop,
+   and where every layer sits on it.
+
+   It goes into the saved mockup's FILENAME, which is the only place it is
+   guaranteed to survive — the URL travels onto the cart line, into the order,
+   onto the work order and into the proof email, with no extra column anywhere
+   and nothing to keep in sync.
+
+   What that buys:
+     - staleness becomes detectable. A cart line whose saved mockup carries a
+       different fingerprint from its own recipe is a picture of an older
+       design, and checkout re-renders it instead of shipping the old one.
+     - matching becomes possible by eye. Two files with the same fingerprint
+       are the same design; different fingerprints are not. Staff can answer
+       "is this the mockup they approved?" from the filename.
+
+   Deliberately covers GEOMETRY AND GARMENT, not the artwork bytes. The
+   artwork a customer uploads is on the order as its own file, and its data:
+   URL changes every session, so including it would make the fingerprint
+   churn without telling anyone anything. The product page keeps its own
+   finer-grained key (mockStateKey) for deciding when to re-upload during
+   design; this one is the cross-page identity. */
+function mockFp(m){
+  if(!m || !m.img) return '';
+  var parts = [String(m.img).slice(-60), (m.crop || []).map(function(n){ return (+n).toFixed(4); }).join(',')];
+  (m.layers || []).forEach(function(L){
+    parts.push([String(L.url || '').slice(-40),
+                (+L.cx || 0).toFixed(4), (+L.cy || 0).toFixed(4),
+                (+L.w || 0).toFixed(4), (+L.rot || 0).toFixed(2)].join(','));
+  });
+  var s = parts.join('|'), h1 = 0x811c9dc5, h2 = 0x01000193;
+  for(var i = 0; i < s.length; i++){
+    var c = s.charCodeAt(i);
+    h1 = ((h1 ^ c) >>> 0) * 16777619 >>> 0;
+    h2 = ((h2 + c) >>> 0) * 2246822519 >>> 0;
+  }
+  return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36);
+}
+/* The fingerprint a saved mockup URL was made with, or '' for one saved
+   before filenames carried it. An unknown fingerprint is treated as "cannot
+   tell", not as "stale" — re-uploading every old cart line on sight would be
+   worse than leaving a picture that is probably right. */
+function mockFpOf(url){
+  /* `mockup-proof-<fp>.png`, never `mockup-<fp>.png`: the old name was
+     `mockup-proof.png`, and a looser pattern reads its "proof" as a
+     fingerprint — which would make every mockup saved before today look
+     stale and re-upload itself on the next checkout. */
+  var m = /mockup-proof-([0-9a-z]{4,20})\.png(?:[?#]|$)/i.exec(String(url || ''));
+  return m ? m[1] : '';
+}
+function ckMockProxy(u){
+  return 'https://wsrv.nl/?url=' + encodeURIComponent(u) + '&output=png';
+}
+function ckLoadImg(src, crossOrigin){
+  return new Promise(function(resolve, reject){
+    var im = new Image();
+    if(crossOrigin) im.crossOrigin = 'anonymous';
+    im.onload = function(){ resolve(im); };
+    im.onerror = function(){ reject(new Error('image load failed')); };
+    im.src = src;
+  });
+}
+/* Best source for one artwork layer. A shared cart deliberately strips
+   `src` (see loadSharedCart) and keeps only `url`, so the url path is the
+   normal one here, not the fallback. */
+function ckLayerSrc(L){
+  if(/^data:/i.test(String(L.src || ''))) return {src:L.src, cors:false};
+  var remote = L.url || L.src || '';
+  if(/^https?:/i.test(remote)) return {src:ckMockProxy(remote), cors:true};
+  return null;
+}
+/* Composite one recipe into a PNG blob. Resolves null when there is nothing
+   to draw, and never rejects. */
+function ckRenderMock(m, maxW){
+  if(!m || !m.img || !m.layers || !m.layers.length) return Promise.resolve(null);
+  maxW = maxW || 1100;
+  var ar = +m.ar || (2 / 3);
+  var crop = (m.crop && m.crop.length === 4) ? m.crop : null;
+  var cw = crop ? (crop[2] - crop[0]) : 1;
+  var ch = crop ? (crop[3] - crop[1]) : 1;
+  if(!(cw > 0) || !(ch > 0)){ crop = null; cw = 1; ch = 1; }
+
+  var W0 = Math.round(maxW / cw); if(W0 > 3000) W0 = 3000;
+  var H0 = Math.max(1, Math.round(W0 / ar));
+
+  return ckLoadImg(ckMockProxy(m.img), true).then(function(g){
+    var cv = document.createElement('canvas');
+    cv.width = W0; cv.height = H0;
+    var cx = cv.getContext('2d');
+    cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, W0, H0);
+    cx.drawImage(g, 0, 0, W0, H0);
+
+    /* Sequentially, so stacking order matches what the customer saw. */
+    return m.layers.reduce(function(chain, L){
+      return chain.then(function(){
+        var pick = ckLayerSrc(L); if(!pick) return;
+        return ckLoadImg(pick.src, pick.cors).then(function(im){
+          var w = (+L.w || 0) * W0; if(!(w > 0)) return;
+          var h = w * ((im.naturalHeight / im.naturalWidth) || 1);
+          cx.save();
+          cx.translate((+L.cx || 0.5) * W0, (+L.cy || 0.5) * H0);
+          cx.rotate(((+L.rot || 0) * Math.PI) / 180);
+          cx.drawImage(im, -w / 2, -h / 2, w, h);
+          cx.restore();
+        })['catch'](function(){ /* one unreadable layer must not lose the mockup */ });
+      });
+    }, Promise.resolve()).then(function(){
+      var out = cv;
+      if(crop){
+        var sx = Math.round(crop[0] * W0), sy = Math.round(crop[1] * H0);
+        var sw = Math.max(1, Math.round(cw * W0)), sh = Math.max(1, Math.round(ch * H0));
+        out = document.createElement('canvas');
+        out.width = sw; out.height = sh;
+        out.getContext('2d').drawImage(cv, sx, sy, sw, sh, 0, 0, sw, sh);
+      }
+      return new Promise(function(resolve){
+        try{ out.toBlob(function(b){ resolve(b || null); }, 'image/png'); }
+        catch(e){ resolve(null); }       /* tainted canvas — the proxy failed */
+      });
+    });
+  })['catch'](function(){ return null; });
+}
+function ckUploadMock(blob, fpName){
+  if(!blob) return Promise.resolve(null);
+  function attempt(n){
+    var fd = new FormData();
+    fd.append('file', blob, fpName || 'mockup-proof.png');
+    return fetch(CONFIG.artEndpoint.replace(/\/+$/, '') + '/upload', {method:'POST', body:fd})
+      .then(function(r){ if(r.ok) return r.json(); throw new Error('upload ' + r.status); })
+      .then(function(j){ if(!j || !j.url) throw new Error('no url'); return j; })
+      ['catch'](function(e){
+        if(n >= 3) throw e;
+        return new Promise(function(res){ setTimeout(res, n * 1200); }).then(function(){ return attempt(n + 1); });
+      });
+  }
+  return attempt(1)['catch'](function(e){
+    try{ if(window.console) console.error('[Alive mockup] checkout upload failed', e); }catch(_){}
+    return null;
+  });
+}
+
+/* Render and upload a mockup for every line that has a recipe and no saved
+   file, writing the URL back where buildFiles() already looks. Always
+   resolves; a line that fails is simply left without one, exactly as before.
+
+   Bounded at 4 lines and ~12 seconds. A big cart on a slow phone must not
+   hold someone at the payment button — the point is to catch the common
+   one-or-two-item saved-cart case, not to guarantee every line. */
+var _ckMockDone = false;
+function saveMissingMockups(){
+  if(_ckMockDone) return Promise.resolve();
+  _ckMockDone = true;
+
+  var jobs = S.items.filter(function(it){
+    if(!(it.mock && it.mock.img && it.mock.layers && it.mock.layers.length)) return false;
+    var have = it.mockupUrl || (it.mockupUrls && it.mockupUrls[it.side || 'front']);
+    if(!have) return true;                       /* nothing saved at all */
+
+    /* Something IS saved — but is it a picture of THIS design? The product
+       page re-saves whenever the recipe changes, so normally yes. Not always:
+       Add to cart gives the upload 120 seconds and then proceeds regardless,
+       which can put the previous colour's mockup on the line. Comparing
+       fingerprints catches that, and costs one string compare.
+
+       A saved mockup from before filenames carried a fingerprint reads as
+       unknown, and unknown is left alone — re-uploading every old cart line
+       on sight would be worse than a picture that is probably right. */
+    var was = mockFpOf(have);
+    if(!was) return false;
+    return was !== mockFp(it.mock);
+  }).slice(0, 4);
+
+  if(!jobs.length) return Promise.resolve();
+
+  var work = Promise.all(jobs.map(function(it){
+    var fpName = 'mockup-proof-' + mockFp(it.mock) + '.png';
+    return ckRenderMock(it.mock, 1100)
+      .then(function(b){ return ckUploadMock(b, fpName); })
+      .then(function(j){
+        if(!j || !j.url) return;
+        var side = it.side || 'front';
+        it.mockupUrl = j.url;
+        it.mockupUrls = Object.assign({}, it.mockupUrls || {});
+        it.mockupUrls[side] = j.url;
+        try{ if(window.console) console.log('[Alive mockup] saved at checkout for ' + (it.style || 'item')); }catch(e){}
+      })['catch'](function(){});
+  }));
+
+  /* Hard ceiling. Whatever has finished by then is used. */
+  return Promise.race([
+    work,
+    new Promise(function(res){ setTimeout(res, 12000); })
+  ])['catch'](function(){});
+}
+
 function submit(){
   S.err = '';
   if(!validate()){ render(); var first = root.querySelector('.f.bad input, .f.bad textarea'); if(first){ first.focus(); scrollToEl(first); } return; }
   if(staleItems().length){ S.err = 'One item in your cart has an old price. Remove it and add it again, then place your order.'; render(); scrollToEl(root.querySelector('.stale')); return; }
   if(missingArtwork().length && !S.missAck){ S.err = 'Please confirm you’ll email the artwork we’re missing.'; render(); scrollToEl(root.querySelector('.miss')); return; }
   applyOptions();
+  /* Start compositing any unsaved mockups NOW, so the work overlaps the
+     beacon and /create-session instead of being stacked on top of them.
+     Awaited further down, just before the order is recorded. */
+  var mockWork = saveMissingMockups();
   var ref = orderRef(), payload = buildPayload();
   var fd = new FormData();
   Object.keys(payload).forEach(function(k){ var v = payload[k]; fd.append(k, v == null ? '' : (typeof v === 'object' ? JSON.stringify(v) : String(v))); });
@@ -1821,7 +2139,25 @@ function submit(){
            The `||` fallback is not belt-and-braces. Without it, anything that
            stops the client existing turns this into a TypeError INSIDE the
            payment path and nobody can check out. */
-        var AO = window.AliveOrders || {recordOrder:function(){ return Promise.resolve({ok:false}); }};
+        /* Wait for the mockups before building the order payload — the
+           URLs have to be on the cart lines before buildFiles() reads them.
+           saveMissingMockups never rejects and caps itself at 12s. */
+        return mockWork.then(function(){
+        var AO = window.AliveOrders || {recordOrder:function(){
+          /* The orders client is not there at all — it failed to parse, or an
+             extension stripped it. Nothing can build a payload, so report the
+             bare facts over a beacon (which survives the redirect to Stripe)
+             and let the Worker's ten-minute Stripe sweep rebuild the order.
+             Before this, the same situation produced silence. */
+          try{
+            var note = JSON.stringify({session_id:j.id, email:f.email, name:f.name,
+              total:tt.grand, error:'AliveOrders client missing on the page'});
+            var url = 'https://alive-orders.austin-662.workers.dev/api/order-write-failed';
+            if(navigator.sendBeacon) navigator.sendBeacon(url, new Blob([note], {type:'application/json'}));
+            else fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:note, keepalive:true}).catch(function(){});
+          }catch(e){}
+          return Promise.resolve({ok:false, error:'client missing'});
+        }};
         return AO.recordOrder({
           items: S.items,
           form: S.form,
@@ -1835,6 +2171,7 @@ function submit(){
           if(rec && rec.ok) S.orderNo = rec.order_no;
           if(embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
           if(j.url){ nav(j.url); return; }
+        });
         });
       }
       if(j.promoError){ CART.setPromo(null); S.promoOpen = true; S.promoErr = j.error || 'That code can’t be used.'; }

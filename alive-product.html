@@ -4191,6 +4191,57 @@ function mockForCart(){
    no deploy of our own. Freshly uploaded artwork is a data: URL and is drawn
    directly at full resolution; artwork rehydrated from a saved cart line is an
    https URL, so it goes through the same proxy. */
+/* ------------------------------------------------------- design fingerprint
+   A short, stable id for WHAT THE CUSTOMER SAW: the garment photo, the crop,
+   and where every layer sits on it.
+
+   It goes into the saved mockup's FILENAME, which is the only place it is
+   guaranteed to survive — the URL travels onto the cart line, into the order,
+   onto the work order and into the proof email, with no extra column anywhere
+   and nothing to keep in sync.
+
+   What that buys:
+     - staleness becomes detectable. A cart line whose saved mockup carries a
+       different fingerprint from its own recipe is a picture of an older
+       design, and checkout re-renders it instead of shipping the old one.
+     - matching becomes possible by eye. Two files with the same fingerprint
+       are the same design; different fingerprints are not. Staff can answer
+       "is this the mockup they approved?" from the filename.
+
+   Deliberately covers GEOMETRY AND GARMENT, not the artwork bytes. The
+   artwork a customer uploads is on the order as its own file, and its data:
+   URL changes every session, so including it would make the fingerprint
+   churn without telling anyone anything. The product page keeps its own
+   finer-grained key (mockStateKey) for deciding when to re-upload during
+   design; this one is the cross-page identity. */
+function mockFp(m){
+  if(!m || !m.img) return '';
+  var parts = [String(m.img).slice(-60), (m.crop || []).map(function(n){ return (+n).toFixed(4); }).join(',')];
+  (m.layers || []).forEach(function(L){
+    parts.push([String(L.url || '').slice(-40),
+                (+L.cx || 0).toFixed(4), (+L.cy || 0).toFixed(4),
+                (+L.w || 0).toFixed(4), (+L.rot || 0).toFixed(2)].join(','));
+  });
+  var s = parts.join('|'), h1 = 0x811c9dc5, h2 = 0x01000193;
+  for(var i = 0; i < s.length; i++){
+    var c = s.charCodeAt(i);
+    h1 = ((h1 ^ c) >>> 0) * 16777619 >>> 0;
+    h2 = ((h2 + c) >>> 0) * 2246822519 >>> 0;
+  }
+  return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36);
+}
+/* The fingerprint a saved mockup URL was made with, or '' for one saved
+   before filenames carried it. An unknown fingerprint is treated as "cannot
+   tell", not as "stale" — re-uploading every old cart line on sight would be
+   worse than leaving a picture that is probably right. */
+function mockFpOf(url){
+  /* `mockup-proof-<fp>.png`, never `mockup-<fp>.png`: the old name was
+     `mockup-proof.png`, and a looser pattern reads its "proof" as a
+     fingerprint — which would make every mockup saved before today look
+     stale and re-upload itself on the next checkout. */
+  var m = /mockup-proof-([0-9a-z]{4,20})\.png(?:[?#]|$)/i.exec(String(url || ''));
+  return m ? m[1] : '';
+}
 function mockProxy(u){
   return 'https://wsrv.nl/?url=' + encodeURIComponent(u) + '&output=png';
 }
@@ -4275,11 +4326,14 @@ function renderMockup(side, maxW){
 }
 /* Upload a mockup blob and hand back its URL. Mirrors upload() but stands
    alone, because a mockup belongs to no single S.art entry. */
-function uploadMockup(blob, side){
+function uploadMockup(blob, side, fpName){
   if(!blob) return Promise.resolve(null);
   function attempt(n){
     var fd = new FormData();
-    fd.append('file', blob, 'mockup-proof.png');
+    /* The fingerprint rides in the filename — see mockFp. It is what lets
+       checkout, the dashboard and a human tell whether a saved mockup is a
+       picture of the design it is attached to. */
+    fd.append('file', blob, fpName || 'mockup-proof.png');
     return fetch(CONFIG.artEndpoint.replace(/\/+$/, '') + '/upload', {method:'POST', body:fd})
       .then(function(r){ if(r.ok) return r.json(); throw new Error('upload ' + r.status); })
       .then(function(j){ if(!j || !j.url) throw new Error('no url'); return j; })
@@ -4309,8 +4363,9 @@ function saveMockup(side){
   var key = mockStateKey(side);
   if(!key) return Promise.resolve(null);
   if(_mockCache[key]) return _mockCache[key];
+  var fpName = 'mockup-proof-' + mockFp(mockSide(side)) + '.png';
   _mockCache[key] = renderMockup(side)
-    .then(function(b){ return uploadMockup(b, side); })
+    .then(function(b){ return uploadMockup(b, side, fpName); })
     .then(function(res){
       if(res && res.url){ S.mockups = S.mockups || {}; S.mockups[side] = res.url; }
       return res;
