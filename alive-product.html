@@ -1303,12 +1303,20 @@
   #alive-flow .why-guar{grid-template-columns:repeat(2,1fr)}
   #alive-flow .why-grid{grid-template-columns:repeat(3,1fr)}
 }
+/* One card per row on a phone. This used to be two, to keep the section
+   short enough to thumb through — but two columns on a 390px screen leaves
+   each clip about 170px wide, and every one of them carries a burned-in
+   caption ("REAL PEOPLE. REAL CARE.", "PANTONE MATCHING") that is unreadable
+   at that size. A clip nobody can see is worth less than the scroll it
+   saves. Austin's call, 16 Oct 2026. 640px rather than 560 so it covers the
+   large phones too. */
+@media(max-width:640px){
+  #alive-flow .why-proof{grid-template-columns:1fr;gap:14px}
+}
 @media(max-width:560px){
   #alive-flow .why{padding-top:26px}
   #alive-flow .why-in{padding:0 14px}
-  /* One column would make this section taller than the configurator above
-     it. Two keeps the whole thing thumb-scrollable in a couple of flicks. */
-  #alive-flow .why-proof{gap:10px}
+  #alive-flow .why-proof{gap:12px}
   #alive-flow .why-guar{padding:13px;gap:9px}
   #alive-flow .why-guar li{font-size:12.5px}
   #alive-flow .why-grid{grid-template-columns:repeat(3,1fr);gap:7px}
