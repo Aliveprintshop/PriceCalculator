@@ -1,0 +1,15 @@
+# Generated catalog files, normalised to LF in the repository.
+#
+# WHY. Something on the office machine rewrites products.json with Windows
+# line endings. The content is byte-identical, but git sees every one of its
+# 386,310 lines as changed — so the file sits permanently "modified", and the
+# nightly SanMar sync lands on top of it as a 2,537-line merge conflict across
+# catalog data. That happened on 16 Oct 2026 and had to be unpicked by hand
+# before an unrelated change could be pushed.
+#
+# `text eol=lf` makes git normalise these to LF on the way in and check them
+# out as LF. A tool that rewrites them with CRLF then produces no diff at all,
+# which is the honest answer: nothing about the file actually changed.
+products.json  text eol=lf
+crops.json     text eol=lf
+reviews.json   text eol=lf

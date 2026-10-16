@@ -2988,18 +2988,18 @@ function whyAlive(){
    heading repeating it would be the same words twice, six inches apart. The
    clip names the thing; the card says what it buys you. */
 var WHY_PROOF = [
-  {i:0, h:'Talk to a human',
+  {i:0, h:'Talk to a real person',
       p:'We are on Industrial Road in Las Vegas. Call during the day and a person who knows your job picks up.'},
-  {i:1, h:'Your exact brand color',
-      p:'Mixed to the Pantone you give us, not something close enough that nobody is supposed to notice.'},
-  {i:2, h:'Free on every order',
+  {i:1, h:'Your logo printed right',
+      p:'Ink mixed to the Pantone you give us, at the size and placement we agree on \u2014 not something close enough that nobody is supposed to notice.'},
+  {i:2, h:'Professional design review on every order',
       p:'A designer opens your file, checks it properly, and tells you about a problem before it is printed.'},
-  {i:3, h:'Still looks new after the wash',
-      p:'Cured to the right temperature, which is the whole difference between a print that lasts and one that flakes.'}
+  {i:3, h:'Print that lasts',
+      p:'Cured to the right temperature, which is the whole difference between a print that survives the wash and one that flakes.'}
 ];
 
 var WHY_PROMISE = [
-  'No setup fees, ever',
+  'Your brand made real',
   'Free professional design review',
   'Proof emailed before we print',
   '100% Printed Right Guarantee'
@@ -3063,7 +3063,7 @@ function whyAliveSection(){
         '<a class="prim" href="' + esc(CONFIG.phoneHref) + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a1 1 0 01-1 1A16 16 0 014 5a1 1 0 011-1z"/></svg>' +
           esc(CONFIG.phone) + '</a>' +
-        '<a href="mailto:' + esc(CONFIG.email) + '">' +
+        '<a href="mailto:' + esc(CONFIG.email) + '?subject=' + encodeURIComponent('Question about a custom order') + '">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>' +
           'Email us</a>' +
       '</div>' +
