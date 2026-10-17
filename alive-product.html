@@ -1375,18 +1375,13 @@
   font-family:inherit;font-size:12.5px;color:var(--text2,#4b5565);text-align:center}
 #alive-flow .dlater u{color:var(--blue,#1b6cce);text-decoration:none;font-weight:600;
   border-bottom:1px solid var(--blue-mid,#a8c8f0)}
-/* The method/location picker as a sheet. It is the SAME markup the inline
-   version uses (methodTabs + locPills + Done, all on data-opts), so there is
-   one set of handlers rather than two that drift. */
-#alive-flow .optsheet{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;
-  background:rgba(13,16,22,.46)}
-#alive-flow .optsheet-scrim{position:absolute;inset:0;border:0;padding:0;background:transparent;cursor:default}
-#alive-flow .optsheet .optsbox{position:relative;width:100%;margin:0;border-radius:18px 18px 0 0;
-  padding:16px 15px calc(18px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto}
-@media (prefers-reduced-motion:no-preference){
-  #alive-flow .optsheet .optsbox{animation:aliveSheetUp .18s ease-out}
-}
-@keyframes aliveSheetUp{from{transform:translateY(14px)}to{transform:translateY(0)}}
+/* The method/location picker opens IN PLACE of the Print line — never as a
+   fixed overlay. Inside the WordPress iframe, whose height is the whole
+   document, `position:fixed` lands at the bottom of the page instead of the
+   bottom of the screen. Same markup the wider layouts use (methodTabs +
+   locPills + Done, all on data-opts), so there is one set of handlers rather
+   than two that drift. */
+#alive-flow .dsgn .optsbox.dopts{margin-top:0}
 @media print{ #alive-flow .why{display:none} }
 </style>
 </head>
@@ -4158,14 +4153,24 @@ function designBlock(){
     + '<span style="min-width:0"><span class="k">Print</span><b>' + esc(what) + ' &middot; ' + esc(where) + '</b></span>'
     + (many ? '<span class="go">Change</span>' : '') + '</' + (many ? 'button' : 'div') + '>';
 
-  var sheet = (S.optsOpen && many)
-    /* The tap-outside target is a scrim BEHIND the box, not the overlay
-       itself. With data-opts="0" on the overlay, every tap inside it bubbled
-       up to that same handler, so choosing a location closed the sheet. */
-    ? '<div class="optsheet"><button type="button" class="optsheet-scrim" data-opts="0" aria-label="Close"></button>'
-      + '<div class="optsbox">' + methodTabs() + locPills()
-      + '<button type="button" class="dbtn optsdone" data-opts="0">Done</button></div></div>'
-    : '';
+  /* OPEN IN PLACE, not as an overlay.
+
+     This was a fixed-position bottom sheet for about an hour, and it cannot
+     be: the page is served in an iframe inside WordPress, and the parent
+     sizes that iframe to the full height of its content — so the iframe's
+     own viewport IS the whole document. `position:fixed` then pins to the
+     bottom of the entire page rather than the bottom of the screen, and the
+     picker opened far below the fold. Austin found it down there, 17 Oct.
+
+     The box replaces the Print line where it stands instead. The customer's
+     finger is already on that spot, which is the one place it cannot be
+     lost. */
+  if(S.optsOpen && many)
+    return '<div class="dsgn' + (S.nudge && !artReady() ? ' needpick' : '') + '">'
+      + '<div class="optsbox dopts">' + methodTabs() + locPills()
+      + '<button type="button" class="dbtn optsdone" data-opts="0">Done</button></div>'
+      + '<div class="drows">' + S.locs.map(locRow).join('') + '</div>'
+      + '</div>';
 
   /* Offered while there is still something to upload, and while "later" is
      on so there is a way back out of it. Once every location has artwork the
@@ -4182,7 +4187,7 @@ function designBlock(){
     + line
     + '<div class="drows">' + S.locs.map(locRow).join('') + '</div>'
     + later
-    + '</div>' + sheet;
+    + '</div>';
 }
 
 /* On a phone the row already says "Add Front design" and Continue is
