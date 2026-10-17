@@ -1324,6 +1324,69 @@
   #alive-flow .why-foot .wf-a{margin-left:0;width:100%}
   #alive-flow .why-foot a{flex:1;justify-content:center}
 }
+/* ===================================================================
+   THE "YOUR DESIGN" BLOCK, PHONES ONLY (<=640px)            17 Oct 2026
+
+   The garment above already carries its own upload target and already
+   shows the result. The block under it was asking the same question a
+   second time — a radio card headed "Upload my design", then a dashed
+   box headed "Upload design" — and the two of them plus the location
+   card and the standing hint came to 478px before a customer had done
+   anything. This is the same step in 162px.
+
+   Phones only. At >=980px the block sits beside the photo in .colR
+   where its height costs nothing, so desktop keeps the original.
+   =================================================================== */
+#alive-flow .dsgn{display:grid;gap:8px;margin:0 0 4px}
+#alive-flow .dsgn .optsline{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;border:1px solid var(--border);background:#fff;border-radius:13px;padding:11px 12px;
+  text-align:left;font-family:inherit;cursor:pointer}
+#alive-flow .dsgn .optsline .k{display:block;font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text2,#4b5565);font-weight:700;margin-bottom:2px}
+#alive-flow .dsgn .optsline b{display:block;font-family:var(--disp);font-weight:800;font-size:14px;
+  text-transform:none;letter-spacing:-.01em}
+#alive-flow .dsgn .optsline .go{flex:0 0 auto;color:var(--blue,#1b6cce);font-weight:700;font-size:11.5px}
+#alive-flow .drows{display:grid;gap:7px}
+#alive-flow .drow{display:flex;align-items:center;gap:9px;border:1px solid var(--border);
+  background:#fff;border-radius:12px;padding:8px 10px 8px 8px;min-height:56px}
+#alive-flow .drow.todo{border-style:dashed;border-color:var(--blue-mid,#a8c8f0);background:var(--blue-light,#eef4fc)}
+#alive-flow .drow.warnrow{border-color:var(--amber,#b45309)}
+#alive-flow .drow-hit{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:9px;
+  background:none;border:0;padding:0;text-align:left;font-family:inherit;cursor:pointer;color:inherit}
+#alive-flow .drow-th{width:36px;height:36px;flex:0 0 auto;border-radius:9px;border:1px solid var(--border);
+  background:#f4f6fa;display:grid;place-items:center;overflow:hidden}
+#alive-flow .drow-th img{width:100%;height:100%;object-fit:contain;display:block}
+#alive-flow .drow-th svg{width:16px;height:16px;color:var(--blue,#1b6cce)}
+#alive-flow .drow-tx{min-width:0;flex:1 1 auto}
+#alive-flow .drow-tx b{display:block;font-family:var(--disp);font-weight:800;font-size:14px;
+  line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#alive-flow .drow-tx span{display:block;font-size:11.5px;color:var(--text2,#4b5565);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#alive-flow .drow-tx span.ok{color:#15803d}
+#alive-flow .drow-tx span.bad{color:var(--amber,#b45309);font-weight:600}
+#alive-flow .drow-en{flex:0 0 auto;display:flex;align-items:center;gap:6px}
+#alive-flow .drow-en select{font-family:inherit;font-size:12px;padding:6px 7px;border-radius:9px;
+  border:1px solid var(--border);background:#fff;color:inherit;max-width:94px}
+#alive-flow .drow-x{width:28px;height:28px;flex:0 0 auto;border-radius:50%;border:1px solid var(--border);
+  background:#fff;color:var(--text2,#4b5565);font-size:12px;line-height:1;cursor:pointer;
+  display:grid;place-items:center}
+#alive-flow .dnote.drow-note{margin:-2px 2px 0;font-size:11.5px}
+#alive-flow .dlater{display:block;width:100%;background:none;border:0;cursor:pointer;padding:3px 2px 0;
+  font-family:inherit;font-size:12.5px;color:var(--text2,#4b5565);text-align:center}
+#alive-flow .dlater u{color:var(--blue,#1b6cce);text-decoration:none;font-weight:600;
+  border-bottom:1px solid var(--blue-mid,#a8c8f0)}
+/* The method/location picker as a sheet. It is the SAME markup the inline
+   version uses (methodTabs + locPills + Done, all on data-opts), so there is
+   one set of handlers rather than two that drift. */
+#alive-flow .optsheet{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;
+  background:rgba(13,16,22,.46)}
+#alive-flow .optsheet-scrim{position:absolute;inset:0;border:0;padding:0;background:transparent;cursor:default}
+#alive-flow .optsheet .optsbox{position:relative;width:100%;margin:0;border-radius:18px 18px 0 0;
+  padding:16px 15px calc(18px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto}
+@media (prefers-reduced-motion:no-preference){
+  #alive-flow .optsheet .optsbox{animation:aliveSheetUp .18s ease-out}
+}
+@keyframes aliveSheetUp{from{transform:translateY(14px)}to{transform:translateY(0)}}
 @media print{ #alive-flow .why{display:none} }
 </style>
 </head>
@@ -4010,6 +4073,127 @@ function artReady(){
   if(S.mode === 'later') return true;
   return S.locs.every(function(k){ return !!S.art[k] && !inkPending(k); });
 }
+/* The upload glyph, once, so the row and the card cannot drift apart. */
+var UP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">'
+  + '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>';
+
+/* Just the select. The card version carries the words "Ink colors" and a
+   tip bubble beside them; on a 56px row the label is the row itself. */
+function inkSelectBare(k){
+  var cap = S.p._drinkware ? 4 : E.MAX_INK, v = S.inks[k] || 1, o = '';
+  for(var i = 1; i <= cap; i++)
+    o += '<option value="' + i + '"' + (i === v ? ' selected' : '') + '>' + i + ' color' + (i > 1 ? 's' : '') + '</option>';
+  return '<select data-ink="' + k + '" aria-label="Ink colors for ' + esc(LOC[k].label) + '">' + o + '</select>';
+}
+
+/* One location, one row. Replaces locCard() on phones.
+
+   Every handler here already existed: data-add opens the file picker,
+   data-del removes, data-ink reprices, data-askink opens the ink prompt.
+   This is a different presentation of the same step, not a second
+   implementation of it. */
+function locRow(k){
+  var l = LOC[k], d = S.art[k], busy = S.busy === k, ink = needsInkCount(k) ? inkSelectBare(k) : '';
+  var title, sub, cls = '', thumb;
+
+  if(S.mode === 'later'){
+    title = l.label;
+    sub = '<span>Artwork to follow &mdash; email it after you order.</span>';
+    thumb = UP_SVG;
+  }else if(busy){
+    title = l.label; sub = '<span>Reading&hellip;</span>'; thumb = UP_SVG;
+  }else if(d){
+    title = l.label;
+    /* The file name stays visible through all three states. It is how
+       somebody checks they picked the right file, and dropping it while the
+       upload is in flight is exactly when they are looking. */
+    sub = d.uploadFailed ? '<span class="bad">' + esc(d.name) + ' &mdash; not uploaded, email it to us</span>'
+        : d.url ? '<span class="ok">' + esc(d.name) + '</span>'
+        : '<span>' + esc(d.name) + ' &middot; uploading&hellip;</span>';
+    thumb = d.thumb ? '<img src="' + esc(d.thumb) + '" alt="">' : UP_SVG;
+    if(d.uploadFailed) cls = ' warnrow';
+  }else{
+    title = 'Add ' + l.label + ' design';
+    sub = '<span>' + esc(locMeta(k) || 'PNG, JPG, PDF or AI') + '</span>';
+    thumb = UP_SVG;
+    cls = ' todo';
+  }
+
+  var hit = '<button type="button" class="drow-hit" data-add="' + k + '"' + (busy ? ' disabled' : '') + '>'
+    + '<span class="drow-th">' + thumb + '</span>'
+    + '<span class="drow-tx"><b>' + esc(title) + '</b>' + sub + '</span></button>';
+
+  /* The select sits OUTSIDE the button: a form control nested inside one is
+     invalid and loses its own clicks in some browsers. */
+  var end = '<div class="drow-en">' + ink
+    + (d && S.mode !== 'later'
+        ? '<button type="button" class="drow-x" data-del="' + k + '" aria-label="Remove the ' + esc(l.label) + ' design">&#10005;</button>'
+        : '') + '</div>';
+
+  var note = '';
+  if(inkPending(k))
+    note = '<div class="dnote warn drow-note">We couldn\u2019t count the colors in this file. '
+      + '<button type="button" class="linkbtn" data-askink="' + k + '">Choose ink colors</button></div>';
+  else if(d && needsInkCount(k) && d.inkAuto && S.inks[k] === d.inkAuto)
+    note = '<div class="dnote ok drow-note">We counted ' + d.inkAuto + ' ink color'
+      + (d.inkAuto > 1 ? 's' : '') + ' and priced it that way.</div>';
+  else if(d && d.noPreview)
+    note = '<div class="dnote drow-note">We can\u2019t preview this file type here. It\u2019s attached and our art team will place it.</div>';
+  else if(d && d.bgMsg)
+    note = '<div class="dnote warn drow-note">' + esc(d.bgMsg) + '</div>';
+
+  return '<div class="drow' + cls + '" data-card="' + k + '">' + hit + end + '</div>' + note;
+}
+
+/* The whole block, for phones. Print at the top where it reads as the
+   setting it is, a row per location, and "send it later" as a link rather
+   than a card the same size as the one people actually want. */
+function designBlock(){
+  var ms = E.decoMethods(S.p), keys = Object.keys(LOC);
+  var many = ms.length > 1 || keys.length > 1;
+  var where = S.locs.map(function(k){ return LOC[k] ? LOC[k].label : k; }).join(' + ');
+  var what = S.method === 'sp' ? 'Screen print' : S.method === 'ht' ? 'Full color print' : 'Embroidery';
+
+  var line = '<' + (many ? 'button type="button" class="optsline" data-opts="1"' : 'div class="optsline"') + '>'
+    + '<span style="min-width:0"><span class="k">Print</span><b>' + esc(what) + ' &middot; ' + esc(where) + '</b></span>'
+    + (many ? '<span class="go">Change</span>' : '') + '</' + (many ? 'button' : 'div') + '>';
+
+  var sheet = (S.optsOpen && many)
+    /* The tap-outside target is a scrim BEHIND the box, not the overlay
+       itself. With data-opts="0" on the overlay, every tap inside it bubbled
+       up to that same handler, so choosing a location closed the sheet. */
+    ? '<div class="optsheet"><button type="button" class="optsheet-scrim" data-opts="0" aria-label="Close"></button>'
+      + '<div class="optsbox">' + methodTabs() + locPills()
+      + '<button type="button" class="dbtn optsdone" data-opts="0">Done</button></div></div>'
+    : '';
+
+  /* Offered while there is still something to upload, and while "later" is
+     on so there is a way back out of it. Once every location has artwork the
+     link is pointing at a problem the customer no longer has. */
+  var needLater = S.mode === 'later' || S.locs.some(function(k){ return !S.art[k]; });
+  var later = needLater
+    ? '<button type="button" class="dlater" data-mode="' + (S.mode === 'later' ? 'now' : 'later') + '">'
+      + (S.mode === 'later'
+          ? 'Changed your mind? <u>Upload it now</u>'
+          : 'No artwork yet? <u>Send it later</u>') + '</button>'
+    : '';
+
+  return '<div class="dsgn' + (S.nudge && !artReady() ? ' needpick' : '') + '">'
+    + line
+    + '<div class="drows">' + S.locs.map(locRow).join('') + '</div>'
+    + later
+    + '</div>' + sheet;
+}
+
+/* On a phone the row already says "Add Front design" and Continue is
+   disabled until there is artwork, so repeating it as standing text is
+   noise. The ink question is not noise — it changes the price. */
+function artNotePhone(){
+  if(S.mode === 'later') return '';
+  var ask = S.locs.filter(inkPending).map(function(k){ return LOC[k].label; });
+  return ask.length ? 'Tell us how many ink colors are in your ' + ask.join(' and ') + ' design.' : '';
+}
+
 function artNote(){
   if(S.mode === 'later') return '';
   var miss = S.locs.filter(function(k){ return !S.art[k]; }).map(function(k){ return LOC[k].label; });
@@ -4644,12 +4828,18 @@ function saveAllMockups(){
    columns, which no amount of `order` can do. */
 var TWO_COL_PX = 980;
 var _twoColNow = null;
+/* The rebuilt Your Design block applies at and below this width. 640 rather
+   than 560 so it also covers the large phones and a phone held sideways. */
+var PHONE_PX = 640;
+var _phoneNow = null;
 
 function render(){
   ensurePreviews();
   var c = S.colors[S.color];
   var twoCol = window.innerWidth >= TWO_COL_PX;
   _twoColNow = twoCol;
+  var phone = window.innerWidth <= PHONE_PX;
+  _phoneNow = phone;
   var html = '';
   if(S.phase === 'artwork'){
     /* STEP 1 — DESIGN: garment color, decoration, design (or "send later"). */
@@ -4670,11 +4860,15 @@ function render(){
         '<div class="colL">' + productCard(overlay(), twoCol ? '' : artColorFoot(), detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
           (twoCol ? optsBlock() : '') +
           (twoCol && artColorFoot() ? '<div class="pcard gcard"><div class="pcard-foot">' + artColorFoot() + '</div></div>' : '') +
-          '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' + '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
-          '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
-          (twoCol ? '' : optsBlock()) +
+          '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' +
+          (phone
+            ? designBlock()
+            : '<div class="' + (S.nudge && !artReady() ? 'needpick' : '') + '">' + modePicker() + '</div>' +
+              '<div class="lcards">' + S.locs.map(locCard).join('') + '</div>' +
+              (twoCol ? '' : optsBlock())) +
           (S.err ? '<div class="warn">' + esc(S.err) + '</div>' : '') +
-          '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">' + artNote() + '</div>' +
+          '<div class="undercta' + (S.nudge && !artReady() ? ' nudge' : '') + '">'
+            + (phone ? artNotePhone() : artNote()) + '</div>' +
         '</div>' +
       '</div></div>' +
       whyAliveSection() +
@@ -4951,7 +5145,8 @@ function wire(){
     window.addEventListener('resize', function(){
       /* Crossing the breakpoint changes which column things live in, so the
          markup has to be rebuilt — a CSS reflow cannot move them. */
-      if((window.innerWidth >= TWO_COL_PX) !== _twoColNow){ render(); return; }
+      if((window.innerWidth >= TWO_COL_PX) !== _twoColNow
+         || (window.innerWidth <= PHONE_PX) !== _phoneNow){ render(); return; }
       fitBarSpace(); if(S.saveOpen) placeSaveBox();
     });
   }
