@@ -35,6 +35,9 @@
   "require_image": true,
   "_image_comment": "If true, drops any product where no color has at least one image URL. Products without images can't be rendered in the calculator.",
 
+  "prefer_flat_images": true,
+  "_flat_images_comment": "SanMar puts an angled ghost-mannequin 'form' photo in the FLAT image column for a few hundred styles (Sport-Tek most of all). If true, the sync checks whether the true flat lay exists at the same path and uses it instead. All-or-nothing per style per view, so crops.json stays valid. Set false to take SanMar's columns as-is. NOTE: crops.json must be regenerated for any style whose photo changes.",
+
   "merge_custom_products": true,
   "_custom_comment": "If true, reads custom-products.xlsx and merges those rows into products.json. See custom-products.xlsx template for the schema."
 }

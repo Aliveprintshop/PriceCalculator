@@ -524,6 +524,103 @@ def finalize_styles(styles):
 
 
 # ---------------------------------------------------------------------------
+# Prefer true flat lays over SanMar's "form" shots
+# ---------------------------------------------------------------------------
+# SanMar publishes two stills per colourway:
+#
+#   STYLE_colour_flat_front.jpg   true flat lay, square to camera
+#   STYLE_colour_form_front.jpg   ghost-mannequin "form" shot, 3/4 angle
+#
+# FRONT_FLAT_IMAGE_URL is supposed to be the first one. For a few hundred
+# styles -- Sport-Tek most of all -- SanMar puts the *form* file in that
+# column instead. Those photos are angled AND sit off-centre in the frame, so
+# the garment leans, the crop box is loose, and the upload target and artwork
+# preview land off to one side.
+#
+# The true flat usually exists anyway, at the same path with form -> flat.
+# This probes for it and swaps when it is really there. A missing image
+# answers 302 and redirects to a small HTML error page, so check the SIZE,
+# not just the status code.
+#
+# ALL OR NOTHING PER STYLE+VIEW. crops.json holds ONE crop box per style per
+# view. Swapping only some colours of a style would leave the others cropped
+# to a box measured from a differently-framed photo. If any colour lacks a
+# flat, the whole style+view keeps its form shots and stays self-consistent.
+#
+# Network failure is not fatal: anything that cannot be confirmed keeps the
+# form image, which is exactly what the catalog ships today.
+# ---------------------------------------------------------------------------
+FLAT_MIN_BYTES = 20000          # a real 1200x1800 still is ~100-400 KB
+FLAT_PROBE_WORKERS = 24
+FLAT_PROBE_TIMEOUT = 20
+
+
+def _flat_sibling(url):
+    """The flat-lay URL for a form URL, or None if it is not a form URL."""
+    if "_form_front" in url:
+        return url.replace("_form_front", "_flat_front")
+    if "_form_back" in url:
+        return url.replace("_form_back", "_flat_back")
+    return None
+
+
+def prefer_flat_images(products):
+    import concurrent.futures
+    import urllib.request
+
+    groups = {}                 # (style, view) -> {form_url, ...}
+    for p in products:
+        for c in p.get("colors") or []:
+            imgs = c.get("images") or {}
+            for key, view in (("front_flat", "f"), ("back_flat", "b")):
+                url = imgs.get(key) or ""
+                if _flat_sibling(url):
+                    groups.setdefault((p["style"], view), set()).add(url)
+
+    if not groups:
+        log("  no 'form' images in the catalog -- nothing to upgrade")
+        return products
+
+    todo = sorted({u for urls in groups.values() for u in urls})
+    log(f"  {len(todo)} form images across {len(groups)} style+view groups "
+        f"-- probing for flat lays")
+
+    def has_flat(url):
+        target = _flat_sibling(url)
+        req = urllib.request.Request(target, method="HEAD")
+        try:
+            with urllib.request.urlopen(req, timeout=FLAT_PROBE_TIMEOUT) as r:
+                size = int(r.headers.get("Content-Length") or 0)
+                return url, r.status == 200 and size >= FLAT_MIN_BYTES
+        except Exception:
+            return url, False
+
+    found = {}
+    with concurrent.futures.ThreadPoolExecutor(FLAT_PROBE_WORKERS) as pool:
+        for url, ok in pool.map(has_flat, todo):
+            found[url] = ok
+
+    upgrade = {k for k, urls in groups.items() if all(found.get(u) for u in urls)}
+    swapped = 0
+    for p in products:
+        for view, key in (("f", "front_flat"), ("b", "back_flat")):
+            if (p["style"], view) not in upgrade:
+                continue
+            for c in p.get("colors") or []:
+                imgs = c.get("images") or {}
+                target = _flat_sibling(imgs.get(key) or "")
+                if target:
+                    imgs[key] = target
+                    swapped += 1
+
+    kept = len(groups) - len(upgrade)
+    log(f"  upgraded {len(upgrade)} style+view groups to flat lays "
+        f"({swapped} images); {kept} kept their form shots (no flat published)")
+    log("  NOTE: crops.json must be regenerated for the upgraded styles")
+    return products
+
+
+# ---------------------------------------------------------------------------
 # Filtering
 # ---------------------------------------------------------------------------
 def apply_filters(products, filters):
@@ -735,6 +832,11 @@ def main():
 
     # Filter
     products = apply_filters(products, filters)
+
+    # Swap SanMar's angled "form" shots for true flat lays where they exist.
+    # Runs AFTER filtering so it only probes the styles we actually ship.
+    if filters.get("prefer_flat_images", True):
+        products = prefer_flat_images(products)
 
     # Merge custom
     if filters.get("merge_custom_products", True):

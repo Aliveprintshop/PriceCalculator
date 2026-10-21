@@ -1337,7 +1337,12 @@
    Phones only. At >=980px the block sits beside the photo in .colR
    where its height costs nothing, so desktop keeps the original.
    =================================================================== */
-#alive-flow .dsgn{display:grid;gap:8px;margin:0 0 4px}
+/* min-width:0 all the way down. The row text is nowrap-with-ellipsis, so
+   without this every grid item's automatic minimum is its FULL text width —
+   two design rows then push the whole column past a 390px phone and the page
+   scrolls sideways. The ellipsis is the point; let it do its job. */
+#alive-flow .dsgn{display:grid;gap:8px;margin:0 0 4px;min-width:0}
+#alive-flow .dsgn>*{min-width:0}
 #alive-flow .dsgn .optsline{display:flex;align-items:center;justify-content:space-between;gap:10px;
   width:100%;border:1px solid var(--border);background:#fff;border-radius:13px;padding:11px 12px;
   text-align:left;font-family:inherit;cursor:pointer}
@@ -1346,9 +1351,10 @@
 #alive-flow .dsgn .optsline b{display:block;font-family:var(--disp);font-weight:800;font-size:14px;
   text-transform:none;letter-spacing:-.01em}
 #alive-flow .dsgn .optsline .go{flex:0 0 auto;color:var(--blue,#1b6cce);font-weight:700;font-size:11.5px}
-#alive-flow .drows{display:grid;gap:7px}
+#alive-flow .drows{display:grid;gap:7px;min-width:0}
+#alive-flow .drows>*{min-width:0}
 #alive-flow .drow{display:flex;align-items:center;gap:9px;border:1px solid var(--border);
-  background:#fff;border-radius:12px;padding:8px 10px 8px 8px;min-height:56px}
+  background:#fff;border-radius:12px;padding:8px 10px 8px 8px;min-height:56px;min-width:0}
 #alive-flow .drow.todo{border-style:dashed;border-color:var(--blue-mid,#a8c8f0);background:var(--blue-light,#eef4fc)}
 #alive-flow .drow.warnrow{border-color:var(--amber,#b45309)}
 #alive-flow .drow-hit{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:9px;
@@ -4233,6 +4239,23 @@ function overlay(){
   /* No design on this side yet: the upload button sits right on the garment. */
   if(!here.length && S.phase === 'artwork' && S.mode !== 'later'){
     var k = S.locs.filter(function(x){ return LOC[x] && LOC[x].side === S.side && !S.art[x]; })[0];
+
+    /* Nothing is printing on this side yet — so offer it anyway.
+       The button used to appear only for a location already in S.locs, which
+       meant flipping to BACK showed a bare garment and no way in. Adding a
+       back logo meant finding Print > Change > Back first, and nobody does
+       that; they assume the back cannot be printed.
+
+       `addLoc` makes the upload BE the way you add the location. The location
+       is not added on the tap, only once a file is actually chosen — tapping
+       and then cancelling the file dialog must not quietly reprice the
+       order. */
+    var addLoc = false;
+    if(!k){
+      k = Object.keys(LOC).filter(function(x){
+        return LOC[x].side === S.side && S.locs.indexOf(x) < 0 && !S.art[x]; })[0];
+      addLoc = !!k;
+    }
     if(k){
       var busy = S.busy === k;
       /* Sit on the spot the artwork will actually land on. The CSS default
@@ -4241,12 +4264,22 @@ function overlay(){
          button on the brim. defaultPlace() is in the same photo coordinates the
          placed layer uses, so the button is now a true preview. */
       var up = defaultPlace(k);
+      /* ...but only VERTICALLY for the small placements. The button is about
+         220px wide; a left-chest print is 12% of the photo. Centring that box
+         on the chest spot hangs it over the sleeve and off the shoulder —
+         worst on polos, whose bodies are narrow — and it reads as crooked
+         rather than as a print area. The box is a tap target, not a preview:
+         its label already says which location it is. So keep it level with
+         the print, centred on the garment. Anything that genuinely fills its
+         spot (full front, back, a cap) is at 0.5 already and unchanged. */
+      var upx = up.w < 0.2 ? 0.5 : up.cx;
       /* The box sits ON the garment, so its contrast follows the garment:
          white type over a dark scrim on dark colours, dark type over a light
          one on pale colours. Mid greys fall to the dark treatment. */
       var tone = garmentIsDark() ? ' on-dark' : ' on-light';
-      return '<button type="button" class="stage-up' + tone + '" data-add="' + k + '"' + (busy ? ' disabled' : '') +
-        ' style="left:' + (up.cx * 100).toFixed(2) + '%;top:' + (up.cy * 100).toFixed(2) + '%">' +
+      return '<button type="button" class="stage-up' + tone + '" data-add="' + k + '"' +
+        (addLoc ? ' data-addloc="1"' : '') + (busy ? ' disabled' : '') +
+        ' style="left:' + (upx * 100).toFixed(2) + '%;top:' + (up.cy * 100).toFixed(2) + '%">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>' +
         '<b>' + (busy ? 'Reading your file…' : 'Upload your design') + '</b><em>' + esc(LOC[k].label) + ' · PNG, JPG, PDF, AI</em></button>';
     }
@@ -4450,11 +4483,22 @@ function startDrag(e, key, mode){
 }
 
 /* upload + analysis */
-function pickFile(k){
+function pickFile(k, addLoc){
   var inp = document.createElement('input');
   inp.type = 'file';
   inp.accept = 'image/*,.pdf,.ai,.eps,.svg,.psd,.zip,application/pdf,application/postscript,application/zip';
-  inp.onchange = function(){ var f = inp.files && inp.files[0]; if(f) takeFile(k, f); };
+  inp.onchange = function(){
+    var f = inp.files && inp.files[0];
+    if(!f) return;
+    /* Only now. A cancelled file dialog must leave the order exactly as it
+       was — adding the location on the tap would change the price for
+       somebody who was only looking. */
+    if(addLoc && S.locs.indexOf(k) < 0){
+      S.locs.push(k);
+      if(S.mode === 'later' && needsInkCount(k)) setTimeout(laterPrompt, 0);
+    }
+    takeFile(k, f);
+  };
   inp.click();
 }
 function thumbFrom(im){
@@ -5046,7 +5090,7 @@ function wire(){
   root.querySelectorAll('[data-mode]').forEach(function(b){
     b.onclick = function(){ S.mode = b.dataset.mode; if(S.mode === 'later') trackDesign('later'); render(); };
   });
-  root.querySelectorAll('[data-add]').forEach(function(b){ b.onclick = function(e){ e.stopPropagation(); pickFile(b.dataset.add); }; });
+  root.querySelectorAll('[data-add]').forEach(function(b){ b.onclick = function(e){ e.stopPropagation(); pickFile(b.dataset.add, b.dataset.addloc === '1'); }; });
   root.querySelectorAll('.size').forEach(function(t){ t.onclick = function(e){ if(e.target.tagName !== 'INPUT'){ var i = t.querySelector('input'); if(i) i.focus(); } }; });
   root.querySelectorAll('[data-opts]').forEach(function(b){ b.onclick = function(){ S.optsOpen = b.dataset.opts === '1'; render(); }; });
   root.querySelectorAll('[data-del]').forEach(function(b){ b.onclick = function(){ delete S.art[b.dataset.del]; if(S.sel === b.dataset.del) S.sel = null; render(); }; });

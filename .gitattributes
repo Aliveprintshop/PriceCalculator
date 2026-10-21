@@ -13,3 +13,9 @@
 products.json  text eol=lf
 crops.json     text eol=lf
 reviews.json   text eol=lf
+
+# Same problem, same fix, for the pages themselves. On 21 Oct alive-product.html
+# showed as fully modified with not one byte of real change — something on this
+# machine had rewritten it with CRLF. Every tracked .html is stored LF, so this
+# normalises without churn.
+*.html         text eol=lf
