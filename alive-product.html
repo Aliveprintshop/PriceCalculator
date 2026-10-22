@@ -2820,9 +2820,32 @@ function deviceClass(){
   var w = window.innerWidth || 0;
   return w < 640 ? 'phone' : (w < 1024 ? 'tablet' : 'desktop');
 }
+/* Last-touch attribution, kept on this origin so it survives the hop from the
+   product page to the checkout. The checkout lives at /cart/ and never carries
+   the ad's utm parameters, so without this a customer who arrived on an ad
+   tagged `ig` would be counted under `ig` when they open a product and under
+   `untagged` when they pay -- and the ad would look like it never converted.
+
+   A visit that arrives WITH a utm_source overwrites what is stored; one that
+   arrives without keeps it. That is last-touch, which is how an ad platform
+   reports its own results. */
+function attribution(){
+  var k = 'alive_attr', cur = qp('utm_source');
+  try{
+    if(cur){
+      var fresh = {source: cur, medium: qp('utm_medium'), campaign: qp('utm_campaign')};
+      localStorage.setItem(k, JSON.stringify(fresh));
+      return fresh;
+    }
+    var raw = localStorage.getItem(k);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {source:null, medium:null, campaign:null};
+}
 function beacon(ev, params){
   var vid = visitorId(); if(!vid) return;
   params = params || {};
+  var attr = attribution();
   var items = params.items && params.items[0];
   try{
     var body = JSON.stringify({
@@ -2831,9 +2854,7 @@ function beacon(ev, params){
       method: params.method || S.method || null,
       value: params.value == null ? null : params.value,
       qty: params.qty == null ? (items && items.quantity) || null : params.qty,
-      /* The embed forwards the landing page's query string into this frame, so
-         an ad link carrying utm_source arrives here intact. */
-      source: qp('utm_source'), medium: qp('utm_medium'), campaign: qp('utm_campaign')
+      source: attr.source, medium: attr.medium, campaign: attr.campaign
     });
     if(navigator.sendBeacon){
       navigator.sendBeacon(EV_URL, new Blob([body], {type:'text/plain;charset=UTF-8'}));

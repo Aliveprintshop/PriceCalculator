@@ -1173,7 +1173,72 @@ function money(n){ return n==null ? '—' : '$' + (+n).toLocaleString('en-US',{m
 function nav(url){ if(EMBEDDED){ try{ window.top.location.href = url; return; }catch(e){} } window.location.href = url; }
 var root = document.getElementById('alive-flow');
 /* Funnel events: the WordPress page forwards these to GA4, Tag Manager and the Meta pixel. */
-function track(ev, params){ if(!EMBEDDED) return; try{ window.parent.postMessage({type:'alive-track', event:ev, params:params || {}}, '*'); }catch(e){} }
+/* ---- the funnel's last two steps, to GA4 and to our own Worker -------------
+   The product page beacons the first five steps. Without the same treatment
+   here, `begin_checkout` and `purchase` reach GA4 but never reach the Alive
+   dashboard, so its funnel stops at "Completed a config" and conversion can
+   only ever report the cart rate.
+
+   This page is served from the same origin as the product page, so it reads
+   the SAME visitor id and the SAME stored attribution out of localStorage --
+   which is the only reason a purchase can be joined to the ad click that
+   started it. /cart/ never carries the utm parameters itself.
+
+   sendBeacon with a text/plain body: it cannot perform a CORS preflight, and
+   application/json would force one, so the request would fail silently. */
+var EV_URL = 'https://alive-orders.austin-662.workers.dev/api/ev';
+function visitorId(){
+  try{
+    var k = 'alive_vid', v = localStorage.getItem(k);
+    if(!v){ v = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+            localStorage.setItem(k, v); }
+    return v;
+  }catch(e){ return null; }
+}
+function deviceClass(){
+  var w = window.innerWidth || 0;
+  return w < 640 ? 'phone' : (w < 1024 ? 'tablet' : 'desktop');
+}
+function attribution(){
+  var k = 'alive_attr', cur = qp('utm_source');
+  try{
+    if(cur){
+      var fresh = {source: cur, medium: qp('utm_medium'), campaign: qp('utm_campaign')};
+      localStorage.setItem(k, JSON.stringify(fresh));
+      return fresh;
+    }
+    var raw = localStorage.getItem(k);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {source:null, medium:null, campaign:null};
+}
+function evBeacon(ev, params){
+  var vid = visitorId(); if(!vid) return;
+  params = params || {};
+  var attr = attribution(), first = (params.items && params.items[0]) || null;
+  try{
+    var body = JSON.stringify({
+      name: ev, visitor: vid, device: deviceClass(),
+      style: first ? String(first.item_id) : null,
+      method: null,
+      value: params.value == null ? null : params.value,
+      qty: first && first.quantity != null ? first.quantity : null,
+      source: attr.source, medium: attr.medium, campaign: attr.campaign
+    });
+    if(navigator.sendBeacon){
+      navigator.sendBeacon(EV_URL, new Blob([body], {type:'text/plain;charset=UTF-8'}));
+    }else{
+      fetch(EV_URL, {method:'POST', headers:{'content-type':'text/plain;charset=UTF-8'},
+                     body: body, keepalive: true}).catch(function(){});
+    }
+  }catch(e){}
+}
+function track(ev, params){
+  params = params || {};
+  evBeacon(ev, params);
+  if(!EMBEDDED) return;
+  try{ window.parent.postMessage({type:'alive-track', event:ev, params:params}, '*'); }catch(e){}
+}
 function gaItems(){ return S.items.map(function(it){ return {item_id:String(it.style), item_name:it.productName || it.style, item_brand:it.brand || '', item_variant:it.color || '', price:+(+it.unitPrice || 0).toFixed(2), quantity:it.qty | 0}; }); }
 function once(key){ try{ if(sessionStorage.getItem(key)) return false; sessionStorage.setItem(key, '1'); }catch(e){} return true; }
 function broadcast(){
