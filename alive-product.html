@@ -2783,6 +2783,11 @@ function nav(url){
 function cartUrl(){ return EMBEDDED ? CONFIG.pages[FLOW].cart : CONFIG.standaloneCart + (FLOW==='stage'?'?flow=stage':''); }
 /* Funnel events: the WordPress page forwards these to GA4, Tag Manager and the Meta pixel. */
 function track(ev, params){ if(!EMBEDDED) return; try{ window.parent.postMessage({type:'alive-track', event:ev, params:params || {}}, '*'); }catch(e){} }
+/* Funnel steps fire ONCE per visit, so the counts read as people rather than
+   keystrokes or back-and-forth between steps. GA4 would dedupe by user anyway;
+   this keeps the raw event count honest too. */
+var _step = {};
+function trackStep(ev, params){ if(_step[ev]) return; _step[ev] = 1; track(ev, params); }
 function gaItem(qty, price){ return {item_id:String(S.p.style), item_name:cleanName(S.p), item_brand:S.p.brand || '', item_variant:(S.colors[S.color] || {}).name || '', price:+(price || 0).toFixed(2), quantity:qty || 1}; }
 var designTracked = false;
 function trackDesign(how){ if(designTracked) return; designTracked = true; track('alive_design_added', {item_id:String(S.p.style), method:S.method, how:how}); }
@@ -5003,6 +5008,14 @@ function go(phase, scroll){
      design step, so it is already done when they add to cart. Fire and forget —
      it must never hold up moving on. */
   if(phase !== 'artwork' && S.phase === 'artwork'){ try{ saveAllMockups(); }catch(e){} }
+  /* Every route into a step runs through here -- the Continue bar, the numbered
+     step chips and the auto-advance -- so this is the one place that sees them
+     all. Without it the funnel cannot tell someone who reached the size grid and
+     gave up from someone who never left the design step. */
+  if(phase === 'sizes' && S.phase !== 'sizes' && S.p){
+    trackStep('continue_to_sizes', {item_id:String(S.p.style), method:S.method,
+                                    locations:S.locs.length});
+  }
   S.phase = phase; S.gal = null; S.sel = null;
   ensureFrame();
   render();
@@ -5052,6 +5065,10 @@ function wire(){
       var v = inp.value.replace(/\D/g,'').slice(0,5); if(inp.value !== v) inp.value = v;
       var n = parseInt(v,10) || 0; if(n) S.sizes[inp.dataset.size] = n; else delete S.sizes[inp.dataset.size];
       inp.parentNode.classList.toggle('has', !!n); refreshPrice();
+      /* The first real quantity typed. The gap between continue_to_sizes and
+         this one is the size grid's own drop-off. */
+      if(n && S.p) trackStep('sizes_entered', {item_id:String(S.p.style),
+                                               method:S.method});
     };
   });
   /* Accordions remember themselves, so a colour change or a redraw doesn't
