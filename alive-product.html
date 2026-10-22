@@ -2782,12 +2782,67 @@ function nav(url){
 }
 function cartUrl(){ return EMBEDDED ? CONFIG.pages[FLOW].cart : CONFIG.standaloneCart + (FLOW==='stage'?'?flow=stage':''); }
 /* Funnel events: the WordPress page forwards these to GA4, Tag Manager and the Meta pixel. */
-function track(ev, params){ if(!EMBEDDED) return; try{ window.parent.postMessage({type:'alive-track', event:ev, params:params || {}}, '*'); }catch(e){} }
+function track(ev, params){
+  params = params || {};
+  beacon(ev, params);
+  if(!EMBEDDED) return;
+  try{ window.parent.postMessage({type:'alive-track', event:ev, params:params}, '*'); }catch(e){}
+}
 /* Funnel steps fire ONCE per visit, so the counts read as people rather than
    keystrokes or back-and-forth between steps. GA4 would dedupe by user anyway;
    this keeps the raw event count honest too. */
 var _step = {};
 function trackStep(ev, params){ if(_step[ev]) return; _step[ev] = 1; track(ev, params); }
+
+/* ---- our own copy of the funnel, posted to the orders Worker ----------------
+   GA4 gets these already, via the parent page. This sends the same steps to
+   alive-orders so the Alive dashboard can show the funnel without a Google
+   service account, and without losing the slice ad blockers remove.
+
+   sendBeacon, so it survives the navigation to the cart and can never delay a
+   click. Note the content type: sendBeacon cannot perform a CORS preflight, and
+   application/json would force one, so the body goes as text/plain. The Worker
+   parses the bytes, not the header.
+
+   The visitor id is random, kept in localStorage on this origin, and carries no
+   personal data. Both this page and the checkout are served from the same
+   origin, so one id follows the whole funnel through to purchase. */
+var EV_URL = CONFIG.ordersEndpoint.replace(/\/+$/, '') + '/api/ev';
+function visitorId(){
+  try{
+    var k = 'alive_vid', v = localStorage.getItem(k);
+    if(!v){ v = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+            localStorage.setItem(k, v); }
+    return v;
+  }catch(e){ return null; }           /* private window: no id, so no beacon */
+}
+function deviceClass(){
+  var w = window.innerWidth || 0;
+  return w < 640 ? 'phone' : (w < 1024 ? 'tablet' : 'desktop');
+}
+function beacon(ev, params){
+  var vid = visitorId(); if(!vid) return;
+  params = params || {};
+  var items = params.items && params.items[0];
+  try{
+    var body = JSON.stringify({
+      name: ev, visitor: vid, device: deviceClass(),
+      style: params.item_id || (items && items.item_id) || (S.p && S.p.style) || null,
+      method: params.method || S.method || null,
+      value: params.value == null ? null : params.value,
+      qty: params.qty == null ? (items && items.quantity) || null : params.qty,
+      /* The embed forwards the landing page's query string into this frame, so
+         an ad link carrying utm_source arrives here intact. */
+      source: qp('utm_source'), medium: qp('utm_medium'), campaign: qp('utm_campaign')
+    });
+    if(navigator.sendBeacon){
+      navigator.sendBeacon(EV_URL, new Blob([body], {type:'text/plain;charset=UTF-8'}));
+    }else{
+      fetch(EV_URL, {method:'POST', headers:{'content-type':'text/plain;charset=UTF-8'},
+                     body: body, keepalive: true}).catch(function(){});
+    }
+  }catch(e){}
+}
 function gaItem(qty, price){ return {item_id:String(S.p.style), item_name:cleanName(S.p), item_brand:S.p.brand || '', item_variant:(S.colors[S.color] || {}).name || '', price:+(price || 0).toFixed(2), quantity:qty || 1}; }
 var designTracked = false;
 function trackDesign(how){ if(designTracked) return; designTracked = true; track('alive_design_added', {item_id:String(S.p.style), method:S.method, how:how}); }
