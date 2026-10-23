@@ -1,0 +1,59 @@
+name: Refresh newsletter turnaround dates
+
+# The weekly email shows three turnaround date cards (Super Rush, Rush,
+# Standard) as one picture, media/nl-turnaround-dates.png. This redraws it
+# every morning so whoever opens the email sees that day's dates.
+#
+# It only commits the picture. The nightly "Sync SanMar catalog nightly" run
+# (14:00 UTC) copies media/ to the live site, so this runs two hours earlier
+# to stay ahead of it even when GitHub starts scheduled jobs late. Dates are
+# worked out for the current day in Las Vegas.
+
+on:
+  schedule:
+    - cron: '15 12 * * *'   # 12:15 UTC = 4:15am PST / 5:15am PDT
+  workflow_dispatch:         # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: write
+
+# Same queue as the nightly sync and the publish, so none of them collide.
+concurrency:
+  group: sanmar-sync
+  cancel-in-progress: false
+
+jobs:
+  dates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Pillow
+        run: python -m pip install pillow
+
+      - name: Draw the date cards
+        run: python newsletter/make-dates.py
+
+      - name: Commit the picture if it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add media/nl-turnaround-dates.png
+          if git diff --staged --quiet; then
+            echo "Dates unchanged - nothing to commit"
+            exit 0
+          fi
+          git commit -m "chore: newsletter turnaround dates $(date -u +%Y-%m-%d)"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin main && exit 0
+            echo "Push rejected, retrying ($attempt/3)"
+            sleep 5
+          done
+          echo "::error::Could not push the dates picture after 3 attempts"
+          exit 1
