@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T18:28:26.789271+00:00",
+  "generated_at": "2026-10-23T18:14:55.399586+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -156648,8 +156648,8 @@
       "style": "EB555",
       "name": "Eddie Bauer Women's WeatherEdge Plus Insulated Jacket. EB555",
       "brand": "Eddie Bauer",
-      "category": "Outerwear",
-      "subcategory": "Women's",
+      "category": "Women's",
+      "subcategory": "Outerwear",
       "description": "Built to outlast the elements this fully seam-sealed technical jacket has exceptional 10K/10K fabric waterproof and breathability ratings thanks to exclusive WeatherEdge Plus technology. Exclusive StormRepel durable water-repellent (DWR) coating adds extra exterior weather protection. Fully insulated this jacket also provides long-lasting warmth and comfort when temps drop. Detachable adjustable hood with locking drawcord full-length exterior storm flap and ventilating pit zips. Princess seams. Welded front zippered pockets with waterproof zippers. Interior pocket with elastic to store goggles hat and bulkier items. Adjustable tab cuffs with hook and loop closures. Adjustable locking drawcord hem. Decoration access pocket. Contrast WeatherEdge Plus logo heat transfer on left sleeve. Contrast Eddie Bauer logo heat transfer on right hem. Made of 100% polyester with durable water-repellent (DWR) coating and TPU film.",
       "case_price": 82.72,
       "case_sale_price": null,
@@ -166503,7 +166503,7 @@
           "name": "Battleship Grey",
           "code": "Battleship Gry",
           "hex": "#8B8D8E",
-          "pms": "7540 C",
+          "pms": null,
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2014/f1/J317_battleshipgrey_model_front.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2014/f1/J317_battleshipgrey_model_back.jpg",
@@ -166529,7 +166529,7 @@
           "name": "Deep Smoke",
           "code": "Deep Smoke",
           "hex": "#7A7A7A",
-          "pms": "425C",
+          "pms": "4292C",
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2025/f1/J317_deepsmoke_model_front.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2025/f1/J317_deepsmoke_model_back.jpg",
@@ -166542,7 +166542,7 @@
           "name": "Forest Green",
           "code": "Forest Green",
           "hex": "#2E5033",
-          "pms": "553C",
+          "pms": "6161C",
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2025/f1/J317_forestgreen_model_front.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2025/f1/J317_forestgreen_model_back.jpg",
@@ -166555,7 +166555,7 @@
           "name": "Maroon",
           "code": "Maroon",
           "hex": "#66253F",
-          "pms": "504C",
+          "pms": "7428C",
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2025/f1/J317_maroon_model_front.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2025/f1/J317_maroon_model_back.jpg",
