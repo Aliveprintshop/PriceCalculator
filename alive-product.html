@@ -5667,11 +5667,14 @@ function welcomeCss(){
   '#aw-ov .aw-code b{font-family:"Montserrat",sans-serif;font-weight:800;font-size:19px;letter-spacing:.06em;color:#1558a8;word-break:break-all;text-align:left;}' +
   '#aw-ov .aw-copy{flex:none;border:0;border-radius:9px;background:#1b6cce;color:#fff;font-family:"Montserrat",sans-serif;font-weight:700;font-size:12px;padding:10px 14px;cursor:pointer;}' +
   '#aw-ov p{margin:0;font-size:14px;line-height:1.55;color:#374151;}' +
-  'html.aw-take body>*:not(#aw-ov){display:none!important;}' +
-  'html.aw-take #aw-ov{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-height:780px;background:linear-gradient(180deg,#eef4fc,#fff);padding:48px 14px 64px;align-items:flex-start;}' +
-  'html.aw-take #aw-ov .aw-card{margin:0 auto;box-shadow:0 18px 50px rgba(15,23,42,.18);max-height:none;}' +
+  '@keyframes awfade{from{opacity:0}to{opacity:1}}@keyframes awrise{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}' +
+  '#aw-ov{animation:awfade .35s ease-out both;}#aw-ov .aw-card{animation:awrise .4s cubic-bezier(.2,.8,.2,1) both;}' +
+  '#aw-ov.aw-emb{position:absolute;left:0;top:0;right:0;bottom:0;width:auto;height:auto;display:block;padding:0;}' +
+  '#aw-ov.aw-emb .aw-wrap{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;padding:0 12px;will-change:transform;}' +
+  '#aw-ov.aw-emb.aw-go .aw-wrap{transition:transform .32s cubic-bezier(.22,.8,.3,1);}' +
+  '@media (prefers-reduced-motion:reduce){#aw-ov,#aw-ov .aw-card,#aw-ov.aw-emb.aw-go .aw-wrap{animation:none!important;transition:none!important;}}' +
   'html.aw-lock,html.aw-lock body{overflow:hidden!important;}' +
-  '@media (max-width:420px){html.aw-take #aw-ov{min-height:640px;padding:24px 10px 48px;}#aw-ov .aw-top .aw-big{font-size:30px;}#aw-ov .aw-body{padding:18px 16px 16px;}#aw-ov .aw-grid{gap:8px;}}';
+  '@media (max-width:420px){#aw-ov .aw-top .aw-big{font-size:30px;}#aw-ov .aw-body{padding:18px 16px 16px;}#aw-ov .aw-grid{gap:8px;}}';
   document.head.appendChild(s);
 }
 function welcomeClose(remember){
@@ -5679,9 +5682,7 @@ function welcomeClose(remember){
   if(remember) wlSet(WELCOME.K_NO, {at: Date.now()});
   if(b.parentNode) b.parentNode.removeChild(b);
   WELCOME.box = null;
-  var de = document.documentElement; de.classList.remove('aw-take'); de.classList.remove('aw-lock');
-  if(WELCOME.back != null){ var y = WELCOME.back; WELCOME.back = null;
-    setTimeout(function(){ try{ window.parent.postMessage({type:'alive-scrollto', y:y}, '*'); }catch(e){} }, 120); }
+  document.documentElement.classList.remove('aw-lock');
   document.removeEventListener('keydown', welcomeKey, true);
 }
 function welcomeKey(e){
@@ -5761,15 +5762,27 @@ function welcomeOpen(){
   box.innerHTML = '<div class="aw-card"></div>';
   document.body.appendChild(box);
   WELCOME.box = box;
-  /* Inside the WordPress embed the page is one tall auto-height frame, so a floating
-     overlay has to chase the parent's scroll and looks jumpy. Instead the pop-up takes
-     over the whole frame (everything else is hidden), so it is just a block that scrolls
-     with the page. Closing brings the page back to where the customer was. */
+  /* Inside the WordPress embed the page is one tall auto-height frame. The dim backdrop
+     covers the whole frame and never moves; only the card glides to the middle of what
+     the customer can see (eased, so scrolling never looks jumpy). */
   if(EMBEDDED){
-    var s0 = window.AliveViewport && window.AliveViewport.slice;
-    WELCOME.back = s0 ? Math.max(0, Math.round(s0.visTop)) : 0;
-    document.documentElement.classList.add('aw-take');
-    try{ window.parent.postMessage({type:'alive-scrollto', y:0}, '*'); }catch(e){}
+    box.className = 'aw-emb';
+    var card0 = box.querySelector('.aw-card'), wrap = document.createElement('div');
+    wrap.className = 'aw-wrap'; box.replaceChild(wrap, card0); wrap.appendChild(card0);
+    var last = -1;
+    var place = function(){
+      if(!WELCOME.box) return;
+      var s = window.AliveViewport && window.AliveViewport.slice; if(!s) return;
+      var vh = Math.max(260, s.visBottom - s.visTop);
+      card0.style.maxHeight = Math.round(vh - 24) + 'px';
+      var y = Math.round(s.visTop + Math.max(12, (vh - card0.offsetHeight) / 2));
+      if(y === last) return; last = y;
+      wrap.style.transform = 'translateY(' + y + 'px)';
+    };
+    place();
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(WELCOME.box) box.classList.add('aw-go'); }); });
+    if(window.AliveViewport) window.AliveViewport.subscribe(place);
+    if(window.ResizeObserver) new ResizeObserver(place).observe(card0);
   }else{
     document.documentElement.classList.add('aw-lock');
   }
