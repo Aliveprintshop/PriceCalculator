@@ -5667,7 +5667,11 @@ function welcomeCss(){
   '#aw-ov .aw-code b{font-family:"Montserrat",sans-serif;font-weight:800;font-size:19px;letter-spacing:.06em;color:#1558a8;word-break:break-all;text-align:left;}' +
   '#aw-ov .aw-copy{flex:none;border:0;border-radius:9px;background:#1b6cce;color:#fff;font-family:"Montserrat",sans-serif;font-weight:700;font-size:12px;padding:10px 14px;cursor:pointer;}' +
   '#aw-ov p{margin:0;font-size:14px;line-height:1.55;color:#374151;}' +
-  '@media (max-width:420px){#aw-ov .aw-top .aw-big{font-size:30px;}#aw-ov .aw-body{padding:18px 16px 16px;}#aw-ov .aw-grid{gap:8px;}}';
+  'html.aw-take body>*:not(#aw-ov){display:none!important;}' +
+  'html.aw-take #aw-ov{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-height:780px;background:linear-gradient(180deg,#eef4fc,#fff);padding:48px 14px 64px;align-items:flex-start;}' +
+  'html.aw-take #aw-ov .aw-card{margin:0 auto;box-shadow:0 18px 50px rgba(15,23,42,.18);max-height:none;}' +
+  'html.aw-lock,html.aw-lock body{overflow:hidden!important;}' +
+  '@media (max-width:420px){html.aw-take #aw-ov{min-height:640px;padding:24px 10px 48px;}#aw-ov .aw-top .aw-big{font-size:30px;}#aw-ov .aw-body{padding:18px 16px 16px;}#aw-ov .aw-grid{gap:8px;}}';
   document.head.appendChild(s);
 }
 function welcomeClose(remember){
@@ -5675,6 +5679,9 @@ function welcomeClose(remember){
   if(remember) wlSet(WELCOME.K_NO, {at: Date.now()});
   if(b.parentNode) b.parentNode.removeChild(b);
   WELCOME.box = null;
+  var de = document.documentElement; de.classList.remove('aw-take'); de.classList.remove('aw-lock');
+  if(WELCOME.back != null){ var y = WELCOME.back; WELCOME.back = null;
+    setTimeout(function(){ try{ window.parent.postMessage({type:'alive-scrollto', y:y}, '*'); }catch(e){} }, 120); }
   document.removeEventListener('keydown', welcomeKey, true);
 }
 function welcomeKey(e){
@@ -5754,19 +5761,18 @@ function welcomeOpen(){
   box.innerHTML = '<div class="aw-card"></div>';
   document.body.appendChild(box);
   WELCOME.box = box;
-  /* Inside the WordPress embed the page is one tall auto-height frame, so pin the
-     overlay to the slice the customer can actually see. */
-  function place(){
-    if(!WELCOME.box) return;
-    var s = window.AliveViewport && window.AliveViewport.slice;
-    if(s && EMBEDDED){
-      box.style.position = 'absolute'; box.style.left = '0'; box.style.width = '100%';
-      box.style.top = Math.round(s.visTop) + 'px';
-      box.style.height = Math.round(Math.max(260, s.visBottom - s.visTop)) + 'px';
-    }
+  /* Inside the WordPress embed the page is one tall auto-height frame, so a floating
+     overlay has to chase the parent's scroll and looks jumpy. Instead the pop-up takes
+     over the whole frame (everything else is hidden), so it is just a block that scrolls
+     with the page. Closing brings the page back to where the customer was. */
+  if(EMBEDDED){
+    var s0 = window.AliveViewport && window.AliveViewport.slice;
+    WELCOME.back = s0 ? Math.max(0, Math.round(s0.visTop)) : 0;
+    document.documentElement.classList.add('aw-take');
+    try{ window.parent.postMessage({type:'alive-scrollto', y:0}, '*'); }catch(e){}
+  }else{
+    document.documentElement.classList.add('aw-lock');
   }
-  place();
-  if(window.AliveViewport) window.AliveViewport.subscribe(place);
   box.addEventListener('click', function(e){
     var t = e.target;
     if(t === box){ welcomeClose(!wlGet(WELCOME.K)); track('welcome_dismissed', {how:'backdrop'}); return; }
