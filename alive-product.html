@@ -5622,11 +5622,14 @@ var WELCOME = {
   pay: 'https://alive-checkout.austin-662.workers.dev',
   purposes: ['Business', 'School', 'Event', 'Clothing Brand', 'Church', 'Marketing'],
   logo: 'https://aliveprintshop.github.io/PriceCalculator/media/alive-logo-white.png',
+  /* PAUSED 26 Oct 2026 until the checkout Worker's Stripe key can create coupons. Set false to turn the pop-up back on. */
+  PAUSED: true,
   box: null, purpose: '', busy: false, shown: false
 };
 function wlGet(k){ try{ return JSON.parse(localStorage.getItem(k) || 'null'); }catch(e){ return null; } }
 function wlSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 function welcomeEligible(){
+  if(WELCOME.PAUSED && !qp('welcome')) return false;   /* ?welcome=1 still shows it, for testing */
   if(WELCOME.shown) return false;
   if(qp('resume') || qp('edit') || qp('nopop')) return false;
   if(wlGet(WELCOME.K)) return false;                                   /* already has a code */
