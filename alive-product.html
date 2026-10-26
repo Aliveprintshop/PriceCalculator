@@ -5572,6 +5572,7 @@ function boot(data){
   if(qp('resume')) resumeDraft().then(function(ok){ if(ok){ ensureFrame(); render(); } });
   if(qp('intent') === 'upload') setTimeout(function(){ var u = root.querySelector('.stage-up, .slot[data-add]'); if(u){ scrollToEl(u); u.classList.add('pulse'); } }, 400);
   var u0 = unitNow(); track('view_item', {currency:'USD', value:+((u0 || 0)).toFixed(2), items:[gaItem(1, u0)]});
+  welcomeStart();
 }
 var CROPS = {};
 var cropsP = fetch(CONFIG.cropsJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS = j || {}; }).catch(function(){});
@@ -5600,10 +5601,197 @@ loadCatalog()
   .then(boot)
   .catch(function(err){ if(window.console) console.error('[Alive product]', err); fail('We could not load this product just now.'); });
 
+/* ------------------------------------------------------------ $25 WELCOME POP-UP
+   Early in the visit (after a few seconds, once per visitor) we offer $25 off a
+   first order of $250 or more (products + printing, before rush, shipping and
+   tax) in exchange for an email. Three steps: what are you ordering for →
+   email → the code.
+
+   - The checkout Worker (/welcome) issues the code. It is the SAME code every
+     time for the same address, and Stripe makes it single-use, so asking twice
+     cannot earn two discounts.
+   - The artwork Worker (/signup) keeps the address + answer so staff see it in
+     the dashboard's Follow up list. Fire-and-forget: it never blocks the code.
+   - The code is dropped into the cart's promo slot unless the customer already
+     has one, and checkout applies it once the order reaches $250.
+   - "No thanks" is always one click and is remembered for 14 days.
+   Self-contained on purpose: its own styles, its own storage keys, no hooks into
+   the product flow. */
+var WELCOME = {
+  K: 'alive_welcome_v1', K_NO: 'alive_welcome_no_v1', DAYS: 14, DELAY: 6000,
+  pay: 'https://alive-checkout.austin-662.workers.dev',
+  purposes: ['Business', 'School', 'Event', 'Clothing Brand', 'Church', 'Marketing'],
+  logo: 'https://aliveprintshop.github.io/PriceCalculator/media/alive-logo-white.png',
+  box: null, purpose: '', busy: false, shown: false
+};
+function wlGet(k){ try{ return JSON.parse(localStorage.getItem(k) || 'null'); }catch(e){ return null; } }
+function wlSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function welcomeEligible(){
+  if(WELCOME.shown) return false;
+  if(qp('resume') || qp('edit') || qp('nopop')) return false;
+  if(wlGet(WELCOME.K)) return false;                                   /* already has a code */
+  var no = wlGet(WELCOME.K_NO);
+  if(no && no.at && (Date.now() - no.at) < WELCOME.DAYS * 86400000) return false;
+  return true;
+}
+function welcomeCss(){
+  if(document.getElementById('aw-css')) return;
+  var s = document.createElement('style'); s.id = 'aw-css';
+  s.textContent =
+  '#aw-ov{position:fixed;left:0;top:0;width:100%;height:100%;z-index:2147483000;display:flex;align-items:center;justify-content:center;' +
+    'background:rgba(15,23,42,.58);padding:12px;box-sizing:border-box;font-family:"Open Sans",sans-serif;color:#1c1c1e;-webkit-font-smoothing:antialiased;}' +
+  '#aw-ov *{box-sizing:border-box;}' +
+  '#aw-ov .aw-card{position:relative;width:100%;max-width:440px;max-height:100%;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.35);}' +
+  '#aw-ov .aw-top{background:#1b6cce;color:#fff;text-align:center;padding:22px 24px 20px;border-radius:18px 18px 0 0;}' +
+  '#aw-ov .aw-top img{height:30px;width:auto;display:block;margin:0 auto 12px;}' +
+  '#aw-ov .aw-top .aw-big{font-family:"Montserrat",sans-serif;font-weight:800;font-size:34px;line-height:1;letter-spacing:-.02em;}' +
+  '#aw-ov .aw-top .aw-sub{font-family:"Montserrat",sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-top:7px;opacity:.95;}' +
+  '#aw-ov .aw-x{position:absolute;right:8px;top:8px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:22px;line-height:1;cursor:pointer;}' +
+  '#aw-ov .aw-x:hover{background:rgba(255,255,255,.32);}' +
+  '#aw-ov .aw-body{padding:22px 24px 20px;text-align:center;}' +
+  '#aw-ov h2{font-family:"Montserrat",sans-serif;font-weight:800;font-size:19px;line-height:1.2;margin:0 0 14px;color:#1c1c1e;}' +
+  '#aw-ov .aw-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}' +
+  '#aw-ov .aw-opt{min-height:48px;border:1.5px solid #d6dde8;border-radius:12px;background:#fff;color:#1c1c1e;font-family:"Montserrat",sans-serif;font-weight:700;font-size:14px;cursor:pointer;padding:8px 10px;}' +
+  '#aw-ov .aw-opt:hover,#aw-ov .aw-opt:focus-visible{border-color:#1b6cce;background:#eef4fc;color:#1558a8;outline:none;}' +
+  '#aw-ov input[type=email]{width:100%;height:50px;border:1.5px solid #d6dde8;border-radius:12px;padding:0 14px;font-size:16px;font-family:"Open Sans",sans-serif;color:#1c1c1e;}' +
+  '#aw-ov input[type=email]:focus{border-color:#1b6cce;outline:none;box-shadow:0 0 0 3px #eef4fc;}' +
+  '#aw-ov .aw-go{display:block;width:100%;margin-top:12px;min-height:50px;border:0;border-radius:12px;background:#1b6cce;color:#fff;font-family:"Montserrat",sans-serif;font-weight:800;font-size:15px;letter-spacing:.04em;cursor:pointer;}' +
+  '#aw-ov .aw-go:hover{background:#1558a8;}#aw-ov .aw-go:disabled{opacity:.6;cursor:default;}' +
+  '#aw-ov .aw-no{display:inline-block;margin-top:14px;background:none;border:0;color:#6b7280;font-size:13px;text-decoration:underline;cursor:pointer;padding:8px;}' +
+  '#aw-ov .aw-fine{font-size:11.5px;line-height:1.5;color:#6b7280;margin:12px 0 0;}' +
+  '#aw-ov .aw-err{color:#b42318;font-size:13px;margin:10px 0 0;min-height:0;}' +
+  '#aw-ov .aw-code{display:flex;align-items:center;justify-content:space-between;gap:10px;border:2px dashed #1b6cce;background:#eef4fc;border-radius:12px;padding:12px 14px;margin:2px 0 6px;}' +
+  '#aw-ov .aw-code b{font-family:"Montserrat",sans-serif;font-weight:800;font-size:19px;letter-spacing:.06em;color:#1558a8;word-break:break-all;text-align:left;}' +
+  '#aw-ov .aw-copy{flex:none;border:0;border-radius:9px;background:#1b6cce;color:#fff;font-family:"Montserrat",sans-serif;font-weight:700;font-size:12px;padding:10px 14px;cursor:pointer;}' +
+  '#aw-ov p{margin:0;font-size:14px;line-height:1.55;color:#374151;}' +
+  '@media (max-width:420px){#aw-ov .aw-top .aw-big{font-size:30px;}#aw-ov .aw-body{padding:18px 16px 16px;}#aw-ov .aw-grid{gap:8px;}}';
+  document.head.appendChild(s);
+}
+function welcomeClose(remember){
+  var b = WELCOME.box; if(!b) return;
+  if(remember) wlSet(WELCOME.K_NO, {at: Date.now()});
+  if(b.parentNode) b.parentNode.removeChild(b);
+  WELCOME.box = null;
+  document.removeEventListener('keydown', welcomeKey, true);
+}
+function welcomeKey(e){
+  if(e.key === 'Escape'){ var done = !!wlGet(WELCOME.K); welcomeClose(!done); if(!done) track('welcome_dismissed', {how:'esc'}); }
+}
+function welcomeTop(){
+  return '<div class="aw-top"><img src="' + WELCOME.logo + '" alt="Alive Print Shop">' +
+    '<div class="aw-big">$25 OFF</div><div class="aw-sub">your first order of $250+</div></div>' +
+    '<button type="button" class="aw-x" data-aw="no" aria-label="Close">&times;</button>';
+}
+function welcomeStep(n, extra){
+  var c = WELCOME.box && WELCOME.box.querySelector('.aw-card'); if(!c) return;
+  var body = '';
+  if(n === 1){
+    body = '<h2 id="aw-h">What are you ordering for?</h2><div class="aw-grid">' +
+      WELCOME.purposes.map(function(p){ return '<button type="button" class="aw-opt" data-aw-p="' + esc(p) + '">' + esc(p) + '</button>'; }).join('') +
+      '</div><button type="button" class="aw-no" data-aw="no">No thanks</button>';
+  }else if(n === 2){
+    var pre = ''; try{ pre = localStorage.getItem('alive_email') || ''; }catch(e){}
+    body = '<h2 id="aw-h">Where should we send your code?</h2>' +
+      '<form id="aw-f" novalidate><input type="email" id="aw-em" autocomplete="email" inputmode="email" placeholder="you@example.com" value="' + esc(pre) + '" aria-label="Email address">' +
+      '<div class="aw-err" id="aw-err" role="alert">' + (extra ? esc(extra) : '') + '</div>' +
+      '<button type="submit" class="aw-go" id="aw-go">GET MY $25 CODE</button></form>' +
+      '<p class="aw-fine">For your first order of $250 or more in products and printing (before rush, shipping and tax). One use per customer. We will email you now and then; unsubscribe any time.</p>' +
+      '<button type="button" class="aw-no" data-aw="no">No thanks</button>';
+  }else{
+    var d = extra || {};
+    if(d.used){
+      body = '<h2 id="aw-h">You have already claimed your code</h2><p>The $25 welcome code is one per customer and this email has used it. We are happy to help with anything else on your order.</p>' +
+        '<button type="button" class="aw-go" data-aw="done">Keep designing</button>';
+    }else{
+      body = '<h2 id="aw-h">You’re in! Here is your code</h2>' +
+        '<div class="aw-code"><b id="aw-code">' + esc(d.code) + '</b><button type="button" class="aw-copy" data-aw="copy">COPY</button></div>' +
+        '<p>It is saved to your cart and takes <b>$25 off</b> automatically at checkout once your order is <b>$250 or more</b> in products and printing.</p>' +
+        '<button type="button" class="aw-go" data-aw="done">Keep designing</button>';
+    }
+  }
+  c.innerHTML = welcomeTop() + '<div class="aw-body">' + body + '</div>';
+  var f = c.querySelector('#aw-em, .aw-opt, .aw-go'); if(f){ try{ f.focus({preventScroll:true}); }catch(e){} }
+}
+function welcomeSubmit(){
+  if(WELCOME.busy) return;
+  var inp = document.getElementById('aw-em'), email = String(inp && inp.value || '').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ var er = document.getElementById('aw-err'); if(er) er.textContent = 'Please enter a valid email address.'; if(inp) inp.focus(); return; }
+  WELCOME.busy = true;
+  var go = document.getElementById('aw-go'); if(go){ go.disabled = true; go.textContent = 'ONE MOMENT…'; }
+  fetch(WELCOME.pay + '/welcome', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:email, purpose:WELCOME.purpose})})
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ j = j || {}; j._s = r.status; return j; }); })
+    .then(function(j){
+      WELCOME.busy = false;
+      try{ localStorage.setItem('alive_email', email); }catch(e){}
+      if(j && j.ok && j.code){
+        wlSet(WELCOME.K, {code:j.code, email:email, purpose:WELCOME.purpose, at:Date.now()});
+        /* Drop it in the cart unless the customer already has a code of their own. */
+        try{
+          if(!CART.getPromo()) localStorage.setItem(CART.K_PROMO, JSON.stringify({code:j.code, stripe:true, amountOff:j.amountOff || 25, percentOff:0, minimum:0, minimumItems:j.minimumItems || 250, welcome:true}));
+        }catch(e){}
+        /* Staff list. Best effort: the customer already has the code either way. */
+        try{ fetch(CONFIG.artEndpoint + '/signup', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:email, purpose:WELCOME.purpose, code:j.code}), keepalive:true}).catch(function(){}); }catch(e){}
+        track('welcome_signup', {purpose:WELCOME.purpose});
+        welcomeStep(3, {code:j.code});
+      }else if(j && j.used){
+        wlSet(WELCOME.K, {code:'', email:email, used:true, at:Date.now()});
+        welcomeStep(3, {used:true});
+      }else{
+        welcomeStep(2, (j && j._s === 422) ? 'Please enter a valid email address.' : 'We could not get your code just now. Please try again in a moment.');
+      }
+    })
+    .catch(function(){ WELCOME.busy = false; welcomeStep(2, 'We could not reach our server. Please check your connection and try again.'); });
+}
+function welcomeOpen(){
+  if(!welcomeEligible()) return;
+  WELCOME.shown = true;
+  welcomeCss();
+  var box = document.createElement('div');
+  box.id = 'aw-ov'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'aw-h');
+  box.innerHTML = '<div class="aw-card"></div>';
+  document.body.appendChild(box);
+  WELCOME.box = box;
+  /* Inside the WordPress embed the page is one tall auto-height frame, so pin the
+     overlay to the slice the customer can actually see. */
+  function place(){
+    if(!WELCOME.box) return;
+    var s = window.AliveViewport && window.AliveViewport.slice;
+    if(s && EMBEDDED){
+      box.style.position = 'absolute'; box.style.left = '0'; box.style.width = '100%';
+      box.style.top = Math.round(s.visTop) + 'px';
+      box.style.height = Math.round(Math.max(260, s.visBottom - s.visTop)) + 'px';
+    }
+  }
+  place();
+  if(window.AliveViewport) window.AliveViewport.subscribe(place);
+  box.addEventListener('click', function(e){
+    var t = e.target;
+    if(t === box){ welcomeClose(!wlGet(WELCOME.K)); track('welcome_dismissed', {how:'backdrop'}); return; }
+    var p = t.closest && t.closest('[data-aw-p]');
+    if(p){ WELCOME.purpose = p.getAttribute('data-aw-p'); track('welcome_answer', {purpose:WELCOME.purpose}); welcomeStep(2); return; }
+    var a = t.closest && t.closest('[data-aw]'); if(!a) return;
+    var k = a.getAttribute('data-aw');
+    if(k === 'no'){ welcomeClose(!wlGet(WELCOME.K)); track('welcome_dismissed', {how:'button'}); }
+    else if(k === 'done'){ welcomeClose(false); }
+    else if(k === 'copy'){
+      var code = (document.getElementById('aw-code') || {}).textContent || '';
+      var ok = function(){ a.textContent = 'COPIED'; };
+      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(ok, function(){});
+      else{ try{ var ta = document.createElement('textarea'); ta.value = code; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok(); }catch(e){} }
+    }
+  });
+  box.addEventListener('submit', function(e){ e.preventDefault(); welcomeSubmit(); });
+  document.addEventListener('keydown', welcomeKey, true);
+  welcomeStep(1);
+  track('welcome_shown', {});
+}
+function welcomeStart(){ setTimeout(welcomeOpen, WELCOME.DELAY); }
+
 /* test hook */
 window.__ALIVE_PRODUCT__ = {S:S, render:render, addToCart:addToCart, go:go,
   takeFile:takeFile, layersFor:layersFor, mockSide:mockSide, mockForCart:mockForCart,
-  renderMockup:renderMockup, saveAllMockups:saveAllMockups};
+  renderMockup:renderMockup, saveAllMockups:saveAllMockups,
+  welcome:{open:welcomeOpen, W:WELCOME}};
 })();
 
 </script>

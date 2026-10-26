@@ -1385,6 +1385,15 @@ function reupload(key){
   };
   inp.click();
 }
+/* A visitor who took the $25 welcome code on the product page has it stored; put it in the
+   cart if the cart has no code of its own (a manually entered code wins). */
+(function(){
+  try{
+    if(CART.getPromo()) return;
+    var w = JSON.parse(localStorage.getItem('alive_welcome_v1') || 'null');
+    if(w && w.code && !w.used) CART.setPromo({code:w.code, stripe:true, amountOff:25, percentOff:0, minimum:0, minimumItems:250, welcome:true});
+  }catch(e){}
+})();
 /* Options already on the items (e.g. coming back from Stripe) are where the pickers start. */
 S.items.forEach(function(it){
   if(it.rush && E.RUSH_MULT[it.rush] > E.RUSH_MULT[S.rush]) S.rush = it.rush;
@@ -1392,7 +1401,22 @@ S.items.forEach(function(it){
 });
 /* Dollar-off codes live in Stripe (it counts uses and stops the code at its limit).
    The Worker checks them; the amount is only shown here, Stripe applies it. */
-function stripePromo(){ var p = CART.getPromo(); return p && p.code && p.stripe ? p : null; }
+/* Products + printing + add-ons, before rush, shipping and tax: what a code with a
+   "$250 in items" rule is judged on (the Worker enforces the same line). */
+function itemsBeforeRush(){
+  return sum(function(it){ return priceItem(it, priceable(it) ? S.addon : it.addons, priceable(it) ? 'std' : it.rush).line; });
+}
+/* How much more the order needs before the stored code applies; 0 when it already does. */
+function promoShortBy(){
+  var p = CART.getPromo(); if(!p || !p.code || !p.stripe || !p.minimumItems) return 0;
+  return +Math.max(0, p.minimumItems - itemsBeforeRush()).toFixed(2);
+}
+function stripePromo(){
+  var p = CART.getPromo();
+  if(!(p && p.code && p.stripe)) return null;
+  if(p.minimumItems && itemsBeforeRush() + 0.5 < p.minimumItems) return null;   /* held back until the order reaches the minimum */
+  return p;
+}
 function promoOff(pre){ var p = stripePromo(); if(!p) return 0;
   var o = p.amountOff ? +p.amountOff : (p.percentOff ? pre * p.percentOff / 100 : 0); return +Math.min(pre, o).toFixed(2); }
 function promoDiscount(){ var p = CART.getPromo(); return p && p.code && E.PROMO_CODES[p.code] ? E.PROMO_CODES[p.code] : 0; }
@@ -1628,7 +1652,7 @@ function render(){
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
-      (promo && promo.code ? '<div class="row promo"><span>Promo ' + esc(promo.code) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : 'applied') + '</b></div>' : '') +
+      (promo && promo.code ? '<div class="row promo"><span>Promo ' + esc(promo.code) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : (promoShortBy() ? 'add ' + money(promoShortBy()) + ' more to use' : 'applied')) + '</b></div>' : '') +
       '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
@@ -1739,7 +1763,13 @@ function loadStripe(){
   });
   return stripeP;
 }
-function clearCart(){ try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); }catch(e){} }
+/* The welcome code is single-use: once an order has gone through with it, or the Worker has
+   refused it, stop putting it back in the cart. */
+function welcomeSpent(){
+  try{ var w = JSON.parse(localStorage.getItem('alive_welcome_v1') || 'null'); if(w){ w.used = true; localStorage.setItem('alive_welcome_v1', JSON.stringify(w)); } }catch(e){}
+}
+function clearCart(){ try{ var pp = CART.getPromo(); if(pp && pp.welcome) welcomeSpent(); }catch(e){}
+  try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); }catch(e){} }
 function paidHere(){
   var id = S.pay && S.pay.id, t = totals();
   if(once('alive_purchase_' + (id || Date.now()))) track('purchase', {transaction_id:id || '', currency:'USD', value:t.grand, shipping:t.ship, items:gaItems()});
@@ -1869,7 +1899,8 @@ function wire(){
       .then(function(j){
         if(!j || !j.ok){ S.promoErr = (j && j.error) || 'That code isn’t valid.'; render(); return; }
         if(j.minimum && totals().grand < j.minimum){ S.promoErr = 'That code needs an order of ' + money(j.minimum) + ' or more.'; render(); return; }
-        CART.setPromo({code:j.code, stripe:true, amountOff:j.amountOff || 0, percentOff:j.percentOff || 0, minimum:j.minimum || 0});
+        if(j.minimumItems && itemsBeforeRush() + 0.5 < j.minimumItems){ S.promoErr = 'That code needs ' + money(j.minimumItems) + ' or more in products and printing (before rush and shipping). Your order is at ' + money(itemsBeforeRush()) + '.'; render(); return; }
+        CART.setPromo({code:j.code, stripe:true, amountOff:j.amountOff || 0, percentOff:j.percentOff || 0, minimum:j.minimum || 0, minimumItems:j.minimumItems || 0});
         S.promoErr = ''; track('promo_applied', {coupon:j.code}); render();
       })
       .catch(function(){ S.promoErr = 'We couldn’t check that code. Please try again.'; render(); });
@@ -2273,7 +2304,7 @@ function submit(){
         });
         });
       }
-      if(j.promoError){ CART.setPromo(null); S.promoOpen = true; S.promoErr = j.error || 'That code can’t be used.'; }
+      if(j.promoError){ var pe = CART.getPromo(); if(pe && pe.welcome && !/\$250/.test(j.error || '')) welcomeSpent(); CART.setPromo(null); S.promoOpen = true; S.promoErr = j.error || 'That code can’t be used.'; }
       S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.') + (j.promoError ? ' We removed the code — your total is updated.' : ''); render();
     })
     .catch(function(){ S.busy = false;
