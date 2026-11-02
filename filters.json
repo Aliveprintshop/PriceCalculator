@@ -41,6 +41,12 @@
   "fix_front_image_styles": ["C819", "C871", "C930"],
   "_fix_front_comment": "Styles where SanMar puts an underside/inside/side photo in the FRONT flat slot. For these, the front_model URL (when it is a *_flat_front.jpg) is used instead. Add a style number here after checking its crops.json box still frames the new photo.",
 
+  "front_image_overrides": {
+    "C855|Realtree Edge": "https://aliveprintshop.github.io/PriceCalculator/media/fixed/C855_realtreeedge_front.jpg",
+    "C869|Realtree Edge": "https://aliveprintshop.github.io/PriceCalculator/media/fixed/C869_realtreeedge_front.jpg"
+  },
+  "_front_overrides_comment": "Hand-framed square photos (media/fixed/) used as the front image for one colour of a style, where SanMar has no usable front shot in the shape that style crop box expects. Key is STYLE|Colour name.",
+
   "merge_custom_products": true,
   "_custom_comment": "If true, reads custom-products.xlsx and merges those rows into products.json. See custom-products.xlsx template for the schema."
 }
