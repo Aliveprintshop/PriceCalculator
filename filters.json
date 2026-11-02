@@ -38,7 +38,7 @@
   "prefer_flat_images": true,
   "_flat_images_comment": "SanMar puts an angled ghost-mannequin 'form' photo in the FLAT image column for a few hundred styles (Sport-Tek most of all). If true, the sync checks whether the true flat lay exists at the same path and uses it instead. All-or-nothing per style per view, so crops.json stays valid. Set false to take SanMar's columns as-is. NOTE: crops.json must be regenerated for any style whose photo changes.",
 
-  "fix_front_image_styles": ["C819"],
+  "fix_front_image_styles": ["C819", "C871", "C930"],
   "_fix_front_comment": "Styles where SanMar puts an underside/inside/side photo in the FRONT flat slot. For these, the front_model URL (when it is a *_flat_front.jpg) is used instead. Add a style number here after checking its crops.json box still frames the new photo.",
 
   "merge_custom_products": true,
