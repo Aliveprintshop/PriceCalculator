@@ -1239,6 +1239,72 @@ function track(ev, params){
   if(!EMBEDDED) return;
   try{ window.parent.postMessage({type:'alive-track', event:ev, params:params}, '*'); }catch(e){}
 }
+
+/* ---- cart snapshot: WHAT is in the cart, not just that someone added one ----
+   The funnel events say how many people reached each step. They cannot say what
+   was being bought, which is what explains a leak: a 36-piece embroidered polo
+   at $2,100 that never paid is a different problem from a 24-piece tee at $380.
+
+   Posted to the orders Worker (/api/cart-snap) each time the cart changes, and
+   shown on the dashboard's Carts tab with the saved mockup, sizes and total.
+   One row per cart: `alive_cart_sid` is random, lives in localStorage on this
+   origin (so the product page and the checkout share it) and is dropped when the
+   order is paid. Contact details are only ever sent from the checkout form, once
+   the customer has typed them.
+
+   sendBeacon, text/plain: same reason as the funnel events -- it cannot do a
+   CORS preflight and must survive the navigation to the cart. */
+var SNAP_URL = 'https://alive-orders.austin-662.workers.dev/api/cart-snap';
+function cartSid(){
+  try{
+    var k = 'alive_cart_sid', v = localStorage.getItem(k);
+    if(!v){ v = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); localStorage.setItem(k, v); }
+    return v;
+  }catch(e){ return null; }
+}
+function snapLine(it){
+  var mk = it.mockupUrl || (it.mockupUrls && (it.mockupUrls.front || it.mockupUrls.back)) || '';
+  var M = {em:'embroidery', ht:'full color', sp:'screen print'};
+  var deco = (it.locations || []).map(function(k){
+    var m = (it.locMethod || {})[k] || it.decoMethod, n = k === 'front' ? it.frontColors : (k === 'back' ? it.backColors : 0);
+    return k.replace(/-/g, ' ') + ': ' + (m === 'sp' && n ? n + '-color print' : (M[m] || m || ''));
+  }).join(' · ');
+  var art = null; try{ art = !it.artworkLater && !!(it.artworkFiles || []).some(function(f){ return f.url; }); }catch(e){}
+  return {style: it.style, name: it.productName, brand: it.brand, color: it.color, qty: it.qty,
+          unit: it.unitPrice, line: it.lineTotal, method: it.decoMethod, deco: deco,
+          locs: it.locations || [], sizes: it.sizes || {}, rush: it.rush || 'std',
+          mockup: mk, image: it.productImage || '', art: art};
+}
+function snapSend(body){
+  var vid = visitorId(), sid = cartSid(); if(!vid || !sid) return;
+  var attr = attribution();
+  body.visitor = vid; body.sid = sid; body.device = deviceClass();
+  body.source = attr.source; body.medium = attr.medium; body.campaign = attr.campaign;
+  try{
+    var s = JSON.stringify(body);
+    if(navigator.sendBeacon){ navigator.sendBeacon(SNAP_URL, new Blob([s], {type:'text/plain;charset=UTF-8'})); }
+    else{ fetch(SNAP_URL, {method:'POST', headers:{'content-type':'text/plain;charset=UTF-8'}, body:s, keepalive:true}).catch(function(){}); }
+  }catch(e){}
+}
+
+function cartSnap(stage, noItems){
+  var t = totals(), f = S.form || {}, pr = CART.getPromo();
+  var body = {stage: stage, ship_mode: S.ship === 'pickup' ? 'pickup' : 'ship', promo: pr && pr.code ? pr.code : null};
+  if(!noItems && S.items.length){
+    body.items = S.items.map(snapLine); body.subtotal = t.total; body.shipping = t.ship;
+    body.discount = t.off; body.total = t.grand;
+  }
+  /* Only what the customer actually typed, and only if it looks real. */
+  var nm = String(f.name || '').trim(), em = String(f.email || '').trim(), ph = String(f.phone || '').replace(/\D/g, '');
+  if(nm.length > 1) body.name = nm;
+  if(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) body.email = em;
+  if(ph.length >= 7) body.phone = String(f.phone).trim();
+  if(String(f.company || '').trim()) body.company = String(f.company).trim();
+  snapSend(body);
+}
+var _snapT = null;
+function scheduleSnap(){ clearTimeout(_snapT); _snapT = setTimeout(function(){ if(S.items.length && !S.done) cartSnap('checkout'); }, 1500); }
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'hidden' && S.items.length && !S.done){ clearTimeout(_snapT); cartSnap('checkout'); } });
 function gaItems(){ return S.items.map(function(it){ return {item_id:String(it.style), item_name:it.productName || it.style, item_brand:it.brand || '', item_variant:it.color || '', price:+(+it.unitPrice || 0).toFixed(2), quantity:it.qty | 0}; }); }
 function once(key){ try{ if(sessionStorage.getItem(key)) return false; sessionStorage.setItem(key, '1'); }catch(e){} return true; }
 function broadcast(){
@@ -1769,10 +1835,11 @@ function welcomeSpent(){
   try{ var w = JSON.parse(localStorage.getItem('alive_welcome_v1') || 'null'); if(w){ w.used = true; localStorage.setItem('alive_welcome_v1', JSON.stringify(w)); } }catch(e){}
 }
 function clearCart(){ try{ var pp = CART.getPromo(); if(pp && pp.welcome) welcomeSpent(); }catch(e){}
-  try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); }catch(e){} }
+  try{ localStorage.removeItem(CART.K_ITEMS); localStorage.removeItem(CART.K_PROMO); sessionStorage.removeItem('alive_order_ref'); localStorage.removeItem('alive_cart_sid'); }catch(e){} }
 function paidHere(){
   var id = S.pay && S.pay.id, t = totals();
   if(once('alive_purchase_' + (id || Date.now()))) track('purchase', {transaction_id:id || '', currency:'USD', value:t.grand, shipping:t.ship, items:gaItems()});
+  try{ cartSnap('paid'); }catch(e){}
   closePay(); clearCart();
   S.items = []; S.done = {paid:id || true}; clearOrderRef(); render();
 }
@@ -1871,8 +1938,9 @@ function helpBar(){
 
 /* ------------------------------------------------------------ events */
 function wire(){
+  scheduleSnap();
   root.querySelectorAll('[data-f]').forEach(function(el){
-    el.oninput = function(){ S.form[el.dataset.f] = el.value;
+    el.oninput = function(){ S.form[el.dataset.f] = el.value; scheduleSnap();
       if(S.bad[el.dataset.f]){ delete S.bad[el.dataset.f]; var w = root.querySelector('[data-wrap="' + el.dataset.f + '"]'); if(w) w.classList.remove('bad'); } };
   });
   root.querySelectorAll('[data-ship]').forEach(function(b){ b.onclick = function(){ S.ship = b.dataset.ship; render(); }; });
@@ -2329,13 +2397,15 @@ function renderDone(){
     if(!EMBEDDED && /github\.io$/.test(window.location.hostname)){ window.location.replace(CONFIG.pages[FLOW].cart + '?paid=' + encodeURIComponent(qp('paid'))); return; }
     var pend = null; try{ pend = JSON.parse(sessionStorage.getItem('alive_pending_purchase') || 'null'); }catch(e){}
     if(pend && once('alive_purchase_' + qp('paid'))){ pend.transaction_id = qp('paid'); track('purchase', pend); }
+    try{ cartSnap('paid', true); }catch(e){}
     clearCart(); S.items = []; S.done = {paid:qp('paid')}; clearOrderRef(); render(); return;
   }
   if(qp('canceled')) S.err = 'Payment was cancelled — your order is still here whenever you’re ready.';
   var code = qp('cart');
   (code ? loadSharedCart(code) : Promise.resolve()).then(function(){ applyOptions(); render();
     if(S.items.length){ var t = totals(), sig = 'alive_bc_' + S.items.map(function(i){ return i.id + ':' + i.qty; }).join('|');
-      if(once(sig)) track('begin_checkout', {currency:'USD', value:t.total, items:gaItems()}); } });
+      if(once(sig)) track('begin_checkout', {currency:'USD', value:t.total, items:gaItems()});
+      try{ cartSnap('checkout'); }catch(e){} } });
 })();
 window.__ALIVE_CHECKOUT__ = {S:S, render:render, totals:totals, buildPayload:buildPayload, boxCount:boxCount, encodeCart:encodeCart, decodeCart:decodeCart, shareUrl:shareUrl};
 })();

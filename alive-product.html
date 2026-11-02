@@ -2864,6 +2864,62 @@ function beacon(ev, params){
     }
   }catch(e){}
 }
+
+/* ---- cart snapshot: WHAT is in the cart, not just that someone added one ----
+   The funnel events say how many people reached each step. They cannot say what
+   was being bought, which is what explains a leak: a 36-piece embroidered polo
+   at $2,100 that never paid is a different problem from a 24-piece tee at $380.
+
+   Posted to the orders Worker (/api/cart-snap) each time the cart changes, and
+   shown on the dashboard's Carts tab with the saved mockup, sizes and total.
+   One row per cart: `alive_cart_sid` is random, lives in localStorage on this
+   origin (so the product page and the checkout share it) and is dropped when the
+   order is paid. Contact details are only ever sent from the checkout form, once
+   the customer has typed them.
+
+   sendBeacon, text/plain: same reason as the funnel events -- it cannot do a
+   CORS preflight and must survive the navigation to the cart. */
+var SNAP_URL = 'https://alive-orders.austin-662.workers.dev/api/cart-snap';
+function cartSid(){
+  try{
+    var k = 'alive_cart_sid', v = localStorage.getItem(k);
+    if(!v){ v = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); localStorage.setItem(k, v); }
+    return v;
+  }catch(e){ return null; }
+}
+function snapLine(it){
+  var mk = it.mockupUrl || (it.mockupUrls && (it.mockupUrls.front || it.mockupUrls.back)) || '';
+  var M = {em:'embroidery', ht:'full color', sp:'screen print'};
+  var deco = (it.locations || []).map(function(k){
+    var m = (it.locMethod || {})[k] || it.decoMethod, n = k === 'front' ? it.frontColors : (k === 'back' ? it.backColors : 0);
+    return k.replace(/-/g, ' ') + ': ' + (m === 'sp' && n ? n + '-color print' : (M[m] || m || ''));
+  }).join(' · ');
+  var art = null; try{ art = !it.artworkLater && !!(it.artworkFiles || []).some(function(f){ return f.url; }); }catch(e){}
+  return {style: it.style, name: it.productName, brand: it.brand, color: it.color, qty: it.qty,
+          unit: it.unitPrice, line: it.lineTotal, method: it.decoMethod, deco: deco,
+          locs: it.locations || [], sizes: it.sizes || {}, rush: it.rush || 'std',
+          mockup: mk, image: it.productImage || '', art: art};
+}
+function snapSend(body){
+  var vid = visitorId(), sid = cartSid(); if(!vid || !sid) return;
+  var attr = attribution();
+  body.visitor = vid; body.sid = sid; body.device = deviceClass();
+  body.source = attr.source; body.medium = attr.medium; body.campaign = attr.campaign;
+  try{
+    var s = JSON.stringify(body);
+    if(navigator.sendBeacon){ navigator.sendBeacon(SNAP_URL, new Blob([s], {type:'text/plain;charset=UTF-8'})); }
+    else{ fetch(SNAP_URL, {method:'POST', headers:{'content-type':'text/plain;charset=UTF-8'}, body:s, keepalive:true}).catch(function(){}); }
+  }catch(e){}
+}
+
+function cartSnap(stage){
+  var items = CART.getItems(); if(!items.length) return;
+  var lines = items.map(snapLine), sum = 0, pcs = 0;
+  items.forEach(function(it){ sum += +it.lineTotal || 0; pcs += it.qty | 0; });
+  var pr = CART.getPromo();
+  snapSend({stage: stage, items: lines, subtotal: +sum.toFixed(2), shipping: 0, discount: 0,
+            total: +sum.toFixed(2), promo: pr && pr.code ? pr.code : null});
+}
 function gaItem(qty, price){ return {item_id:String(S.p.style), item_name:cleanName(S.p), item_brand:S.p.brand || '', item_variant:(S.colors[S.color] || {}).name || '', price:+(price || 0).toFixed(2), quantity:qty || 1}; }
 var designTracked = false;
 function trackDesign(how){ if(designTracked) return; designTracked = true; track('alive_design_added', {item_id:String(S.p.style), method:S.method, how:how}); }
@@ -5465,6 +5521,7 @@ function addToCartNow(){
   };
   var saved = S.editId ? CART.replaceItem(S.editId, item) : CART.addItem(item);
   if(!saved){ S.err = 'We could not save your order in this browser. Please call ' + CONFIG.phone + '.'; render(); return; }
+  try{ cartSnap('cart'); }catch(e){}
   if(!S.editId) track('add_to_cart', {currency:'USD', value:+(+item.lineTotal).toFixed(2), items:[gaItem(item.qty, item.unitPrice)]});
   setTimeout(function(){ nav(cartUrl()); }, EMBEDDED ? 150 : 0);   /* let the page hand the event to GA/Meta first */
 }
