@@ -621,6 +621,41 @@ def prefer_flat_images(products):
 
 
 # ---------------------------------------------------------------------------
+# Per-style fix: SanMar's "front flat" column holds a non-front view
+# ---------------------------------------------------------------------------
+# For some colourways SanMar puts the cap's UNDERSIDE (or inside / side shot)
+# in FRONT_FLAT_IMAGE_URL, e.g. C819 Realtree Edge ships
+# ..._flat_underside.jpg there, while the real front is in FRONT_MODEL_IMAGE_URL
+# as ..._flat_front.jpg. Styles listed in filters.json "fix_front_image_styles"
+# get front_flat swapped to that front shot -- but only for colours where the
+# current front_flat is clearly a non-front view AND the front_model URL is
+# clearly a flat-front file. Everything else is left exactly as SanMar sent it.
+# Opt-in by style so crops.json stays valid (check the new photo fits the box).
+# ---------------------------------------------------------------------------
+_WRONG_FRONT_VIEW = ("_underside", "_inside", "_interior", "_side.")
+
+
+def fix_front_images(products, styles):
+    wanted = {str(s).strip().upper() for s in (styles or [])}
+    if not wanted:
+        return products
+    fixed = 0
+    for p in products:
+        if str(p.get("style", "")).strip().upper() not in wanted:
+            continue
+        for c in p.get("colors") or []:
+            imgs = c.get("images") or {}
+            cur = (imgs.get("front_flat") or "").lower()
+            alt = imgs.get("front_model") or ""
+            if (any(t in cur for t in _WRONG_FRONT_VIEW)
+                    and alt.lower().endswith("_flat_front.jpg")):
+                imgs["front_flat"] = alt
+                fixed += 1
+    log(f"  fixed {fixed} wrong-view front images for styles {sorted(wanted)}")
+    return products
+
+
+# ---------------------------------------------------------------------------
 # Filtering
 # ---------------------------------------------------------------------------
 def apply_filters(products, filters):
@@ -837,6 +872,9 @@ def main():
     # Runs AFTER filtering so it only probes the styles we actually ship.
     if filters.get("prefer_flat_images", True):
         products = prefer_flat_images(products)
+
+    # Per-style: replace an underside/inside shot sitting in the front slot.
+    products = fix_front_images(products, filters.get("fix_front_image_styles"))
 
     # Merge custom
     if filters.get("merge_custom_products", True):
