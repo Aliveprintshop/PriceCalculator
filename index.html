@@ -587,6 +587,17 @@ var DEFAULT_BANNER='';
 var INDUSTRY_BANNERS={
   'Construction / Trades':'https://assets.cdn.filesafe.space/Ih3lwgAgJJ2eScDYpw30/media/6a32c0745408771d1644da6b.png'
 };
+// Category hero banners — shown above the search box when EXACTLY ONE category is
+// selected (and no industry / brand banner applies). Same slot and size as the
+// industry banner: 940x140 (export at 2x = 1880x280). Keyed by the exact category
+// label. Leave '' (or delete the line) and no banner shows for that category.
+var CATEGORY_BANNERS={
+  'T-Shirts':'',
+  'Headwear':'',
+  'Polos & Button-Downs':'',
+  'Sweatshirts & Hoodies':'',
+  'Outerwear':''
+};
 var BRAND_BANNERS={
   'A4':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/sp26-a4-plp-final-OCXPmrgFlrxEX8Lx.jpg',
   'Bella + Canvas':'https://assets.zyrosite.com/YX4lv3kQgMIqG6yj/bella-canvas-LRhBQzPAPbJW7zzi.png',
@@ -611,6 +622,10 @@ function updateBrandBanner(){
   }else if(_brands.size===1){
     var brand=Array.from(_brands)[0];
     if(BRAND_BANNERS[brand]){url=BRAND_BANNERS[brand]; alt=brand+' featured banner';}
+  }
+  if(!url&&!_industry&&_brands.size===0&&_cats.size===1){
+    var cat=Array.from(_cats)[0];
+    if(CATEGORY_BANNERS[cat]){url=CATEGORY_BANNERS[cat]; alt=cat+' custom apparel';}
   }
   if(url){
     var img=host.querySelector('img');
@@ -2099,8 +2114,8 @@ function renderGrid(){
 // =====================================================================
 // Interactions (filter changes always reset to page 1)
 // =====================================================================
-function toggleCategory(label){_industry=null;_gbb=null;_dealsMode=false;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
-function clearCategories(){_cats.clear();_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();notifyParentRoute();}
+function toggleCategory(label){_industry=null;_gbb=null;_dealsMode=false;if(_cats.has(label))_cats.delete(label);else _cats.add(label);_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
+function clearCategories(){_cats.clear();_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();renderChipRow();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 function toggleBrand(name){_industry=null;_gbb=null;_dealsMode=false;if(_brands.has(name))_brands.delete(name);else _brands.add(name);_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 function clearBrands(){_brands.clear();_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();updateFilterBadge();updateBrandBanner();notifyParentRoute();}
 // Shop By Industry: single-select. Selecting one clears category/brand filters and shows only its curated list.
