@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T21:27:01.316787+00:00",
+  "generated_at": "2026-11-02T21:35:09.467710+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -97767,7 +97767,7 @@
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2018/f8/C871_realtreeedge_flat_front.jpg",
             "back_model": null,
-            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2018/f8/C871_realtreeedge_flat_underside.jpg",
+            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2018/f8/C871_realtreeedge_flat_front.jpg",
             "back_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2018/f8/C871_realtreeedge_flat_back.jpg",
             "side_model": null
           }
@@ -99571,7 +99571,7 @@
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2019/f9/C930_realtreeedge_flat_front.jpg",
             "back_model": null,
-            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2019/f9/C930_realtreeedge_flat_inside.jpg",
+            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2019/f9/C930_realtreeedge_flat_front.jpg",
             "back_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2019/f9/C930_realtreeedge_flat_back.jpg",
             "side_model": null
           }
