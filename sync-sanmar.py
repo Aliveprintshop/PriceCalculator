@@ -655,6 +655,25 @@ def fix_front_images(products, styles):
     return products
 
 
+def apply_front_overrides(products, overrides):
+    """filters.json "front_image_overrides": {"STYLE|Colour name": url}.
+    Hand-made, correctly framed photos (hosted in media/fixed/) for colours
+    where SanMar has no usable front shot in the right shape."""
+    if not overrides:
+        return products
+    want = {str(k).strip().upper(): v for k, v in overrides.items()
+            if not str(k).startswith("_")}
+    done = 0
+    for p in products:
+        for c in p.get("colors") or []:
+            key = (str(p.get("style", "")).strip() + "|" + str(c.get("name", "")).strip()).upper()
+            if key in want:
+                c.setdefault("images", {})["front_flat"] = want[key]
+                done += 1
+    log(f"  applied {done} front image overrides")
+    return products
+
+
 # ---------------------------------------------------------------------------
 # Filtering
 # ---------------------------------------------------------------------------
@@ -875,6 +894,7 @@ def main():
 
     # Per-style: replace an underside/inside shot sitting in the front slot.
     products = fix_front_images(products, filters.get("fix_front_image_styles"))
+    products = apply_front_overrides(products, filters.get("front_image_overrides"))
 
     # Merge custom
     if filters.get("merge_custom_products", True):
