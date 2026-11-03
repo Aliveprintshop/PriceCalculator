@@ -209,6 +209,8 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 /* BRAND HERO BANNER — shows when a single brand with a configured banner is selected */
 .brand-banner{margin-bottom:14px;}
 .brand-banner img{width:100%;height:auto;display:block;border-radius:12px;}
+/* The 'Order with confidence' promo banner is mobile-only; it reads like a pop-up ad on desktop. */
+@media(min-width:821px){.brand-banner.promo-mobile-only{display:none !important;}}
 
 /* TRUST BANNER */
 .trust-banner{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
@@ -580,6 +582,7 @@ function updateFilterBadge(){
 // Filters button. Paste a URL back in here to restore a default hero banner.
 // Brand + industry banners below are unaffected — they still show when a
 // shopper filters to that brand/industry.
+var PROMO_MOBILE_ONLY='https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png';   // this image is hidden on desktop (>820px), shown on mobile
 var DEFAULT_BANNER='https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png';
 // Industry-specific hero banners — override the default when a "Shop By Industry"
 // filter is active (e.g. arriving via #construction-trades-thank-you). Keyed by the
@@ -630,6 +633,7 @@ function updateBrandBanner(){
   if(url){
     var img=host.querySelector('img');
     if(img.getAttribute('src')!==url){img.setAttribute('src',url); img.setAttribute('alt',alt);}
+    host.classList.toggle('promo-mobile-only', url===PROMO_MOBILE_ONLY);
     host.style.display='block';
   }else{
     host.style.display='none';
