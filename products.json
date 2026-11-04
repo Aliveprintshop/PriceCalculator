@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T20:30:12.024080+00:00",
+  "generated_at": "2026-11-04T20:45:21.540053+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -189599,7 +189599,7 @@
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_black_model_front_052016.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f8/L344_black_model_back_052016.jpg",
-            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_black_flat_front.jpg",
+            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_black_form_front.jpg",
             "back_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f9/L344_black_flat_back.jpg",
             "side_model": null
           }
@@ -189612,7 +189612,7 @@
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_dressbluenavy_model_front_052016.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f8/L344_dressbluenavy_model_back_052016.jpg",
-            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_dressbluenavy_flat_front.jpg",
+            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_dressbluenavy_form_front.jpg",
             "back_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f9/L344_dressbluenavy_flat_back.jpg",
             "side_model": null
           }
@@ -189625,7 +189625,7 @@
           "images": {
             "front_model": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_greysteel_model_front_052016.jpg",
             "back_model": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f8/L344_greysteel_model_back_052016.jpg",
-            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_greysteel_flat_front.jpg",
+            "front_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f7/L344_greysteel_form_front.jpg",
             "back_flat": "https://cdnm.sanmar.com/imglib/mresjpg/2016/f9/L344_greysteel_flat_back.jpg",
             "side_model": null
           }
