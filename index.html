@@ -172,6 +172,10 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 }
 .card-sale-note{display:inline-block;align-self:flex-start;margin-top:5px;background:#FDECEC;color:#B42318;font-family:'Montserrat',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:0.02em;line-height:1.2;padding:4px 8px;border-radius:999px;}
 .card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,108,206,0.15);text-decoration:none;}
+.card-imgbox{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/5;background:#fff;border-bottom:1px solid var(--border);padding:6px;box-sizing:border-box;}
+.card-imgcrop{position:relative;width:100%;overflow:hidden;}
+.card-imgcrop img{position:absolute;max-width:none;}
+.grid.featfirst .card:first-child .card-imgbox{aspect-ratio:16/11;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
 .card-swatches{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);min-height:36px;}
 .sw{width:14px;height:14px;border-radius:50%;border:1.5px solid transparent;flex-shrink:0;}
@@ -641,6 +645,22 @@ function updateBrandBanner(){
 }
 
 var PRODUCTS_JSON_URL='https://aliveprintshop.github.io/PriceCalculator/products.json';
+/* Hat photos from SanMar are a small shape at the top of a tall white frame. crops-m.json holds, per style,
+   where the hat sits so the card can zoom to it and centre it. */
+var CROPS_M={};
+fetch('https://aliveprintshop.github.io/PriceCalculator/crops-m.json').then(function(r){return r.ok?r.json():{};}).then(function(j){
+  CROPS_M=j||{};
+  try{if(typeof ITEMS!=='undefined'&&ITEMS&&ITEMS.length&&typeof renderGrid==='function')renderGrid();}catch(e){}
+}).catch(function(){});
+function cardImgHtml(p,src,alt){
+  var plain='<img class="card-img" loading="lazy" src="'+src+'" alt="'+alt+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">';
+  var e=p&&p.category==='Caps'&&CROPS_M[String(p.style).toUpperCase()],b=e&&e.m;
+  if(!b||!src)return plain;
+  var cw=b[2]-b[0],ch=b[3]-b[1],ratio=cw*b[4]/ch;
+  if(!(ratio>0.85))return plain;
+  return '<div class="card-imgbox"><div class="card-imgcrop" style="aspect-ratio:'+ratio.toFixed(4)+'">'+
+    '<img loading="lazy" src="'+src+'" alt="'+alt+'" style="left:'+(-b[0]/cw*100).toFixed(3)+'%;top:'+(-b[1]/ch*100).toFixed(3)+'%;width:'+(100/cw).toFixed(3)+'%;height:'+(100/ch).toFixed(3)+'%"></div></div>';
+}
 var POPULAR=["DM130","NL6210","NL3600","DT7075","1717","5000","64000","SXU007","ST350","3001CVC","BC3200"];
 // Default-grid ordering for items NOT in POPULAR (no user sort / no industry mode).
 // Featured brands float up in this order; lower number = higher on the page.
@@ -2069,7 +2089,7 @@ function renderGrid(){
         '<span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
            dealBadge+projStarHtml(it.s)+
-           '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+           cardImgHtml(p,src,displayName)+
            '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
            '<div class="card-info">'+
              (brand?'<div class="card-brand">'+brand+'</div>':'')+
@@ -2171,7 +2191,7 @@ function gbbCardHtml(it){
     : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
   return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
-         '<img class="card-img" loading="lazy" src="'+src+'" alt="'+displayName+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">'+
+         cardImgHtml(p,src,displayName)+
          '<div class="card-swatches">'+swatchesHtml(p)+'</div>'+
          '<div class="card-info">'+
            (brand?'<div class="card-brand">'+brand+'</div>':'')+
