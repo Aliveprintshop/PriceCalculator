@@ -175,7 +175,6 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 .card-imgbox{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/5;background:#fff;border-bottom:1px solid var(--border);padding:6px;box-sizing:border-box;}
 .card-imgcrop{position:relative;width:100%;overflow:hidden;}
 .card-imgcrop img{position:absolute;max-width:none;}
-.grid.featfirst .card:first-child .card-imgbox{aspect-ratio:16/11;}
 .card-img{width:100%;aspect-ratio:4/5;object-fit:contain;object-position:center;background:#fff;border-bottom:1px solid var(--border);padding:6px;}
 .card-swatches{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);min-height:36px;}
 .sw{width:14px;height:14px;border-radius:50%;border:1.5px solid transparent;flex-shrink:0;}
@@ -654,7 +653,7 @@ fetch('https://aliveprintshop.github.io/PriceCalculator/crops-m.json').then(func
 }).catch(function(){});
 function cardImgHtml(p,src,alt){
   var plain='<img class="card-img" loading="lazy" src="'+src+'" alt="'+alt+'" onerror="this.style.background=\'#f7f7f9\';this.removeAttribute(\'src\');">';
-  var e=p&&p.category==='Caps'&&CROPS_M[String(p.style).toUpperCase()],b=e&&e.m;
+  var e=p&&(p.category==='Caps'||p.category==='Bags')&&CROPS_M[String(p.style).toUpperCase()],b=e&&e.m;
   if(!b||!src)return plain;
   var cw=b[2]-b[0],ch=b[3]-b[1],ratio=cw*b[4]/ch;
   if(!(ratio>0.85))return plain;
