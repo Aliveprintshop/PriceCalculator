@@ -2724,6 +2724,7 @@ var SITE = 'https://aliveprintshop.com';
 var CONFIG = {
   productsJson: 'https://aliveprintshop.github.io/PriceCalculator/products.json',
   cropsJson: 'https://aliveprintshop.github.io/PriceCalculator/crops.json',
+  cropsMJson: 'https://aliveprintshop.github.io/PriceCalculator/crops-m.json',
   /* Hostinger pages. ?flow=stage (set by the staging embed snippet) sends the
      customer through the hidden test pages instead of the live ones. */
   pages: {
@@ -3385,12 +3386,18 @@ function heroImage(c){
   var b = colorBack(c);
   return (S.side === 'back' && b) ? b : colorFront(c);
 }
+/* Square thumbnail of a tall photo: centre the visible window on the product. */
+function modelTileFit(){
+  var e = CROPS_M[String(S.p.style).toUpperCase()], b = e && e.m; if(!b) return '';
+  var wf = b[4] || 0.6667, cy = (b[1] + b[3]) / 2, t = Math.min(Math.max(cy - wf / 2, 0), 1 - wf);
+  return ' style="object-position:50% ' + (t / (1 - wf) * 100).toFixed(1) + '%"';
+}
 function mediaStrip(c){
   var tiles = galleryItems(c).map(function(m){
     var key = m.kind === 'view' ? 'view:' + m.side : m.kind === 'model' ? 'model:' + m.side : 'media:' + m.i;
     var on = m.kind === 'view' ? (S.gal == null && S.side === m.side) : m.kind === 'model' ? S.gal === 'm:' + m.side : S.gal === m.i;
     return '<button type="button" class="gtile' + (on ? ' on' : '') + (m.video ? ' vid' : '') + '" data-gal="' + key + '" aria-label="' + esc(m.alt) + (m.video ? ' (video)' : '') + '">' +
-      '<figure><img src="' + esc(m.img) + '" alt="' + esc(m.alt) + '" loading="lazy">' +
+      '<figure><img src="' + esc(m.img) + '" alt="' + esc(m.alt) + '" loading="lazy"' + (m.kind === 'model' ? modelTileFit() : '') + '>' +
       (m.video ? '<i class="vbadge">' + PLAY_SVG + '</i>' : '') + '</figure></button>';
   }).join('');
   /* The strip scrolls, and nothing on screen says so — a customer sees five
@@ -3575,6 +3582,7 @@ function productCard(overlayHtml, foot, rail, strip){
      shape, so placement coordinates are unchanged; the stage just shows
      the part of it where the product is. */
   var cr = S.gal == null && CROPS[String(p.style).toUpperCase()], box = cr && cr[S.side === 'back' && colorBack(c) ? 'b' : 'f'];
+  if(S.gal === 'm:front'){ var mce = CROPS_M[String(p.style).toUpperCase()]; box = (mce && mce.m) || null; }
   var stageStyle = editor ? ' style="aspect-ratio:' + frame + '"' : '', artStyle = '';
   /* No crop box — a gallery photo, or one of the two styles with no crop data.
      The stage's only child is absolutely positioned, so inside the flex card it
@@ -5666,8 +5674,12 @@ function boot(data){
   var u0 = unitNow(); track('view_item', {currency:'USD', value:+((u0 || 0)).toFixed(2), items:[gaItem(1, u0)]});
   welcomeStart();
 }
-var CROPS = {};
-var cropsP = fetch(CONFIG.cropsJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS = j || {}; }).catch(function(){});
+var CROPS = {}, CROPS_M = {};
+var cropsP = Promise.all([
+  fetch(CONFIG.cropsJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS = j || {}; }).catch(function(){}),
+  /* where the product sits inside SanMar's on-model/detail photo (hats are a small shape at the top of a tall frame) */
+  fetch(CONFIG.cropsMJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS_M = j || {}; }).catch(function(){})
+]);
 /* Speed: load just this product's file (p/<STYLE>.json, ~2 KB gzipped) and the shared
    swatch colours, written by split-products.py at publish time. Falls back to the full
    catalog if the per-product file isn't there. Network hiccups get one retry. */
