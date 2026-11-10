@@ -3539,7 +3539,7 @@ function reviewLine(){
 /* Size chart / spec sheet PDFs from the SanMar feed (carried by the nightly
    sync). Only real http(s) links are shown. */
 function docLinks(p){
-  var defs = [['size_chart','Size chart (measurements)'], ['spec_sheet','Spec sheet'], ['decoration_spec_sheet','Decoration spec sheet']];
+  var defs = [['size_chart','Size chart (measurements)'], ['spec_sheet','Spec sheet']];
   var out = defs.filter(function(d){ return /^https?:\/\//i.test(String(p[d[0]] || '')); }).map(function(d){
     return '<a href="' + esc(p[d[0]]) + '" target="_blank" rel="noopener noreferrer">' + d[1] + ' &#8599;</a>'; });
   return out.length ? '<p class="ddocs">' + out.join(' &middot; ') + '</p>' : '';
