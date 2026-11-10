@@ -418,6 +418,9 @@ def parse_sdl(sdl_path: Path, sales_by_key: dict, limit=None):
                     "category": category,
                     "subcategory": subcategory,
                     "description": row.get("PRODUCT_DESCRIPTION", "").strip(),
+                    "size_chart": row.get("PRODUCT_MEASUREMENT", "").strip() or None,
+                    "spec_sheet": row.get("SPEC_SHEET", "").strip() or None,
+                    "decoration_spec_sheet": row.get("DECORATION_SPEC_SHEET", "").strip() or None,
                     "case_price": case_price,
                     "case_sale_price": None,
                     "sale_start_date": None,
@@ -516,6 +519,11 @@ def finalize_styles(styles):
             "colors": colors,
             "source": "sanmar",
         }
+        # Size chart / spec sheet links (only when SanMar supplies them, so
+        # products.json does not grow nulls for the other ~thousands of rows).
+        for k in ("size_chart", "spec_sheet", "decoration_spec_sheet"):
+            if entry.get(k):
+                product[k] = entry[k]
         products.append(product)
 
     # Sort alphabetically by style so diffs in git are readable
