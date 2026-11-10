@@ -3581,7 +3581,7 @@ function productCard(overlayHtml, foot, rail, strip){
      (crops.json, measured per style). The art box keeps the whole photo's
      shape, so placement coordinates are unchanged; the stage just shows
      the part of it where the product is. */
-  var cr = S.gal == null && CROPS[String(p.style).toUpperCase()], box = cr && cr[S.side === 'back' && colorBack(c) ? 'b' : 'f'];
+  var box = S.gal == null ? cropBox(c, S.side === 'back' && colorBack(c) ? 'back' : 'front') : null;
   if(S.gal === 'm:front'){ var mce = CROPS_M[String(p.style).toUpperCase()]; box = (mce && mce.m) || null; }
   var stageStyle = editor ? ' style="aspect-ratio:' + frame + '"' : '', artStyle = '';
   /* No crop box — a gallery photo, or one of the two styles with no crop data.
@@ -4819,10 +4819,18 @@ function ensurePreviews(){
     im.src = src;
   });
 }
+/* Where the product sits inside THIS colour's front/back photo, measured per photo by the sync
+   (colour.crop, per-mille: x0,y0,x1,y1,width/height). Photos differ in size and framing from one
+   colour to the next, so one box per style stretched or cut the others. No box = the photo is
+   shown whole (never stretched). */
+function cropBox(c, side){
+  var k = c && c.crop && c.crop[side === 'back' ? 'b' : 'f'];
+  return (k && k.length === 5 && k[4] > 0) ? [k[0] / 1000, k[1] / 1000, k[2] / 1000, k[3] / 1000, k[4] / 1000] : null;
+}
 function mockSide(side){
   var c = S.colors[S.color] || {}, img = side === 'back' ? colorBack(c) : colorFront(c);
   if(!img) return null;
-  var cr = CROPS[String(S.p.style).toUpperCase()], box = cr && cr[side === 'back' ? 'b' : 'f'];
+  var box = cropBox(c, side);
   var layers = layersFor(side).map(function(k){
     var d = S.art[k], p = d.place;
     var plain = !d.bgRemoved && /\.(png|jpe?g|webp|gif|svg)$/i.test(d.name || '') ? (d.url || '') : '';
@@ -5676,7 +5684,6 @@ function boot(data){
 }
 var CROPS = {}, CROPS_M = {};
 var cropsP = Promise.all([
-  fetch(CONFIG.cropsJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS = j || {}; }).catch(function(){}),
   /* where the product sits inside SanMar's on-model/detail photo (hats are a small shape at the top of a tall frame) */
   fetch(CONFIG.cropsMJson).then(function(r){ return r.ok ? r.json() : {}; }).then(function(j){ CROPS_M = j || {}; }).catch(function(){})
 ]);
