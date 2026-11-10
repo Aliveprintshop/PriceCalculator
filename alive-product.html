@@ -1051,6 +1051,7 @@
 /* Four rows of swatches, then "show all" — a 112-colour cap otherwise makes
    this block nine rows tall and stretches the whole step. */
 /* ---- blurb, rating, product details ----------------------------------- */
+#alive-flow .ddocs{margin:10px 0 0;font-size:13px;line-height:1.7;}#alive-flow .ddocs a{color:var(--blue-dark);font-weight:600;text-decoration:none;margin-right:2px;}#alive-flow .ddocs a:hover{text-decoration:underline;}
 #alive-flow .blurb{margin:7px 0 0;font-size:14px;color:var(--text);line-height:1.45;}
 #alive-flow .revline{display:inline-flex;align-items:center;gap:7px;margin-top:8px;text-decoration:none;
   font-family:var(--disp);font-size:13px;color:var(--text2);}
@@ -3338,6 +3339,11 @@ function galleryItems(c){
   var f = colorFront(c), b = colorBack(c);
   if(f) out.push({kind:'view', side:'front', img:f, alt:'Front'});
   if(b) out.push({kind:'view', side:'back', img:b, alt:'Back'});
+  /* SanMar's on-model photos go after the flat Front/Back tiles: the flats
+     stay the primary photos (and the only ones with the placement editor). */
+  var im = c.images || {};
+  if(im.front_model && im.front_model !== f) out.push({kind:'model', side:'front', img:im.front_model, alt:'Front on model'});
+  if(im.back_model && im.back_model !== b) out.push({kind:'model', side:'back', img:im.back_model, alt:'Back on model'});
   return out;
 }
 /* Someone who has asked their system not to animate things gets the poster and
@@ -3347,7 +3353,7 @@ function prefersStill(){
   catch(e){ return false; }
 }
 function currentClip(){
-  var m = (S.gal != null) ? CONFIG.media[S.gal] : null;
+  var m = (typeof S.gal === 'number') ? CONFIG.media[S.gal] : null;
   return (m && m.video) ? m : null;
 }
 /* The hero: a photo, or the clip playing the way Vyper does it — muted, looped,
@@ -3374,14 +3380,15 @@ function heroVidBtn(){
 }
 
 function heroImage(c){
+  if(typeof S.gal === 'string'){ var mi = (c.images || {})[S.gal.slice(2) + '_model']; if(mi) return mi; S.gal = null; }
   if(S.gal != null) return CONFIG.media[S.gal].img;
   var b = colorBack(c);
   return (S.side === 'back' && b) ? b : colorFront(c);
 }
 function mediaStrip(c){
   var tiles = galleryItems(c).map(function(m){
-    var key = m.kind === 'view' ? 'view:' + m.side : 'media:' + m.i;
-    var on = m.kind === 'view' ? (S.gal == null && S.side === m.side) : S.gal === m.i;
+    var key = m.kind === 'view' ? 'view:' + m.side : m.kind === 'model' ? 'model:' + m.side : 'media:' + m.i;
+    var on = m.kind === 'view' ? (S.gal == null && S.side === m.side) : m.kind === 'model' ? S.gal === 'm:' + m.side : S.gal === m.i;
     return '<button type="button" class="gtile' + (on ? ' on' : '') + (m.video ? ' vid' : '') + '" data-gal="' + key + '" aria-label="' + esc(m.alt) + (m.video ? ' (video)' : '') + '">' +
       '<figure><img src="' + esc(m.img) + '" alt="' + esc(m.alt) + '" loading="lazy">' +
       (m.video ? '<i class="vbadge">' + PLAY_SVG + '</i>' : '') + '</figure></button>';
@@ -3402,6 +3409,7 @@ function stripCaption(c){
   items.forEach(function(m){
     if(m.kind === 'media' && S.gal === m.i) cur = m;
     else if(m.kind === 'view' && S.gal == null && S.side === m.side) cur = m;
+    else if(m.kind === 'model' && S.gal === 'm:' + m.side) cur = m;
   });
   /* Its whole job was telling the customer whether they were looking at this
      garment or at a photo of someone else's job. With only this garment's
@@ -3442,7 +3450,7 @@ function wireStrip(){
   row.addEventListener('click', function(e){ if(moved > 6){ e.preventDefault(); e.stopPropagation(); moved = 0; } }, true);
   root.querySelectorAll('[data-gal]').forEach(function(b){
     b.onclick = function(){ var p = b.dataset.gal.split(':');
-      if(p[0] === 'view'){ S.gal = null; S.side = p[1]; } else S.gal = +p[1];
+      if(p[0] === 'view'){ S.gal = null; S.side = p[1]; } else if(p[0] === 'model'){ S.gal = 'm:' + p[1]; } else S.gal = +p[1];
       /* a different tile is a different clip: start it from the top, playing */
       S.vidT = 0; S.vidPaused = false;
       render(); };
@@ -3482,9 +3490,27 @@ var BLURB_BY_STYLE = {
   '18500':  'A heavyweight hoodie that holds up wash after wash.',
   '112':    'The trucker cap everyone asks for, built to be embroidered.'
 };
+/* SanMar's description opens with a sentence or two of marketing copy, then runs
+   straight into the spec list ("6.1-ounce 100% cotton Tear-away label ...") with
+   no separators. The lead copy is clean enough to show; the spec run is not
+   reliably splittable into bullets, so it stays whole in Product details. */
+function sanmarIntro(p){
+  var d = String(p.description || '').replace(/\s+/g, ' ').trim();
+  var parts = d.split(/(?<=[a-z\)]\.)\s*(?=[A-Z0-9])/), out = [];
+  for(var i = 0; i < parts.length && out.length < 2; i++){
+    var s = parts[i].trim();
+    if(/\d+(\.\d+)?-ounce|\d+\s?%|Dimensions:|Tear-away|Note:|\bUPF\b|^\d/.test(s)) break;
+    if(!/\.$/.test(s)) break;
+    out.push(s);
+  }
+  var t = out.join(' ');
+  return (t.length >= 30 && t.length <= 260) ? t : '';
+}
 function blurb(p){
   var hit = BLURB_BY_STYLE[String(p.style).toUpperCase()];
   if(hit) return hit;
+  var intro = sanmarIntro(p);
+  if(intro) return intro;
   var base = BLURB_BY_CAT[p.category];
   if(!base) return '';
   /* "Premium" / "A good basic" from where it sits on price, not invented. */
@@ -3510,6 +3536,14 @@ function reviewLine(){
 /* Everything we hold on the piece itself. The spec line is SanMar's own copy,
    synced nightly in products.json — no extra API call. Measured size charts
    are NOT in that feed; add them to sync-sanmar.py to show a real table. */
+/* Size chart / spec sheet PDFs from the SanMar feed (carried by the nightly
+   sync). Only real http(s) links are shown. */
+function docLinks(p){
+  var defs = [['size_chart','Size chart (measurements)'], ['spec_sheet','Spec sheet'], ['decoration_spec_sheet','Decoration spec sheet']];
+  var out = defs.filter(function(d){ return /^https?:\/\//i.test(String(p[d[0]] || '')); }).map(function(d){
+    return '<a href="' + esc(p[d[0]]) + '" target="_blank" rel="noopener noreferrer">' + d[1] + ' &#8599;</a>'; });
+  return out.length ? '<p class="ddocs">' + out.join(' &middot; ') + '</p>' : '';
+}
 function detailsAcc(p){
   var sz = p.available_sizes || [], up = p.size_upcharges || {};
   var upKeys = Object.keys(up).filter(function(k){ return up[k]; });
@@ -3526,6 +3560,7 @@ function detailsAcc(p){
       (desc ? '<p class="dspec">' + esc(desc) + '</p>' : '') +
       '<dl class="dfacts">' + facts.map(function(f){
         return '<div><dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') + '</dl>' +
+      docLinks(p) +
       '<p class="dnote2">Not sure on sizing? Call ' + esc(CONFIG.phone) + ' and we will talk it through.</p>' +
     '</div></details>';
 }
