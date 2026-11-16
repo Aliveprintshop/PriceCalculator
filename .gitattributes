@@ -19,3 +19,15 @@ reviews.json   text eol=lf
 # machine had rewritten it with CRLF. Every tracked .html is stored LF, so this
 # normalises without churn.
 *.html         text eol=lf
+
+# Same problem, same fix, for the code and config this machine also rewrites.
+# On 16 Nov a pull left sync-sanmar.py, filters.json, requirements.txt and the
+# sync workflow all showing as fully modified with not one byte of real change.
+# Two ways that bites: sync-sanmar.py came back entirely CRLF, which makes a
+# patch fail to apply against LF anchors, and CRLF inside a workflow's `run:`
+# block makes bash fail with $'\r': command not found - which would break the
+# very sync that publishes the catalogue.
+*.yml          text eol=lf
+*.yaml         text eol=lf
+*.py           text eol=lf
+*.txt          text eol=lf
