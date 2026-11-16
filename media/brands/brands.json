@@ -1,0 +1,314 @@
+[
+  {
+    "brand": "Port Authority",
+    "slug": "port-authority",
+    "products": 718,
+    "sanmar_value": "portauthorityheader.jpg",
+    "file": "media/brands/port-authority.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/portauthorityheader.jpg"
+  },
+  {
+    "brand": "Sport-Tek",
+    "slug": "sport-tek",
+    "products": 424,
+    "sanmar_value": "sporttekheader.jpg",
+    "file": "media/brands/sport-tek.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/sporttekheader.jpg"
+  },
+  {
+    "brand": "OGIO",
+    "slug": "ogio",
+    "products": 239,
+    "sanmar_value": "ogioheader.jpg",
+    "file": "media/brands/ogio.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/ogioheader.jpg"
+  },
+  {
+    "brand": "Port & Co",
+    "slug": "port-co",
+    "products": 155,
+    "sanmar_value": "portandcompanyheader.jpg",
+    "file": "media/brands/port-co.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/portandcompanyheader.jpg"
+  },
+  {
+    "brand": "Carhartt",
+    "slug": "carhartt",
+    "products": 144,
+    "sanmar_value": "Carharttheader.jpg",
+    "file": "media/brands/carhartt.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Carharttheader.jpg"
+  },
+  {
+    "brand": "District",
+    "slug": "district",
+    "products": 137,
+    "sanmar_value": "districtheader.jpg",
+    "file": "media/brands/district.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/districtheader.jpg"
+  },
+  {
+    "brand": "Nike",
+    "slug": "nike",
+    "products": 117,
+    "sanmar_value": "nikegolfheader.jpg",
+    "file": "media/brands/nike.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/nikegolfheader.jpg"
+  },
+  {
+    "brand": "CornerStone",
+    "slug": "cornerstone",
+    "products": 104,
+    "sanmar_value": "cornerstoneheader.jpg",
+    "file": "media/brands/cornerstone.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/cornerstoneheader.jpg"
+  },
+  {
+    "brand": "New Era",
+    "slug": "new-era",
+    "products": 89,
+    "sanmar_value": "neweraheader.jpg",
+    "file": "media/brands/new-era.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/neweraheader.jpg"
+  },
+  {
+    "brand": "TravisMathew",
+    "slug": "travismathew",
+    "products": 85,
+    "sanmar_value": "travismathewheader.jpg",
+    "file": "media/brands/travismathew.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/travismathewheader.jpg"
+  },
+  {
+    "brand": "Bella + Canvas",
+    "slug": "bella-canvas",
+    "products": 84,
+    "sanmar_value": "Bella Logo 2000.jpg",
+    "file": null,
+    "source": null
+  },
+  {
+    "brand": "The North Face",
+    "slug": "the-north-face",
+    "products": 84,
+    "sanmar_value": "northfaceheader.jpg",
+    "file": "media/brands/the-north-face.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/northfaceheader.jpg"
+  },
+  {
+    "brand": "Eddie Bauer",
+    "slug": "eddie-bauer",
+    "products": 81,
+    "sanmar_value": "eddiebauerheader.jpg",
+    "file": "media/brands/eddie-bauer.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/eddiebauerheader.jpg"
+  },
+  {
+    "brand": "Mercer+Mettle",
+    "slug": "mercer-mettle",
+    "products": 80,
+    "sanmar_value": "M+MHeader.jpg",
+    "file": "media/brands/mercer-mettle.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/M+MHeader.jpg"
+  },
+  {
+    "brand": "Gildan",
+    "slug": "gildan",
+    "products": 72,
+    "sanmar_value": "gildanheader.jpg",
+    "file": "media/brands/gildan.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/gildanheader.jpg"
+  },
+  {
+    "brand": "Brooks Brothers",
+    "slug": "brooks-brothers",
+    "products": 60,
+    "sanmar_value": "BBHeader.jpg",
+    "file": "media/brands/brooks-brothers.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/BBHeader.jpg"
+  },
+  {
+    "brand": "Jerzees",
+    "slug": "jerzees",
+    "products": 54,
+    "sanmar_value": "jerzeesheader.jpg",
+    "file": "media/brands/jerzees.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/jerzeesheader.jpg"
+  },
+  {
+    "brand": "Richardson",
+    "slug": "richardson",
+    "products": 46,
+    "sanmar_value": "richardsonheader.jpg",
+    "file": "media/brands/richardson.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/richardsonheader.jpg"
+  },
+  {
+    "brand": "Next Level Apparel",
+    "slug": "next-level-apparel",
+    "products": 42,
+    "sanmar_value": "nextlevelheader.jpg",
+    "file": "media/brands/next-level-apparel.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/nextlevelheader.jpg"
+  },
+  {
+    "brand": "Stanley/Stella",
+    "slug": "stanley-stella",
+    "products": 32,
+    "sanmar_value": "stanelystellaheader.png",
+    "file": "media/brands/stanley-stella.png",
+    "source": "https://cdnm.sanmar.com/catalog/images/stanelystellaheader.png"
+  },
+  {
+    "brand": "MiiR",
+    "slug": "miir",
+    "products": 31,
+    "sanmar_value": "MiiRheader.jpg",
+    "file": "media/brands/miir.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/MiiRheader.jpg"
+  },
+  {
+    "brand": "Comfort Colors",
+    "slug": "comfort-colors",
+    "products": 27,
+    "sanmar_value": "ComfortColorsheader.jpg",
+    "file": "media/brands/comfort-colors.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/ComfortColorsheader.jpg"
+  },
+  {
+    "brand": "Wink",
+    "slug": "wink",
+    "products": 26,
+    "sanmar_value": "wonderwinkheader.jpg",
+    "file": "media/brands/wink.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/wonderwinkheader.jpg"
+  },
+  {
+    "brand": "AllMade",
+    "slug": "allmade",
+    "products": 25,
+    "sanmar_value": "Allmadeheader.jpg",
+    "file": "media/brands/allmade.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Allmadeheader.jpg"
+  },
+  {
+    "brand": "A4",
+    "slug": "a4",
+    "products": 24,
+    "sanmar_value": "a4header.png",
+    "file": "media/brands/a4.png",
+    "source": "https://cdnm.sanmar.com/catalog/images/a4header.png"
+  },
+  {
+    "brand": "Champion",
+    "slug": "champion",
+    "products": 23,
+    "sanmar_value": "championheader.jpg",
+    "file": "media/brands/champion.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/championheader.jpg"
+  },
+  {
+    "brand": "Russell Outdoors",
+    "slug": "russell-outdoors",
+    "products": 17,
+    "sanmar_value": "russelloutdoorheader.jpg",
+    "file": "media/brands/russell-outdoors.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/russelloutdoorheader.jpg"
+  },
+  {
+    "brand": "Red Kap",
+    "slug": "red-kap",
+    "products": 13,
+    "sanmar_value": "redkapheader.jpg",
+    "file": "media/brands/red-kap.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/redkapheader.jpg"
+  },
+  {
+    "brand": "Cotopaxi",
+    "slug": "cotopaxi",
+    "products": 12,
+    "sanmar_value": "Cotopaxiheader.jpg",
+    "file": "media/brands/cotopaxi.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Cotopaxiheader.jpg"
+  },
+  {
+    "brand": "Volunteer Knitwear",
+    "slug": "volunteer-knitwear",
+    "products": 12,
+    "sanmar_value": "volunteerheader.jpg",
+    "file": "media/brands/volunteer-knitwear.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/volunteerheader.jpg"
+  },
+  {
+    "brand": "Outdoor Research",
+    "slug": "outdoor-research",
+    "products": 10,
+    "sanmar_value": "ORheader.jpg",
+    "file": "media/brands/outdoor-research.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/ORheader.jpg"
+  },
+  {
+    "brand": "Rabbit Skins",
+    "slug": "rabbit-skins",
+    "products": 10,
+    "sanmar_value": "rabbitskinsheader.jpg",
+    "file": "media/brands/rabbit-skins.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/rabbitskinsheader.jpg"
+  },
+  {
+    "brand": "Tommy Bahama",
+    "slug": "tommy-bahama",
+    "products": 10,
+    "sanmar_value": "TBHeader.jpg",
+    "file": "media/brands/tommy-bahama.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/TBHeader.jpg"
+  },
+  {
+    "brand": "tentree",
+    "slug": "tentree",
+    "products": 9,
+    "sanmar_value": "Tentreeheader.jpg",
+    "file": "media/brands/tentree.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Tentreeheader.jpg"
+  },
+  {
+    "brand": "Flexfit",
+    "slug": "flexfit",
+    "products": 8,
+    "sanmar_value": "Flexfitheader.jpg",
+    "file": "media/brands/flexfit.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Flexfitheader.jpg"
+  },
+  {
+    "brand": "Spacecraft",
+    "slug": "spacecraft",
+    "products": 4,
+    "sanmar_value": "Spacecraftheader.jpg",
+    "file": "media/brands/spacecraft.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Spacecraftheader.jpg"
+  },
+  {
+    "brand": "Canvas for Good",
+    "slug": "canvas-for-good",
+    "products": 2,
+    "sanmar_value": "canvasforgoodheader.jpg",
+    "file": "media/brands/canvas-for-good.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/canvasforgoodheader.jpg"
+  },
+  {
+    "brand": "OTTO CAP",
+    "slug": "otto-cap",
+    "products": 1,
+    "sanmar_value": "",
+    "file": null,
+    "source": null
+  },
+  {
+    "brand": "Bulwark",
+    "slug": "bulwark",
+    "products": 1,
+    "sanmar_value": "bulwarkheader.jpg",
+    "file": "media/brands/bulwark.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/bulwarkheader.jpg"
+  }
+]
