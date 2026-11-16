@@ -1486,6 +1486,38 @@ function stripePromo(){
 function promoOff(pre){ var p = stripePromo(); if(!p) return 0;
   var o = p.amountOff ? +p.amountOff : (p.percentOff ? pre * p.percentOff / 100 : 0); return +Math.min(pre, o).toFixed(2); }
 function promoDiscount(){ var p = CART.getPromo(); return p && p.code && E.PROMO_CODES[p.code] ? E.PROMO_CODES[p.code] : 0; }
+/* What a code is worth, used only to choose between two of them. The hold-back
+   for an unmet minimum is deliberately ignored here: a bigger code the cart has
+   not reached yet should not be traded away for a smaller one it has. The
+   SAMPLE codes are staff sample pricing and always win, since someone typed
+   them on purpose. */
+function promoWorth(p){
+  if(!p || !p.code) return 0;
+  if(E.PROMO_CODES[p.code]) return Infinity;
+  var pre = itemsBeforeRush();
+  return +(+(p.amountOff ? +p.amountOff : (p.percentOff ? pre * p.percentOff / 100 : 0)) || 0).toFixed(2);
+}
+/* Black Friday, all of November 2026: $50 off any order of $250 or more in
+   products and printing, applied for the customer so nobody has to find a code.
+   The coupon, its minimum and its expiry live in Stripe (alive-blackfriday-50);
+   the figures here only draw the page and decide when to stop offering it.
+   The $250 rule rides on the existing minimumItems machinery, so an order under
+   it shows "add $X more to use" and sends no code to the Worker. */
+var BF = {code:'BLACKFRIDAY50', amountOff:50, minimumItems:250, endsAt:Date.parse('2026-12-01T07:59:59Z')};
+function bfOn(){ return Date.now() < BF.endsAt; }
+function bfAutoApply(){
+  try{
+    var cur = CART.getPromo();
+    /* Someone who was here in November still has the code in their browser.
+       Once the deal is over Stripe refuses it, so clear it rather than show a
+       discount that would vanish at payment. */
+    if(!bfOn()){ if(cur && cur.code === BF.code) CART.setPromo(null); return; }
+    if(cur && cur.code === BF.code) return;
+    if(promoWorth(cur) >= BF.amountOff) return;   /* never downgrade a better code */
+    CART.setPromo({code:BF.code, stripe:true, amountOff:BF.amountOff, percentOff:0,
+                   minimum:0, minimumItems:BF.minimumItems, auto:true});
+  }catch(e){}
+}
 /* Items made on the new product page carry their pricing product and can be
    re-priced. Items from the old calculator keep the price and options they
    were added with. */
@@ -1718,14 +1750,17 @@ function render(){
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
-      (promo && promo.code ? '<div class="row promo"><span>Promo ' + esc(promo.code) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : (promoShortBy() ? 'add ' + money(promoShortBy()) + ' more to use' : 'applied')) + '</b></div>' : '') +
+      (promo && promo.code ? '<div class="row promo"><span>' + (promo.code === BF.code ? 'Black Friday ' + money(BF.amountOff) + ' off' : 'Promo ' + esc(promo.code)) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : (promoShortBy() ? 'add ' + money(promoShortBy()) + ' more to use' : 'applied')) + '</b></div>' : '') +
       '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
-      (promo && promo.code ? '' : (S.promoOpen
+      /* The Black Friday code is applied for the customer, so it must not take
+         the code box away from someone holding a better one. Keep it reachable;
+         a typed code still only replaces it if it is worth more. */
+      (promo && promo.code && promo.code !== BF.code ? '' : (S.promoOpen
         ? '<div class="promo-in"><input id="co-promo" placeholder="Promo code" autocomplete="off"><button type="button" class="dbtn" data-applypromo="1">Apply</button></div>' + (S.promoErr ? '<div class="perr">' + esc(S.promoErr) + '</div>' : '')
-        : '<button type="button" class="linkbtn promo-link" data-openpromo="1">Have a promo code?</button>')) +
+        : '<button type="button" class="linkbtn promo-link" data-openpromo="1">' + (promo && promo.code === BF.code ? 'Have a different code?' : 'Have a promo code?') + '</button>')) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-submit="1"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting secure checkout…' : 'Pay &amp; place order') + '</button>' +
       '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' +
@@ -1968,7 +2003,15 @@ function wire(){
         if(!j || !j.ok){ S.promoErr = (j && j.error) || 'That code isn’t valid.'; render(); return; }
         if(j.minimum && totals().grand < j.minimum){ S.promoErr = 'That code needs an order of ' + money(j.minimum) + ' or more.'; render(); return; }
         if(j.minimumItems && itemsBeforeRush() + 0.5 < j.minimumItems){ S.promoErr = 'That code needs ' + money(j.minimumItems) + ' or more in products and printing (before rush and shipping). Your order is at ' + money(itemsBeforeRush()) + '.'; render(); return; }
-        CART.setPromo({code:j.code, stripe:true, amountOff:j.amountOff || 0, percentOff:j.percentOff || 0, minimum:j.minimum || 0, minimumItems:j.minimumItems || 0});
+        /* One code per order — Stripe stacks nothing — so keep whichever is
+           worth more rather than letting a smaller typed code displace it. */
+        var incoming = {code:j.code, stripe:true, amountOff:j.amountOff || 0, percentOff:j.percentOff || 0, minimum:j.minimum || 0, minimumItems:j.minimumItems || 0};
+        var cur = CART.getPromo();
+        if(cur && cur.code !== incoming.code && promoWorth(cur) > promoWorth(incoming)){
+          S.promoErr = 'You already have the bigger discount applied, so we kept it.';
+          S.promoOpen = true; render(); return;
+        }
+        CART.setPromo(incoming);
         S.promoErr = ''; track('promo_applied', {coupon:j.code}); render();
       })
       .catch(function(){ S.promoErr = 'We couldn’t check that code. Please try again.'; render(); });
@@ -2402,7 +2445,7 @@ function renderDone(){
   }
   if(qp('canceled')) S.err = 'Payment was cancelled — your order is still here whenever you’re ready.';
   var code = qp('cart');
-  (code ? loadSharedCart(code) : Promise.resolve()).then(function(){ applyOptions(); render();
+  (code ? loadSharedCart(code) : Promise.resolve()).then(function(){ bfAutoApply(); applyOptions(); render();
     if(S.items.length){ var t = totals(), sig = 'alive_bc_' + S.items.map(function(i){ return i.id + ':' + i.qty; }).join('|');
       if(once(sig)) track('begin_checkout', {currency:'USD', value:t.total, items:gaItems()});
       try{ cartSnap('checkout'); }catch(e){} } });
