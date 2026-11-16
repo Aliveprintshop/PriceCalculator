@@ -7,7 +7,7 @@ fetches each logo and writes:
   media/brands/brands.json       [{brand, slug, file, source, products}]
 Run from the "Pull SanMar brand logos" workflow (workflow_dispatch only).
 """
-import csv, collections, importlib.util, json, os, re, sys, urllib.request
+import csv, collections, urllib.parse, importlib.util, json, os, re, sys, urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -36,7 +36,7 @@ CANDIDATES = ["{v}", "https://cdnm.sanmar.com/catalog/images/{v}", "https://cdnm
               "https://cdnm.sanmar.com/imglib/brandlogos/{v}", "https://www.sanmar.com/medias/{v}"]
 def fetch(v):
     for t in CANDIDATES:
-        u = t.format(v=v)
+        u = t.format(v=urllib.parse.quote(v))
         if not u.startswith("http"): continue
         try:
             req = urllib.request.Request(u, headers={"User-Agent": "Mozilla/5.0"})
@@ -57,6 +57,13 @@ for brand, n in carried.most_common():
         if data:
             ext = (os.path.splitext(u.split("?")[0])[1] or ".jpg").lower()
             fn = entry["slug"] + ext
+            # SanMar sends a blank all-white file for a few brands; skip those.
+            try:
+                from PIL import Image; import io
+                if Image.open(io.BytesIO(data)).convert("L").getextrema()[0] >= 250:
+                    print("    blank logo, skipped", u); data = None
+            except Exception: pass
+        if data:
             (OUT / fn).write_bytes(data)
             entry.update(file="media/brands/" + fn, source=u)
     print("BRAND", brand, "->", entry["file"] or "NO LOGO", "|", v)
