@@ -25,11 +25,13 @@ Local use:
 """
 
 import argparse
+import collections
 import csv
 import io
 import json
 import os
 import re
+import statistics
 import sys
 import zipfile
 from datetime import datetime, timezone
@@ -735,6 +737,53 @@ def measure_crop(url):
     box = [max(0, box[0] - pad * bw), max(0, box[1] - pad * bh), min(1, box[2] + pad * bw), min(1, box[3] + pad * bh)]
     return [round(v * 1000) for v in box] + [round(W / H * 1000)]
 
+def reconcile_crops(products):
+    """Replace a colour's crop box with its siblings' when it disagrees.
+
+    measure_crop finds the garment by contrast against SanMar's white
+    background. A white or very pale garment leaves almost nothing to find, so
+    the box collapses onto whatever does register - a sleeve shadow, a seam, a
+    neck label - and the page then shows a sleeve instead of a shirt. Every
+    colour of a style is photographed identically, so the other colours are the
+    ground truth.
+
+    Only boxes measured from photos of the SAME shape are compared: SanMar
+    ships different photo aspect ratios inside one style, and a normalised box
+    legitimately differs between them. Three same-shape colours are required
+    before anything is overruled, so a style cannot be "corrected" by one or
+    two equally bad measurements.
+    """
+    fixed = 0
+    for prod in products:
+        for side, _img in CROP_SIDES:
+            groups = collections.defaultdict(list)
+            for c in prod.get("colors") or []:
+                b = (c.get("crop") or {}).get(side)
+                if b and len(b) == 5 and b[2] > b[0] and b[3] > b[1]:
+                    groups[b[4]].append(c)
+            for _ar, members in groups.items():
+                if len(members) < 3:
+                    continue
+                boxes = [c["crop"][side] for c in members]
+                med = [statistics.median([b[i] for b in boxes]) for i in range(4)]
+                area_m = (med[2] - med[0]) * (med[3] - med[1])
+                if area_m <= 0:
+                    continue
+                for c in members:
+                    b = c["crop"][side]
+                    inter = (max(0, min(b[2], med[2]) - max(b[0], med[0])) *
+                             max(0, min(b[3], med[3]) - max(b[1], med[1])))
+                    # how much of the agreed garment box this crop still shows,
+                    # and whether it has ballooned well past it
+                    covered = inter / area_m
+                    area = ((b[2] - b[0]) * (b[3] - b[1])) / area_m
+                    if covered < 0.92 or area > 2.5:
+                        c["crop"][side] = [int(round(v)) for v in med] + [b[4]]
+                        fixed += 1
+    log(f"  crop reconcile: {fixed} box(es) replaced from sibling colours")
+    return products
+
+
 def apply_color_crops(products, path="crops-c.json", max_new=1500):
     try:
         data = json.load(open(path, encoding="utf-8")) if Path(path).exists() else {}
@@ -1010,6 +1059,8 @@ def main():
     products = fix_front_images(products, filters.get("fix_front_image_styles"))
     products = apply_front_overrides(products, filters.get("front_image_overrides"))
     products = apply_color_crops(products)
+    # A pale garment can defeat the measurement; the other colours correct it.
+    products = reconcile_crops(products)
 
     # Merge custom
     if filters.get("merge_custom_products", True):
