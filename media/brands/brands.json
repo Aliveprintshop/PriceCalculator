@@ -84,8 +84,8 @@
     "slug": "bella-canvas",
     "products": 84,
     "sanmar_value": "Bella Logo 2000.jpg",
-    "file": null,
-    "source": null
+    "file": "media/brands/bella-canvas.jpg",
+    "source": "https://cdnm.sanmar.com/catalog/images/Bella%20Logo%202000.jpg"
   },
   {
     "brand": "The North Face",
@@ -109,7 +109,7 @@
     "products": 80,
     "sanmar_value": "M+MHeader.jpg",
     "file": "media/brands/mercer-mettle.jpg",
-    "source": "https://cdnm.sanmar.com/catalog/images/M+MHeader.jpg"
+    "source": "https://cdnm.sanmar.com/catalog/images/M%2BMHeader.jpg"
   },
   {
     "brand": "Gildan",
@@ -292,8 +292,8 @@
     "slug": "canvas-for-good",
     "products": 2,
     "sanmar_value": "canvasforgoodheader.jpg",
-    "file": "media/brands/canvas-for-good.jpg",
-    "source": "https://cdnm.sanmar.com/catalog/images/canvasforgoodheader.jpg"
+    "file": null,
+    "source": null
   },
   {
     "brand": "OTTO CAP",
