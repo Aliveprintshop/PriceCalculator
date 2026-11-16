@@ -1,0 +1,41 @@
+name: PCNA connection test
+
+# Manual only. Does NOT deploy the site and does NOT touch sync.yml / products.json.
+on:
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: "PCNA product IDs to test (comma-separated)"
+        required: false
+        default: "0600-10"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test PCNA PromoStandards login + sample data
+        env:
+          PCNA_ID: ${{ secrets.PCNA_ID }}
+          PCNA_PASSWORD: ${{ secrets.PCNA_PASSWORD }}
+          PCNA_SAMPLES: ${{ github.event.inputs.samples }}
+          PCNA_OUT: pcna-out
+        run: python pcna_test.py
+
+      - name: Save raw XML (deleted after 1 day)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pcna-raw
+          path: pcna-out/
+          retention-days: 1
+          if-no-files-found: ignore
