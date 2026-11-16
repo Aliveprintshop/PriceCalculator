@@ -1,0 +1,33 @@
+name: Pull SanMar brand logos
+
+# One-off, manual only. Reads BRAND_LOGO_IMAGE from SanMar_SDL_N.csv and
+# commits the logos to media/brands/. Safe to re-run; it overwrites the folder.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Pull logos
+        env:
+          SANMAR_FTP_USER: ${{ secrets.SANMAR_FTP_USER }}
+          SANMAR_FTP_PASSWORD: ${{ secrets.SANMAR_FTP_PASSWORD }}
+        run: python scripts/pull-brand-logos.py
+      - name: Commit logos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add media/brands
+          git diff --staged --quiet && { echo "nothing new"; exit 0; }
+          git commit -m "chore: pull SanMar brand logos into media/brands"
+          for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1
