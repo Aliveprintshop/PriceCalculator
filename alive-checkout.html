@@ -355,6 +355,28 @@
 #alive-flow .qi{position:relative;}
 #alive-flow .qi::after{content:"";position:absolute;inset:-13px;}
 #alive-flow .stp .nm{font-size:12px !important;}
+
+/* ---- Discount badge beside step 3 (16 Nov 2026) ---------------------
+   Shows the active code's value ("$50 OFF") next to Checkout. Pops in once
+   per page load; later re-renders show it without the bounce. */
+#alive-flow .stp.has-disc{position:relative;}
+#alive-flow .disc-badge{position:absolute;left:calc(50% + 24px);top:2px;z-index:2;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:4px;background:#16a34a;color:#fff;
+  font-family:var(--disp);font-size:12.5px;font-weight:800;letter-spacing:.2px;line-height:1;
+  padding:6px 9px 6px 7px;border-radius:999px;transform:rotate(-4deg);transform-origin:left center;
+  box-shadow:0 2px 6px rgba(22,163,74,.28);pointer-events:none;}
+#alive-flow .disc-badge:before{content:"";position:absolute;left:-5px;top:50%;margin-top:-5px;
+  border-style:solid;border-width:5px 5px 5px 0;border-color:transparent #16a34a transparent transparent;}
+#alive-flow .disc-badge svg{width:13px;height:13px;flex:0 0 auto;}
+#alive-flow .disc-badge.pop{animation:aliveDiscPop .55s cubic-bezier(.34,1.7,.5,1) both;animation-delay:.25s;}
+@keyframes aliveDiscPop{0%{opacity:0;transform:scale(0) rotate(-12deg);}100%{opacity:1;transform:scale(1) rotate(-4deg);}}
+@media(max-width:560px){
+  /* No room beside the dot on a phone: sit under the "Checkout" label instead. */
+  #alive-flow .disc-badge{position:static;margin-top:1px;font-size:10.5px;padding:4px 7px 4px 6px;transform-origin:center top;}
+  #alive-flow .disc-badge:before{display:none;}
+  #alive-flow .disc-badge svg{width:11px;height:11px;}
+}
+@media(prefers-reduced-motion:reduce){#alive-flow .disc-badge.pop{animation:none;}}
 </style>
 </head>
 <body>
@@ -1955,11 +1977,44 @@ function openShare(){
   }).catch(function(){ S.err = 'We couldn’t make a link for this cart. Please try again.'; render(); });
 }
 
+
+/* ---- Discount badge beside step 3 (16 Nov 2026) --------------------- */
+function discLabel(p){
+  if(!p || !p.code) return '';
+  if(E.PROMO_CODES && E.PROMO_CODES[p.code]) return '';   /* staff SAMPLE pricing: no badge */
+  if(+p.amountOff > 0) return '$' + (+p.amountOff % 1 ? (+p.amountOff).toFixed(2) : +p.amountOff) + ' OFF';
+  if(+p.percentOff > 0) return (+p.percentOff) + '% OFF';
+  return '';
+}
+var DISC_POPPED = false;
+function discBadge(){
+  var t = ''; try{ t = discLabel(discActive()); }catch(e){ t = ''; }
+  if(!t) return '';
+  var cls = DISC_POPPED ? '' : ' pop'; DISC_POPPED = true;
+  return '<span class="disc-badge' + cls + '" role="note" aria-label="' + esc(t.toLowerCase()) + ' discount applied at checkout">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>' + esc(t) + '</span>';
+}
+/* Redraw just the badge (e.g. a code was claimed after the page drew). */
+function discRefresh(){
+  try{
+    var st = document.querySelectorAll('#alive-flow .stp');
+    if(st.length < 3) return;
+    var s3 = st[st.length - 1], old = s3.querySelector('.disc-badge');
+    if(old) old.parentNode.removeChild(old);
+    var h = discBadge();
+    s3.classList.toggle('has-disc', !!h);
+    if(h) s3.insertAdjacentHTML('beforeend', h);
+  }catch(e){}
+}
+
+/* Checkout has already chosen the best code (bfAutoApply / promoWorth). */
+function discActive(){ try{ return CART.getPromo(); }catch(e){ return null; } }
 function stepper(){
   var defs = ['Design','Sizes','Checkout'], out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(l, i){
     var done = i < 2;
-    out += '<span class="stp ' + (done ? 'done' : 'now') + '"><span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : 3) + '</span><span class="nm">' + l + '</span></span>';
+    var b = done ? '' : discBadge();
+    out += '<span class="stp ' + (done ? 'done' : 'now') + (b ? ' has-disc' : '') + '"><span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : 3) + '</span><span class="nm">' + l + '</span>' + b + '</span>';
     if(i < 2) out += '<span class="rule done"></span>';
   });
   return out + '</div></div>';
