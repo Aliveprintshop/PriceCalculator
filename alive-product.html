@@ -4764,12 +4764,12 @@ function takeFile(k, file){
       applyDetect(k, det);
       S.busy = null; S.sel = k; if(LOC[k].side) { S.side = LOC[k].side; S.gal = null; }
       trackDesign('upload');
-      render(); upload(k, file); askInksIfNeeded(k);
+      render(); upload(k, file); askInksIfNeeded(k); upcMaybe(k);
     };
     im.onerror = function(){
       S.art[k] = {name:file.name, src:'', thumb:'', colors:[], photoish:false, url:'', key:'', uploadFailed:false, noPreview:true, place:defaultPlace(k)};
       applyDetect(k, null);
-      S.busy = null; render(); upload(k, file); askInksIfNeeded(k);
+      S.busy = null; render(); upload(k, file); askInksIfNeeded(k); upcMaybe(k);
     };
     im.src = src;
   };
@@ -5774,10 +5774,240 @@ loadCatalog()
   .catch(function(err){ if(window.console) console.error('[Alive product]', err); fail('We could not load this product just now.'); });
 
 
+/* ------------------------------------------------------------ "YOUR GRAPHIC IS UPLOADED!" CHOICE
+   After the FIRST logo of a visit lands on the design, offer two ways forward:
+     - Continue my order: closes, leaves them on the design (they can still move
+       or resize it, then Continue to sizes as before).
+     - Help me finish: name, email, phone, notes → GHL (same webhook as the cart
+       and the shared-project quote form, source "Help me finish (design page)",
+       tag help-me-finish) and the staff dashboard (capSend: puts the email on
+       the artwork and saves the design as a draft, so it shows in Follow up).
+   Decided with Spencer 16 Nov 2026. Lives on document.body, not in root, so a
+   render() never wipes it. Waits for the ink-color question if that is open. */
+var UPC = {
+  ghl: 'https://services.leadconnectorhq.com/hooks/Ih3lwgAgJJ2eScDYpw30/webhook-trigger/56b87ba2-f86c-40c1-998a-3f336bce9f53',
+  done: false, box: null, k: null, busy: false, form: {name:'', email:'', phone:'', notes:''}
+};
+var UPC_METHOD = {sp:'Screen printing', em:'Embroidery', ht:'Heat transfer'};
+function upcTrack(ev, params){
+  if(!EMBEDDED) return;   /* parent page forwards to GA/Meta; skip the /api/ev beacon (it 422s on unlisted events) */
+  try{ window.parent.postMessage({type:'alive-track', event:ev, params:params || {}}, '*'); }catch(e){}
+}
+function upcCss(){
+  if(document.getElementById('upc-css')) return;
+  var s = document.createElement('style'); s.id = 'upc-css';
+  s.textContent =
+  '#upc-ov{position:fixed;left:0;top:0;width:100%;height:100%;z-index:2147482000;display:flex;align-items:center;justify-content:center;' +
+    'background:rgba(15,23,42,.55);padding:12px;box-sizing:border-box;font-family:"Open Sans",sans-serif;color:#1c1c1e;-webkit-font-smoothing:antialiased;animation:upcfade .3s ease-out both;}' +
+  '#upc-ov *{box-sizing:border-box;}' +
+  '@keyframes upcfade{from{opacity:0}to{opacity:1}}@keyframes upcrise{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}' +
+  '#upc-ov .upc-card{position:relative;width:100%;max-width:460px;max-height:100%;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.32);padding:26px 26px 24px;text-align:center;animation:upcrise .38s cubic-bezier(.2,.8,.2,1) both;}' +
+  '#upc-ov .upc-brand{font-family:"Montserrat",sans-serif;font-weight:800;font-size:13px;letter-spacing:.14em;color:#1c1c1e;margin:2px 0 18px;}' +
+  '#upc-ov .upc-x{position:absolute;right:10px;top:10px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#1c1c1e;font-size:28px;line-height:1;cursor:pointer;}' +
+  '#upc-ov .upc-x:hover{background:#f1f4f8;}' +
+  '#upc-ov .upc-tick{width:56px;height:56px;border-radius:50%;background:#1b6cce;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}' +
+  '#upc-ov .upc-thumb{width:84px;height:84px;object-fit:contain;border:1px solid #e3e8ef;border-radius:12px;background:#f7f9fc;display:block;margin:0 auto 12px;padding:6px;}' +
+  '#upc-ov h2{font-family:"Montserrat",sans-serif;font-weight:800;font-size:25px;line-height:1.15;letter-spacing:-.01em;margin:0 0 6px;color:#1c1c1e;}' +
+  '#upc-ov .upc-lead{font-size:15.5px;color:#374151;margin:0 0 20px;line-height:1.45;}' +
+  '#upc-ov .upc-btn{display:block;width:100%;min-height:54px;border-radius:12px;font-family:"Montserrat",sans-serif;font-weight:800;font-size:18px;cursor:pointer;padding:10px 14px;}' +
+  '#upc-ov .upc-pri{border:0;background:#1b6cce;color:#fff;}#upc-ov .upc-pri:hover{background:#1558a8;}#upc-ov .upc-pri:disabled{opacity:.6;cursor:default;}' +
+  '#upc-ov .upc-sec{border:2px solid #1b6cce;background:#fff;color:#1b6cce;}#upc-ov .upc-sec:hover{background:#eef4fc;}' +
+  '#upc-ov .upc-sub{font-size:13.5px;color:#374151;line-height:1.45;margin:8px 0 0;}' +
+  '#upc-ov .upc-or{display:flex;align-items:center;gap:12px;color:#6b7280;font-size:14px;margin:16px 0;}#upc-ov .upc-or:before,#upc-ov .upc-or:after{content:"";flex:1;height:1px;background:#d6dde8;}' +
+  '#upc-ov form{text-align:left;}' +
+  '#upc-ov label{display:block;font-family:"Montserrat",sans-serif;font-weight:700;font-size:12.5px;color:#374151;margin:12px 0 5px;}' +
+  '#upc-ov input,#upc-ov textarea{width:100%;border:1.5px solid #d6dde8;border-radius:10px;padding:0 12px;font-size:16px;font-family:"Open Sans",sans-serif;color:#1c1c1e;background:#fff;}' +
+  '#upc-ov input{height:46px;}#upc-ov textarea{padding:10px 12px;min-height:84px;resize:vertical;}' +
+  '#upc-ov input:focus,#upc-ov textarea:focus{border-color:#1b6cce;outline:none;box-shadow:0 0 0 3px #eef4fc;}' +
+  '#upc-ov .upc-err{color:#b42318;font-size:13px;margin:10px 0 0;}' +
+  '#upc-ov .upc-back{display:inline-block;margin-top:12px;background:none;border:0;color:#6b7280;font-size:13.5px;text-decoration:underline;cursor:pointer;padding:8px;}' +
+  '#upc-ov a{color:#1b6cce;font-weight:700;text-decoration:none;white-space:nowrap;}' +
+  '#upc-ov .upc-fine{font-size:12px;color:#6b7280;margin:10px 0 0;text-align:center;line-height:1.5;}' +
+  '#upc-ov.upc-emb{position:absolute;display:block;padding:0;}' +
+  '#upc-ov.upc-emb .upc-wrap{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;padding:0 12px;transition:transform .3s cubic-bezier(.22,.8,.3,1);}' +
+  '@media (prefers-reduced-motion:reduce){#upc-ov,#upc-ov .upc-card,#upc-ov.upc-emb .upc-wrap{animation:none!important;transition:none!important;}}' +
+  'html.upc-lock,html.upc-lock body{overflow:hidden!important;}' +
+  '@media (max-width:420px){#upc-ov .upc-card{padding:22px 18px 18px;}#upc-ov h2{font-size:22px;}#upc-ov .upc-btn{font-size:16.5px;}}';
+  document.head.appendChild(s);
+}
+function upcMaybe(k){
+  if(UPC.done || S.editId || qp('resume') || qp('edit') || qp('nopop') || S.mode === 'later') return;
+  UPC.done = true; UPC.k = k;
+  /* The ink-color question sets the price, so it goes first; we follow once it is answered. */
+  var tries = 0;
+  (function wait(){
+    if(UPC.box) return;
+    if(inkPending(k) || root.querySelector('.tipbox')){ if(++tries < 600) setTimeout(wait, 300); return; }
+    setTimeout(upcOpen, 350);
+  })();
+}
+function upcClose(how){
+  var b = UPC.box; if(!b) return;
+  if(b.parentNode) b.parentNode.removeChild(b);
+  UPC.box = null;
+  document.documentElement.classList.remove('upc-lock');
+  document.removeEventListener('keydown', upcKey, true);
+  if(how) upcTrack('upload_choice_close', {how:how});
+}
+function upcKey(e){ if(e.key === 'Escape') upcClose('esc'); }
+function upcThumb(){
+  var d = S.art[UPC.k];
+  return (d && d.thumb) ? '<img class="upc-thumb" src="' + esc(d.thumb) + '" alt="Your graphic">' : '';
+}
+function upcView(n, extra){
+  var c = UPC.box && UPC.box.querySelector('.upc-card'); if(!c) return;
+  var top = '<div class="upc-brand">ALIVE PRINT SHOP</div><button type="button" class="upc-x" data-upc="x" aria-label="Close">&times;</button>';
+  var body;
+  if(n === 1){
+    body = '<div class="upc-tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h2 id="upc-h">Your graphic is uploaded!</h2>' +
+      '<p class="upc-lead">How would you like to finish your order?</p>' +
+      '<button type="button" class="upc-btn upc-pri" data-upc="go">Continue my order</button>' +
+      '<p class="upc-sub">Choose sizes and quantities, see your total, and check out.</p>' +
+      '<div class="upc-or">or</div>' +
+      '<button type="button" class="upc-btn upc-sec" data-upc="help">Help me finish</button>' +
+      '<p class="upc-sub">Send your logo, project details, and contact info to our team. We&rsquo;ll help you place your order.</p>';
+  }else if(n === 2){
+    var f = UPC.form;
+    body = upcThumb() + '<h2 id="upc-h">We&rsquo;ll help you finish</h2>' +
+      '<p class="upc-lead">Your logo and the ' + esc(cleanName(S.p)) + ' you picked come with this. Tell us how to reach you.</p>' +
+      '<form id="upc-f" novalidate>' +
+        '<label for="upc-name">Name</label><input id="upc-name" autocomplete="name" value="' + esc(f.name) + '">' +
+        '<label for="upc-email">Email</label><input id="upc-email" type="email" inputmode="email" autocomplete="email" value="' + esc(f.email) + '">' +
+        '<label for="upc-phone">Phone</label><input id="upc-phone" type="tel" inputmode="tel" autocomplete="tel" value="' + esc(f.phone) + '">' +
+        '<label for="upc-notes">Project details <span style="font-weight:600;color:#6b7280">(optional)</span></label>' +
+        '<textarea id="upc-notes" placeholder="How many pieces, when you need them, anything else">' + esc(f.notes) + '</textarea>' +
+        '<div class="upc-err" id="upc-err" role="alert">' + (extra ? esc(extra) : '') + '</div>' +
+        '<button type="submit" class="upc-btn upc-pri" id="upc-send" style="margin-top:14px">Send to our team</button>' +
+      '</form>' +
+      '<p class="upc-fine">Prefer to talk? Call <a href="' + esc(CONFIG.phoneHref) + '">' + esc(CONFIG.phone) + '</a>.</p>' +
+      '<button type="button" class="upc-back" data-upc="back">&larr; Back</button>';
+  }else{
+    var first = String(UPC.form.name || '').trim().split(/\s+/)[0] || '';
+    body = '<div class="upc-tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h2 id="upc-h">Got it' + (first ? ', ' + esc(first) : '') + '!</h2>' +
+      '<p class="upc-lead">Our team has your logo and details and will reach out to help you place your order. Questions in the meantime? Call <a href="' + esc(CONFIG.phoneHref) + '">' + esc(CONFIG.phone) + '</a>.</p>' +
+      '<button type="button" class="upc-btn upc-pri" data-upc="x">Done</button>';
+  }
+  c.innerHTML = top + body;
+  var foc = c.querySelector(n === 2 ? (UPC.form.name ? '#upc-email' : '#upc-name') : '.upc-pri');
+  if(n === 2 && UPC.form.name && UPC.form.email) foc = c.querySelector('#upc-phone');
+  if(foc){ try{ foc.focus({preventScroll:true}); }catch(e){} }
+}
+function upcGrab(){
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  if(!document.getElementById('upc-f')) return;
+  UPC.form = {name:g('upc-name'), email:g('upc-email'), phone:g('upc-phone'), notes:g('upc-notes')};
+}
+function upcSubmit(){
+  if(UPC.busy) return;
+  upcGrab();
+  var f = UPC.form, bad = '';
+  if(!f.name) bad = 'Please add your name.';
+  else if(!emailOk(f.email)) bad = 'Please enter a valid email address.';
+  else if(f.phone.replace(/\D/g, '').length < 10) bad = 'Please enter a phone number we can reach you at.';
+  if(bad){ var er = document.getElementById('upc-err'); if(er) er.textContent = bad; return; }
+  UPC.busy = true;
+  var btn = document.getElementById('upc-send'); if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+
+  /* Wait (briefly) for the logo to finish uploading so the link goes with it. */
+  var waits = [];
+  S.locs.forEach(function(k){ var d = S.art[k]; if(d && d.upP) waits.push(d.upP['catch'](function(){})); });
+  var uploaded = Promise.race([Promise.all(waits), new Promise(function(res){ setTimeout(res, 20000); })]);
+
+  uploaded.then(function(){
+    var parts = f.name.split(/\s+/), firstName = parts.shift() || f.name, lastName = parts.join(' ');
+    var c = S.colors[S.color] || {}, art = [], missing = [];
+    S.locs.forEach(function(k){
+      var d = S.art[k]; if(!d) return;
+      var lbl = (LOC[k] && LOC[k].label) || k;
+      if(d.url) art.push(lbl + ': ' + d.url); else missing.push(lbl + ' (' + (d.name || 'file') + ')');
+    });
+    var link = CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(S.p.style);
+    var noteText =
+      '— HELP ME FINISH (design page) —\n' +
+      'Product: ' + cleanName(S.p) + ' (' + S.p.style + ')\n' +
+      'Color: ' + (c.name || '—') + '\n' +
+      'Decoration: ' + (UPC_METHOD[S.method] || S.method || '—') + '\n' +
+      'Locations: ' + (S.locs.map(function(k){ return (LOC[k] && LOC[k].label) || k; }).join(', ') || '—') + '\n' +
+      'Product link: ' + link + '\n\n' +
+      '— ARTWORK —\n' + (art.join('\n') || 'None uploaded') +
+      (missing.length ? '\nDid not finish uploading: ' + missing.join(', ') + ' — ask the customer to email it.' : '') + '\n\n' +
+      '— CONTACT —\nName: ' + f.name + '\nEmail: ' + f.email + '\nPhone: ' + f.phone + '\n\n' +
+      '— CUSTOMER NOTES —\n' + (f.notes || '—');
+    var payload = {
+      firstName:firstName, lastName:lastName, email:f.email, phone:f.phone,
+      orderNotes:f.notes, noteText:noteText,
+      productStyle:S.p.style, productName:cleanName(S.p), productColor:c.name || '',
+      decoration:UPC_METHOD[S.method] || S.method || '', locations:S.locs.join(', '),
+      artworkUrls:art.join('\n'), productLink:link,
+      source:'Help me finish (design page)', tags:'help-me-finish',
+      submittedAt:new Date().toLocaleString('en-US', {timeZone:'America/Los_Angeles'})
+    };
+    var fd = new FormData();
+    Object.keys(payload).forEach(function(key){ fd.append(key, payload[key] == null ? '' : String(payload[key])); });
+    return fetch(UPC.ghl, {method:'POST', body:fd}).then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); });
+  }).then(function(){
+    UPC.busy = false;
+    /* Staff dashboard: email on the artwork + saved design (Follow up list). Best effort. */
+    try{ S.capEmail = f.email; if(!(S.capState === 'sent' && S.capSent === f.email)){ S.capState = 'idle'; capSend(f.email); } }catch(e){}
+    upcTrack('upload_help_sent', {item_id:String(S.p.style)});
+    upcView(3);
+  })['catch'](function(e){
+    if(window.console) console.error('[Alive help-me-finish]', e);
+    UPC.busy = false;
+    upcView(2, 'We could not send that just now. Please try again, or call us at ' + CONFIG.phone + '.');
+  });
+}
+function upcOpen(){
+  if(UPC.box || !S.art[UPC.k]) return;
+  upcCss();
+  try{ UPC.form.email = UPC.form.email || S.capEmail || localStorage.getItem('alive_email') || ''; }catch(e){}
+  var box = document.createElement('div');
+  box.id = 'upc-ov'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'upc-h');
+  box.innerHTML = '<div class="upc-card"></div>';
+  document.body.appendChild(box);
+  UPC.box = box;
+  if(EMBEDDED && window.AliveViewport){
+    /* Tall auto-height iframe: backdrop covers the frame, the card glides to the visible slice. */
+    box.className = 'upc-emb';
+    var card = box.querySelector('.upc-card'), wrap = document.createElement('div');
+    wrap.className = 'upc-wrap'; box.replaceChild(wrap, card); wrap.appendChild(card);
+    var place = function(){
+      if(!UPC.box) return;
+      var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      box.style.left = '0'; box.style.top = '0'; box.style.width = '100%'; box.style.height = h + 'px';
+      var s = window.AliveViewport.slice; if(!s) return;
+      var vh = Math.max(260, s.visBottom - s.visTop);
+      card.style.maxHeight = Math.round(vh - 24) + 'px';
+      wrap.style.transform = 'translateY(' + Math.round(s.visTop + Math.max(12, (vh - card.offsetHeight) / 2)) + 'px)';
+    };
+    place();
+    window.AliveViewport.subscribe(place);
+    if(window.ResizeObserver) new ResizeObserver(place).observe(card);
+  }else{
+    document.documentElement.classList.add('upc-lock');
+  }
+  box.addEventListener('click', function(e){
+    var t = e.target;
+    if(t === box){ upcClose('backdrop'); return; }
+    var a = t.closest && t.closest('[data-upc]'); if(!a) return;
+    var k = a.getAttribute('data-upc');
+    if(k === 'x') upcClose(UPC.box && UPC.box.querySelector('#upc-f') ? 'x-form' : 'x');
+    else if(k === 'go'){ upcTrack('upload_continue', {item_id:String(S.p.style)}); upcClose(); }
+    else if(k === 'help'){ upcTrack('upload_help_open', {item_id:String(S.p.style)}); upcView(2); }
+    else if(k === 'back'){ upcGrab(); upcView(1); }
+  });
+  box.addEventListener('submit', function(e){ e.preventDefault(); upcSubmit(); });
+  document.addEventListener('keydown', upcKey, true);
+  upcView(1);
+  upcTrack('upload_choice_shown', {item_id:String(S.p.style)});
+}
+
 /* test hook */
 window.__ALIVE_PRODUCT__ = {S:S, render:render, addToCart:addToCart, go:go,
   takeFile:takeFile, layersFor:layersFor, mockSide:mockSide, mockForCart:mockForCart,
-  renderMockup:renderMockup, saveAllMockups:saveAllMockups};
+  renderMockup:renderMockup, saveAllMockups:saveAllMockups, upc:{open:upcOpen, U:UPC}};
 })();
 
 </script>
