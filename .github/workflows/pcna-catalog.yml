@@ -1,0 +1,37 @@
+name: PCNA catalog pull
+
+# Manual only. Pulls PCNA product details (+ public List pricing for target
+# categories) into an artifact for product selection. Does NOT deploy the site.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pull PCNA catalog
+        env:
+          PCNA_ID: ${{ secrets.PCNA_ID }}
+          PCNA_PASSWORD: ${{ secrets.PCNA_PASSWORD }}
+          PCNA_OUT: pcna-out
+          PCNA_WORKERS: "6"
+        run: python pcna_catalog.py
+
+      - name: Save catalog (deleted after 3 days)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pcna-catalog
+          path: pcna-out/
+          retention-days: 3
+          if-no-files-found: ignore
