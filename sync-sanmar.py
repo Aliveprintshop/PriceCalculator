@@ -418,6 +418,9 @@ def parse_sdl(sdl_path: Path, sales_by_key: dict, limit=None):
                     "category": category,
                     "subcategory": subcategory,
                     "description": row.get("PRODUCT_DESCRIPTION", "").strip(),
+                    "size_chart": row.get("PRODUCT_MEASUREMENT", "").strip() or None,
+                    "spec_sheet": row.get("SPEC_SHEET", "").strip() or None,
+                    "decoration_spec_sheet": row.get("DECORATION_SPEC_SHEET", "").strip() or None,
                     "case_price": case_price,
                     "case_sale_price": None,
                     "sale_start_date": None,
@@ -516,6 +519,11 @@ def finalize_styles(styles):
             "colors": colors,
             "source": "sanmar",
         }
+        # Size chart / spec sheet links (only when SanMar supplies them, so
+        # products.json does not grow nulls for the other ~thousands of rows).
+        for k in ("size_chart", "spec_sheet", "decoration_spec_sheet"):
+            if entry.get(k):
+                product[k] = entry[k]
         products.append(product)
 
     # Sort alphabetically by style so diffs in git are readable
@@ -617,6 +625,166 @@ def prefer_flat_images(products):
     log(f"  upgraded {len(upgrade)} style+view groups to flat lays "
         f"({swapped} images); {kept} kept their form shots (no flat published)")
     log("  NOTE: crops.json must be regenerated for the upgraded styles")
+    return products
+
+
+# ---------------------------------------------------------------------------
+# Per-style fix: SanMar's "front flat" column holds a non-front view
+# ---------------------------------------------------------------------------
+# For some colourways SanMar puts the cap's UNDERSIDE (or inside / side shot)
+# in FRONT_FLAT_IMAGE_URL, e.g. C819 Realtree Edge ships
+# ..._flat_underside.jpg there, while the real front is in FRONT_MODEL_IMAGE_URL
+# as ..._flat_front.jpg. Styles listed in filters.json "fix_front_image_styles"
+# get front_flat swapped to that front shot -- but only for colours where the
+# current front_flat is clearly a non-front view AND the front_model URL is
+# clearly a flat-front file. Everything else is left exactly as SanMar sent it.
+# Opt-in by style so crops.json stays valid (check the new photo fits the box).
+# ---------------------------------------------------------------------------
+_WRONG_FRONT_VIEW = ("_underside", "_inside", "_interior", "_side.")
+
+
+def fix_front_images(products, styles):
+    wanted = {str(s).strip().upper() for s in (styles or [])}
+    if not wanted:
+        return products
+    fixed = 0
+    for p in products:
+        if str(p.get("style", "")).strip().upper() not in wanted:
+            continue
+        for c in p.get("colors") or []:
+            imgs = c.get("images") or {}
+            cur = (imgs.get("front_flat") or "").lower()
+            alt = imgs.get("front_model") or ""
+            if (any(t in cur for t in _WRONG_FRONT_VIEW)
+                    and alt.lower().endswith("_flat_front.jpg")):
+                imgs["front_flat"] = alt
+                fixed += 1
+    log(f"  fixed {fixed} wrong-view front images for styles {sorted(wanted)}")
+    return products
+
+
+def apply_front_overrides(products, overrides):
+    """filters.json "front_image_overrides": {"STYLE|Colour name": url}.
+    Hand-made, correctly framed photos (hosted in media/fixed/) for colours
+    where SanMar has no usable front shot in the right shape."""
+    if not overrides:
+        return products
+    want = {str(k).strip().upper(): v for k, v in overrides.items()
+            if not str(k).startswith("_")}
+    done = 0
+    for p in products:
+        for c in p.get("colors") or []:
+            key = (str(p.get("style", "")).strip() + "|" + str(c.get("name", "")).strip()).upper()
+            if key in want:
+                c.setdefault("images", {})["front_flat"] = want[key]
+                done += 1
+    log(f"  applied {done} front image overrides")
+    return products
+
+
+# ---------------------------------------------------------------------------
+# Per-colour photo crops
+# ---------------------------------------------------------------------------
+# SanMar's flat photos differ in size and framing from one colour to the next
+# (e.g. 1200x1245, 1200x1343 and 1200x1800 inside one style), so a single crop
+# box per style stretched or cut off the other colours. crops-c.json holds one
+# measured box per colour photo: {"STYLE|Colour|f": [url, [x0,y0,x1,y1,w/h]]}
+# (per-mille ints; f = front_flat, b = back_flat). Boxes are only applied when
+# the recorded url still matches, and photos with no box are shown whole.
+# Missing ones are measured here (capped per run) when Pillow + numpy exist.
+CROP_SIDES = (("f", "front_flat"), ("b", "back_flat"))
+
+def _runs(mask, gap):
+    idx = [i for i, v in enumerate(mask) if v]
+    if not idx:
+        return None
+    best, s, p = None, idx[0], idx[0]
+    for i in idx[1:]:
+        if i - p > gap:
+            if best is None or p - s > best[1] - best[0]:
+                best = (s, p)
+            s = i
+        p = i
+    if best is None or p - s > best[1] - best[0]:
+        best = (s, p)
+    return best
+
+def measure_crop(url):
+    """Box around the product in a white-background photo, or None."""
+    import io, urllib.request
+    import numpy as np
+    from PIL import Image
+    raw = urllib.request.urlopen(url, timeout=30).read()
+    im = Image.open(io.BytesIO(raw))
+    W, H = im.size
+    im.draft("L", (W // 3, H // 3))
+    g = np.asarray(im.convert("L")).astype(int)
+    h, w = g.shape
+    bg = np.median(np.concatenate([g[0, :], g[-1, :], g[:, 0], g[:, -1]]))
+    m = (g < 238) | (abs(g - bg) > 14)
+    r = _runs(m.sum(axis=1) >= max(2, 0.008 * w), int(0.03 * h))
+    if not r:
+        return None
+    y0, y1 = r
+    c = _runs(m[y0:y1 + 1].sum(axis=0) >= max(2, 0.004 * (y1 - y0 + 1)), int(0.03 * w))
+    if not c:
+        return None
+    x0, x1 = c
+    box = [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h]
+    bw, bh, pad = box[2] - box[0], box[3] - box[1], 0.03
+    box = [max(0, box[0] - pad * bw), max(0, box[1] - pad * bh), min(1, box[2] + pad * bw), min(1, box[3] + pad * bh)]
+    return [round(v * 1000) for v in box] + [round(W / H * 1000)]
+
+def apply_color_crops(products, path="crops-c.json", max_new=1500):
+    try:
+        data = json.load(open(path, encoding="utf-8")) if Path(path).exists() else {}
+    except Exception as e:
+        log(f"  crops-c.json unreadable ({e}); measuring from scratch")
+        data = {}
+    todo = []
+    for p in products:
+        for c in p.get("colors") or []:
+            for side, key in CROP_SIDES:
+                u = (c.get("images") or {}).get(key)
+                k = f"{str(p.get('style','')).strip().upper()}|{c.get('name','')}|{side}"
+                if u and (k not in data or data[k][0] != u):
+                    todo.append((k, u))
+    measured = 0
+    if todo:
+        try:
+            import concurrent.futures as cf
+            todo = todo[:max_new]
+            def one(t):
+                try:
+                    return t[0], t[1], measure_crop(t[1])
+                except Exception:
+                    return t[0], t[1], None
+            with cf.ThreadPoolExecutor(12) as ex:
+                for k, u, box in ex.map(one, todo):
+                    if box:
+                        data[k] = [u, box]
+                        measured += 1
+        except Exception as e:
+            log(f"  crop measuring skipped ({e})")
+    applied = 0
+    for p in products:
+        st = str(p.get("style", "")).strip().upper()
+        seen = {}
+        for c in p.get("colors") or []:
+            seen[c.get("name")] = seen.get(c.get("name"), 0) + 1
+        for c in p.get("colors") or []:
+            if seen.get(c.get("name"), 0) != 1:
+                continue  # duplicate colour names: the page cannot tell them apart
+            crop = {}
+            for side, key in CROP_SIDES:
+                u = (c.get("images") or {}).get(key)
+                e = data.get(f"{st}|{c.get('name','')}|{side}")
+                if u and e and e[0] == u:
+                    crop[side] = e[1]
+            if crop:
+                c["crop"] = crop
+                applied += 1
+    log(f"  colour crops: {applied} colours cropped, {measured} newly measured")
     return products
 
 
@@ -837,6 +1005,11 @@ def main():
     # Runs AFTER filtering so it only probes the styles we actually ship.
     if filters.get("prefer_flat_images", True):
         products = prefer_flat_images(products)
+
+    # Per-style: replace an underside/inside shot sitting in the front slot.
+    products = fix_front_images(products, filters.get("fix_front_image_styles"))
+    products = apply_front_overrides(products, filters.get("front_image_overrides"))
+    products = apply_color_crops(products)
 
     # Merge custom
     if filters.get("merge_custom_products", True):
