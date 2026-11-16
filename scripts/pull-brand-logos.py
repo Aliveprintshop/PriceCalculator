@@ -48,6 +48,22 @@ def fetch(v):
             print("    miss", u, type(e).__name__)
     return None, None, None
 
+def trim(path, pad=4):
+    """Cut SanMar's white padding so every logo fills its menu tile evenly."""
+    try:
+        from PIL import Image, ImageChops
+        im = Image.open(path); rgb = im.convert("RGB")
+        diff = ImageChops.difference(rgb, Image.new("RGB", rgb.size, (255, 255, 255))).convert("L").point(lambda v: 255 if v > 18 else 0)
+        box = diff.getbbox()
+        if not box: return
+        l, t, r, b = box
+        box = (max(0, l - pad), max(0, t - pad), min(im.width, r + pad), min(im.height, b + pad))
+        out = im.crop(box)
+        if str(path).endswith(".jpg"): out.convert("RGB").save(path, quality=92)
+        else: out.save(path)
+    except Exception as e:
+        print("    trim failed", path, e)
+
 index = []
 for brand, n in carried.most_common():
     v = logos[brand].most_common(1)[0][0] if logos.get(brand) else ""
@@ -65,6 +81,7 @@ for brand, n in carried.most_common():
             except Exception: pass
         if data:
             (OUT / fn).write_bytes(data)
+            trim(OUT / fn)
             entry.update(file="media/brands/" + fn, source=u)
     print("BRAND", brand, "->", entry["file"] or "NO LOGO", "|", v)
     index.append(entry)
