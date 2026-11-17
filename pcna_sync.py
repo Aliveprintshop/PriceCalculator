@@ -456,9 +456,17 @@ def parse_product(root):
         # join them back and take the swatch from the first (main) color.
         cols = [(clean(first(c, "colorName")) or clean(first(c, "standardColorName")), first(c, "hex"))
                 for c in kids(pp, "Color")]
-        cols = [(n, h) for n, h in cols if n]
-        cname = "/".join(n for n, _ in cols) if cols else ""
-        hx = cols[0][1] if cols else ""
+        cols = [(nice_color(n), h) for n, h in cols if n]
+        # PCNA repeats a colour ('Rose Quartz (RSQTZ)' + 'Rose Quartz') and cuts
+        # two-tones short ('Black w' + 'Black w/Red Trim'): keep the fullest name.
+        names = []
+        for nm, _ in cols:
+            low = nm.lower()
+            if any(low == x.lower() or x.lower().startswith(low) for x in names):
+                continue
+            names = [x for x in names if not low.startswith(x.lower())] + [nm]
+        cname = " / ".join(names)
+        hx = next((h for nm, h in cols if h and nm in names), cols[0][1] if cols else "")
         if pid:
             parts.append({"partId": pid, "color": nice_color(cname), "hex": hx})
     image = big(first(prod, "primaryImageUrl"))
