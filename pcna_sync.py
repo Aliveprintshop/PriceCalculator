@@ -300,7 +300,8 @@ def nice_color(name):
     n = name or ""
     for _ in range(3):                                    # 'Blue (Blue Ink) (BL-BL)', 'TrRed(TRE)'
         n = re.sub(r"\s*\([A-Z0-9-]{1,8}\)\s*$", "", n)
-    n = re.sub(r"\bw/?\s*/\s*", "w/ ", n)                 # 'White w/Red Trim' -> 'White w/ Red Trim'
+    n = re.sub(r"\b[wW]/?\s*/\s*", "w/ ", n)             # 'White w/Red Trim', 'Silver W / Black Trim'
+    n = re.sub(r"\bw\s+(?=[A-Z])", "w/ ", n)              # 'White w Blue Trim'
     n = re.sub(r"\bw/\s*", "w/ ", n)
     n = re.sub(r"^TrRed$", "Translucent Red", n)
     if n.isupper() or n.split("/")[0].isupper():
@@ -382,7 +383,7 @@ def _stem(name):
 
 def main_score(v, prefer=None):
     n, c = v["name"], v["cls"]
-    if prefer and prefer.upper() in n:
+    if prefer and prefer.upper() in n.upper():
         return -1
     bad = any(k in n for k in ("DETAIL", "GROUP", "GRP", "_TOP", "BACK", "_USB", "ACCESOR", "STRAW"))
     front, blank = "front" in c, "blank" in c
@@ -402,6 +403,76 @@ def main_score(v, prefer=None):
     if front:
         return 7
     return 9
+
+
+_DEC = re.compile(r"_D(?:[_-]|$)")
+_BAD_ALT = ("DET", "GROUP", "GRP", "_LS", "ACCES", "STRAW", "USB", "_TOP", "LIFESTYLE")
+
+
+def is_decorated(url):
+    """PCNA names sample-logo photos '<part>_D_...'; blank ones '_B_' / '_A_'."""
+    st = url.rsplit("/", 1)[-1].rsplit(".", 1)[0].upper()
+    return bool(_DEC.search(st[st.find("_"):] if "_" in st else ""))
+
+
+_HEAD_CACHE = {}
+
+
+def url_exists(url):
+    if url not in _HEAD_CACHE:
+        ok = False
+        for method, extra in (("HEAD", {}), ("GET", {"Range": "bytes=0-0"})):
+            try:
+                req = urllib.request.Request(url, method=method,
+                                             headers={"User-Agent": "Mozilla/5.0", **extra})
+                with urllib.request.urlopen(req, timeout=20) as r:
+                    ok = r.status in (200, 206) and "image" in (r.headers.get("Content-Type") or "image")
+                break
+            except urllib.error.HTTPError as e:
+                if e.code == 404:
+                    break
+            except Exception:
+                pass
+        _HEAD_CACHE[url] = ok
+    return _HEAD_CACHE[url]
+
+
+def blank_main(main, views):
+    """The first photo a customer sees must be BLANK (no sample logo), so they
+    can place their own. If the chosen main is a decorated shot, use the blank
+    twin PCNA keeps on its image server (same name with _D_ -> _B_, same
+    framing), else the best blank alternate PCNA lists for that color."""
+    if not main or not is_decorated(main):
+        return main
+    head, tail = main.rsplit("/", 1)
+    i = tail.upper().find("_D")
+    stem, ext = tail.rsplit(".", 1) if "." in tail else (tail, "jpg")
+    for t in (stem[:i] + "_B" + stem[i + 2:], (stem[:i] + "_B" + stem[i + 2:]).upper()):
+        twin = f"{head}/{t}.{ext}"
+        if url_exists(twin):
+            return twin
+
+    def rank(v):
+        n = v["name"]
+        if is_decorated(v["url"]) or any(k in n for k in _BAD_ALT):
+            return 99
+        if "_B_FR" in n: return 0
+        if "_A_FR" in n: return 1
+        if "BACK" in n and "_B" in n: return 2
+        if any(k in n for k in ("_A_AL", "_A_AR", "_B_AL", "_B_AR", "_B_RS", "_A_RS")): return 3
+        if "_A_" in n or "_B_" in n: return 4
+        return 99
+    best = sorted(views, key=lambda v: (rank(v), len(v["name"])))
+    if best and rank(best[0]) < 99:
+        return best[0]["url"]
+    return main          # PCNA has no blank photo of this color
+
+
+def view_key(url):
+    """Which camera view a photo is: decorated and blank twins share framing."""
+    st = _stem(url.rsplit("/", 1)[-1].upper())
+    st = re.sub(r"^_D(?=_|$)", "_B", st)
+    return st.replace("FRONT", "FR")
 
 
 def gallery(views, prefer=None, n_extra=4):
@@ -524,14 +595,32 @@ def build(pid, group):
         if cname in seen:
             continue
         seen.add(cname)
-        main, back, extras = gallery(views.get(part["partId"], []), cfg.get("main"))
+        pviews = views.get(part["partId"], [])
+        main, back, extras = gallery(pviews, cfg.get("main"))
+        blank = blank_main(main, pviews)
+        if blank != main:
+            extras = [main] + [u for u in extras if u != blank]
+            if back == blank:
+                back = None
+            main = blank
+            extras = extras[:5]
+        elif main and is_decorated(main):
+            log.append(f"{pid} {cname}: no blank photo, main keeps a sample logo")
         images = {"front_flat": main or info["image"]}
         if back:
             images["back_flat"] = back
         if extras:
             images["gallery"] = extras
-        colors.append({"name": cname, "hex": swatch_hex(cname, part["hex"]), "sku": part["partId"],
-                       "images": images})
+        col = {"name": cname, "hex": swatch_hex(cname, part["hex"]), "sku": part["partId"],
+               "images": images}
+        vk = view_key(images["front_flat"]) if images["front_flat"] else ""
+        vb = (cfg.get("views") or {}).get(vk)
+        if isinstance(vb, list) and len(vb) == 4:
+            col["imprintBox"] = [round(float(x), 4) for x in vb]
+        elif main:
+            log.append(f"{pid} {cname}: no logo spot for view {vk} ({images['front_flat'].rsplit('/', 1)[-1]})")
+        col["_view"] = vk
+        colors.append(col)
     if not colors:
         colors = [{"name": "Standard", "hex": "#cccccc", "sku": pid, "images": {"front_flat": info["image"]}}]
 
@@ -571,8 +660,9 @@ def build(pid, group):
     }
     # Imprint area drawn on the main photo (and where a new logo lands), as
     # fractions of the square photo: [left, top, width, height].
-    if isinstance(cfg.get("box"), list) and len(cfg["box"]) == 4:
-        base["_imprintBox"] = [round(float(x), 4) for x in cfg["box"]]
+    first_box = next((c["imprintBox"] for c in colors if c.get("imprintBox")), None)
+    if first_box:
+        base["_imprintBox"] = first_box
     out = []
     print_e = next((e for e in entries if e["kind"] == "print"), None)
     laser_e = next((e for e in entries if e["kind"] == "laser"), None)

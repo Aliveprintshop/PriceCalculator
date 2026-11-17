@@ -3093,8 +3093,9 @@ function isOneSize(){ var z = S.p.available_sizes || []; return z.length <= 1; }
 
 /* PCNA promo items carry their decoration area as [left, top, width, height]
    fractions of the square main photo. Shown on the front photo only. */
-function imprintBox(p){ var b = p && p._imprintBox; return (Array.isArray(b) && b.length === 4) ? b : null; }
+function imprintBox(p){ var c = (typeof S !== 'undefined' && S.colors) ? S.colors[S.color] : null; var b = (c && c.imprintBox) || (c && c._view ? null : p && p._imprintBox); return (Array.isArray(b) && b.length === 4) ? b : null; }
 function imprintBoxHtml(p){
+  return ''; // box not drawn (Austin 2026-11-16); imprintBox() still guides logo placement
   var b = imprintBox(p); if(!b || S.gal != null || S.side !== 'front') return '';
   return '<div class="imprint-box" aria-hidden="true" style="left:' + (b[0]*100).toFixed(2) + '%;top:' + (b[1]*100).toFixed(2) +
     '%;width:' + (b[2]*100).toFixed(2) + '%;height:' + (b[3]*100).toFixed(2) + '%"></div>';
