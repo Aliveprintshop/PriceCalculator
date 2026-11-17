@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T01:02:53.357894+00:00",
+  "generated_at": "2026-11-17T01:14:03.028001+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -729882,7 +729882,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-6566BL",
           "images": {
@@ -729895,7 +729895,7 @@
           }
         },
         {
-          "name": "Clear (CL)/Clear",
+          "name": "Clear",
           "hex": "#FFFFFE",
           "sku": "SM-6566CL",
           "images": {
@@ -729908,7 +729908,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-6566GR",
           "images": {
@@ -729921,7 +729921,7 @@
           }
         },
         {
-          "name": "Smoke (SM)/Smoke",
+          "name": "Smoke",
           "hex": "#7E7E7E",
           "sku": "SM-6566SM",
           "images": {
@@ -729933,6 +729933,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.35,
+        0.45,
+        0.28,
+        0.27
       ],
       "style": "SM-6566",
       "_dwMatrix": {
@@ -729982,7 +729988,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Clear (CL)/Clear",
+          "name": "Clear",
           "hex": "#FFFFFE",
           "sku": "SM-6570CL",
           "images": {
@@ -729993,7 +729999,7 @@
           }
         },
         {
-          "name": "Light Blue (LBL)/Light Blue",
+          "name": "Light Blue",
           "hex": "#6CACE4",
           "sku": "SM-6570LBL",
           "images": {
@@ -730008,7 +730014,7 @@
           }
         },
         {
-          "name": "Midnight Blue/Midnight Blue",
+          "name": "Midnight Blue",
           "hex": "#191D70",
           "sku": "SM-6570MDBL",
           "images": {
@@ -730023,7 +730029,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-6570OR",
           "images": {
@@ -730038,7 +730044,7 @@
           }
         },
         {
-          "name": "Sage (SG)/Sage",
+          "name": "Sage",
           "hex": "#9C9F84",
           "sku": "SM-6570SG",
           "images": {
@@ -730053,7 +730059,7 @@
           }
         },
         {
-          "name": "Smoke (SM)/Smoke",
+          "name": "Smoke",
           "hex": "#7E7E7E",
           "sku": "SM-6570SM",
           "images": {
@@ -730067,6 +730073,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.42,
+        0.25,
+        0.3
       ],
       "style": "SM-6570",
       "_dwMatrix": {
@@ -730116,7 +730128,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6561BK",
           "images": {
@@ -730131,7 +730143,7 @@
           }
         },
         {
-          "name": "Charcoal (CH)/Charcoal",
+          "name": "Charcoal",
           "hex": "#333F4A",
           "sku": "SM-6561CH",
           "images": {
@@ -730144,7 +730156,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-6561GR",
           "images": {
@@ -730157,7 +730169,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6561NY",
           "images": {
@@ -730170,7 +730182,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-6561OR",
           "images": {
@@ -730183,7 +730195,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-6561RD",
           "images": {
@@ -730197,7 +730209,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6561WH",
           "images": {
@@ -730210,7 +730222,7 @@
           }
         },
         {
-          "name": "Yellow (YW)/Yellow",
+          "name": "Yellow",
           "hex": "#FED141",
           "sku": "SM-6561YW",
           "images": {
@@ -730222,6 +730234,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.33,
+        0.36,
+        0.36
       ],
       "style": "SM-6561",
       "_dwMatrix": {
@@ -730271,7 +730289,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6562BK",
           "images": {
@@ -730286,7 +730304,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-6562BL",
           "images": {
@@ -730301,7 +730319,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-6562GR",
           "images": {
@@ -730316,7 +730334,7 @@
           }
         },
         {
-          "name": "Maroon (MR)/Maroon",
+          "name": "Maroon",
           "hex": "#862633",
           "sku": "SM-6562MR",
           "images": {
@@ -730331,7 +730349,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-6562OR",
           "images": {
@@ -730346,7 +730364,7 @@
           }
         },
         {
-          "name": "Tan (TN)/Tan",
+          "name": "Tan",
           "hex": "#D2B48C",
           "sku": "SM-6562TN",
           "images": {
@@ -730361,7 +730379,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6562WH",
           "images": {
@@ -730374,6 +730392,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.33,
+        0.45,
+        0.3,
+        0.12
       ],
       "style": "SM-6562",
       "_dwMatrix": {
@@ -730424,7 +730448,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White/White/Black",
+          "name": "White / Black",
           "hex": "#FFFFFF",
           "sku": "1602-59WHBK",
           "images": {
@@ -730439,7 +730463,7 @@
           }
         },
         {
-          "name": "White/White/Blue",
+          "name": "White / Blue",
           "hex": "#FFFFFF",
           "sku": "1602-59WHBL",
           "images": {
@@ -730454,7 +730478,7 @@
           }
         },
         {
-          "name": "White/White/Green",
+          "name": "White / Green",
           "hex": "#FFFFFF",
           "sku": "1602-59WHGR",
           "images": {
@@ -730469,7 +730493,7 @@
           }
         },
         {
-          "name": "White/White/Orange",
+          "name": "White / Orange",
           "hex": "#FFFFFF",
           "sku": "1602-59WHOR",
           "images": {
@@ -730483,7 +730507,7 @@
           }
         },
         {
-          "name": "White/White/Red",
+          "name": "White / Red",
           "hex": "#FFFFFF",
           "sku": "1602-59WHRD",
           "images": {
@@ -730497,6 +730521,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.18,
+        0.3,
+        0.38,
+        0.38
       ],
       "style": "1602-59",
       "_dwMatrix": {
@@ -730544,7 +730574,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6948BK",
           "images": {
@@ -730558,7 +730588,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6948WH",
           "images": {
@@ -730572,7 +730602,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#78BE20",
           "sku": "SM-6948GR",
           "images": {
@@ -730585,7 +730615,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6948NY",
           "images": {
@@ -730599,7 +730629,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-6948OR",
           "images": {
@@ -730614,7 +730644,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-6948RD",
           "images": {
@@ -730627,7 +730657,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "SM-6948RYL",
           "images": {
@@ -730641,6 +730671,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.345,
+        0.42,
+        0.24,
+        0.24
       ],
       "style": "SM-6948",
       "_dwMatrix": {
@@ -730700,7 +730736,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6948BK",
           "images": {
@@ -730714,7 +730750,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6948WH",
           "images": {
@@ -730728,7 +730764,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#78BE20",
           "sku": "SM-6948GR",
           "images": {
@@ -730741,7 +730777,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6948NY",
           "images": {
@@ -730755,7 +730791,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-6948OR",
           "images": {
@@ -730770,7 +730806,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-6948RD",
           "images": {
@@ -730783,7 +730819,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "SM-6948RYL",
           "images": {
@@ -730797,6 +730833,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.345,
+        0.42,
+        0.24,
+        0.24
       ],
       "style": "SM-6948-L",
       "_dwMatrix": {
@@ -730861,7 +730903,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6908WH",
           "images": {
@@ -730875,7 +730917,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6908NY",
           "images": {
@@ -730889,7 +730931,7 @@
           }
         },
         {
-          "name": "River Green (RVGR)/River Green",
+          "name": "River Green",
           "hex": "#558284",
           "sku": "SM-6908RVGR",
           "images": {
@@ -730903,7 +730945,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6908BK",
           "images": {
@@ -730916,6 +730958,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.34,
+        0.4,
+        0.3,
+        0.18
       ],
       "style": "SM-6908",
       "_dwMatrix": {
@@ -730979,7 +731027,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6908WH",
           "images": {
@@ -730993,7 +731041,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6908NY",
           "images": {
@@ -731007,7 +731055,7 @@
           }
         },
         {
-          "name": "River Green (RVGR)/River Green",
+          "name": "River Green",
           "hex": "#558284",
           "sku": "SM-6908RVGR",
           "images": {
@@ -731021,7 +731069,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6908BK",
           "images": {
@@ -731034,6 +731082,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.34,
+        0.4,
+        0.3,
+        0.18
       ],
       "style": "SM-6908-L",
       "_dwMatrix": {
@@ -731096,7 +731150,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6553BK",
           "images": {
@@ -731111,7 +731165,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6553NY",
           "images": {
@@ -731126,7 +731180,7 @@
           }
         },
         {
-          "name": "Stone (ST)/Stone",
+          "name": "Stone",
           "hex": "#888c8d",
           "sku": "SM-6553ST",
           "images": {
@@ -731141,7 +731195,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6553WH",
           "images": {
@@ -731155,6 +731209,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.33,
+        0.32,
+        0.31,
+        0.36
       ],
       "style": "SM-6553",
       "_dwMatrix": {
@@ -731216,7 +731276,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6553BK",
           "images": {
@@ -731231,7 +731291,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "SM-6553NY",
           "images": {
@@ -731246,7 +731306,7 @@
           }
         },
         {
-          "name": "Stone (ST)/Stone",
+          "name": "Stone",
           "hex": "#888c8d",
           "sku": "SM-6553ST",
           "images": {
@@ -731261,7 +731321,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6553WH",
           "images": {
@@ -731275,6 +731335,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.33,
+        0.32,
+        0.31,
+        0.36
       ],
       "style": "SM-6553-L",
       "_dwMatrix": {
@@ -731340,7 +731406,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFA500",
           "sku": "1602-14OR",
           "images": {
@@ -731352,7 +731418,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1602-14RD",
           "images": {
@@ -731365,7 +731431,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1602-14BK",
           "images": {
@@ -731378,7 +731444,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "1602-14GR",
           "images": {
@@ -731391,7 +731457,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1602-14GY",
           "images": {
@@ -731405,7 +731471,7 @@
           }
         },
         {
-          "name": "Midnight Blue/Midnight Blue",
+          "name": "Midnight Blue",
           "hex": "#191D70",
           "sku": "1602-14MDBL",
           "images": {
@@ -731418,7 +731484,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1602-14WH",
           "images": {
@@ -731430,6 +731496,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.32,
+        0.38,
+        0.36,
+        0.34
       ],
       "style": "1602-14",
       "_dwMatrix": {
@@ -731494,7 +731566,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFA500",
           "sku": "1602-14OR",
           "images": {
@@ -731506,7 +731578,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1602-14RD",
           "images": {
@@ -731519,7 +731591,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1602-14BK",
           "images": {
@@ -731532,7 +731604,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "1602-14GR",
           "images": {
@@ -731545,7 +731617,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1602-14GY",
           "images": {
@@ -731559,7 +731631,7 @@
           }
         },
         {
-          "name": "Midnight Blue/Midnight Blue",
+          "name": "Midnight Blue",
           "hex": "#191D70",
           "sku": "1602-14MDBL",
           "images": {
@@ -731572,7 +731644,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1602-14WH",
           "images": {
@@ -731584,6 +731656,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.32,
+        0.38,
+        0.36,
+        0.34
       ],
       "style": "1602-14-L",
       "_dwMatrix": {
@@ -731647,7 +731725,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6942BK",
           "images": {
@@ -731660,7 +731738,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-6942BL",
           "images": {
@@ -731672,7 +731750,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6942WH",
           "images": {
@@ -731683,6 +731761,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.38,
+        0.29,
+        0.38
       ],
       "style": "SM-6942",
       "_dwMatrix": {
@@ -731745,7 +731829,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6942BK",
           "images": {
@@ -731758,7 +731842,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-6942BL",
           "images": {
@@ -731770,7 +731854,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6942WH",
           "images": {
@@ -731781,6 +731865,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.38,
+        0.29,
+        0.38
       ],
       "style": "SM-6942-L",
       "_dwMatrix": {
@@ -731845,7 +731935,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-15BK",
           "images": {
@@ -731860,7 +731950,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1603-15GY",
           "images": {
@@ -731875,7 +731965,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1603-15NY",
           "images": {
@@ -731888,7 +731978,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1603-15RD",
           "images": {
@@ -731901,7 +731991,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1603-15WH",
           "images": {
@@ -731913,6 +732003,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.345,
+        0.27,
+        0.26,
+        0.33
       ],
       "style": "1603-15",
       "_dwMatrix": {
@@ -731976,7 +732072,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-15BK",
           "images": {
@@ -731991,7 +732087,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1603-15GY",
           "images": {
@@ -732006,7 +732102,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1603-15NY",
           "images": {
@@ -732019,7 +732115,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1603-15RD",
           "images": {
@@ -732032,7 +732128,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1603-15WH",
           "images": {
@@ -732044,6 +732140,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.345,
+        0.27,
+        0.26,
+        0.33
       ],
       "style": "1603-15-L",
       "_dwMatrix": {
@@ -732109,7 +732211,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1624-74BK",
           "images": {
@@ -732123,7 +732225,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1624-74NY",
           "images": {
@@ -732137,7 +732239,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1624-74RD",
           "images": {
@@ -732149,7 +732251,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1624-74SL",
           "images": {
@@ -732163,7 +732265,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1624-74WH",
           "images": {
@@ -732176,6 +732278,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.41,
+        0.5,
+        0.18,
+        0.28
       ],
       "style": "1624-74",
       "_dwMatrix": {
@@ -732240,7 +732348,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1624-74BK",
           "images": {
@@ -732254,7 +732362,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1624-74NY",
           "images": {
@@ -732268,7 +732376,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1624-74RD",
           "images": {
@@ -732280,7 +732388,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1624-74SL",
           "images": {
@@ -732294,7 +732402,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1624-74WH",
           "images": {
@@ -732307,6 +732415,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.41,
+        0.5,
+        0.18,
+        0.28
       ],
       "style": "1624-74-L",
       "_dwMatrix": {
@@ -732372,7 +732486,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1625-85BK",
           "images": {
@@ -732384,7 +732498,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1625-85GY",
           "images": {
@@ -732397,7 +732511,7 @@
           }
         },
         {
-          "name": "Mint Green/Mint Green",
+          "name": "Mint Green",
           "hex": "#57c7c2",
           "sku": "1625-85MTGR",
           "images": {
@@ -732408,7 +732522,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1625-85NY",
           "images": {
@@ -732420,7 +732534,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "1625-85OR",
           "images": {
@@ -732433,7 +732547,7 @@
           }
         },
         {
-          "name": "Process Blue (PBL)/Process Blue",
+          "name": "Process Blue",
           "hex": "#0077C8",
           "sku": "1625-85PBL",
           "images": {
@@ -732446,7 +732560,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1625-85RD",
           "images": {
@@ -732459,7 +732573,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1625-85SL",
           "images": {
@@ -732472,7 +732586,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1625-85WH",
           "images": {
@@ -732485,6 +732599,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.38,
+        0.24,
+        0.34
       ],
       "style": "1625-85",
       "_dwMatrix": {
@@ -732549,7 +732669,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1625-85BK",
           "images": {
@@ -732561,7 +732681,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1625-85GY",
           "images": {
@@ -732574,7 +732694,7 @@
           }
         },
         {
-          "name": "Mint Green/Mint Green",
+          "name": "Mint Green",
           "hex": "#57c7c2",
           "sku": "1625-85MTGR",
           "images": {
@@ -732585,7 +732705,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1625-85NY",
           "images": {
@@ -732597,7 +732717,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "1625-85OR",
           "images": {
@@ -732610,7 +732730,7 @@
           }
         },
         {
-          "name": "Process Blue (PBL)/Process Blue",
+          "name": "Process Blue",
           "hex": "#0077C8",
           "sku": "1625-85PBL",
           "images": {
@@ -732623,7 +732743,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1625-85RD",
           "images": {
@@ -732636,7 +732756,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1625-85SL",
           "images": {
@@ -732649,7 +732769,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1625-85WH",
           "images": {
@@ -732662,6 +732782,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.38,
+        0.24,
+        0.34
       ],
       "style": "1625-85-L",
       "_dwMatrix": {
@@ -732722,7 +732848,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Bay Blue/Bay Blue",
+          "name": "Bay Blue",
           "hex": "#195190",
           "sku": "SM-6983BBL",
           "images": {
@@ -732736,7 +732862,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6983BK",
           "images": {
@@ -732750,7 +732876,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6983WH",
           "images": {
@@ -732763,6 +732889,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.31,
+        0.36,
+        0.23,
+        0.27
       ],
       "style": "SM-6983",
       "_dwMatrix": {
@@ -732822,7 +732954,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Bay Blue/Bay Blue",
+          "name": "Bay Blue",
           "hex": "#195190",
           "sku": "SM-6983BBL",
           "images": {
@@ -732836,7 +732968,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6983BK",
           "images": {
@@ -732850,7 +732982,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6983WH",
           "images": {
@@ -732863,6 +732995,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.31,
+        0.36,
+        0.23,
+        0.27
       ],
       "style": "SM-6983-L",
       "_dwMatrix": {
@@ -732928,7 +733066,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Bay Blue/Bay Blue",
+          "name": "Bay Blue",
           "hex": "#195190",
           "sku": "1602-35BBL",
           "images": {
@@ -732940,7 +733078,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1602-35BK",
           "images": {
@@ -732952,7 +733090,7 @@
           }
         },
         {
-          "name": "Stone (ST)/Stone",
+          "name": "Stone",
           "hex": "#888c8d",
           "sku": "1602-35ST",
           "images": {
@@ -732964,7 +733102,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1602-35WH",
           "images": {
@@ -732976,7 +733114,7 @@
           }
         },
         {
-          "name": "Mist/Mist",
+          "name": "Mist",
           "hex": "#e8FFF5",
           "sku": "1602-35MST",
           "images": {
@@ -732986,6 +733124,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.36,
+        0.28,
+        0.3
       ],
       "style": "1602-35",
       "_dwMatrix": {
@@ -733050,7 +733194,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Bay Blue/Bay Blue",
+          "name": "Bay Blue",
           "hex": "#195190",
           "sku": "1602-35BBL",
           "images": {
@@ -733062,7 +733206,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1602-35BK",
           "images": {
@@ -733074,7 +733218,7 @@
           }
         },
         {
-          "name": "Stone (ST)/Stone",
+          "name": "Stone",
           "hex": "#888c8d",
           "sku": "1602-35ST",
           "images": {
@@ -733086,7 +733230,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1602-35WH",
           "images": {
@@ -733098,7 +733242,7 @@
           }
         },
         {
-          "name": "Mist/Mist",
+          "name": "Mist",
           "hex": "#e8FFF5",
           "sku": "1602-35MST",
           "images": {
@@ -733108,6 +733252,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.36,
+        0.28,
+        0.3
       ],
       "style": "1602-35-L",
       "_dwMatrix": {
@@ -733170,7 +733320,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6939BK",
           "images": {
@@ -733182,7 +733332,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6939WH",
           "images": {
@@ -733193,6 +733343,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.4,
+        0.4,
+        0.3
       ],
       "style": "SM-6939",
       "_dwMatrix": {
@@ -733254,7 +733410,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-6939BK",
           "images": {
@@ -733266,7 +733422,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-6939WH",
           "images": {
@@ -733277,6 +733433,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.4,
+        0.4,
+        0.3
       ],
       "style": "SM-6939-L",
       "_dwMatrix": {
@@ -733336,7 +733498,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Charcoal (CH)/Charcoal",
+          "name": "Charcoal",
           "hex": "#333F4A",
           "sku": "SM-6962CH",
           "images": {
@@ -733349,7 +733511,7 @@
           }
         },
         {
-          "name": "Clear (CL)/Clear",
+          "name": "Clear",
           "hex": "#FFFFFE",
           "sku": "SM-6962CL",
           "images": {
@@ -733412,7 +733574,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1625-66GY",
           "images": {
@@ -733420,7 +733582,7 @@
           }
         },
         {
-          "name": "Brick Red/Brick Red",
+          "name": "Brick Red",
           "hex": "#9a4643",
           "sku": "1625-66BKRD",
           "images": {
@@ -733431,7 +733593,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1625-66SL",
           "images": {
@@ -733442,7 +733604,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1625-66NY",
           "images": {
@@ -733454,7 +733616,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1625-66WH",
           "images": {
@@ -733466,7 +733628,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1625-66BK",
           "images": {
@@ -733477,6 +733639,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.34,
+        0.47,
+        0.3,
+        0.24
       ],
       "style": "1625-66",
       "_dwMatrix": {
@@ -733541,7 +733709,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "1625-66GY",
           "images": {
@@ -733549,7 +733717,7 @@
           }
         },
         {
-          "name": "Brick Red/Brick Red",
+          "name": "Brick Red",
           "hex": "#9a4643",
           "sku": "1625-66BKRD",
           "images": {
@@ -733560,7 +733728,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1625-66SL",
           "images": {
@@ -733571,7 +733739,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1625-66NY",
           "images": {
@@ -733583,7 +733751,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1625-66WH",
           "images": {
@@ -733595,7 +733763,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1625-66BK",
           "images": {
@@ -733606,6 +733774,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.34,
+        0.47,
+        0.3,
+        0.24
       ],
       "style": "1625-66-L",
       "_dwMatrix": {
@@ -733671,7 +733845,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Rose Quartz (RSQTZ)/Rose Quartz",
+          "name": "Rose Quartz",
           "hex": "#e7b8b1",
           "sku": "1603-02RSQTZ",
           "images": {
@@ -733685,7 +733859,7 @@
           }
         },
         {
-          "name": "Ash/Ash",
+          "name": "Ash",
           "hex": "#b2beb5",
           "sku": "1603-02ASH",
           "images": {
@@ -733699,7 +733873,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-02BK",
           "images": {
@@ -733713,7 +733887,7 @@
           }
         },
         {
-          "name": "Cream (CR)/Cream",
+          "name": "Cream",
           "hex": "#DFD1A7",
           "sku": "1603-02CR",
           "images": {
@@ -733727,7 +733901,7 @@
           }
         },
         {
-          "name": "Frost (FRST)/Frost",
+          "name": "Frost",
           "hex": "#ffffff",
           "sku": "1603-02FRST",
           "images": {
@@ -733741,7 +733915,7 @@
           }
         },
         {
-          "name": "Twilight/Twilight",
+          "name": "Twilight",
           "hex": "#5C6069",
           "sku": "1603-02TWLT",
           "images": {
@@ -733755,7 +733929,7 @@
           }
         },
         {
-          "name": "Sky Blue/Sky Blue",
+          "name": "Sky Blue",
           "hex": "#87CEFA",
           "sku": "1603-02SKY",
           "images": {
@@ -733769,7 +733943,7 @@
           }
         },
         {
-          "name": "Spring Green (SPG)/Spring Green",
+          "name": "Spring Green",
           "hex": "#A3C7BB",
           "sku": "1603-02SPG",
           "images": {
@@ -733783,7 +733957,7 @@
           }
         },
         {
-          "name": "Cobalt (CBT)/Cobalt",
+          "name": "Cobalt",
           "hex": "#3E6BA6",
           "sku": "1603-02CBT",
           "images": {
@@ -733797,7 +733971,7 @@
           }
         },
         {
-          "name": "Cream with Royal Accent/Cream with Royal Accent",
+          "name": "Cream with Royal Accent",
           "hex": "#D1C5B7",
           "sku": "1603-02CRRYL",
           "images": {
@@ -733810,6 +733984,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.33,
+        0.22,
+        0.27
       ],
       "style": "1603-02",
       "_dwMatrix": {
@@ -733874,7 +734054,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Rose Quartz (RSQTZ)/Rose Quartz",
+          "name": "Rose Quartz",
           "hex": "#e7b8b1",
           "sku": "1603-02RSQTZ",
           "images": {
@@ -733888,7 +734068,7 @@
           }
         },
         {
-          "name": "Ash/Ash",
+          "name": "Ash",
           "hex": "#b2beb5",
           "sku": "1603-02ASH",
           "images": {
@@ -733902,7 +734082,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-02BK",
           "images": {
@@ -733916,7 +734096,7 @@
           }
         },
         {
-          "name": "Cream (CR)/Cream",
+          "name": "Cream",
           "hex": "#DFD1A7",
           "sku": "1603-02CR",
           "images": {
@@ -733930,7 +734110,7 @@
           }
         },
         {
-          "name": "Frost (FRST)/Frost",
+          "name": "Frost",
           "hex": "#ffffff",
           "sku": "1603-02FRST",
           "images": {
@@ -733944,7 +734124,7 @@
           }
         },
         {
-          "name": "Twilight/Twilight",
+          "name": "Twilight",
           "hex": "#5C6069",
           "sku": "1603-02TWLT",
           "images": {
@@ -733958,7 +734138,7 @@
           }
         },
         {
-          "name": "Sky Blue/Sky Blue",
+          "name": "Sky Blue",
           "hex": "#87CEFA",
           "sku": "1603-02SKY",
           "images": {
@@ -733972,7 +734152,7 @@
           }
         },
         {
-          "name": "Spring Green (SPG)/Spring Green",
+          "name": "Spring Green",
           "hex": "#A3C7BB",
           "sku": "1603-02SPG",
           "images": {
@@ -733986,7 +734166,7 @@
           }
         },
         {
-          "name": "Cobalt (CBT)/Cobalt",
+          "name": "Cobalt",
           "hex": "#3E6BA6",
           "sku": "1603-02CBT",
           "images": {
@@ -734000,7 +734180,7 @@
           }
         },
         {
-          "name": "Cream with Royal Accent/Cream with Royal Accent",
+          "name": "Cream with Royal Accent",
           "hex": "#D1C5B7",
           "sku": "1603-02CRRYL",
           "images": {
@@ -734013,6 +734193,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.33,
+        0.22,
+        0.27
       ],
       "style": "1603-02-L",
       "_dwMatrix": {
@@ -734077,7 +734263,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Ash/Ash",
+          "name": "Ash",
           "hex": "#b2beb5",
           "sku": "1603-01ASH",
           "images": {
@@ -734091,7 +734277,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-01BK",
           "images": {
@@ -734105,7 +734291,7 @@
           }
         },
         {
-          "name": "Cream (CR)/Cream",
+          "name": "Cream",
           "hex": "#DFD1A7",
           "sku": "1603-01CR",
           "images": {
@@ -734120,7 +734306,7 @@
           }
         },
         {
-          "name": "Frost (FRST)/Frost",
+          "name": "Frost",
           "hex": "#ffffff",
           "sku": "1603-01FRST",
           "images": {
@@ -734134,7 +734320,7 @@
           }
         },
         {
-          "name": "Twilight/Twilight",
+          "name": "Twilight",
           "hex": "#5C6069",
           "sku": "1603-01TWLT",
           "images": {
@@ -734146,6 +734332,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.44,
+        0.32,
+        0.24,
+        0.3
       ],
       "style": "1603-01",
       "_dwMatrix": {
@@ -734209,7 +734401,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Ash/Ash",
+          "name": "Ash",
           "hex": "#b2beb5",
           "sku": "1603-01ASH",
           "images": {
@@ -734223,7 +734415,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-01BK",
           "images": {
@@ -734237,7 +734429,7 @@
           }
         },
         {
-          "name": "Cream (CR)/Cream",
+          "name": "Cream",
           "hex": "#DFD1A7",
           "sku": "1603-01CR",
           "images": {
@@ -734252,7 +734444,7 @@
           }
         },
         {
-          "name": "Frost (FRST)/Frost",
+          "name": "Frost",
           "hex": "#ffffff",
           "sku": "1603-01FRST",
           "images": {
@@ -734266,7 +734458,7 @@
           }
         },
         {
-          "name": "Twilight/Twilight",
+          "name": "Twilight",
           "hex": "#5C6069",
           "sku": "1603-01TWLT",
           "images": {
@@ -734278,6 +734470,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.44,
+        0.32,
+        0.24,
+        0.3
       ],
       "style": "1603-01-L",
       "_dwMatrix": {
@@ -734343,7 +734541,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-11BK",
           "images": {
@@ -734357,21 +734555,21 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "1603-11GR",
           "images": {
-            "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_FR.jpg",
-            "back_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_back.jpg",
+            "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_back.jpg",
             "gallery": [
               "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_D_back.jpg",
               "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_AL.jpg",
+              "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_FR.jpg",
               "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_FR_Detail.jpg"
             ]
           }
         },
         {
-          "name": "Gun Metal/Gun Metal",
+          "name": "Gun Metal",
           "hex": "#745C41",
           "sku": "1603-11GNMT",
           "images": {
@@ -734385,7 +734583,7 @@
           }
         },
         {
-          "name": "Cream (CRM)/Cream",
+          "name": "Cream",
           "hex": "#f3f0e1",
           "sku": "1603-11CRM",
           "images": {
@@ -734399,7 +734597,7 @@
           }
         },
         {
-          "name": "Ash/Ash",
+          "name": "Ash",
           "hex": "#b2beb5",
           "sku": "1603-11ASH",
           "images": {
@@ -734413,7 +734611,7 @@
           }
         },
         {
-          "name": "Hammertone Frost/Hammertone Frost",
+          "name": "Hammertone Frost",
           "hex": "#F2F2F2",
           "sku": "1603-11HFRST",
           "images": {
@@ -734424,6 +734622,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.32,
+        0.42,
+        0.38
       ],
       "style": "1603-11",
       "_dwMatrix": {
@@ -734488,7 +734692,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1603-11BK",
           "images": {
@@ -734502,21 +734706,21 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "1603-11GR",
           "images": {
-            "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_FR.jpg",
-            "back_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_back.jpg",
+            "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_back.jpg",
             "gallery": [
               "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_D_back.jpg",
               "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_AL.jpg",
+              "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_FR.jpg",
               "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GN_B_FR_Detail.jpg"
             ]
           }
         },
         {
-          "name": "Gun Metal/Gun Metal",
+          "name": "Gun Metal",
           "hex": "#745C41",
           "sku": "1603-11GNMT",
           "images": {
@@ -734530,7 +734734,7 @@
           }
         },
         {
-          "name": "Cream (CRM)/Cream",
+          "name": "Cream",
           "hex": "#f3f0e1",
           "sku": "1603-11CRM",
           "images": {
@@ -734544,7 +734748,7 @@
           }
         },
         {
-          "name": "Ash/Ash",
+          "name": "Ash",
           "hex": "#b2beb5",
           "sku": "1603-11ASH",
           "images": {
@@ -734558,7 +734762,7 @@
           }
         },
         {
-          "name": "Hammertone Frost/Hammertone Frost",
+          "name": "Hammertone Frost",
           "hex": "#F2F2F2",
           "sku": "1603-11HFRST",
           "images": {
@@ -734569,6 +734773,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.32,
+        0.42,
+        0.38
       ],
       "style": "1603-11-L",
       "_dwMatrix": {
@@ -734634,7 +734844,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1601-93WH",
           "images": {
@@ -734648,7 +734858,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1601-93BK",
           "images": {
@@ -734661,7 +734871,7 @@
           }
         },
         {
-          "name": "Cascade/Cascade",
+          "name": "Cascade",
           "hex": "#519DE6",
           "sku": "1601-93CSD",
           "images": {
@@ -734675,7 +734885,7 @@
           }
         },
         {
-          "name": "Harbor Blue/Harbor Blue",
+          "name": "Harbor Blue",
           "hex": "#434D5F",
           "sku": "1601-93HBL",
           "images": {
@@ -734685,6 +734895,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.5,
+        0.27,
+        0.33
       ],
       "style": "1601-93",
       "_dwMatrix": {
@@ -734749,7 +734965,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1601-93WH",
           "images": {
@@ -734763,7 +734979,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1601-93BK",
           "images": {
@@ -734776,7 +734992,7 @@
           }
         },
         {
-          "name": "Cascade/Cascade",
+          "name": "Cascade",
           "hex": "#519DE6",
           "sku": "1601-93CSD",
           "images": {
@@ -734790,7 +735006,7 @@
           }
         },
         {
-          "name": "Harbor Blue/Harbor Blue",
+          "name": "Harbor Blue",
           "hex": "#434D5F",
           "sku": "1601-93HBL",
           "images": {
@@ -734800,6 +735016,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.5,
+        0.27,
+        0.33
       ],
       "style": "1601-93-L",
       "_dwMatrix": {
@@ -734865,7 +735087,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1601-91WH",
           "images": {
@@ -734878,7 +735100,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1601-91BK",
           "images": {
@@ -734891,7 +735113,7 @@
           }
         },
         {
-          "name": "Harbor Blue/Harbor Blue",
+          "name": "Harbor Blue",
           "hex": "#434D5F",
           "sku": "1601-91HBL",
           "images": {
@@ -734901,6 +735123,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.5,
+        0.23,
+        0.33
       ],
       "style": "1601-91",
       "_dwMatrix": {
@@ -734965,7 +735193,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1601-91WH",
           "images": {
@@ -734978,7 +735206,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1601-91BK",
           "images": {
@@ -734991,7 +735219,7 @@
           }
         },
         {
-          "name": "Harbor Blue/Harbor Blue",
+          "name": "Harbor Blue",
           "hex": "#434D5F",
           "sku": "1601-91HBL",
           "images": {
@@ -735001,6 +735229,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.5,
+        0.23,
+        0.33
       ],
       "style": "1601-91-L",
       "_dwMatrix": {
@@ -735066,7 +735300,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1627-37BK",
           "images": {
@@ -735080,7 +735314,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1627-37WH",
           "images": {
@@ -735091,6 +735325,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.32,
+        0.33,
+        0.35,
+        0.3
       ],
       "style": "1627-37",
       "_dwMatrix": {
@@ -735155,7 +735395,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1627-37BK",
           "images": {
@@ -735169,7 +735409,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1627-37WH",
           "images": {
@@ -735180,6 +735420,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.32,
+        0.33,
+        0.35,
+        0.3
       ],
       "style": "1627-37-L",
       "_dwMatrix": {
@@ -735245,7 +735491,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Charcoal (CA)/Charcoal",
+          "name": "Charcoal",
           "hex": "#333F49",
           "sku": "1627-88CA",
           "images": {
@@ -735258,7 +735504,7 @@
           }
         },
         {
-          "name": "Clear (CL)/Clear",
+          "name": "Clear",
           "hex": "#FFFFFE",
           "sku": "1627-88CL",
           "images": {
@@ -735271,7 +735517,7 @@
           }
         },
         {
-          "name": "Oxford (OXFD)/Oxford",
+          "name": "Oxford",
           "hex": "#0060AC",
           "sku": "1627-88OXFD",
           "images": {
@@ -735283,6 +735529,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.32,
+        0.45,
+        0.3,
+        0.36
       ],
       "style": "1627-88",
       "_dwMatrix": {
@@ -735329,7 +735581,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-5359BK",
           "images": {
@@ -735343,7 +735595,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-5359WH",
           "images": {
@@ -735356,6 +735608,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.34,
+        0.1,
+        0.29,
+        0.58
       ],
       "style": "SM-5359",
       "_dwMatrix": {
@@ -735405,7 +735663,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2900-53BK",
           "images": {
@@ -735418,7 +735676,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "2900-53NY",
           "images": {
@@ -735431,7 +735689,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "2900-53GY",
           "images": {
@@ -735444,7 +735702,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "2900-53RD",
           "images": {
@@ -735457,7 +735715,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "2900-53BL",
           "images": {
@@ -735471,7 +735729,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "2900-53OR",
           "images": {
@@ -735485,7 +735743,7 @@
           }
         },
         {
-          "name": "Purple (PP)/Purple",
+          "name": "Purple",
           "hex": "#330072",
           "sku": "2900-53PP",
           "images": {
@@ -735498,6 +735756,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.27,
+        0.12,
+        0.37,
+        0.62
       ],
       "style": "2900-53",
       "_dwMatrix": {
@@ -735547,7 +735811,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2900-62BK",
           "images": {
@@ -735561,7 +735825,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "2900-62NY",
           "images": {
@@ -735575,6 +735839,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.305,
+        0.51,
+        0.29,
+        0.24
       ],
       "style": "2900-62",
       "_dwMatrix": {
@@ -735625,7 +735895,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2900-55BK",
           "images": {
@@ -735639,7 +735909,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "2900-55GY",
           "images": {
@@ -735653,7 +735923,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "2900-55NY",
           "images": {
@@ -735667,7 +735937,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "2900-55RD",
           "images": {
@@ -735680,6 +735950,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.345,
+        0.515,
+        0.29,
+        0.19
       ],
       "style": "2900-55",
       "_dwMatrix": {
@@ -735732,7 +736008,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2800-11BK",
           "images": {
@@ -735743,7 +736019,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "2800-11NY",
           "images": {
@@ -735757,7 +736033,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "2800-11RD",
           "images": {
@@ -735771,7 +736047,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "2800-11WH",
           "images": {
@@ -735782,6 +736058,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.32,
+        0.18,
+        0.31,
+        0.46
       ],
       "style": "2800-11",
       "_dwMatrix": {
@@ -735832,7 +736114,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2900-57BK",
           "images": {
@@ -735846,7 +736128,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "2900-57GY",
           "images": {
@@ -735860,7 +736142,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "2900-57NY",
           "images": {
@@ -735874,7 +736156,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "2900-57RD",
           "images": {
@@ -735887,6 +736169,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.27,
+        0.15,
+        0.4,
+        0.7
       ],
       "style": "2900-57",
       "_dwMatrix": {
@@ -735937,7 +736225,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0913-01BK",
           "images": {
@@ -735951,7 +736239,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "0913-01BL",
           "images": {
@@ -735964,6 +736252,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.29,
+        0.26,
+        0.39,
+        0.46
       ],
       "style": "0913-01",
       "_dwMatrix": {
@@ -736014,7 +736308,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0913-03BK",
           "images": {
@@ -736028,7 +736322,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "0913-03BL",
           "images": {
@@ -736041,6 +736335,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.31,
+        0.18,
+        0.39,
+        0.64
       ],
       "style": "0913-03",
       "_dwMatrix": {
@@ -736091,7 +736391,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Beige/Beige",
+          "name": "Beige",
           "hex": "#f5f5dc",
           "sku": "0912-05BG",
           "images": {
@@ -736105,7 +736405,7 @@
           }
         },
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "0912-05GY",
           "images": {
@@ -736118,6 +736418,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.34,
+        0.25,
+        0.32,
+        0.51
       ],
       "style": "0912-05",
       "_dwMatrix": {
@@ -736169,7 +736475,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0917-01BK",
           "images": {
@@ -736184,7 +736490,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "0917-01NY",
           "images": {
@@ -736199,7 +736505,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "0917-01OR",
           "images": {
@@ -736214,7 +736520,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "0917-01RD",
           "images": {
@@ -736228,6 +736534,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.28,
+        0.17,
+        0.33,
+        0.66
       ],
       "style": "0917-01",
       "_dwMatrix": {
@@ -736278,7 +736590,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "0911-38NY",
           "images": {
@@ -736291,7 +736603,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0911-38BK",
           "images": {
@@ -736305,7 +736617,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "0911-38WH",
           "images": {
@@ -736316,6 +736628,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.355,
+        0.225,
+        0.33,
+        0.55
       ],
       "style": "0911-38",
       "_dwMatrix": {
@@ -736361,7 +736679,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black w/ Black w/ Red Trim",
+          "name": "Black w/ Red Trim",
           "hex": "#000000",
           "sku": "SM-3618BKRE",
           "images": {
@@ -736372,7 +736690,7 @@
           }
         },
         {
-          "name": "Black w/ Black w/ Gray Trim",
+          "name": "Black w/ Gray Trim",
           "hex": "#000000",
           "sku": "SM-3618BKGY",
           "images": {
@@ -736383,7 +736701,7 @@
           }
         },
         {
-          "name": "Black w/ Black w/ Blue Trim",
+          "name": "Black w/ Blue Trim",
           "hex": "#000000",
           "sku": "SM-3618BKBL",
           "images": {
@@ -736393,6 +736711,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.12,
+        0.25,
+        0.3,
+        0.35
       ],
       "style": "SM-3618",
       "_dwMatrix": {
@@ -736438,7 +736762,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Graphite (GA)/Graphite",
+          "name": "Graphite",
           "hex": "#383428",
           "sku": "SM-3603GA",
           "images": {
@@ -736451,6 +736775,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.25,
+        0.24,
+        0.3,
+        0.52
       ],
       "style": "SM-3603",
       "_dwMatrix": {
@@ -736503,7 +736833,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0600-10BK",
           "images": {
@@ -736517,7 +736847,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "0600-10BL",
           "images": {
@@ -736528,6 +736858,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.22,
+        0.35,
+        0.56
       ],
       "style": "0600-10",
       "_dwMatrix": {
@@ -736579,7 +736915,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2933-43BK",
           "images": {
@@ -736654,7 +736990,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2933-43BK",
           "images": {
@@ -736727,7 +737063,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-5258BK",
           "images": {
@@ -736738,7 +737074,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-5258BL",
           "images": {
@@ -736749,7 +737085,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "SM-5258SL",
           "images": {
@@ -736760,7 +737096,7 @@
           }
         },
         {
-          "name": "White w/ White w/ Black Trim",
+          "name": "White w/ Black Trim",
           "hex": "#fefefc",
           "sku": "SM-5258WBK",
           "images": {
@@ -736771,7 +737107,7 @@
           }
         },
         {
-          "name": "White w/ White w/ Blue Trim",
+          "name": "White w/ Blue Trim",
           "hex": "#fefefb",
           "sku": "SM-5258WBL",
           "images": {
@@ -736782,7 +737118,7 @@
           }
         },
         {
-          "name": "White w/ White w/ Red Trim",
+          "name": "White w/ Red Trim",
           "hex": "#FFFFFF",
           "sku": "SM-5258WRE",
           "images": {
@@ -736793,6 +737129,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.46,
+        0.24,
+        0.06
       ],
       "style": "SM-5258",
       "_dwMatrix": {
@@ -736841,7 +737183,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-4101OR",
           "images": {
@@ -736852,7 +737194,7 @@
           }
         },
         {
-          "name": "Silver (SSI)/Silver",
+          "name": "Silver",
           "hex": "#c0c0c2",
           "sku": "SM-4101SSI",
           "images": {
@@ -736863,7 +737205,7 @@
           }
         },
         {
-          "name": "Translucent Teal (TE)/Translucent Teal",
+          "name": "Translucent Teal",
           "hex": "#008081",
           "sku": "SM-4101TE",
           "images": {
@@ -736874,7 +737216,7 @@
           }
         },
         {
-          "name": "Blue (Blue Ink) (BL-BL)/Blue (Blue Ink)",
+          "name": "Blue (Blue Ink)",
           "hex": "#0000fe",
           "sku": "SM-4101BL-BL",
           "images": {
@@ -736882,7 +737224,7 @@
           }
         },
         {
-          "name": "Silver Barrel w/ Silver Barrel w/ Red Grip",
+          "name": "Silver Barrel w/ Red Grip",
           "hex": "#c0c0c0",
           "sku": "SM-4101SIRE",
           "images": {
@@ -736893,7 +737235,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-4101BL",
           "images": {
@@ -736904,7 +737246,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-4101GR",
           "images": {
@@ -736915,7 +737257,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-4101BK",
           "images": {
@@ -736926,7 +737268,7 @@
           }
         },
         {
-          "name": "Red (Re)/Red",
+          "name": "Red",
           "hex": "#ED1B38",
           "sku": "SM-4101RE",
           "images": {
@@ -736937,7 +737279,7 @@
           }
         },
         {
-          "name": "Pink (PK)/Pink",
+          "name": "Pink",
           "hex": "#F99FC9",
           "sku": "SM-4101PK",
           "images": {
@@ -736948,7 +737290,7 @@
           }
         },
         {
-          "name": "Silver Barrel w/ Silver Barrel w/ Orange Grip",
+          "name": "Silver Barrel w/ Orange Grip",
           "hex": "#c0c0c0",
           "sku": "SM-4101SIOR",
           "images": {
@@ -736959,7 +737301,7 @@
           }
         },
         {
-          "name": "Black w/ Black w/ Silver Trim",
+          "name": "Black w/ Silver Trim",
           "hex": "#1c1c1e",
           "sku": "SM-4101SIBK",
           "images": {
@@ -736970,7 +737312,7 @@
           }
         },
         {
-          "name": "Silver Barrel w/ Silver Barrel w/ Blue Grip",
+          "name": "Silver Barrel w/ Blue Grip",
           "hex": "#c0c0c0",
           "sku": "SM-4101SIBL",
           "images": {
@@ -736981,7 +737323,7 @@
           }
         },
         {
-          "name": "Purple (PU)/Purple",
+          "name": "Purple",
           "hex": "#330073",
           "sku": "SM-4101PU",
           "images": {
@@ -736992,7 +737334,7 @@
           }
         },
         {
-          "name": "Silver Barrel w/ Silver Barrel w/ Green Grip",
+          "name": "Silver Barrel w/ Green Grip",
           "hex": "#c0c0c0",
           "sku": "SM-4101SIGR",
           "images": {
@@ -737002,6 +737344,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.64,
+        0.46,
+        0.17,
+        0.08
       ],
       "style": "SM-4101",
       "_dwMatrix": {
@@ -737050,7 +737398,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Solid Blue (SBL)/Solid Blue",
+          "name": "Solid Blue",
           "hex": "#345986",
           "sku": "KK-640SBL",
           "images": {
@@ -737062,7 +737410,7 @@
           }
         },
         {
-          "name": "White w/ White w/ Red Trim",
+          "name": "White w/ Red Trim",
           "hex": "#FFFFFF",
           "sku": "KK-640WRE",
           "images": {
@@ -737074,7 +737422,7 @@
           }
         },
         {
-          "name": "White w Blue Trim (WBL)/White w Blue Trim",
+          "name": "White w Blue Trim",
           "hex": "#FFFFFF",
           "sku": "KK-640WBL",
           "images": {
@@ -737086,7 +737434,7 @@
           }
         },
         {
-          "name": "White w Green Trim (WGR)/White w Green Trim",
+          "name": "White w Green Trim",
           "hex": "#FFFFFF",
           "sku": "KK-640WGR",
           "images": {
@@ -737098,7 +737446,7 @@
           }
         },
         {
-          "name": "White w/ White w/ Orange Trim",
+          "name": "White w/ Orange Trim",
           "hex": "#FFFFFF",
           "sku": "KK-640WOR",
           "images": {
@@ -737110,7 +737458,7 @@
           }
         },
         {
-          "name": "Translucent Blue (FBL)/Translucent Blue",
+          "name": "Translucent Blue",
           "hex": "#2f6fb5",
           "sku": "KK-640FBL",
           "images": {
@@ -737122,7 +737470,7 @@
           }
         },
         {
-          "name": "Translucent Red (FRE)/Translucent Red",
+          "name": "Translucent Red",
           "hex": "#c22a3b",
           "sku": "KK-640FRE",
           "images": {
@@ -737134,7 +737482,7 @@
           }
         },
         {
-          "name": "Silver (SI)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C7",
           "sku": "KK-640SI",
           "images": {
@@ -737146,7 +737494,7 @@
           }
         },
         {
-          "name": "Black w/ Black w/ Silver Trim",
+          "name": "Black w/ Silver Trim",
           "hex": "#1c1c1e",
           "sku": "KK-640SIBK",
           "images": {
@@ -737158,7 +737506,7 @@
           }
         },
         {
-          "name": "White w Black Trim (WBK)/White w Black Trim",
+          "name": "White w Black Trim",
           "hex": "#FFFFFF",
           "sku": "KK-640WBK",
           "images": {
@@ -737170,7 +737518,7 @@
           }
         },
         {
-          "name": "Solid Black (SBK)/Solid Black",
+          "name": "Solid Black",
           "hex": "#020101",
           "sku": "KK-640SBK",
           "images": {
@@ -737182,7 +737530,7 @@
           }
         },
         {
-          "name": "Blue w/ Blue w/ Silver Trim",
+          "name": "Blue w/ Silver Trim",
           "hex": "#2f6fb5",
           "sku": "KK-640SIBL",
           "images": {
@@ -737193,6 +737541,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.46,
+        0.23,
+        0.06
       ],
       "style": "KK-640",
       "_dwMatrix": {
@@ -737243,7 +737597,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "6003-36BK",
           "images": {
@@ -737257,7 +737611,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "6003-36BL",
           "images": {
@@ -737271,7 +737625,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "6003-36OR",
           "images": {
@@ -737285,7 +737639,7 @@
           }
         },
         {
-          "name": "Purple (PP)/Purple",
+          "name": "Purple",
           "hex": "#330072",
           "sku": "6003-36PP",
           "images": {
@@ -737299,7 +737653,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "6003-36RD",
           "images": {
@@ -737313,7 +737667,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "6003-36WH",
           "images": {
@@ -737326,6 +737680,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.475,
+        0.33,
+        0.07,
+        0.3
       ],
       "style": "6003-36",
       "_dwMatrix": {
@@ -737374,7 +737734,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Silver w/ Silver w/ Red Trim",
+          "name": "Silver w/ Red Trim",
           "hex": "#C0C0C0",
           "sku": "SM-4801SIRE",
           "images": {
@@ -737386,7 +737746,7 @@
           }
         },
         {
-          "name": "Silver w/ Silver w/ Black Trim",
+          "name": "Silver W / Black Trim",
           "hex": "#C0C0C0",
           "sku": "SM-4801SIBK",
           "images": {
@@ -737398,7 +737758,7 @@
           }
         },
         {
-          "name": "Silver w/ Silver w/ Blue",
+          "name": "Silver w/ Blue",
           "hex": "#c0c0c5",
           "sku": "SM-4801SIBL",
           "images": {
@@ -737410,6 +737770,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.48,
+        0.1,
+        0.06,
+        0.27
       ],
       "style": "SM-4801",
       "_dwMatrix": {
@@ -737457,7 +737823,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-5288BK",
           "images": {
@@ -737472,7 +737838,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-5288BL",
           "images": {
@@ -737487,7 +737853,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-5288GR",
           "images": {
@@ -737502,7 +737868,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-5288OR",
           "images": {
@@ -737517,7 +737883,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-5288RD",
           "images": {
@@ -737531,6 +737897,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.475,
+        0.25,
+        0.065,
+        0.45
       ],
       "style": "SM-5288",
       "_dwMatrix": {
@@ -737590,7 +737962,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-5288BK",
           "images": {
@@ -737605,7 +737977,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-5288BL",
           "images": {
@@ -737620,7 +737992,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-5288GR",
           "images": {
@@ -737635,7 +738007,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-5288OR",
           "images": {
@@ -737650,7 +738022,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-5288RD",
           "images": {
@@ -737664,6 +738036,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.475,
+        0.25,
+        0.065,
+        0.45
       ],
       "style": "SM-5288-L",
       "_dwMatrix": {
@@ -737727,7 +738105,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1066-78BK",
           "images": {
@@ -737741,7 +738119,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "1066-78BL",
           "images": {
@@ -737755,7 +738133,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1066-78RD",
           "images": {
@@ -737769,7 +738147,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1066-78WH",
           "images": {
@@ -737782,6 +738160,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.4,
+        0.465,
+        0.3,
+        0.07
       ],
       "style": "1066-78",
       "_dwMatrix": {
@@ -737844,7 +738228,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1066-78BK",
           "images": {
@@ -737858,7 +738242,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "1066-78BL",
           "images": {
@@ -737872,7 +738256,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1066-78RD",
           "images": {
@@ -737886,7 +738270,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "1066-78WH",
           "images": {
@@ -737899,6 +738283,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.4,
+        0.465,
+        0.3,
+        0.07
       ],
       "style": "1066-78-L",
       "_dwMatrix": {
@@ -737959,7 +738349,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-5204BK",
           "images": {
@@ -737970,7 +738360,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-5204BL",
           "images": {
@@ -737981,7 +738371,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-5204GR",
           "images": {
@@ -737992,7 +738382,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-5204OR",
           "images": {
@@ -738003,7 +738393,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-5204RD",
           "images": {
@@ -738013,6 +738403,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.445,
+        0.12,
+        0.08,
+        0.26
       ],
       "style": "SM-5204",
       "_dwMatrix": {
@@ -738072,7 +738468,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-5204BK",
           "images": {
@@ -738083,7 +738479,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-5204BL",
           "images": {
@@ -738094,7 +738490,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-5204GR",
           "images": {
@@ -738105,7 +738501,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "SM-5204OR",
           "images": {
@@ -738116,7 +738512,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "SM-5204RD",
           "images": {
@@ -738126,6 +738522,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.445,
+        0.12,
+        0.08,
+        0.26
       ],
       "style": "SM-5204-L",
       "_dwMatrix": {
@@ -738190,7 +738592,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1066-55SL",
           "images": {
@@ -738204,6 +738606,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.63,
+        0.455,
+        0.25,
+        0.07
       ],
       "style": "1066-55",
       "_dwMatrix": {
@@ -738267,7 +738675,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1066-55SL",
           "images": {
@@ -738281,6 +738689,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.63,
+        0.455,
+        0.25,
+        0.07
       ],
       "style": "1066-55-L",
       "_dwMatrix": {
@@ -738345,7 +738759,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "5893-73BK",
           "images": {
@@ -738356,7 +738770,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "5893-73NY",
           "images": {
@@ -738367,7 +738781,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "5893-73SL",
           "images": {
@@ -738377,6 +738791,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.08,
+        0.085,
+        0.24
       ],
       "style": "5893-73",
       "_dwMatrix": {
@@ -738440,7 +738860,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "5893-73BK",
           "images": {
@@ -738451,7 +738871,7 @@
           }
         },
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "5893-73NY",
           "images": {
@@ -738462,7 +738882,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "5893-73SL",
           "images": {
@@ -738472,6 +738892,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.08,
+        0.085,
+        0.24
       ],
       "style": "5893-73-L",
       "_dwMatrix": {
@@ -738536,7 +738962,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "2933-20BK",
           "images": {
@@ -738548,7 +738974,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "2933-20BL",
           "images": {
@@ -738561,6 +738987,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.465,
+        0.4,
+        0.07,
+        0.22
       ],
       "style": "2933-20",
       "_dwMatrix": {
@@ -738613,7 +739045,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0913-05BK",
           "images": {
@@ -738625,6 +739057,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.69,
+        0.455,
+        0.2,
+        0.07
       ],
       "style": "0913-05",
       "_dwMatrix": {
@@ -738689,7 +739127,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "0913-05BK",
           "images": {
@@ -738701,6 +739139,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.69,
+        0.455,
+        0.2,
+        0.07
       ],
       "style": "0913-05-L",
       "_dwMatrix": {
@@ -738766,7 +739210,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "2933-24BL",
           "images": {
@@ -738777,6 +739221,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.47,
+        0.32,
+        0.08,
+        0.22
       ],
       "style": "2933-24",
       "_dwMatrix": {
@@ -738841,7 +739291,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "2933-24BL",
           "images": {
@@ -738852,6 +739302,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.47,
+        0.32,
+        0.08,
+        0.22
       ],
       "style": "2933-24-L",
       "_dwMatrix": {
@@ -738917,7 +739373,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "7120-15BK",
           "images": {
@@ -738931,7 +739387,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "7120-15RYL",
           "images": {
@@ -738945,7 +739401,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "7120-15SL",
           "images": {
@@ -738958,6 +739414,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.05,
+        0.36,
+        0.45,
+        0.12
       ],
       "style": "7120-15",
       "_dwMatrix": {
@@ -739022,7 +739484,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "7120-15BK",
           "images": {
@@ -739036,7 +739498,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "7120-15RYL",
           "images": {
@@ -739050,7 +739512,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "7120-15SL",
           "images": {
@@ -739063,6 +739525,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.05,
+        0.36,
+        0.45,
+        0.12
       ],
       "style": "7120-15-L",
       "_dwMatrix": {
@@ -739123,7 +739591,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2836BK",
           "images": {
@@ -739137,6 +739605,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.31,
+        0.14,
+        0.38,
+        0.72
       ],
       "style": "SM-2836",
       "_dwMatrix": {
@@ -739183,7 +739657,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "SM-3923GY",
           "images": {
@@ -739196,7 +739670,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "SM-3923SL",
           "images": {
@@ -739208,6 +739682,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.15,
+        0.38,
+        0.3,
+        0.3
       ],
       "style": "SM-3923",
       "_dwMatrix": {
@@ -739266,7 +739746,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Gray (GY)/Gray",
+          "name": "Gray",
           "hex": "#7C878E",
           "sku": "SM-3923GY",
           "images": {
@@ -739279,7 +739759,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "SM-3923SL",
           "images": {
@@ -739291,6 +739771,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.15,
+        0.38,
+        0.3,
+        0.3
       ],
       "style": "SM-3923-L",
       "_dwMatrix": {
@@ -739353,7 +739839,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "7124-29BK",
           "images": {
@@ -739364,6 +739850,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.07,
+        0.34,
+        0.86,
+        0.31
       ],
       "style": "7124-29",
       "_dwMatrix": {
@@ -739410,7 +739902,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "SM-2819WH",
           "images": {
@@ -739423,6 +739915,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.3,
+        0.33,
+        0.4,
+        0.38
       ],
       "style": "SM-2819",
       "_dwMatrix": {
@@ -739469,7 +739967,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2844BK",
           "images": {
@@ -739482,6 +739980,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.38,
+        0.28,
+        0.24,
+        0.34
       ],
       "style": "SM-2844",
       "_dwMatrix": {
@@ -739531,7 +740035,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Wood(WD)/Wood",
+          "name": "Wood",
           "hex": "#ffa54f",
           "sku": "7141-27WD",
           "images": {
@@ -739542,6 +740046,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.25,
+        0.25,
+        0.5,
+        0.5
       ],
       "style": "7141-27",
       "_dwMatrix": {
@@ -739588,7 +740098,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2944BK",
           "images": {
@@ -739600,7 +740110,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "SM-2944RYL",
           "images": {
@@ -739614,7 +740124,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-2944WH",
           "images": {
@@ -739625,6 +740135,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.09,
+        0.09,
+        0.82,
+        0.82
       ],
       "style": "SM-2944",
       "_dwMatrix": {
@@ -739675,7 +740191,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "7197-25BK",
           "images": {
@@ -739687,6 +740203,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.2,
+        0.3,
+        0.62,
+        0.6
       ],
       "style": "7197-25",
       "_dwMatrix": {
@@ -739738,7 +740260,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "7196-30BK",
           "images": {
@@ -739798,7 +740320,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-2951WH",
           "images": {
@@ -739812,6 +740334,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.25,
+        0.3,
+        0.5,
+        0.4
       ],
       "style": "SM-2951",
       "_dwMatrix": {
@@ -739863,7 +740391,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "7196-29BK",
           "images": {
@@ -739876,6 +740404,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.24,
+        0.36,
+        0.19,
+        0.24
       ],
       "style": "7196-29",
       "_dwMatrix": {
@@ -739926,7 +740460,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "7143-79WH",
           "images": {
@@ -739940,6 +740474,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.27,
+        0.16,
+        0.24,
+        0.1
       ],
       "style": "7143-79",
       "_dwMatrix": {
@@ -739992,7 +740532,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1690-53NY",
           "images": {
@@ -740003,7 +740543,7 @@
           }
         },
         {
-          "name": "Yellow (YW)/Yellow",
+          "name": "Yellow",
           "hex": "#FED141",
           "sku": "1690-53YW",
           "images": {
@@ -740015,7 +740555,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1690-53WH",
           "images": {
@@ -740027,7 +740567,7 @@
           }
         },
         {
-          "name": "Purple (PP)/Purple",
+          "name": "Purple",
           "hex": "#330072",
           "sku": "1690-53PP",
           "images": {
@@ -740039,7 +740579,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "1690-53BL",
           "images": {
@@ -740051,7 +740591,7 @@
           }
         },
         {
-          "name": "Corporate Red/Corporate Red",
+          "name": "Corporate Red",
           "hex": "#fb0102",
           "sku": "1690-53CPR",
           "images": {
@@ -740063,7 +740603,7 @@
           }
         },
         {
-          "name": "Lime (LM)/Lime",
+          "name": "Lime",
           "hex": "#78BE20",
           "sku": "1690-53LM",
           "images": {
@@ -740075,7 +740615,7 @@
           }
         },
         {
-          "name": "Aqua (AQ)/Aqua",
+          "name": "Aqua",
           "hex": "#00FFFF",
           "sku": "1690-53AQ",
           "images": {
@@ -740086,7 +740626,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1690-53BK",
           "images": {
@@ -740098,7 +740638,7 @@
           }
         },
         {
-          "name": "Corporate Blue/Corporate Blue",
+          "name": "Corporate Blue",
           "hex": "#1245a8",
           "sku": "1690-53CBL",
           "images": {
@@ -740110,7 +740650,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1690-53SL",
           "images": {
@@ -740122,7 +740662,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "1690-53OR",
           "images": {
@@ -740134,7 +740674,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "1690-53GR",
           "images": {
@@ -740146,7 +740686,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1690-53RD",
           "images": {
@@ -740157,7 +740697,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "1690-53RYL",
           "images": {
@@ -740168,6 +740708,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.25,
+        0.3,
+        0.16
       ],
       "style": "1690-53",
       "_dwMatrix": {
@@ -740232,7 +740778,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Navy (NY)/Navy",
+          "name": "Navy",
           "hex": "#0C2340",
           "sku": "1690-53NY",
           "images": {
@@ -740243,7 +740789,7 @@
           }
         },
         {
-          "name": "Yellow (YW)/Yellow",
+          "name": "Yellow",
           "hex": "#FED141",
           "sku": "1690-53YW",
           "images": {
@@ -740255,7 +740801,7 @@
           }
         },
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "1690-53WH",
           "images": {
@@ -740267,7 +740813,7 @@
           }
         },
         {
-          "name": "Purple (PP)/Purple",
+          "name": "Purple",
           "hex": "#330072",
           "sku": "1690-53PP",
           "images": {
@@ -740279,7 +740825,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "1690-53BL",
           "images": {
@@ -740291,7 +740837,7 @@
           }
         },
         {
-          "name": "Corporate Red/Corporate Red",
+          "name": "Corporate Red",
           "hex": "#fb0102",
           "sku": "1690-53CPR",
           "images": {
@@ -740303,7 +740849,7 @@
           }
         },
         {
-          "name": "Lime (LM)/Lime",
+          "name": "Lime",
           "hex": "#78BE20",
           "sku": "1690-53LM",
           "images": {
@@ -740315,7 +740861,7 @@
           }
         },
         {
-          "name": "Aqua (AQ)/Aqua",
+          "name": "Aqua",
           "hex": "#00FFFF",
           "sku": "1690-53AQ",
           "images": {
@@ -740326,7 +740872,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "1690-53BK",
           "images": {
@@ -740338,7 +740884,7 @@
           }
         },
         {
-          "name": "Corporate Blue/Corporate Blue",
+          "name": "Corporate Blue",
           "hex": "#1245a8",
           "sku": "1690-53CBL",
           "images": {
@@ -740350,7 +740896,7 @@
           }
         },
         {
-          "name": "Silver (SL)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C0",
           "sku": "1690-53SL",
           "images": {
@@ -740362,7 +740908,7 @@
           }
         },
         {
-          "name": "Orange (OR)/Orange",
+          "name": "Orange",
           "hex": "#FFa500",
           "sku": "1690-53OR",
           "images": {
@@ -740374,7 +740920,7 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "1690-53GR",
           "images": {
@@ -740386,7 +740932,7 @@
           }
         },
         {
-          "name": "Red (RD)/Red",
+          "name": "Red",
           "hex": "#C8102E",
           "sku": "1690-53RD",
           "images": {
@@ -740397,7 +740943,7 @@
           }
         },
         {
-          "name": "Royal (RYL)/Royal",
+          "name": "Royal",
           "hex": "#0033A0",
           "sku": "1690-53RYL",
           "images": {
@@ -740408,6 +740954,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.25,
+        0.3,
+        0.16
       ],
       "style": "1690-53-L",
       "_dwMatrix": {
@@ -740468,7 +741020,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Red (Re)/Red",
+          "name": "Red",
           "hex": "#ED1B38",
           "sku": "SM-2348RE",
           "images": {
@@ -740476,7 +741028,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2348BK",
           "images": {
@@ -740484,7 +741036,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-2348BL",
           "images": {
@@ -740496,13 +741048,19 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-2348GR",
           "images": {
             "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348GR_D_FR_9098.jpg"
           }
         }
+      ],
+      "_imprintBox": [
+        0.27,
+        0.24,
+        0.1,
+        0.36
       ],
       "style": "SM-2348",
       "_dwMatrix": {
@@ -740562,7 +741120,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Red (Re)/Red",
+          "name": "Red",
           "hex": "#ED1B38",
           "sku": "SM-2348RE",
           "images": {
@@ -740570,7 +741128,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2348BK",
           "images": {
@@ -740578,7 +741136,7 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-2348BL",
           "images": {
@@ -740590,13 +741148,19 @@
           }
         },
         {
-          "name": "Green (GR)/Green",
+          "name": "Green",
           "hex": "#007A53",
           "sku": "SM-2348GR",
           "images": {
             "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348GR_D_FR_9098.jpg"
           }
         }
+      ],
+      "_imprintBox": [
+        0.27,
+        0.24,
+        0.1,
+        0.36
       ],
       "style": "SM-2348-L",
       "_dwMatrix": {
@@ -740657,7 +741221,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#FFFFFF",
           "sku": "SM-2360WH",
           "images": {
@@ -740667,6 +741231,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.45,
+        0.36,
+        0.4,
+        0.28
       ],
       "style": "SM-2360",
       "_dwMatrix": {
@@ -740714,7 +741284,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Red (Re)/Red",
+          "name": "Red",
           "hex": "#ED1B38",
           "sku": "SM-2373RE",
           "images": {
@@ -740725,13 +741295,19 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-2373BL",
           "images": {
             "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373BL_D_FR_4657.jpg"
           }
         }
+      ],
+      "_imprintBox": [
+        0.385,
+        0.5,
+        0.07,
+        0.29
       ],
       "style": "SM-2373",
       "_dwMatrix": {
@@ -740791,7 +741367,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Red (Re)/Red",
+          "name": "Red",
           "hex": "#ED1B38",
           "sku": "SM-2373RE",
           "images": {
@@ -740802,13 +741378,19 @@
           }
         },
         {
-          "name": "Blue (BL)/Blue",
+          "name": "Blue",
           "hex": "#0000FF",
           "sku": "SM-2373BL",
           "images": {
             "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373BL_D_FR_4657.jpg"
           }
         }
+      ],
+      "_imprintBox": [
+        0.385,
+        0.5,
+        0.07,
+        0.29
       ],
       "style": "SM-2373-L",
       "_dwMatrix": {
@@ -740868,7 +741450,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "TrRed(TRE)/TrRed",
+          "name": "Translucent Red",
           "hex": "#C8102F",
           "sku": "SM-9737TRE",
           "images": {
@@ -740880,7 +741462,7 @@
           }
         },
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-9737BK",
           "images": {
@@ -740893,7 +741475,7 @@
           }
         },
         {
-          "name": "Silver (SIWH)/Silver",
+          "name": "Silver",
           "hex": "#c0c0c1",
           "sku": "SM-9737SIWH",
           "images": {
@@ -740905,7 +741487,7 @@
           }
         },
         {
-          "name": "Translucent Blue (TBL)/Translucent Blue",
+          "name": "Translucent Blue",
           "hex": "#0033A1",
           "sku": "SM-9737TBL",
           "images": {
@@ -740916,6 +741498,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.1,
+        0.43,
+        0.48,
+        0.13
       ],
       "style": "SM-9737",
       "_dwMatrix": {
@@ -740962,7 +741550,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2308BK",
           "images": {
@@ -740972,6 +741560,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.48,
+        0.46,
+        0.25,
+        0.12
       ],
       "style": "SM-2308",
       "_dwMatrix": {
@@ -741018,7 +741612,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Silver (SI)/Silver",
+          "name": "Silver",
           "hex": "#C0C0C7",
           "sku": "SM-2783SI",
           "images": {
@@ -741029,6 +741623,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.1,
+        0.42,
+        0.4,
+        0.2
       ],
       "style": "SM-2783",
       "_dwMatrix": {
@@ -741075,7 +741675,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "Black (BK)/Black",
+          "name": "Black",
           "hex": "#000000",
           "sku": "SM-2396BK",
           "images": {
@@ -741085,6 +741685,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.28,
+        0.4,
+        0.28,
+        0.15
       ],
       "style": "SM-2396",
       "_dwMatrix": {
@@ -741131,7 +741737,7 @@
       "_maxInk": 1,
       "colors": [
         {
-          "name": "White (WH)/White",
+          "name": "White",
           "hex": "#ffffff",
           "sku": "SM-9568WH",
           "images": {
@@ -741145,6 +741751,12 @@
             ]
           }
         }
+      ],
+      "_imprintBox": [
+        0.36,
+        0.38,
+        0.18,
+        0.1
       ],
       "style": "SM-9568",
       "_dwMatrix": {
