@@ -1411,6 +1411,8 @@
   #alive-flow .disc-badge:before{display:none;}
   #alive-flow .disc-badge svg{width:11px;height:11px;}
 }
+#alive-flow .disc-note{position:absolute;left:8px;top:100%;margin-top:4px;color:#15803d;font-size:11px;font-weight:700;letter-spacing:.1px;white-space:nowrap;background:none;line-height:1.2;}
+@media(max-width:560px){#alive-flow .disc-note{left:50%;transform:translateX(-50%);margin-top:2px;font-size:9.5px;}}
 @media(prefers-reduced-motion:reduce){#alive-flow .disc-badge.pop{animation:none;}}
 </style>
 </head>
@@ -3185,7 +3187,15 @@ function discBadge(){
   if(!t) return '';
   var cls = DISC_POPPED ? '' : ' pop'; DISC_POPPED = true;
   return '<span class="disc-badge' + cls + '" role="note" aria-label="' + esc(t.toLowerCase()) + ' discount applied at checkout">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>' + esc(t) + '</span>';
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>' + esc(t) +
+    discNote() + '</span>';
+}
+/* Small green caption under the badge naming the deal. Black Friday only, and
+   only until the deal ends (30 Nov 23:59 PT); other codes get no caption. */
+function discNote(){
+  var p = null; try{ p = discActive(); }catch(e){}
+  if(p && p.code === 'BLACKFRIDAY50' && Date.now() < DISC_BF.endsAt) return '<span class="disc-note">Black Friday Deal</span>';
+  return '';
 }
 /* Redraw just the badge (e.g. a code was claimed after the page drew). */
 function discRefresh(){
