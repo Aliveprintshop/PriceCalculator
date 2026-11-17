@@ -53,6 +53,15 @@ jobs:
           fi
           python sync-sanmar.py $LIMIT_ARG
 
+      # PCNA promo products (weekly pcna-sync.yml writes pcna-products.json with
+      # customer prices only). The SanMar sync rewrites products.json from scratch,
+      # so merge PCNA back in every night. A failure here must not block the publish.
+      - name: Merge PCNA promo products
+        run: |
+          if [ -f merge-pcna.py ] && [ -f pcna-products.json ]; then
+            python merge-pcna.py products.json pcna-products.json || echo "::warning::PCNA merge failed - site publishes without PCNA"
+          fi
+
       - name: Show summary
         run: |
           echo "products.json size: $(wc -c < products.json) bytes"

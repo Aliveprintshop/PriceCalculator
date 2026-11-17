@@ -1,0 +1,62 @@
+name: PCNA promo products sync
+
+# Weekly: PCNA refreshes its data on Mondays and asks partners to pull at most
+# once a week. Builds pcna-products.json (customer prices only - no costs),
+# commits it, then starts the nightly SanMar sync, which merges it into
+# products.json and publishes the site.
+on:
+  schedule:
+    - cron: '17 15 * * 2'   # Tuesdays 15:17 UTC (7:17am PST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: pcna-sync
+  cancel-in-progress: false
+
+jobs:
+  pcna:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build pcna-products.json
+        env:
+          PCNA_ID: ${{ secrets.PCNA_ID }}
+          PCNA_PASSWORD: ${{ secrets.PCNA_PASSWORD }}
+        run: python pcna_sync.py
+
+      - name: Commit pcna-products.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B main
+            git reset origin/main
+            git add pcna-products.json
+            if git diff --staged --quiet; then
+              echo "No changes to pcna-products.json"
+              git checkout -- .
+              break
+            fi
+            git commit -m "chore: PCNA sync $(date -u +%Y-%m-%d)"
+            if git push origin main; then git checkout -- .; break; fi
+            echo "Push rejected, retrying ($attempt/3)"; sleep 5
+          done
+
+      # Pushes made with the workflow token don't start other workflows, so
+      # start the nightly sync directly: it merges PCNA into products.json
+      # and publishes the site.
+      - name: Publish (run the catalog sync)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run sync.yml --ref main
