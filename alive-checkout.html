@@ -1291,6 +1291,7 @@ function snapLine(it){
     var m = (it.locMethod || {})[k] || it.decoMethod, n = k === 'front' ? it.frontColors : (k === 'back' ? it.backColors : 0);
     return k.replace(/-/g, ' ') + ': ' + (m === 'sp' && n ? n + '-color print' : (M[m] || m || ''));
   }).join(' · ');
+  if(isPcna(it)) deco = 'front: ' + (it.decoLabel || '1-color print');
   var art = null; try{ art = !it.artworkLater && !!(it.artworkFiles || []).some(function(f){ return f.url; }); }catch(e){}
   return {style: it.style, name: it.productName, brand: it.brand, color: it.color, qty: it.qty,
           unit: it.unitPrice, line: it.lineTotal, method: it.decoMethod, deco: deco,
@@ -1604,8 +1605,12 @@ function applyOptions(){
 }
 function sum(fn){ return +S.items.reduce(function(t, it){ return t + (fn(it) || 0); }, 0).toFixed(2); }
 /* Boxes: add up each item's share of a box, then round up once. */
+/* PCNA promo products are priced all-in: freight is already in the price,
+   so they take no shipping boxes. The checkout Worker skips them the same way. */
+function isPcna(it){ return !!(it && it.pricingProduct && it.pricingProduct._pcna); }
 function boxCount(items){
   var share = (items || S.items).reduce(function(t, it){
+    if(isPcna(it)) return t;
     var cap = CONFIG.boxCap[itemType(it)] || CONFIG.boxCap.other;
     return t + (it.qty|0) / cap;
   }, 0);
@@ -1648,6 +1653,7 @@ function itemHtml(it){
     var n = k === 'front' ? it.frontColors : (k === 'back' ? it.backColors : 0);
     return (LOC_LABEL[k] || k) + ': ' + (m === 'em' ? 'embroidered' : m === 'ht' ? 'full color' : (n ? n + '-color print' : 'print'));
   }).join(' · ');
+  if(isPcna(it)) deco = 'Imprint: ' + (it.decoLabel || '1-color print');
   var mk = mockHtml(it.mock);
   return '<div class="item">' +
     (mk ? '<button type="button" class="item-art mock" data-mock="' + esc(it.id) + '" aria-label="See your design larger">' + mk + '</button>'
@@ -1773,7 +1779,7 @@ function render(){
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       (promo && promo.code ? '<div class="row promo"><span>' + (promo.code === BF.code ? 'Black Friday ' + money(BF.amountOff) + ' off' : 'Promo ' + esc(promo.code)) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : (promoShortBy() ? 'add ' + money(promoShortBy()) + ' more to use' : 'applied')) + '</b></div>' : '') +
-      '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
+      '<div class="row"><span>' + (pickup ? 'Pickup' : t.boxes ? 'Shipping · ' + boxesText(t.boxes) : 'Shipping · included') + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
@@ -1804,7 +1810,7 @@ function render(){
           '<div class="fields two">' + field('name','Full name','text','name') + field('email','Email','email','email') + '</div>' +
           '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
-          shipRow('ship', 'Ship it to me', 'Flat $' + CONFIG.shipPerBox + ' per box · your order fits in ' + boxesText(boxCount()), money(boxCount() * CONFIG.shipPerBox)) +
+          shipRow('ship', 'Ship it to me', boxCount() ? 'Flat $' + CONFIG.shipPerBox + ' per box · your order fits in ' + boxesText(boxCount()) : 'Shipping is included in your promo item prices', boxCount() ? money(boxCount() * CONFIG.shipPerBox) : 'Included') +
           shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') + '</div>' +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
@@ -1835,7 +1841,7 @@ function payTotals(){
   var t = totals(), pickup = S.ship === 'pickup';
   return '<div class="card tot">' +
     '<div class="row"><span>' + t.pieces + ' pieces' + (t.addons ? ' + add-ons' : '') + (t.rush ? ' + rush' : '') + '</span><b class="num">' + money(t.total) + '</b></div>' +
-    '<div class="row"><span>' + (pickup ? 'Pickup' : 'Shipping · ' + boxesText(t.boxes)) + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
+    '<div class="row"><span>' + (pickup ? 'Pickup' : t.boxes ? 'Shipping · ' + boxesText(t.boxes) : 'Shipping · included') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
     (t.off ? '<div class="row promo"><span>Promo ' + esc(stripePromo().code) + '</span><b class="num">−' + money(t.off) + '</b></div>' : '') +
     '<div class="row"><span>Sales tax</span><b class="num">Shown in payment</b></div>' +
     '<div class="row big"><span>Before tax</span><span class="v num">' + money(t.grand) + '</span></div>' +
@@ -2115,14 +2121,14 @@ function buildPayload(){
   function sizesOf(it){ return it.sizes ? Object.keys(it.sizes).map(function(k){ return k + ':' + it.sizes[k]; }).join(', ') : ''; }
   var itemsText = items.map(function(it, i){
     return '#' + (i+1) + ' ' + it.brand + ' ' + it.style + ' ' + it.productName + ' (' + it.color + ') — ' + it.qty + ' pcs (' + sizesOf(it) + ') — ' + it.decoLabel + ' on ' + (it.locations || []).join(', ') +
-      (it.decoMethod === 'sp' ? ' [Front ' + (it.frontColors || 1) + 'c, Back ' + (it.backColors || 1) + 'c]' : '') +
+      (isPcna(it) ? ' [PCNA promo item — order from PCNA]' : it.decoMethod === 'sp' ? ' [Front ' + (it.frontColors || 1) + 'c, Back ' + (it.backColors || 1) + 'c]' : '') +
       (it.addonList && it.addonList.length ? ' — Addons: ' + it.addonList.join(', ') : '') + ' — ' + it.turnaroundLabel +
       ' — Unit $' + (+it.unitPrice).toFixed(2) + ', Line $' + (+it.lineTotal).toFixed(2) + (it.artworkLink ? ' — Artwork: ' + it.artworkLink : '') + (it.notes ? ' — Notes: ' + it.notes : '');
   }).join('\n');
   var itemsBlock = items.map(function(it, i){
     var L = ['Item #' + (i+1) + ': ' + it.brand + ' ' + it.style + ' ' + it.productName + ' (' + it.color + ')',
       '  Qty: ' + it.qty + ' pcs (' + sizesOf(it) + ')',
-      '  Decoration: ' + it.decoLabel + (it.decoMethod === 'sp' ? ' [Front ' + (it.frontColors || 1) + 'c, Back ' + (it.backColors || 1) + 'c]' : ''),
+      '  Decoration: ' + it.decoLabel + (isPcna(it) ? ' [PCNA promo item — order from PCNA]' : it.decoMethod === 'sp' ? ' [Front ' + (it.frontColors || 1) + 'c, Back ' + (it.backColors || 1) + 'c]' : ''),
       '  Locations: ' + ((it.locations || []).join(', ') || '—')];
     if(it.addonList && it.addonList.length) L.push('  Add-ons: ' + it.addonList.join(', '));
     L.push('  Turnaround: ' + it.turnaroundLabel);

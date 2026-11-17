@@ -521,7 +521,11 @@ var QUICK_CATEGORIES=[
   {label:'Outerwear',             chip:'Jackets'},
   {label:'Activewear',            chip:'Activewear'},
   {label:'Bags',                  chip:'Bags'},
-  {label:'Drinkware',             chip:'Drinkware'}
+  {label:'Drinkware',             chip:'Drinkware'},
+  {label:'Pens',                  chip:'Pens'},
+  {label:'Journals & Notebooks',  chip:'Journals'},
+  {label:'Technology',            chip:'Tech'},
+  {label:'Keychains',             chip:'Keychains'}
 ];
 function renderTrustBanner(){
   var host=document.getElementById('trust-banner');if(!host)return;
@@ -1273,6 +1277,19 @@ function dwFromPrice(p){
   return lo;
 }
 
+// Card copy for all-inclusive items (drinkware + PCNA promo products).
+function dwBreakList(p){
+  if(!p||!p._dwMatrix)return [];
+  return Object.keys(p._dwMatrix).map(function(k){return parseInt(k,10);}).filter(function(n){return !isNaN(n);}).sort(function(a,b){return a-b;});
+}
+function cardAtQty(p){var b=dwBreakList(p);return (p&&p._drinkware&&b.length)?b[b.length-1]:144;}
+function dwCardMeta(p){
+  var b=dwBreakList(p),min=b.length?b[0]:24;
+  var what=(p&&p._pcna)?'item, logo &amp; shipping included':'bottle + logo included';
+  return '<span class="card-meta-rush">All-Inclusive</span>'+
+         '<span class="card-meta-moq">Minimum '+min+' pcs &middot; '+what+'</span>';
+}
+
 var CATEGORY_BUCKETS=[
   {label:'T-Shirts',              cats:['T-Shirts']},
   {label:'Long Sleeve',           cats:[],                         longSleeveFromName:true},
@@ -1284,6 +1301,10 @@ var CATEGORY_BUCKETS=[
   {label:'Headwear',              cats:['Caps']},
   {label:'Bags',                  cats:['Bags']},
   {label:'Drinkware',             cats:['Drinkware']},
+  {label:'Journals & Notebooks',  cats:['Journals & Notebooks']},
+  {label:'Pens',                  cats:['Pens']},
+  {label:'Technology',            cats:['Technology']},
+  {label:'Keychains',             cats:['Keychains']},
   {label:'Workwear & Safety',     cats:['Workwear','Personal Protection']},
   {label:'Bottoms',               cats:['Bottoms']},
   {label:'Women',                 cats:["Women's"]},
@@ -2103,8 +2124,7 @@ function renderGrid(){
     else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
     var isDw=!!(p&&p._drinkware);
     var metaHtml=isDw
-      ? '<span class="card-meta-rush">All-Inclusive</span>'+
-        '<span class="card-meta-moq">Minimum 24 pcs &middot; bottle + logo included</span>'
+      ? dwCardMeta(p)
       : '<span class="card-meta-rush">Rush Available</span>'+
         '<span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
@@ -2114,7 +2134,7 @@ function renderGrid(){
            '<div class="card-info">'+
              (brand?'<div class="card-brand">'+brand+'</div>':'')+
              '<div class="card-name">'+displayName+'</div>'+
-             '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at 144+</span></div>'+
+             '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at '+cardAtQty(p)+'+</span></div>'+
              saleNoteHtml(_st)+
              '<div class="card-meta">'+metaHtml+'</div>'+
            '</div></a>';
@@ -2207,7 +2227,7 @@ function gbbCardHtml(it){
   else if(BADGE_MOST_POPULAR.indexOf(_st)>-1)dealBadge='<span class="card-badge popular">Most Popular</span>';
   var isDw=!!(p&&p._drinkware);
   var metaHtml=isDw
-    ? '<span class="card-meta-rush">All-Inclusive</span><span class="card-meta-moq">Minimum 24 pcs &middot; bottle + logo included</span>'
+    ? dwCardMeta(p)
     : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
   return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
@@ -2216,7 +2236,7 @@ function gbbCardHtml(it){
          '<div class="card-info">'+
            (brand?'<div class="card-brand">'+brand+'</div>':'')+
            '<div class="card-name">'+displayName+'</div>'+
-           '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at 144+</span></div>'+
+           '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at '+cardAtQty(p)+'+</span></div>'+
            saleNoteHtml(_st)+
            '<div class="card-meta">'+metaHtml+'</div>'+
          '</div></a>';
@@ -2370,6 +2390,16 @@ async function loadProducts(){
       if(p.name&&EXCLUDE_NAME.test(p.name))continue;
       if(EXCLUDE_STYLES[String(p.style).toUpperCase()])continue;
       if(p.name&&EXCLUDE_NAME_EXACT[p.name.toLowerCase().trim()])continue;
+      // PCNA promo products (merged in by merge-pcna.py): all-inclusive price matrix,
+      // like drinkware. The hidden '-L' entries are Laser siblings, reached only
+      // from the product page's Decoration dropdown.
+      if(p._pcna){
+        if(p._hidden)continue;
+        var _pfp=dwFromPrice(p);if(_pfp==null)continue;
+        var _pfc=(Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].name)?p.colors[0].name:'';
+        flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:_pfc,p:_pfp,fp:_pfp,_full:p});
+        continue;
+      }
       // Basic Tee Deal: 5000 / 5000B use our $2.30 cost basis (1.5x markup applied below).
       var _stU=String(p.style).toUpperCase();
       /* Basic Tee Deal pricing switched OFF 2026-09-25 — 5000/5000B use normal pricing,

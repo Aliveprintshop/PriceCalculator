@@ -326,11 +326,13 @@ def parse_product(root):
     desc = " ".join(d for d in descs if not re.search(r"(USD|CAD)-(List|Net)-", d))
     feats = [clean(e.text) for e in kids(prod, "productMarketingPoint") if e.text]
     feats += [clean(first(mp, "pointCopy")) for mp in kids(prod, "ProductMarketingPoint")]
-    feats = [f for f in dict.fromkeys(feats) if f][:8]
+    feats = [f for f in dict.fromkeys(feats)
+             if f and len(f) > 3 and f.lower() != 'none' and '/' not in f and not f.isdigit()][:8]
     parts = []
     for pp in kids(prod, "ProductPart"):
         pid = direct(pp, "partId")
         cname = clean(first(pp, "colorName")) or clean(first(pp, "standardColorName"))
+        cname = re.sub(r"\s*\([A-Z0-9]{1,6}\)\s*$", "", cname)   # 'Black (BK)' -> 'Black'
         hx = first(pp, "hex")
         if hx and not hx.startswith("#"):
             hx = "#" + hx
@@ -365,10 +367,13 @@ def build(pid, group):
         return None, [f"{pid}: pricing missing (List {bool(lb)}, Net {bool(nb)})"]
     # Every part of a PCNA style is priced the same; use the first one, but
     # warn if the colors differ.
-    p0 = next(iter(lb))
+    # Colors are usually priced alike. When they aren't, price every color at
+    # the dearest one, so no color is ever under-quoted.
+    p0 = max(lb, key=lambda k: lb[k][0][1])
     list_rows, net_rows = lb[p0], nb.get(p0) or next(iter(nb.values()))
     if any(v != list_rows for v in lb.values()):
-        log.append(f"{pid}: parts priced differently; using {p0}")
+        cheap = min(v[0][1] for v in lb.values())
+        log.append(f"{pid}: colors priced differently (${cheap:.2f}-${list_rows[0][1]:.2f} list); priced at {p0}")
     breaks = [q for q, _ in list_rows]
 
     decos = decorations(lr)

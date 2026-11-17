@@ -1510,7 +1510,8 @@ function dwFromPrice(p){
 function prepare(raw, manual){
   if(!raw||!raw.style)return null;
   var p=JSON.parse(JSON.stringify(raw));
-  if(manual){ p._blank = p._drinkware ? dwFromPrice(p) : (p.p||null); return p; }
+  /* PCNA promo products (source:'pcna') sit in products.json but price like drinkware. */
+  if(manual||p._pcna){ p._blank = p._drinkware ? dwFromPrice(p) : (p.p||null); return p; }
   if(p.discontinued===true)return null;
   if(CALC_EXCLUDE_STYLES[String(p.style).toUpperCase()])return null;
   normalizeProductUpcharges(p);
@@ -3143,7 +3144,7 @@ function basisLabel(){
       return needsInkCount(k) ? l + ' ' + inkFor(k) + '-color' : l; });
     return parts.join(' + ');
   }
-  if(S.p._drinkware) return '1-color print';
+  if(S.p._drinkware) return S.p._decoLabel || '1-color print';
   if(m === 'em') return (LOC[defaultLoc('em')] || {label:'Front'}).label.replace(/ \(.*\)/,'') + ' embroidery';
   if(m === 'ht') return 'full color front';
   return '1-color front';
@@ -3709,7 +3710,7 @@ function artColorFoot(){
   var sw = S.colors.map(function(c, i){
     return '<button class="sw' + (i === S.color ? ' on' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>';
   }).join('');
-  return '<div class="fhead"><span class="lbl">Garment color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b></span>' +
+  return '<div class="fhead"><span class="lbl">' + (S.p && S.p._drinkware ? 'Color' : 'Garment color') + ': <b>' + esc((S.colors[S.color]||{}).name || '') + '</b></span>' +
     '<span class="aux">' + S.colors.length + ' colors</span></div>' +
     '<div class="swatches artsw' + (S.swOpen ? '' : ' clipped') + '" id="f-artsw">' + sw + '</div>' +
     '<button type="button" class="swmore" data-swmore="1" hidden>' +
@@ -3960,6 +3961,38 @@ function mctaState(){
   return {label: realQty() === 0 ? 'Add sizes to continue' : 'Add ' + minGap() + ' more to continue', off:false};
 }
 
+/* ------------------------------------------------------------ PCNA Print / Laser
+   A PCNA item that can be printed OR laser engraved is two catalog entries:
+   <id> (print, listed) and <id>-L (laser, hidden). Each carries its own
+   all-inclusive price matrix, so checkout and the payment Worker price the
+   chosen one with no special case. Switching swaps the product in place and
+   keeps the artwork, color and quantity. */
+var PCNA_ALT = {};
+function pcnaOptions(){ return (S.p && S.p._pcna && Array.isArray(S.p._decoOptions)) ? S.p._decoOptions : []; }
+function pcnaPreload(){
+  PCNA_ALT[String(S.p.style).toUpperCase()] = S.raw;
+  pcnaOptions().forEach(function(o){
+    var key = String(o.style).toUpperCase(); if(PCNA_ALT[key]) return;
+    var base = CONFIG.productsJson.replace(/products\.json.*$/, 'p/');
+    getJSON(base + encodeURIComponent(key.replace(/[^A-Z0-9_-]/g, '_')) + '.json')
+      .then(function(j){ if(j && j.product) PCNA_ALT[key] = j.product; }).catch(function(){});
+  });
+}
+function pcnaSwitch(style){
+  var key = String(style).toUpperCase(), raw = PCNA_ALT[key];
+  if(!raw || key === String(S.p.style).toUpperCase()) return;
+  var p = E.prepare(raw, true); if(!p) return;
+  var colorName = (S.colors[S.color] || {}).name;
+  S.raw = raw; S.p = p;
+  S.colors = sortColors((p.colors || []).filter(function(c){ return c && c.images && colorFront(c); }));
+  S.color = 0; S.colors.forEach(function(c, j){ if(c.name === colorName) S.color = j; });
+  render();
+}
+root.addEventListener('click', function(e){
+  var b = e.target && e.target.closest ? e.target.closest('[data-pcnastyle]') : null;
+  if(!b) return; e.preventDefault(); pcnaSwitch(b.getAttribute('data-pcnastyle'));
+});
+
 /* ------------------------------------------------------------ ARTWORK */
 function setMethod(m){
   S.method = m;
@@ -3971,6 +4004,12 @@ function setMethod(m){
   Object.keys(S.art).forEach(function(k){ if(!LOC[k]) delete S.art[k]; });
 }
 function methodTabs(){
+  if(S.p && S.p._pcna){
+    var opts = pcnaOptions();
+    if(opts.length < 2) return '<div class="sec-lbl">Decoration' + tip('method') + '</div><div class="onlym">' + esc(S.p._decoLabel || '1-color print') + '</div>';
+    return '<div class="sec-lbl">Decoration' + tip('method') + '</div><div class="mtabs">' + opts.map(function(o){
+      return '<button type="button" class="mtab' + (String(o.style).toUpperCase() === String(S.p.style).toUpperCase() ? ' on' : '') + '" data-pcnastyle="' + esc(o.style) + '">' + esc(o.label) + '</button>'; }).join('') + '</div>';
+  }
   var ms = E.decoMethods(S.p);
   if(ms.length < 2) return '<div class="sec-lbl">Decoration' + tip('method') + '</div><div class="onlym">' + esc(E.methodLabel(ms[0])) + '</div>';
   return '<div class="sec-lbl">Decoration' + tip('method') + '</div><div class="mtabs">' + ms.map(function(m){
@@ -3988,9 +4027,10 @@ function locPills(){
 /* Decoration + print spots as one summary line; "Change" opens the full choices. */
 function optsBlock(){
   var ms = E.decoMethods(S.p), keys = Object.keys(LOC);
-  var many = ms.length > 1 || keys.length > 1;
+  var many = ms.length > 1 || keys.length > 1 || pcnaOptions().length > 1;
   var where = S.locs.map(function(k){ return LOC[k] ? LOC[k].label : k; }).join(' + ');
   var what = S.method === 'sp' ? 'Screen print' : S.method === 'ht' ? 'Full color print' : 'Embroidery';
+  if(S.p._pcna){ what = S.p._decoLabel || '1-color print'; where = S.p._imprint || 'Standard imprint area'; }
   if(S.optsOpen && many)
     return '<div class="optsbox">' + methodTabs() + locPills() + '<button type="button" class="dbtn optsdone" data-opts="0">Done</button></div>';
   return '<div class="optsum"><div><span class="sec-lbl">Print' + tip('method') + '</span><b>' + esc(what) + ' · ' + esc(where) + '</b></div>' +
@@ -4020,7 +4060,7 @@ function accBlock(key, title, body, cls){
   return '<details class="acc card' + (cls ? ' ' + cls : '') + '"' + (S[key] ? ' open' : '') + ' data-acc="' + key + '">' +
     '<summary><span class="lbl">' + title + '</span></summary><div class="accbody">' + body + '</div></details>';
 }
-function needsInkCount(k){ return S.method === 'sp' && !S.p._drinkware ? (k !== 'left-sleeve' && k !== 'right-sleeve') : !!S.p._drinkware; }
+function needsInkCount(k){ if(S.p && S.p._pcna) return false; return S.method === 'sp' && !S.p._drinkware ? (k !== 'left-sleeve' && k !== 'right-sleeve') : !!S.p._drinkware; }
 /* Ink colors for an uploaded design (28 Sep 2026).
    Counted automatically when the file is a flat logo; when it can't be counted
    (a photo, shading, or a PDF/AI/EPS we can't read here) the customer is asked,
@@ -4065,6 +4105,7 @@ function inkSelect(k){
   return '<label class="inksel">Ink colors' + tip('colors') + '<select data-ink="' + k + '">' + o + '</select></label>';
 }
 function locMeta(k){
+  if(S.p && S.p._pcna) return S.p._decoLabel || '1-color print';
   if(S.method === 'em') return 'Embroidered · up to 5,000 stitches';
   if(S.method === 'ht') return 'Full color · any number of colors';
   if(!needsInkCount(k)) return '1 color';
@@ -4393,9 +4434,10 @@ function locRow(k){
    than a card the same size as the one people actually want. */
 function designBlock(){
   var ms = E.decoMethods(S.p), keys = Object.keys(LOC);
-  var many = ms.length > 1 || keys.length > 1;
+  var many = ms.length > 1 || keys.length > 1 || pcnaOptions().length > 1;
   var where = S.locs.map(function(k){ return LOC[k] ? LOC[k].label : k; }).join(' + ');
   var what = S.method === 'sp' ? 'Screen print' : S.method === 'ht' ? 'Full color print' : 'Embroidery';
+  if(S.p._pcna){ what = S.p._decoLabel || '1-color print'; where = S.p._imprint || 'Standard imprint area'; }
 
   var line = '<' + (many ? 'button type="button" class="optsline" data-opts="1"' : 'div class="optsline"') + '>'
     + '<span style="min-width:0"><span class="k">Print</span><b>' + esc(what) + ' &middot; ' + esc(where) + '</b></span>'
@@ -5545,7 +5587,7 @@ var CART = {
 function pricingProduct(){
   var p = S.p, keep = {};
   ['style','name','brand','category','case_price','case_sale_price','size_upcharges','available_sizes',
-   '_dealBasicTee','_drinkware','_dwMatrix','_blank'].forEach(function(k){ if(p[k] !== undefined) keep[k] = p[k]; });
+   '_dealBasicTee','_drinkware','_dwMatrix','_blank','_pcna','_decoLabel'].forEach(function(k){ if(p[k] !== undefined) keep[k] = p[k]; });
   return keep;
 }
 function addToCart(){
@@ -5593,7 +5635,7 @@ function addToCartNow(){
   var item = {
     style: S.p.style, productName: cleanName(S.p), brand: S.p.brand || '', color: c.name || '',
     productImage: colorFront(c),
-    decoMethod: E.orderMethod(S.p, cfg), decoLabel: E.methodLabel(S.method),
+    decoMethod: E.orderMethod(S.p, cfg), decoLabel: (S.p._pcna && S.p._decoLabel) ? S.p._decoLabel : E.methodLabel(S.method),
     locMethod: lm, locations: S.locs.slice(),
     frontColors: (lm.front === 'sp' || (S.p._drinkware && lm.front)) ? inkFor('front') : null,
     backColors: lm.back === 'sp' ? inkFor('back') : null,
@@ -5711,6 +5753,7 @@ function boot(data){
   var p = raw && E.prepare(raw, manual);
   if(!p) return fail('We could not find that product just now.');
   S.raw = raw; S.p = p;
+  if(p._pcna) pcnaPreload();
   S.colors = sortColors((p.colors || []).filter(function(c){ return c && c.images && colorFront(c); }));
   if(!S.colors.length) return fail('We could not load photos for this product.');
   var wc = qp('color');
@@ -6007,7 +6050,8 @@ function upcOpen(){
 /* test hook */
 window.__ALIVE_PRODUCT__ = {S:S, render:render, addToCart:addToCart, go:go,
   takeFile:takeFile, layersFor:layersFor, mockSide:mockSide, mockForCart:mockForCart,
-  renderMockup:renderMockup, saveAllMockups:saveAllMockups, upc:{open:upcOpen, U:UPC}};
+  renderMockup:renderMockup, saveAllMockups:saveAllMockups, upc:{open:upcOpen, U:UPC},
+  unitNow:unitNow, minQ:minQ, basisLabel:basisLabel, pcnaOptions:pcnaOptions, pcnaAlt:PCNA_ALT};
 })();
 
 </script>
