@@ -34,6 +34,11 @@ import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 
 PCNA_ID = os.environ.get("PCNA_ID", "").strip()
+IMPRINT_FILE = os.environ.get("PCNA_IMPRINT", "pcna-imprint.json")
+try:
+    IMPRINT = json.load(open(IMPRINT_FILE, encoding="utf-8"))
+except Exception:
+    IMPRINT = {}
 PCNA_PW = os.environ.get("PCNA_PASSWORD", "").strip()
 PICKS = os.environ.get("PCNA_PICKS", "pcna-picks.json")
 OUT = os.environ.get("PCNA_OUT_FILE", "pcna-products.json")
@@ -286,7 +291,47 @@ HEX_GUESS = [
     ("bamboo", "#c8a96b"), ("copper", "#b87333"), ("stainless", "#b8bcc0"), ("charcoal", "#36454f"),
     ("cream", "#f3ead7"), ("ivory", "#f3ead7"), ("mint", "#a8e6cf"), ("lime", "#9acd32"),
     ("aqua", "#4fd1c5"), ("maroon", "#7a1f2b"), ("burgundy", "#7a1f2b"),
+    ("rose", "#e7b8b1"), ("quartz", "#e7c9c3"), ("sage", "#9c9f84"), ("cobalt", "#3e6ba6"),
+    ("teal", "#008081"), ("graphite", "#41424c"), ("smoke", "#7e7e7e"), ("ash", "#b2beb5"),
 ]
+
+
+def nice_color(name):
+    n = name or ""
+    for _ in range(3):                                    # 'Blue (Blue Ink) (BL-BL)', 'TrRed(TRE)'
+        n = re.sub(r"\s*\([A-Z0-9-]{1,8}\)\s*$", "", n)
+    n = re.sub(r"\bw/?\s*/\s*", "w/ ", n)                 # 'White w/Red Trim' -> 'White w/ Red Trim'
+    n = re.sub(r"\bw/\s*", "w/ ", n)
+    n = re.sub(r"^TrRed$", "Translucent Red", n)
+    if n.isupper() or n.split("/")[0].isupper():
+        n = re.sub(r"\bW/\s*", "w/ ", n.title())
+    return n.strip()
+
+
+def _neutral(hx):
+    try:
+        h = hx.lstrip("#")
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        return max(r, g, b) - min(r, g, b) < 18
+    except Exception:
+        return True
+
+
+def swatch_hex(name, pcna_hex):
+    """PCNA's hex, unless it is missing or a grey/white stand-in for a colour
+    the name clearly states (two-tone parts often carry the trim's silver)."""
+    main = (name or "").split("/")[0].split(" w")[0]
+    guess = guess_hex(main)
+    hx = pcna_hex if pcna_hex and re.match(r"^#?[0-9A-Fa-f]{6}$", pcna_hex) else ""
+    if hx and not hx.startswith("#"):
+        hx = "#" + hx
+    if not hx:
+        return guess
+    if _neutral(hx) and guess != "#cccccc" and not _neutral(guess):
+        return guess
+    if guess in ("#1c1c1e",) and hx.lower() not in ("#000000", "#020101") and _neutral(hx) and int(hx[1:3], 16) > 60:
+        return guess                                   # 'Black w/ Silver' tagged silver
+    return hx
 
 
 def guess_hex(name):
@@ -301,38 +346,95 @@ def big(url):
     return re.sub(r"/t_PS_[A-Z0-9]+/", "/t_PS_EXTRALARGE2/", url or "")
 
 
-def parse_media(root):
-    """{partId: best photo url}. The customer places their own logo on the
-    photo, so a clean BLANK front shot of that color wins; PCNA's decorated
-    sample, group shots and accessory/alternate shots are fallbacks only."""
-    best = {}
+IMG_SKIP = re.compile(r"(TEMPLATE|COMPLIANCE|GRS|POW_|_WEB_)", re.I)
+
+
+def media_views(root):
+    """{partId: [view, ...]} for every PCNA photo of that color, where a view is
+    {url, name, cls:set}. Also returns {colorName: [view]} for photos PCNA files
+    by color instead of by part."""
+    seen, by_part = set(), {}
     for m in kids(root, "MediaContent"):
         part = direct(m, "partId")
         url = direct(m, "url")
-        if not part or not url:
+        if not part or not url or IMG_SKIP.search(url):
             continue
+        big_url = big(url)
+        if big_url in seen:
+            continue
+        seen.add(big_url)
         cls = {(t.text or "").strip().lower() for t in kids(m, "classTypeName")}
-        name = url.rsplit("/", 1)[-1].upper()
-        front = "front" in cls
-        if front and "blank" in cls and "internal use" not in cls and "_GRP" not in name:
-            score = 0
-        elif front and "blank" in cls and "_GRP" not in name:
-            score = 1
-        elif front and "decorated" in cls and "_GRP" not in name:
-            score = 2
-        elif "part default image" in cls and "_GRP" not in name:
-            score = 3
-        elif front and "alternate" not in cls:
-            score = 4
-        elif "alternate" not in cls:
-            score = 5
-        else:
-            score = 6
-        if "-" in name.rsplit(".", 1)[0][-3:]:   # prefer the un-numbered original
-            score += 0.1
-        if part not in best or score < best[part][0]:
-            best[part] = (score, big(url))
-    return {k: v[1] for k, v in best.items()}
+        cls -= {"small", "medium", "large", "extralarge", "hires"}
+        if "internal use" in cls:
+            continue
+        name = big_url.rsplit("/", 1)[-1].upper()
+        by_part.setdefault(part, []).append({"url": big_url, "name": name, "cls": cls})
+    return by_part
+
+
+def _stem(name):
+    """'1603-15BK_B_FR-1.JPG' -> '_B_FR' ; numbered copies of one view collapse."""
+    st = name.rsplit(".", 1)[0]
+    st = re.sub(r"[-_ ]?\d+$", "", st)        # trailing -1 / _3613
+    i = st.find("_")
+    return st[i:] if i >= 0 else st
+
+
+def main_score(v, prefer=None):
+    n, c = v["name"], v["cls"]
+    if prefer and prefer.upper() in n:
+        return -1
+    bad = any(k in n for k in ("DETAIL", "GROUP", "GRP", "_TOP", "BACK", "_USB", "ACCESOR", "STRAW"))
+    front, blank = "front" in c, "blank" in c
+    stem = _stem(n)
+    if blank and front and not bad and stem in ("_B_FR", "_B_FRONT", "_B"):
+        return 0
+    if blank and front and not bad:
+        return 1
+    if blank and not bad and "_B_FR" in n:
+        return 2
+    if front and "decorated" in c and not bad:
+        return 4
+    if "part default image" in c and not bad:
+        return 5
+    if blank and not bad:
+        return 6
+    if front:
+        return 7
+    return 9
+
+
+def gallery(views, prefer=None, n_extra=4):
+    """main photo + up to n_extra other views of the same color, one per view."""
+    if not views:
+        return None, None, []
+    ordered = sorted(views, key=lambda v: (main_score(v, prefer), len(v["name"])))
+    main = ordered[0]
+    back = None
+    extras, stems = [], {_stem(main["name"])}
+
+    def rank(v):
+        n, c = v["name"], v["cls"]
+        if "back" in c and "blank" in c: return 0
+        if "decorated" in c and "front" in c: return 1
+        if any(k in c for k in ("angle-left", "angle-right")) or "_AL" in n or "_AR" in n: return 2
+        if "blank" in c: return 3
+        if "alternate" in c or "lifestyle" in c: return 4
+        return 5
+    for v in sorted(views, key=lambda v: (rank(v), len(v["name"]))):
+        if v is main:
+            continue
+        st = _stem(v["name"])
+        if st in stems:
+            continue
+        stems.add(st)
+        if back is None and "back" in v["cls"] and "blank" in v["cls"]:
+            back = v["url"]          # shown as the Back tile, not repeated in the gallery
+            continue
+        extras.append(v["url"])
+        if len(extras) >= n_extra:
+            break
+    return main["url"], back, extras
 
 
 def parse_product(root):
@@ -350,13 +452,15 @@ def parse_product(root):
     parts = []
     for pp in kids(prod, "ProductPart"):
         pid = direct(pp, "partId")
-        cname = clean(first(pp, "colorName")) or clean(first(pp, "standardColorName"))
-        cname = re.sub(r"\s*\([A-Z0-9]{1,6}\)\s*$", "", cname)   # 'Black (BK)' -> 'Black'
-        hx = first(pp, "hex")
-        if hx and not hx.startswith("#"):
-            hx = "#" + hx
+        # PCNA splits two-tone names across Color entries ("White w" + "Red Trim (WRE)"):
+        # join them back and take the swatch from the first (main) color.
+        cols = [(clean(first(c, "colorName")) or clean(first(c, "standardColorName")), first(c, "hex"))
+                for c in kids(pp, "Color")]
+        cols = [(n, h) for n, h in cols if n]
+        cname = "/".join(n for n, _ in cols) if cols else ""
+        hx = cols[0][1] if cols else ""
         if pid:
-            parts.append({"partId": pid, "color": cname, "hex": hx})
+            parts.append({"partId": pid, "color": nice_color(cname), "hex": hx})
     image = big(first(prod, "primaryImageUrl"))
     return {"name": name, "brand": brand or line, "line": line, "desc": desc[:900],
             "features": feats, "parts": parts, "image": image,
@@ -371,7 +475,8 @@ def build(pid, group):
     info = parse_product(r)
     if not info["name"]:
         return None, [f"{pid}: GetProduct failed: {err(r, raw)}"]
-    media = parse_media(parse(get_media(pid)))
+    views = media_views(parse(get_media(pid)))
+    cfg = IMPRINT.get(pid, {})
 
     fr = parse(get_fob(pid))
     fobs = [first(f, "fobId") for f in kids(fr, "FobPoint")]
@@ -411,9 +516,14 @@ def build(pid, group):
         if cname in seen:
             continue
         seen.add(cname)
-        img = media.get(part["partId"]) or info["image"]
-        colors.append({"name": cname, "hex": part["hex"] or guess_hex(cname), "sku": part["partId"],
-                       "images": {"front_flat": img}})
+        main, back, extras = gallery(views.get(part["partId"], []), cfg.get("main"))
+        images = {"front_flat": main or info["image"]}
+        if back:
+            images["back_flat"] = back
+        if extras:
+            images["gallery"] = extras
+        colors.append({"name": cname, "hex": swatch_hex(cname, part["hex"]), "sku": part["partId"],
+                       "images": images})
     if not colors:
         colors = [{"name": "Standard", "hex": "#cccccc", "sku": pid, "images": {"front_flat": info["image"]}}]
 
@@ -451,6 +561,10 @@ def build(pid, group):
         "_maxInk": 1,
         "colors": colors,
     }
+    # Imprint area drawn on the main photo (and where a new logo lands), as
+    # fractions of the square photo: [left, top, width, height].
+    if isinstance(cfg.get("box"), list) and len(cfg["box"]) == 4:
+        base["_imprintBox"] = [round(float(x), 4) for x in cfg["box"]]
     out = []
     print_e = next((e for e in entries if e["kind"] == "print"), None)
     laser_e = next((e for e in entries if e["kind"] == "laser"), None)

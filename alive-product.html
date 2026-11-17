@@ -1130,6 +1130,8 @@
 #alive-flow .tipbox .lp-full{display:block;width:100%;margin:10px 0 0;padding:12px 14px;border:0;border-radius:10px;background:#1b6cce;color:#fff;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;}
 /* Upload button pulse when arriving from /start with "Upload your design" */
 @keyframes alivePulse{0%{box-shadow:0 0 0 0 rgba(27,108,206,.55);}70%{box-shadow:0 0 0 14px rgba(27,108,206,0);}100%{box-shadow:0 0 0 0 rgba(27,108,206,0);}}
+/* PCNA promo items: the decoration area, drawn the way PCNA shows it */
+#alive-flow .imprint-box{position:absolute;border:2px solid #29b6d8;border-radius:2px;pointer-events:none;z-index:2;box-sizing:border-box;}
 #alive-flow .stage-up.pulse,#alive-flow .slot.pulse{animation:alivePulse 1.4s ease-out 3;}
 /* "Your design is in good hands." trust banner (28 Sep 2026). Same width as the cards around it. */
 #alive-flow .gh{margin-top:18px;container-type:inline-size;border-radius:var(--r-lg,14px);overflow:hidden;color:#fff;
@@ -3089,10 +3091,21 @@ function ptype(){ return E.productType(S.p); }
 function noun(){ return TYPE_NOUN[ptype()] || 'piece'; }
 function isOneSize(){ var z = S.p.available_sizes || []; return z.length <= 1; }
 
+/* PCNA promo items carry their decoration area as [left, top, width, height]
+   fractions of the square main photo. Shown on the front photo only. */
+function imprintBox(p){ var b = p && p._imprintBox; return (Array.isArray(b) && b.length === 4) ? b : null; }
+function imprintBoxHtml(p){
+  var b = imprintBox(p); if(!b || S.gal != null || S.side !== 'front') return '';
+  return '<div class="imprint-box" aria-hidden="true" style="left:' + (b[0]*100).toFixed(2) + '%;top:' + (b[1]*100).toFixed(2) +
+    '%;width:' + (b[2]*100).toFixed(2) + '%;height:' + (b[3]*100).toFixed(2) + '%"></div>';
+}
+
 /* Where a new design lands on the photo, as fractions of the photo box. SanMar
    flat lays are 2:3 with the garment filling the frame, except caps, which sit
    in the top third. Square photos (manual products) are centred. */
 function defaultPlace(key){
+  var ib = imprintBox(S.p);
+  if(ib) return {cx: ib[0] + ib[2] / 2, cy: ib[1] + ib[3] / 2, w: Math.min(ib[2], ib[3] * 2.5) * 0.9, rot: 0};
   var t = ptype(), fr = S.frame[S.color] || (2/3), square = fr > 0.85;
   if(t === 'drinkware' || (square && (t === 'hat' || t === 'beanie' || t === 'bag'))){
     if(t === 'hat' || t === 'beanie') return {cx:0.5, cy:0.36, w:0.26, rot:0};
@@ -3418,6 +3431,10 @@ function galleryItems(c){
   var im = c.images || {};
   if(im.front_model && im.front_model !== f) out.push({kind:'model', side:'front', img:im.front_model, alt:'Front on model'});
   if(im.back_model && im.back_model !== b) out.push({kind:'model', side:'back', img:im.back_model, alt:'Back on model'});
+  /* PCNA promo items: more photos of the same color (decorated sample, angles, in use). */
+  (Array.isArray(im.gallery) ? im.gallery : []).forEach(function(u, i){
+    if(u && u !== f && u !== b) out.push({kind:'model', side:'front', img:u, alt:'More views ' + (i + 1)});
+  });
   return out;
 }
 /* Someone who has asked their system not to animate things gets the poster and
@@ -3690,7 +3707,7 @@ function productCard(overlayHtml, foot, rail, strip){
        between the garment and a square work photo never resizes the page. */
     '<div class="stagebox" id="f-stagebox"' + (S.stageH ? ' style="min-height:' + S.stageH + 'px"' : '') + '>' +
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
-      '<div class="stage-art" id="f-stage"' + artStyle + '>' + heroMedia(c, p) +
+      '<div class="stage-art" id="f-stage"' + artStyle + '>' + heroMedia(c, p) + imprintBoxHtml(p) +
       (editor && S.gal == null ? (overlayHtml || '') : '') + '</div>' + heroVidBtn() + '</div></div>' +
     sides + (strip || '') + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
   '</div>';
