@@ -302,15 +302,34 @@ def big(url):
 
 
 def parse_media(root):
-    """{partId: best front image url}"""
+    """{partId: best photo url}. The customer places their own logo on the
+    photo, so a clean BLANK front shot of that color wins; PCNA's decorated
+    sample, group shots and accessory/alternate shots are fallbacks only."""
     best = {}
     for m in kids(root, "MediaContent"):
         part = direct(m, "partId")
         url = direct(m, "url")
         if not part or not url:
             continue
-        classes = " ".join(t.text or "" for t in kids(m, "classTypeName")).lower()
-        score = (0 if "front" in classes else 1 if "primary" in classes else 2 if "blank" in classes else 3)
+        cls = {(t.text or "").strip().lower() for t in kids(m, "classTypeName")}
+        name = url.rsplit("/", 1)[-1].upper()
+        front = "front" in cls
+        if front and "blank" in cls and "internal use" not in cls and "_GRP" not in name:
+            score = 0
+        elif front and "blank" in cls and "_GRP" not in name:
+            score = 1
+        elif front and "decorated" in cls and "_GRP" not in name:
+            score = 2
+        elif "part default image" in cls and "_GRP" not in name:
+            score = 3
+        elif front and "alternate" not in cls:
+            score = 4
+        elif "alternate" not in cls:
+            score = 5
+        else:
+            score = 6
+        if "-" in name.rsplit(".", 1)[0][-3:]:   # prefer the un-numbered original
+            score += 0.1
         if part not in best or score < best[part][0]:
             best[part] = (score, big(url))
     return {k: v[1] for k, v in best.items()}
