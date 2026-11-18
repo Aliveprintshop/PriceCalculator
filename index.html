@@ -148,6 +148,12 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 /* Featured-pick tags. Each says WHY this one is on screen. */
 .card-badge.soft{background:#7c3aed;}
 .card-badge.heavy{background:#0f766e;}
+.card-badge.tough{background:#92400e;}
+.card-badge.new{background:#0284c7;}
+.card-badge.fan{background:#db2777;}
+.card-badge.premium{background:#111827;}
+.card-badge.trend{background:#ea580c;}
+.card-badge.fit{background:#4f46e5;}
 /* ── Load more: the first view is small on purpose; this reveals the rest ── */
 .loadmore-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:26px 16px 6px;}
 .loadmore{display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--border2);
@@ -162,10 +168,8 @@ html:not(.proj-embedded) .proj-bar{top:auto;bottom:0;}
 @media(min-width:821px){
   .grid.featfirst{grid-template-columns:repeat(4,minmax(0,1fr));}
 }
-@media(max-width:820px){
-  .grid.featfirst .card:first-child{grid-column:1/-1;}
-  .grid.featfirst .card:first-child .card-img{aspect-ratio:16/11;}
-}
+/* (The phone "lead pick full width" layout was dropped with the 20-card first
+   view: 1 + 19 left a hole in the last row.) */
 @media(max-width:820px){
   .loadmore-wrap{background:var(--surface);padding:22px 14px 18px;}
   .loadmore{width:100%;justify-content:center;}
@@ -724,19 +728,99 @@ var CARHARTT_PINNED=["CT106923","CT107106","CT106972","CT106577","CT104597","CT1
    four styles. A category with no entry simply leads with its normal sort.
    ===================================================================== */
 var FEATURED={
+  'T-Shirts':[
+    {s:'BC3001', tag:'Best Seller'},  {s:'1717',   tag:'Fan Favorite'},
+    {s:'NL6210', tag:'Most Popular'}, {s:'64000',  tag:'Best Value'},
+    {s:'DM130',  tag:'Supersoft'},    {s:'LS15001',tag:'New'},
+    {s:'NL3600', tag:'Best Fit'},     {s:'LS16005',tag:'Heavy Weight'}
+  ],
+  'Long Sleeve':[
+    {s:'BC3501', tag:'Best Seller'},  {s:'NL3601', tag:'Best Fit'},
+    {s:'LS15009',tag:'New'},          {s:'CTK126', tag:'Built Tough'},
+    {s:'G2400',  tag:'Best Value'}
+  ],
   'Sweatshirts & Hoodies':[
-    {s:'18500',  tag:'Best Value'},
-    {s:'DT1101', tag:'Most Popular'},
-    {s:'DT7800', tag:'Supersoft'},
-    {s:'NL9307', tag:'Heavy Weight'}
+    {s:'CTK121', tag:'Best Seller'},  {s:'DT7800', tag:'Supersoft'},
+    {s:'LS14001',tag:'New'},          {s:'1567',   tag:'Fan Favorite'},
+    {s:'DT1101', tag:'Most Popular'}, {s:'NL9307', tag:'Heavy Weight'},
+    {s:'NKDR1499',tag:'Premium'},     {s:'DT8100', tag:'Best Value'}
+  ],
+  'Polos & Button-Downs':[
+    {s:'799802', tag:'Best Seller'},  {s:'K540',   tag:'Most Popular'},
+    {s:'TM1MU411',tag:'Premium'},     {s:'K500',   tag:'Best Value'},
+    {s:'ST650',  tag:'Fan Favorite'}, {s:'CS418',  tag:'Built Tough'}
+  ],
+  'Headwear':[
+    {s:'112',    tag:'Best Seller'},  {s:'CT105298',tag:'Fan Favorite'},
+    {s:'C934',   tag:'Best Fit'},     {s:'C932',   tag:'Most Popular'},
+    {s:'CP90',   tag:'Best Value'},   {s:'STC10',  tag:'Lightweight'}
+  ],
+  'Outerwear':[
+    {s:'CT102208',tag:'Best Seller'}, {s:'J317',   tag:'Best Value'},
+    {s:'CT104670',tag:'Premium'},     {s:'J333',   tag:'Waterproof'}
+  ],
+  'Bags':[
+    {s:'NKDH7709',tag:'Most Popular'},{s:'BG100',  tag:'Best Value'},
+    {s:'BG226',  tag:'Laptop Ready'}, {s:'BG411',  tag:'Fan Favorite'}
+  ],
+  'Drinkware':[
+    {s:'1603-02',tag:'Most Popular'}, {s:'1603-15',tag:'Best Seller'},
+    {s:'1624-74',tag:'Premium'},      {s:'SM-6566',tag:'Best Value'}
+  ],
+  'Journals & Notebooks':[
+    {s:'2900-53',tag:'Best Seller'},  {s:'SM-5359',tag:'Best Value'},
+    {s:'0913-01',tag:'Built Tough'}
+  ],
+  'Pens':[
+    {s:'KK-640', tag:'Most Popular'}, {s:'SM-5258',tag:'Best Value'},
+    {s:'6003-36',tag:'Fan Favorite'}
+  ],
+  'Technology':[
+    {s:'7120-15',tag:'Most Popular'}, {s:'SM-2836',tag:'Best Value'},
+    {s:'7124-29',tag:'Premium'}
+  ],
+  'Keychains':[
+    {s:'SM-2360',tag:'Best Value'},   {s:'SM-9737',tag:'Most Popular'}
+  ],
+  'Activewear':[
+    {s:'ST700',  tag:'Best Seller'},  {s:'ST850',  tag:'Premium'}
+  ],
+  'Workwear & Safety':[
+    {s:'CTK87',  tag:'Built Tough'},  {s:'CS200',  tag:'Best Value'}
+  ],
+  'Bottoms':[
+    {s:'LST006', tag:'New'},          {s:'LS14006',tag:'Supersoft'},
+    {s:'PC78P',  tag:'Best Value'},   {s:'LST009', tag:'Fan Favorite'}
+  ],
+  'Women':[
+    {s:'BC6400', tag:'Best Seller'},  {s:'LS81001',tag:'New'},
+    {s:'LS88001',tag:'Supersoft'}
+  ],
+  'Youth':[
+    {s:'LS14001YH',tag:'New'},        {s:'5000B',  tag:'Best Value'}
   ]
+};
+/* Tags on the default /products/ grid (the TOP_PICKS below), one per card. */
+var TOP_PICK_TAGS={
+  'BC3001':'Best Seller',  'CTK121':'Fan Favorite', '799802':'Best Seller', '112':'Most Popular',
+  '1717':'Most Popular',   'DT7800':'Supersoft',    'NKDH7709':'Fan Favorite','1603-15':'Trending',
+  '64000':'Best Value',    'LS14001':'New',         'TM1MU411':'Premium',     'CT105298':'Fan Favorite',
+  'NL6210':'Best Seller',  '18000':'Best Value',    'K540':'Most Popular',    'CT102208':'Built Tough',
+  'DM130':'Supersoft',     'J317':'Water-Resistant','BG100':'Laptop Ready',   '1624-74':'Premium'
 };
 /* Badge colour per tag. Anything not listed gets the default green. */
 var FEATURED_TAG_CLASS={
   'Best Value':'',
+  'Best Seller':'seller',
   'Most Popular':'popular',
   'Supersoft':'soft',
-  'Heavy Weight':'heavy'
+  'Heavy Weight':'heavy',
+  'Built Tough':'tough',
+  'New':'new',
+  'Fan Favorite':'fan',
+  'Premium':'premium',
+  'Trending':'trend',
+  'Best Fit':'fit'
 };
 function featuredList(){
   if(_search||_industry||_gbb||_dealsMode)return null;
@@ -745,15 +829,22 @@ function featuredList(){
   if(_cats.size!==1)return null;
   return FEATURED[Array.from(_cats)[0]]||null;
 }
+function isDefaultGrid(){
+  return !_search&&!_industry&&!_gbb&&!_dealsMode&&!_brands.size&&!_colors.size&&
+         _sort==='featured'&&_cats.size===0;
+}
 function featuredTag(style){
+  if(isDefaultGrid())return TOP_PICK_TAGS[String(style||'').toUpperCase()]||null;
   var list=featuredList();if(!list)return null;
   var up=String(style||'').toUpperCase();
   for(var i=0;i<list.length;i++) if(String(list[i].s).toUpperCase()===up) return list[i].tag;
   return null;
 }
-/* How many cards the first view shows: 8 on every screen (4x2 on desktop, 2x4 on a phone). */
+/* How many cards the first view shows: 20 on every screen (5 rows of 4 on
+   desktop, 10 rows of 2 on a phone), so all the tagged top picks show before
+   "Load more" (Austin, 2026-11-18; was 8). */
 function firstBatch(){
-  return 8;
+  return 20;
 }
 var LOAD_STEP=12;     /* each "Load more" tap adds this many */
 var _shown=0;         /* 0 = not yet sized; set on the first render of a view */
