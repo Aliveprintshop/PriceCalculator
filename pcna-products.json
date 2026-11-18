@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-11-17T22:58:47Z",
+ "generated_at": "2026-11-18T16:11:25Z",
  "source": "PCNA PromoStandards",
  "pricing": "coded all-in incl. setup, run, freight",
- "product_count": 75,
+ "product_count": 73,
  "products": [
   {
    "name": "Meka Recycled RPET Single Wall Sports Bottle 18oz",
@@ -52,7 +52,7 @@
     },
     {
      "name": "Clear",
-     "hex": "#FFFFFE",
+     "hex": "#FFFFFF",
      "sku": "SM-6566CL",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6566CL_B_FR.jpg",
@@ -166,7 +166,7 @@
    "colors": [
     {
      "name": "Clear",
-     "hex": "#FFFFFE",
+     "hex": "#FFFFFF",
      "sku": "SM-6570CL",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6570CL_B_FR2.jpg",
@@ -472,7 +472,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6561WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6561WH_B_FR.jpg",
@@ -698,7 +698,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6562WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6562WH_B_FR.jpg",
@@ -956,7 +956,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6948WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6948WH_B_FR.jpg",
@@ -1167,7 +1167,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6948WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6948WH_B_FR.jpg",
@@ -1362,7 +1362,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6908WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6908WH_B_FRONT.jpg",
@@ -1518,7 +1518,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6908WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6908WH_B_FRONT.jpg",
@@ -1739,7 +1739,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6553WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6553WH_B_FR.jpg",
@@ -1893,7 +1893,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6553WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6553WH_B_FR.jpg",
@@ -2105,7 +2105,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1602-14WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1602-14WH_B_.jpg",
@@ -2314,7 +2314,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1602-14WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1602-14WH_B_.jpg",
@@ -2443,7 +2443,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6942WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6942WH_B_FR.jpg",
@@ -2571,7 +2571,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6942WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6942WH_B_FR.jpg",
@@ -2744,7 +2744,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1603-15WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-15WH_B_FR.jpg",
@@ -2916,7 +2916,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1603-15WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-15WH_B_FR.jpg",
@@ -3099,6 +3099,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1624-74WH_A__4334.jpg"
       ]
      },
+     "imprintBox": [
+      0.4,
+      0.45,
+      0.2,
+      0.3
+     ],
      "_view": "_A_FR"
     }
    ],
@@ -3265,6 +3271,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1624-74WH_A__4334.jpg"
       ]
      },
+     "imprintBox": [
+      0.4,
+      0.45,
+      0.2,
+      0.3
+     ],
      "_view": "_A_FR"
     }
    ],
@@ -3348,6 +3360,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85BK_A_AL-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3362,25 +3380,13 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85GY_A_AL-1.jpg"
       ]
      },
-     "_view": "_B_BACK"
-    },
-    {
-     "name": "Mint Green",
-     "hex": "#57c7c2",
-     "sku": "1625-85MTGR",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85MTGR_D_FR_5795.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85_MTGR_TOP30.jpg"
-      ]
-     },
      "imprintBox": [
-      0.38,
-      0.38,
-      0.24,
-      0.34
+      0.39,
+      0.4,
+      0.22,
+      0.3
      ],
-     "_view": "_B_FR"
+     "_view": "_B_BACK"
     },
     {
      "name": "Navy",
@@ -3393,6 +3399,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85NY_A_AL-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3407,6 +3419,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85OR_A__1268.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3421,6 +3439,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85PBL_D_BACK-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3435,6 +3459,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85RD_TOP30.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3449,6 +3479,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85SL_TOP30.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3464,14 +3500,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85WH_A_AL-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     }
    ],
    "_imprintBox": [
-    0.38,
-    0.38,
-    0.24,
-    0.34
+    0.39,
+    0.4,
+    0.22,
+    0.3
    ],
    "style": "1625-85",
    "_dwMatrix": {
@@ -3546,6 +3588,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85BK_A_AL-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3560,25 +3608,13 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85GY_A_AL-1.jpg"
       ]
      },
-     "_view": "_B_BACK"
-    },
-    {
-     "name": "Mint Green",
-     "hex": "#57c7c2",
-     "sku": "1625-85MTGR",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85MTGR_D_FR_5795.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85_MTGR_TOP30.jpg"
-      ]
-     },
      "imprintBox": [
-      0.38,
-      0.38,
-      0.24,
-      0.34
+      0.39,
+      0.4,
+      0.22,
+      0.3
      ],
-     "_view": "_B_FR"
+     "_view": "_B_BACK"
     },
     {
      "name": "Navy",
@@ -3591,6 +3627,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85NY_A_AL-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3605,6 +3647,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85OR_A__1268.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3619,6 +3667,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85PBL_D_BACK-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3633,6 +3687,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85RD_TOP30.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3647,6 +3707,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85SL_TOP30.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     },
     {
@@ -3662,14 +3728,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-85WH_A_AL-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.4,
+      0.22,
+      0.3
+     ],
      "_view": "_B_BACK"
     }
    ],
    "_imprintBox": [
-    0.38,
-    0.38,
-    0.24,
-    0.34
+    0.39,
+    0.4,
+    0.22,
+    0.3
    ],
    "style": "1625-85-L",
    "_dwMatrix": {
@@ -3773,7 +3845,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6983WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6983WH_B_FR.jpg",
@@ -3900,7 +3972,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6983WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6983WH_B_FR.jpg",
@@ -4048,7 +4120,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1602-35WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1602-35WH_B_FR.jpg",
@@ -4211,7 +4283,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1602-35WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1602-35WH_B_FR.jpg",
@@ -4335,7 +4407,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6939WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6939WH_B_FR.jpg",
@@ -4441,7 +4513,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-6939WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6939WH_B_FR.jpg",
@@ -4539,7 +4611,7 @@
     },
     {
      "name": "Clear",
-     "hex": "#FFFFFE",
+     "hex": "#FFFFFF",
      "sku": "SM-6962CL",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-6962CL_B_RS.jpg",
@@ -4602,21 +4674,6 @@
    "_maxInk": 1,
    "colors": [
     {
-     "name": "Gray",
-     "hex": "#7C878E",
-     "sku": "1625-66GY",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66GY_D_FR_7122.jpg"
-     },
-     "imprintBox": [
-      0.34,
-      0.47,
-      0.3,
-      0.24
-     ],
-     "_view": "_B_FR"
-    },
-    {
      "name": "Brick Red",
      "hex": "#9a4643",
      "sku": "1625-66BKRD",
@@ -4626,6 +4683,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66BKRD_D_FR.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4638,6 +4701,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66SL_D_FR_7332.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4651,6 +4720,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66NY_A_AR-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4664,6 +4739,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66WH_D_Still.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4677,14 +4758,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66_BK_D_FR_GRP.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     }
    ],
    "_imprintBox": [
+    0.33,
+    0.35,
     0.34,
-    0.47,
-    0.3,
-    0.24
+    0.3
    ],
    "style": "1625-66",
    "_dwMatrix": {
@@ -4749,21 +4836,6 @@
    "_maxInk": 1,
    "colors": [
     {
-     "name": "Gray",
-     "hex": "#7C878E",
-     "sku": "1625-66GY",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66GY_D_FR_7122.jpg"
-     },
-     "imprintBox": [
-      0.34,
-      0.47,
-      0.3,
-      0.24
-     ],
-     "_view": "_B_FR"
-    },
-    {
      "name": "Brick Red",
      "hex": "#9a4643",
      "sku": "1625-66BKRD",
@@ -4773,6 +4845,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66BKRD_D_FR.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4785,6 +4863,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66SL_D_FR_7332.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4798,6 +4882,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66NY_A_AR-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4811,6 +4901,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66WH_D_Still.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     },
     {
@@ -4824,14 +4920,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1625-66_BK_D_FR_GRP.jpg"
       ]
      },
+     "imprintBox": [
+      0.33,
+      0.35,
+      0.34,
+      0.3
+     ],
      "_view": "_A_FR"
     }
    ],
    "_imprintBox": [
+    0.33,
+    0.35,
     0.34,
-    0.47,
-    0.3,
-    0.24
+    0.3
    ],
    "style": "1625-66-L",
    "_dwMatrix": {
@@ -4982,7 +5084,7 @@
     },
     {
      "name": "Frost",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1603-02FRST",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-02FRST_B_FR.jpg",
@@ -5261,7 +5363,7 @@
     },
     {
      "name": "Frost",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1603-02FRST",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-02FRST_B_FR.jpg",
@@ -5520,7 +5622,7 @@
     },
     {
      "name": "Frost",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1603-01FRST",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-01FRST_B_FR.jpg",
@@ -5693,7 +5795,7 @@
     },
     {
      "name": "Frost",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1603-01FRST",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-01FRST_B_FR.jpg",
@@ -5858,6 +5960,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GNMT_A_BACK.jpg"
       ]
      },
+     "imprintBox": [
+      0.42,
+      0.3,
+      0.4,
+      0.4
+     ],
      "_view": "_B_FR"
     },
     {
@@ -5873,6 +5981,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11CRM_A_BACK.jpg"
       ]
      },
+     "imprintBox": [
+      0.42,
+      0.3,
+      0.4,
+      0.4
+     ],
      "_view": "_B_FR"
     },
     {
@@ -5888,6 +6002,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11ASH_A_BACK.jpg"
       ]
      },
+     "imprintBox": [
+      0.42,
+      0.3,
+      0.4,
+      0.4
+     ],
      "_view": "_B_FR"
     },
     {
@@ -5901,6 +6021,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11HFRST_B_FR.jpg"
       ]
      },
+     "imprintBox": [
+      0.15,
+      0.55,
+      0.5,
+      0.25
+     ],
      "_view": "_B"
     }
    ],
@@ -6028,6 +6154,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11GNMT_A_BACK.jpg"
       ]
      },
+     "imprintBox": [
+      0.42,
+      0.3,
+      0.4,
+      0.4
+     ],
      "_view": "_B_FR"
     },
     {
@@ -6043,6 +6175,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11CRM_A_BACK.jpg"
       ]
      },
+     "imprintBox": [
+      0.42,
+      0.3,
+      0.4,
+      0.4
+     ],
      "_view": "_B_FR"
     },
     {
@@ -6058,6 +6196,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11ASH_A_BACK.jpg"
       ]
      },
+     "imprintBox": [
+      0.42,
+      0.3,
+      0.4,
+      0.4
+     ],
      "_view": "_B_FR"
     },
     {
@@ -6071,6 +6215,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1603-11HFRST_B_FR.jpg"
       ]
      },
+     "imprintBox": [
+      0.15,
+      0.55,
+      0.5,
+      0.25
+     ],
      "_view": "_B"
     }
    ],
@@ -6145,7 +6295,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1601-93WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-93WH_B_FR.jpg",
@@ -6217,6 +6367,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-93HBL_D_1.jpg"
       ]
      },
+     "imprintBox": [
+      0.37,
+      0.6,
+      0.24,
+      0.28
+     ],
      "_view": "_B"
     }
    ],
@@ -6290,7 +6446,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1601-93WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-93WH_B_FR.jpg",
@@ -6362,6 +6518,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-93HBL_D_1.jpg"
       ]
      },
+     "imprintBox": [
+      0.37,
+      0.6,
+      0.24,
+      0.28
+     ],
      "_view": "_B"
     }
    ],
@@ -6436,7 +6598,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1601-91WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-91WH_B_FR.jpg",
@@ -6486,6 +6648,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-91HBL_D_1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.47,
+      0.22,
+      0.3
+     ],
      "_view": "_B"
     }
    ],
@@ -6559,7 +6727,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1601-91WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-91WH_B_FR.jpg",
@@ -6609,6 +6777,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1601-91HBL_D_1.jpg"
       ]
      },
+     "imprintBox": [
+      0.39,
+      0.47,
+      0.22,
+      0.3
+     ],
      "_view": "_B"
     }
    ],
@@ -6705,7 +6879,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1627-37WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1627-37WH_B_FR.jpg",
@@ -6816,7 +6990,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1627-37WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1627-37WH_B_FR.jpg",
@@ -6926,7 +7100,7 @@
     },
     {
      "name": "Clear",
-     "hex": "#FFFFFE",
+     "hex": "#FFFFFF",
      "sku": "1627-88CL",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1627-88CL_B_FR.jpg",
@@ -7038,7 +7212,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-5359WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-5359WH_B_FR.jpg",
@@ -7547,24 +7721,6 @@
    "_drinkware": true,
    "_maxInk": 1,
    "colors": [
-    {
-     "name": "Black",
-     "hex": "#000000",
-     "sku": "2800-11BK",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/2800-11BK_D_FR-2.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/2800-11_BK_D_FR_GRP.jpg"
-      ]
-     },
-     "imprintBox": [
-      0.32,
-      0.18,
-      0.31,
-      0.46
-     ],
-     "_view": "_B_FR"
-    },
     {
      "name": "Navy",
      "hex": "#0C2340",
@@ -8298,7 +8454,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "0911-38WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0911-38WH_B_FR.jpg",
@@ -8840,7 +8996,7 @@
     },
     {
      "name": "White w/ Black Trim",
-     "hex": "#fefefc",
+     "hex": "#FFFFFF",
      "sku": "SM-5258WBK",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-5258WBK_B_FR.jpg",
@@ -8859,7 +9015,7 @@
     },
     {
      "name": "White w/ Blue Trim",
-     "hex": "#fefefb",
+     "hex": "#FFFFFF",
      "sku": "SM-5258WBL",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-5258WBL_B_FR.jpg",
@@ -8959,6 +9115,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101OR_D_FR_1473.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.12,
+      0.05,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -8971,6 +9133,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101SSI_D_FR_2185.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -8983,22 +9151,13 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101TE_D_FR_7340.jpg"
       ]
      },
-     "_view": "_A_FR"
-    },
-    {
-     "name": "Blue (Blue Ink)",
-     "hex": "#0000fe",
-     "sku": "SM-4101BL-BL",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101BL-BL_D_FR_2626.jpg"
-     },
      "imprintBox": [
-      0.64,
-      0.46,
-      0.17,
-      0.08
+      0.465,
+      0.12,
+      0.05,
+      0.25
      ],
-     "_view": "_B_FR"
+     "_view": "_A_FR"
     },
     {
      "name": "Silver Barrel w/ Red Grip",
@@ -9010,6 +9169,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101SIRE_D_FR_1045.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9022,6 +9187,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101BL_D_FR_1949.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.12,
+      0.05,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -9034,25 +9205,13 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101GR_D_FR_2744.jpg"
       ]
      },
-     "_view": "_A_FR"
-    },
-    {
-     "name": "Black",
-     "hex": "#000000",
-     "sku": "SM-4101BK",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101BK_D_FR_7310.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101_BK_D_FR_GRP.jpg"
-      ]
-     },
      "imprintBox": [
-      0.64,
-      0.46,
-      0.17,
-      0.08
+      0.465,
+      0.12,
+      0.05,
+      0.25
      ],
-     "_view": "_B_FR"
+     "_view": "_A_FR"
     },
     {
      "name": "Red",
@@ -9064,6 +9223,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101RE_D_FR_6036.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.12,
+      0.05,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -9076,6 +9241,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101PK_D_FR_2800.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.12,
+      0.05,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -9088,6 +9259,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101SIOR_D_FR_1405.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9100,6 +9277,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101SIBK_D_FR_8999.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.12,
+      0.05,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -9112,6 +9295,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101SIBL_D_FR_6224.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9124,6 +9313,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101PU_D_FR_5214.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9136,14 +9331,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4101SIGR_D_FR_3989.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     }
    ],
    "_imprintBox": [
-    0.64,
-    0.46,
-    0.17,
-    0.08
+    0.465,
+    0.12,
+    0.05,
+    0.25
    ],
    "style": "SM-4101",
    "_dwMatrix": {
@@ -9202,6 +9403,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640SBL_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9215,6 +9422,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640WRE_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9228,6 +9441,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640WBL_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9241,6 +9460,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640WGR_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9254,6 +9479,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640WOR_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9267,6 +9498,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640FBL_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9280,6 +9517,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640FRE_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9293,6 +9536,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640SI_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9306,6 +9555,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640SIBK_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.2,
+      0.06,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -9319,6 +9574,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640WBK_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9332,6 +9593,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640SBK_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.465,
+      0.25,
+      0.06,
+      0.25
+     ],
      "_view": "_A_"
     },
     {
@@ -9345,8 +9612,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/KK-640SIBL_A_LS-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.2,
+      0.06,
+      0.25
+     ],
      "_view": "_A_FR"
     }
+   ],
+   "_imprintBox": [
+    0.465,
+    0.25,
+    0.06,
+    0.25
    ],
    "style": "KK-640",
    "_dwMatrix": {
@@ -9503,7 +9782,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "6003-36WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/6003-36WH_B_FR.jpg",
@@ -9586,6 +9865,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4801SIRE_A_FR-1.jpg"
       ]
      },
+     "imprintBox": [
+      0.2,
+      0.47,
+      0.25,
+      0.06
+     ],
      "_view": "_B_FR_BACK"
     },
     {
@@ -9599,6 +9884,12 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4801SIBK_A_Back.jpg"
       ]
      },
+     "imprintBox": [
+      0.47,
+      0.12,
+      0.06,
+      0.25
+     ],
      "_view": "_A_FR"
     },
     {
@@ -9613,8 +9904,20 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-4801SIBL_A__9829.jpg"
       ]
      },
+     "imprintBox": [
+      0.2,
+      0.47,
+      0.25,
+      0.06
+     ],
      "_view": "_A_BACK"
     }
+   ],
+   "_imprintBox": [
+    0.2,
+    0.47,
+    0.25,
+    0.06
    ],
    "style": "SM-4801",
    "_dwMatrix": {
@@ -10078,7 +10381,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1066-78WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1066-78WH_B_FR.jpg",
@@ -10229,7 +10532,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "1066-78WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/1066-78WH_B_FR.jpg",
@@ -12367,7 +12670,7 @@
     },
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-2944WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2944WH_B_FR-1.jpg",
@@ -12580,7 +12883,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-2951WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2951WH_B_FR.jpg",
@@ -12734,7 +13037,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "7143-79WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/7143-79WH_B_FR-1.jpg",
@@ -13487,251 +13790,6 @@
    ]
   },
   {
-   "name": "Small Carabiner Key Ring",
-   "brand": "Bullet",
-   "category": "Keychains",
-   "subcategory": "",
-   "description": "The Classic Carabiner Key Ring is a 6mm carabiner that includes a metal split key ring. Not intended for climbing. Individually polybagged Individually polybagged Individually polybagged Individually polybagged",
-   "desc": "The Classic Carabiner Key Ring is a 6mm carabiner that includes a metal split key ring. Not intended for climbing. Individually polybagged Individually polybagged Individually polybagged Individually polybagged",
-   "features": [
-    "{070601} KEYCHAINS",
-    "6B1DC3397E717B82FDA4DF1B3A6814DD",
-    "6FE1497F7FE9543D1C31822242D38556"
-   ],
-   "available_sizes": [
-    "Qty"
-   ],
-   "size_upcharges": {},
-   "discontinued": false,
-   "source": "pcna",
-   "_pcna": true,
-   "_pcnaId": "SM-2348",
-   "_drinkware": true,
-   "_maxInk": 1,
-   "colors": [
-    {
-     "name": "Red",
-     "hex": "#ED1B38",
-     "sku": "SM-2348RE",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348RE_D_FR_4187.jpg"
-     },
-     "imprintBox": [
-      0.27,
-      0.24,
-      0.1,
-      0.36
-     ],
-     "_view": "_B_FR"
-    },
-    {
-     "name": "Black",
-     "hex": "#000000",
-     "sku": "SM-2348BK",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348BK_D_FR_8314.jpg"
-     },
-     "imprintBox": [
-      0.27,
-      0.24,
-      0.1,
-      0.36
-     ],
-     "_view": "_B_FR"
-    },
-    {
-     "name": "Blue",
-     "hex": "#0000FF",
-     "sku": "SM-2348BL",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348BL_D__9159.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348_BL_D_FR_GRP.jpg",
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348BL_D_FR_5340.jpg"
-      ]
-     },
-     "_view": "_B_"
-    },
-    {
-     "name": "Green",
-     "hex": "#007A53",
-     "sku": "SM-2348GR",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348GR_D_FR_9098.jpg"
-     },
-     "imprintBox": [
-      0.27,
-      0.24,
-      0.1,
-      0.36
-     ],
-     "_view": "_B_FR"
-    }
-   ],
-   "_imprintBox": [
-    0.27,
-    0.24,
-    0.1,
-    0.36
-   ],
-   "style": "SM-2348",
-   "_dwMatrix": {
-    "300": {
-     "1": 2.45
-    },
-    "1000": {
-     "1": 1.75
-    },
-    "1500": {
-     "1": 1.59
-    },
-    "2250": {
-     "1": 1.4
-    },
-    "3000": {
-     "1": 1.27
-    }
-   },
-   "_decoLabel": "1-color print",
-   "_decoMethod": "print",
-   "_imprint": "1.25\" x 0.13\", Point Left, Clip Bottom - Centered On Body",
-   "_decoOptions": [
-    {
-     "style": "SM-2348",
-     "label": "1-color print",
-     "method": "print"
-    },
-    {
-     "style": "SM-2348-L",
-     "label": "Laser engraved",
-     "method": "laser"
-    }
-   ]
-  },
-  {
-   "name": "Small Carabiner Key Ring",
-   "brand": "Bullet",
-   "category": "Keychains",
-   "subcategory": "",
-   "description": "The Classic Carabiner Key Ring is a 6mm carabiner that includes a metal split key ring. Not intended for climbing. Individually polybagged Individually polybagged Individually polybagged Individually polybagged",
-   "desc": "The Classic Carabiner Key Ring is a 6mm carabiner that includes a metal split key ring. Not intended for climbing. Individually polybagged Individually polybagged Individually polybagged Individually polybagged",
-   "features": [
-    "{070601} KEYCHAINS",
-    "6B1DC3397E717B82FDA4DF1B3A6814DD",
-    "6FE1497F7FE9543D1C31822242D38556"
-   ],
-   "available_sizes": [
-    "Qty"
-   ],
-   "size_upcharges": {},
-   "discontinued": false,
-   "source": "pcna",
-   "_pcna": true,
-   "_pcnaId": "SM-2348",
-   "_drinkware": true,
-   "_maxInk": 1,
-   "colors": [
-    {
-     "name": "Red",
-     "hex": "#ED1B38",
-     "sku": "SM-2348RE",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348RE_D_FR_4187.jpg"
-     },
-     "imprintBox": [
-      0.27,
-      0.24,
-      0.1,
-      0.36
-     ],
-     "_view": "_B_FR"
-    },
-    {
-     "name": "Black",
-     "hex": "#000000",
-     "sku": "SM-2348BK",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348BK_D_FR_8314.jpg"
-     },
-     "imprintBox": [
-      0.27,
-      0.24,
-      0.1,
-      0.36
-     ],
-     "_view": "_B_FR"
-    },
-    {
-     "name": "Blue",
-     "hex": "#0000FF",
-     "sku": "SM-2348BL",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348BL_D__9159.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348_BL_D_FR_GRP.jpg",
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348BL_D_FR_5340.jpg"
-      ]
-     },
-     "_view": "_B_"
-    },
-    {
-     "name": "Green",
-     "hex": "#007A53",
-     "sku": "SM-2348GR",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2348GR_D_FR_9098.jpg"
-     },
-     "imprintBox": [
-      0.27,
-      0.24,
-      0.1,
-      0.36
-     ],
-     "_view": "_B_FR"
-    }
-   ],
-   "_imprintBox": [
-    0.27,
-    0.24,
-    0.1,
-    0.36
-   ],
-   "style": "SM-2348-L",
-   "_dwMatrix": {
-    "300": {
-     "1": 2.45
-    },
-    "1000": {
-     "1": 1.75
-    },
-    "1500": {
-     "1": 1.59
-    },
-    "2250": {
-     "1": 1.4
-    },
-    "3000": {
-     "1": 1.27
-    }
-   },
-   "_decoLabel": "Laser engraved",
-   "_decoMethod": "laser",
-   "_imprint": "1.25\" x 0.13\", Point Left, Clip Bottom - Centered On Body",
-   "_hidden": true,
-   "_decoOptions": [
-    {
-     "style": "SM-2348",
-     "label": "1-color print",
-     "method": "print"
-    },
-    {
-     "style": "SM-2348-L",
-     "label": "Laser engraved",
-     "method": "laser"
-    }
-   ]
-  },
-  {
    "name": "Rectangular Soft Key Tag",
    "brand": "Bullet",
    "category": "Keychains",
@@ -13800,189 +13858,6 @@
    "_decoLabel": "1-color print",
    "_decoMethod": "print",
    "_imprint": "1.36\" x 1.19\", Back - Centered On Body (Ring Left)"
-  },
-  {
-   "name": "Large Carabiner Key Ring",
-   "brand": "Bullet",
-   "category": "Keychains",
-   "subcategory": "",
-   "description": "The Large Carabiner Key Ring is an 8mm carabiner with a woven nylon strap and a metal split key ring. Laser engraving is recommended. Not intended for climbing. Individually polybagged Individually polybagged",
-   "desc": "The Large Carabiner Key Ring is an 8mm carabiner with a woven nylon strap and a metal split key ring. Laser engraving is recommended. Not intended for climbing. Individually polybagged Individually polybagged",
-   "features": [
-    "{070601} KEYCHAINS",
-    "AC56A82E2AB73791183AD3CDA9143D32",
-    "374C90E2A800E4D96073777C4BE668BA"
-   ],
-   "available_sizes": [
-    "Qty"
-   ],
-   "size_upcharges": {},
-   "discontinued": false,
-   "source": "pcna",
-   "_pcna": true,
-   "_pcnaId": "SM-2373",
-   "_drinkware": true,
-   "_maxInk": 1,
-   "colors": [
-    {
-     "name": "Red",
-     "hex": "#ED1B38",
-     "sku": "SM-2373RE",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373RE_D__3996.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373RE_D_FR_1870.jpg"
-      ]
-     },
-     "imprintBox": [
-      0.385,
-      0.5,
-      0.07,
-      0.29
-     ],
-     "_view": "_B_"
-    },
-    {
-     "name": "Blue",
-     "hex": "#0000FF",
-     "sku": "SM-2373BL",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373BL_D_FR_4657.jpg"
-     },
-     "_view": "_B_FR"
-    }
-   ],
-   "_imprintBox": [
-    0.385,
-    0.5,
-    0.07,
-    0.29
-   ],
-   "style": "SM-2373",
-   "_dwMatrix": {
-    "250": {
-     "1": 2.72
-    },
-    "500": {
-     "1": 2.15
-    },
-    "1000": {
-     "1": 1.91
-    },
-    "2500": {
-     "1": 1.75
-    },
-    "5000": {
-     "1": 1.53
-    }
-   },
-   "_decoLabel": "1-color print",
-   "_decoMethod": "print",
-   "_imprint": "2\" x 0.22\", Point Left, Clip Top - Centered On Body",
-   "_decoOptions": [
-    {
-     "style": "SM-2373",
-     "label": "1-color print",
-     "method": "print"
-    },
-    {
-     "style": "SM-2373-L",
-     "label": "Laser engraved",
-     "method": "laser"
-    }
-   ]
-  },
-  {
-   "name": "Large Carabiner Key Ring",
-   "brand": "Bullet",
-   "category": "Keychains",
-   "subcategory": "",
-   "description": "The Large Carabiner Key Ring is an 8mm carabiner with a woven nylon strap and a metal split key ring. Laser engraving is recommended. Not intended for climbing. Individually polybagged Individually polybagged",
-   "desc": "The Large Carabiner Key Ring is an 8mm carabiner with a woven nylon strap and a metal split key ring. Laser engraving is recommended. Not intended for climbing. Individually polybagged Individually polybagged",
-   "features": [
-    "{070601} KEYCHAINS",
-    "AC56A82E2AB73791183AD3CDA9143D32",
-    "374C90E2A800E4D96073777C4BE668BA"
-   ],
-   "available_sizes": [
-    "Qty"
-   ],
-   "size_upcharges": {},
-   "discontinued": false,
-   "source": "pcna",
-   "_pcna": true,
-   "_pcnaId": "SM-2373",
-   "_drinkware": true,
-   "_maxInk": 1,
-   "colors": [
-    {
-     "name": "Red",
-     "hex": "#ED1B38",
-     "sku": "SM-2373RE",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373RE_D__3996.jpg",
-      "gallery": [
-       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373RE_D_FR_1870.jpg"
-      ]
-     },
-     "imprintBox": [
-      0.385,
-      0.5,
-      0.07,
-      0.29
-     ],
-     "_view": "_B_"
-    },
-    {
-     "name": "Blue",
-     "hex": "#0000FF",
-     "sku": "SM-2373BL",
-     "images": {
-      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-2373BL_D_FR_4657.jpg"
-     },
-     "_view": "_B_FR"
-    }
-   ],
-   "_imprintBox": [
-    0.385,
-    0.5,
-    0.07,
-    0.29
-   ],
-   "style": "SM-2373-L",
-   "_dwMatrix": {
-    "250": {
-     "1": 2.72
-    },
-    "500": {
-     "1": 2.15
-    },
-    "1000": {
-     "1": 1.91
-    },
-    "2500": {
-     "1": 1.75
-    },
-    "5000": {
-     "1": 1.53
-    }
-   },
-   "_decoLabel": "Laser engraved",
-   "_decoMethod": "laser",
-   "_imprint": "1.88\" x 0.19\", Point Left, Clip Top - Centered On Body",
-   "_hidden": true,
-   "_decoOptions": [
-    {
-     "style": "SM-2373",
-     "label": "1-color print",
-     "method": "print"
-    },
-    {
-     "style": "SM-2373-L",
-     "label": "Laser engraved",
-     "method": "laser"
-    }
-   ]
   },
   {
    "name": "Rectangular Key-Light",
@@ -14344,7 +14219,7 @@
    "colors": [
     {
      "name": "White",
-     "hex": "#ffffff",
+     "hex": "#FFFFFF",
      "sku": "SM-9568WH",
      "images": {
       "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/SM-9568WH_B_FR.jpg",
