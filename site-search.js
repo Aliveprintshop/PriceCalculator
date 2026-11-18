@@ -61,8 +61,24 @@
   '.aps-sb-row .aps-sb{margin:0;max-width:none;flex:none;}'+
   '@media(max-width:1024px){.aps-sb-desk{display:none!important;}.aps-sb-row{display:block;}'+
     'header.aps-sb-host{flex-wrap:wrap!important;}}'+
-  '@media(min-width:1025px){.aps-sb-row{display:none!important;}}'+
-  '@media(min-width:1025px) and (max-width:1280px){.aps-sb-desk{margin:0 10px;flex-basis:220px;}}';
+  '@media(min-width:1321px){.aps-sb-row{display:none!important;}}'+
+  '.aps-sb .aps-sb-x{margin:0!important;padding:0!important;width:30px!important;height:30px!important;min-height:0!important;'+
+    'line-height:28px!important;background:transparent!important;border:0!important;box-shadow:none!important;color:#6b7280!important;font-size:20px!important;}'+
+  '.aps-sb-desk .aps-sb-dd{min-width:440px;}'+
+  /* Desktop header layout with the bar in it: the right-hand buttons take only
+     the room they need, the menu never shrinks (it would overlap the cart), and
+     the bar takes what is left. The header's content column is 1440px here
+     (1312px + room for the bar). */
+  '@media(min-width:1321px){'+
+    'header.aps-sb-host.elementor-element-92c3014{padding-left:max(32px,calc((100% - 1440px) / 2))!important;padding-right:max(32px,calc((100% - 1440px) / 2))!important;}'+
+    'header.aps-sb-host .elementor-element-08286aa{width:auto!important;flex:0 0 auto!important;}'+
+    'header.aps-sb-host .elementor-element-645e597{flex:1 1 auto!important;width:auto!important;min-width:0!important;gap:24px!important;}'+
+    'header.aps-sb-host .elementor-widget-nav-menu{flex:0 0 auto!important;}'+
+    '.aps-sb-desk{flex:1 1 300px!important;min-width:200px!important;max-width:560px!important;margin:0!important;}}'+
+  /* Narrow desktops (no room in the row): use the full-width bar under the header. */
+  '@media(min-width:1025px) and (max-width:1320px){.aps-sb-desk{display:none!important;}'+
+    '.aps-sb-row{display:block!important;}.aps-sb-row .aps-sb{max-width:640px;margin:0 auto;}'+
+    'header.aps-sb-host{flex-wrap:wrap!important;}}';
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
   /* ---------------- search engine (copy of index.html) ---------------- */
@@ -244,7 +260,7 @@
       if(logo&&logo.parentNode){
         var d=build('aps-sb-desk');
         logo.parentNode.insertBefore(d,logo.nextSibling);
-        var row=logo.parentNode;row.style.flexWrap='nowrap';row.style.flexGrow='1';row.style.minWidth='0';
+        logo.parentNode.style.flexWrap='nowrap';
       }
       /* Phone/tablet: a full-width row under the header. */
       var r=document.createElement('div');r.className='aps-sb-row';r.appendChild(build('aps-sb-mob'));
