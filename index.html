@@ -2443,6 +2443,17 @@ function loadMore(){
   renderGrid();
 }
 function toggleBrandsExpanded(){_brandsExpanded=!_brandsExpanded;renderBrandList();}
+/* Header search bar (site-search.js on aliveprintshop.com) sends shoppers to
+   /products/?q=<words>#search-<words-with-dashes>; the embed passes the hash in
+   as ?cat=. Returns the search words, or null for any other slug. */
+function searchFromSlug(slug){
+  var m=/^search-(.+)$/.exec(String(slug||'').toLowerCase().trim());
+  return m?m[1].replace(/-+/g,' ').trim():null;
+}
+function applySearchFromSlug(q){
+  _search=q;_industry=null;_gbb=null;_dealsMode=false;_cats.clear();_brands.clear();_colors.clear();
+  var sb=document.getElementById('page-search');if(sb)sb.value=q;
+}
 function onPageSearch(){var s=document.getElementById('page-search');_search=s?s.value:'';if(_search){_industry=null;_gbb=null;_dealsMode=false;}_page=1;_shown=0;renderCategoryList();renderBrandList();renderColorList();renderIndustryList();renderGbbList();renderGrid();}
 (function(){ try{ if(window.innerWidth<=820){ var ps=document.getElementById('page-search'); if(ps) ps.placeholder='Search products or brands'; } }catch(e){} })();
 function toggleSidebar(){var sb=document.getElementById('sidebar');if(sb)sb.classList.toggle('open');}
@@ -2547,10 +2558,13 @@ async function loadProducts(){
           var tyb=document.getElementById('thankyou-banner');
           if(tyb)tyb.style.display='flex';
         }
+        // Header search on aliveprintshop.com links here as /products/?q=..#search-<words>.
+        var _sq=searchFromSlug(rawSlug);
         // Resolve in priority order: deals > category > industry > brand.
         // The hidden "Buy-It-Now Deals" view is reached only by the deals slug.
-        var label=slugToBucketLabel(rawSlug);
-        if(rawSlug===DEALS_SLUG){_dealsMode=true;}
+        var label=_sq?null:slugToBucketLabel(rawSlug);
+        if(_sq){applySearchFromSlug(_sq);}
+        else if(rawSlug===DEALS_SLUG){_dealsMode=true;}
         else if(label){_cats.clear();_cats.add(label);}
         else{
           var indLabel=slugToIndustryLabel(rawSlug);
@@ -2601,7 +2615,10 @@ window.addEventListener('message',function(e){
   if(!d||d.type!=='alive-route-set')return;
   var slug=(d.slug||'').toLowerCase().trim();
   _industry=null;_gbb=null;_dealsMode=false;_cats.clear();_brands.clear();_colors.clear();
-  if(slug){
+  var _sq=searchFromSlug(slug);
+  if(_sq){applySearchFromSlug(_sq);}
+  else{var _ps=document.getElementById('page-search');if(_search&&_ps){_search='';_ps.value='';}}
+  if(slug&&!_sq){
     if(slug===DEALS_SLUG){_dealsMode=true;}
     else{
       var label=slugToBucketLabel(slug);
