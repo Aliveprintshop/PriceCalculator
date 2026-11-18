@@ -1,0 +1,41 @@
+name: Lane Seven connection test
+
+# Manual only. Does NOT deploy the site and does NOT touch sync.yml / products.json.
+on:
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: "Lane Seven style IDs to test (comma-separated; blank = first 3)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test Lane Seven PromoStandards login + sample data
+        env:
+          LANE7_ID: ${{ secrets.LANE7_ID }}
+          LANE7_PASSWORD: ${{ secrets.LANE7_PASSWORD }}
+          LANE7_SAMPLES: ${{ github.event.inputs.samples }}
+          LANE7_OUT: lane7-out
+        run: python lane7_test.py
+
+      - name: Save raw XML (deleted after 1 day)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lane7-raw
+          path: lane7-out/
+          retention-days: 1
+          if-no-files-found: ignore
