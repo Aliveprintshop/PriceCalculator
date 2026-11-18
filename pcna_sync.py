@@ -605,13 +605,18 @@ def build(pid, group):
             main = blank
             extras = extras[:5]
         elif main and is_decorated(main):
-            log.append(f"{pid} {cname}: no blank photo, main keeps a sample logo")
+            # Austin 2026-11-18: no blank photo -> don't show this color.
+            log.append(f"{pid} {cname}: no blank photo, color hidden")
+            continue
         images = {"front_flat": main or info["image"]}
         if back:
             images["back_flat"] = back
         if extras:
             images["gallery"] = extras
-        col = {"name": cname, "hex": swatch_hex(cname, part["hex"]), "sku": part["partId"],
+        hx = swatch_hex(cname, part["hex"]) or ""
+        if re.fullmatch(r"#?(f[8-9a-f]){3}", hx.strip(), re.I):
+            hx = "#FFFFFF"          # near-white: the page only outlines pure white swatches
+        col = {"name": cname, "hex": hx, "sku": part["partId"],
                "images": images}
         vk = view_key(images["front_flat"]) if images["front_flat"] else ""
         vb = (cfg.get("views") or {}).get(vk)
@@ -622,6 +627,8 @@ def build(pid, group):
         col["_view"] = vk
         colors.append(col)
     if not colors:
+        if any(views.get(pt["partId"]) for pt in info["parts"]):
+            return None, log + [f"{pid}: no color has a blank photo, product hidden"]
         colors = [{"name": "Standard", "hex": "#cccccc", "sku": pid, "images": {"front_flat": info["image"]}}]
 
     entries = []
