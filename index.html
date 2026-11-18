@@ -758,7 +758,17 @@ function firstBatch(){
 var LOAD_STEP=12;     /* each "Load more" tap adds this many */
 var _shown=0;         /* 0 = not yet sized; set on the first render of a view */
 
-var TOP_PICKS=['18500','NL6210','799802','112','5000','NKDH7709','TM1MU411'];
+// Default /products/ grid (Austin, 2026-11-18): 20 top picks, mixed so every
+// desktop row of 4 and every phone row of 2 shows different categories.
+// Quality-first (Austin: no Gildan 5000 / 18500 basics up top). Real Printavo
+// best sellers 1717, 64000, 112, DM130 stay; Lane Seven and PCNA promo mixed in.
+var TOP_PICKS=[
+  'BC3001','CTK121','799802','112',       // tee, hoodie, polo, cap
+  '1717','DT7800','NKDH7709','1603-15',   // tee, hoodie, backpack, tumbler
+  '64000','LS14001','TM1MU411','CT105298',// tee, hoodie, polo, cap
+  'NL6210','18000','K540','CT102208',     // tee, crewneck, polo, jacket
+  'DM130','J317','BG100','1624-74'        // tee, soft shell, backpack, bottle
+];
 
 // =====================================================================
 // SALE badge — styles running a special price. Shows a red "SALE" pill on the
