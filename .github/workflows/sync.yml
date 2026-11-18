@@ -62,6 +62,14 @@ jobs:
             python merge-pcna.py products.json pcna-products.json || echo "::warning::PCNA merge failed - site publishes without PCNA"
           fi
 
+      # Lane Seven Apparel (weekly lane7-sync.yml writes lane7-products.json in the
+      # SanMar shape). Same merge script; a failure must not block the publish.
+      - name: Merge Lane Seven apparel
+        run: |
+          if [ -f merge-pcna.py ] && [ -f lane7-products.json ]; then
+            python merge-pcna.py products.json lane7-products.json || echo "::warning::Lane Seven merge failed - site publishes without Lane Seven"
+          fi
+
       - name: Show summary
         run: |
           echo "products.json size: $(wc -c < products.json) bytes"

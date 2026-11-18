@@ -1,0 +1,61 @@
+name: Lane Seven apparel sync
+
+# Weekly (+ manual): builds lane7-products.json from Lane Seven's PromoStandards
+# API in the same shape as SanMar products, commits it, then starts the nightly
+# SanMar sync, which merges it into products.json and publishes the site.
+on:
+  schedule:
+    - cron: '23 14 * * 3'   # Wednesdays 14:23 UTC (6:23am PST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: lane7-sync
+  cancel-in-progress: false
+
+jobs:
+  lane7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build lane7-products.json
+        env:
+          LANE7_ID: ${{ secrets.LANE7_ID }}
+          LANE7_PASSWORD: ${{ secrets.LANE7_PASSWORD }}
+        run: python lane7_sync.py
+
+      - name: Commit lane7-products.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B main
+            git reset origin/main
+            git add lane7-products.json
+            if git diff --staged --quiet; then
+              echo "No changes to lane7-products.json"
+              git checkout -- .
+              break
+            fi
+            git commit -m "chore: Lane Seven sync $(date -u +%Y-%m-%d)"
+            if git push origin main; then git checkout -- .; break; fi
+            echo "Push rejected, retrying ($attempt/3)"; sleep 5
+          done
+
+      # Pushes made with the workflow token don't start other workflows, so
+      # start the nightly sync directly: it merges Lane Seven into products.json
+      # and publishes the site.
+      - name: Publish (run the catalog sync)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run sync.yml --ref main
