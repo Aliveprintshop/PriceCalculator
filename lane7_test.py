@@ -45,8 +45,8 @@ WSDL = {
     "inventory": BASE + "/wsdl/inventory2.0.0RC4/InventoryService.wsdl",
 }
 
-NS_PD = ('xmlns:ns="http://www.promostandards.org/WSDL/ProductDataService/1.0.0/" '
-         'xmlns:shar="http://www.promostandards.org/WSDL/ProductDataService/1.0.0/SharedObjects/"')
+NS_PD = ('xmlns:ns="http://www.promostandards.org/WSDL/ProductDataService/2.0.0/" '
+         'xmlns:shar="http://www.promostandards.org/WSDL/ProductDataService/2.0.0/SharedObjects/"')
 NS_PPC = ('xmlns:ns="http://www.promostandards.org/WSDL/PricingAndConfiguration/1.0.0/" '
           'xmlns:shar="http://www.promostandards.org/WSDL/PricingAndConfiguration/1.0.0/SharedObjects/"')
 NS_MED = ('xmlns:ns="http://www.promostandards.org/WSDL/MediaService/1.0.0/" '
@@ -72,7 +72,7 @@ def creds():
 
 def req_sellable():
     return "getProductSellable", envelope(NS_PD, "GetProductSellableRequest",
-        "<shar:wsVersion>1.0.0</shar:wsVersion>" + creds() +
+        "<shar:wsVersion>2.0.0</shar:wsVersion>" + creds() +
         "<shar:localizationCountry>US</shar:localizationCountry>"
         "<shar:localizationLanguage>en</shar:localizationLanguage>"
         "<shar:isSellable>true</shar:isSellable>")
@@ -80,7 +80,7 @@ def req_sellable():
 
 def req_product(pid):
     return "getProduct", envelope(NS_PD, "GetProductRequest",
-        "<shar:wsVersion>1.0.0</shar:wsVersion>" + creds() +
+        "<shar:wsVersion>2.0.0</shar:wsVersion>" + creds() +
         "<shar:localizationCountry>US</shar:localizationCountry>"
         "<shar:localizationLanguage>en</shar:localizationLanguage>"
         f"<shar:productId>{esc(pid)}</shar:productId>")
