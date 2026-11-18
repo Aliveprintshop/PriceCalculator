@@ -27,6 +27,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install photo tools
+        run: pip install --quiet pillow numpy scipy
+
       - name: Build lane7-products.json
         env:
           LANE7_ID: ${{ secrets.LANE7_ID }}
@@ -42,8 +45,9 @@ jobs:
             git checkout -B main
             git reset origin/main
             git add lane7-products.json
+            if [ -d media/lane7 ]; then git add -A media/lane7; fi
             if git diff --staged --quiet; then
-              echo "No changes to lane7-products.json"
+              echo "No changes to lane7-products.json or photos"
               git checkout -- .
               break
             fi
