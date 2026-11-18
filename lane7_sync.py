@@ -21,6 +21,11 @@ L7_ID = os.environ.get("LANE7_ID", "").strip()
 L7_PW = os.environ.get("LANE7_PASSWORD", "").strip()
 OUT = os.environ.get("LANE7_OUT_FILE", "lane7-products.json")
 WORKERS = 6
+# Austin 2026-11-18: Lane Seven is sometimes bought through another distributor
+# at a higher price, so every Lane Seven blank is priced 30% higher than the
+# API price. Applied to case_price and the 2XL+ upcharges; the site then adds
+# its usual x1.5 and decoration on top (so the blank shows at API x 1.3 x 1.5).
+PRICE_UPLIFT = 1.30
 
 BASE = "https://promostandards.lanesevenapparel.com"
 URL = {
@@ -154,6 +159,10 @@ def get_media(pid):
 def category_for(cat, name):
     """Lane Seven category / product name -> the site's catalog categories."""
     s = f"{cat} {name}".lower()
+    if re.search(r"\bwom[ae]n'?s?\b", s):
+        return "Women's"
+    if "polo collar" in s:          # a crewneck sweatshirt with a polo collar
+        return "Sweatshirts/Fleece"
     if "youth" in s:
         return "Youth"
     if any(k in s for k in ("jogger", "pant", "short", "sweatpant")):
@@ -178,10 +187,17 @@ def size_key(s):
     return (SIZE_ORDER.index(s) if s in SIZE_ORDER else 99, s)
 
 
-VIEW = re.compile(r"^([A-Z]+)(\d)(front|side|back|frontw|sidew|backw|flat|flat2)_", re.I)
-VIEW_SLOT = {"flat": "front_flat", "flat2": "back_flat", "front": "front_model",
-             "back": "back_model", "side": "side_model",
-             "frontw": "front_model_w", "backw": "back_model_w", "sidew": "side_model_w"}
+VIEW = re.compile(r"^([A-Z]+)(\d+)([a-z][a-z0-9]*)_", re.I)
+MODEL_SLOT = {"front": "front_model", "back": "back_model", "side": "side_model",
+              "frontw": "front_model_w", "backw": "back_model_w", "sidew": "side_model_w"}
+
+
+def view_slot(view):
+    """Lane Seven view word -> our slot. Flats are the blank, no-model shots."""
+    v = view.lower()
+    if "flat" in v:
+        return "back_flat" if re.search(r"flat\d|back|bk", v) else "front_flat"
+    return MODEL_SLOT.get(v, "other")
 
 
 def media_by_code(root, style):
@@ -201,8 +217,8 @@ def media_by_code(root, style):
         if not mv:
             continue
         code, view = mv.group(1).upper(), mv.group(3).lower()
-        slot = VIEW_SLOT.get(view)
-        out.setdefault(code, {}).setdefault(slot, url)
+        out.setdefault(code, {}).setdefault(view_slot(view), url)
+        out[code].setdefault("_views", set()).add(view)
     return out
 
 
@@ -230,23 +246,29 @@ def build(pid):
         return None, [f"{pid}: no open (non-closeout) parts"]
 
     fobs = [direct(f, "fobId") for f in kids(parse(get_fob(pid)), "FobPoint")]
-    fob = "CADC" if "CADC" in fobs else (fobs[0] if fobs else "CADC")
+    # Lane Seven's own California warehouse first, then any other FOB that prices it.
+    order = (["CADC"] if "CADC" in fobs else []) + [f for f in fobs if f != "CADC"][:6] or ["CADC"]
     prices = {}
-    for p in kids(parse(get_price(pid, fob)), "Part"):
-        part = direct(p, "partId")
-        rows = []
-        for pp in [e for e in p.iter() if local(e.tag) == "PartPrice"]:
-            try:
-                rows.append((int(float(tx(pp, "minQuantity") or 1)), float(tx(pp, "price"))))
-            except ValueError:
-                pass
-        if part and rows:
-            prices[part] = min(rows)[1]          # one break (qty 1) at Lane Seven
+    for fob in order:
+        for p in kids(parse(get_price(pid, fob)), "Part"):
+            part = direct(p, "partId")
+            rows = []
+            for pp in [e for e in p.iter() if local(e.tag) == "PartPrice"]:
+                try:
+                    rows.append((int(float(tx(pp, "minQuantity") or 1)), float(tx(pp, "price"))))
+                except ValueError:
+                    pass
+            if part and rows:
+                prices[part] = round(min(rows)[1] * PRICE_UPLIFT, 2)   # one break (qty 1)
+        if prices:
+            if fob != "CADC":
+                log.append(f"{pid}: priced from FOB {fob}")
+            break
     if not prices:
         g = next(iter(kids(prod, "ProductPrice")), None)
         try:
             base = float(tx(g, "price"))
-            prices = {k: base for k in parts}
+            prices = {k: round(base * PRICE_UPLIFT, 2) for k in parts}
             log.append(f"{pid}: pricing service empty, used the product's base price")
         except (TypeError, ValueError):
             return None, [f"{pid}: no price"]
@@ -277,17 +299,23 @@ def build(pid):
         seen.add(cname)
         code = re.sub(r"\d+$", "", part[len(pid):]).upper() if part.upper().startswith(pid.upper()) else ""
         img = media.get(code, {})
-        front = img.get("front_flat") or img.get("front_model")
+        # Austin 2026-11-18: the Front and Back photos must be the blank flat
+        # garment (no model). Model shots go in the photo row after them.
+        front = img.get("front_flat")
         if not front:
-            log.append(f"{pid} {cname}: no photo, color hidden")
+            log.append(f"{pid} {cname}: no blank front photo, color hidden "
+                       f"(views: {', '.join(sorted(img.get('_views', []))) or 'none'})")
             continue
+        if not img.get("back_flat"):
+            log.append(f"{pid} {cname}: no blank back photo "
+                       f"(views: {', '.join(sorted(img.get('_views', [])))})")
         hx = info["hex"].lstrip("#")
         colors.append({
             "name": cname, "code": code or cname,
             "hex": ("#" + hx.upper()) if re.fullmatch(r"[0-9A-Fa-f]{6}", hx) else "#CCCCCC",
-            "images": {"front_model": img.get("front_model"), "back_model": img.get("back_model"),
-                       "front_flat": front, "back_flat": img.get("back_flat"),
-                       "side_model": img.get("side_model")},
+            "images": {"front_flat": front, "back_flat": img.get("back_flat"),
+                       "front_model": img.get("front_model"), "back_model": None, "side_model": None,
+                       "gallery": [u for u in (img.get("back_model"), img.get("side_model")) if u]},
         })
     if not colors:
         return None, log + [f"{pid}: no color has photos, product hidden"]
@@ -319,6 +347,98 @@ def build(pid):
     }, log
 
 
+# ---------------------------------------------------------------- photo cleanup
+# Austin 2026-11-18: no grey background and no wasted space. Lane Seven's flat
+# shots sit on a flat #F4F4F4 studio grey, 750x1084 with lots of empty frame.
+# Each flat is flood-filled from the border to white, cropped to the garment
+# (+4% margin) and saved as a JPG in media/lane7/, which the nightly sync
+# publishes with the site. Files are named after Lane Seven's (they carry a
+# timestamp), so a photo is only processed once.
+MEDIA_DIR = os.environ.get("LANE7_MEDIA_DIR", "media/lane7")
+MEDIA_URL = os.environ.get("LANE7_MEDIA_URL",
+                           "https://aliveprintshop.github.io/PriceCalculator/media/lane7")
+
+
+def clean_photo(url, dest):
+    import io
+    import numpy as np
+    from PIL import Image
+    from scipy import ndimage
+    raw = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}),
+                                 timeout=60).read()
+    im = Image.open(io.BytesIO(raw)).convert("RGBA")
+    a = np.asarray(im).astype(np.int16)
+    rgb, alpha = a[..., :3], a[..., 3]
+    h, w = alpha.shape
+    border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+    bg = np.median(border, axis=0)
+    near = (np.abs(rgb - bg).max(axis=2) <= 4) | (alpha < 16)
+    # only background that touches the frame edge (never grey inside the garment)
+    lab, _ = ndimage.label(near)
+    edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+    bgmask = np.isin(lab, list(edge))
+    out = rgb.copy()
+    out[bgmask] = 255
+    # soften the cut edge so it doesn't look jagged
+    ring = ndimage.binary_dilation(bgmask, iterations=1) & ~bgmask
+    out[ring] = (out[ring] * 0.6 + 255 * 0.4).astype(np.int16)
+    ys, xs = np.where(~bgmask)
+    if len(ys) < 0.01 * h * w:
+        raise ValueError("garment not found")
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    py, px = int(0.04 * (y1 - y0)), int(0.04 * (x1 - x0))
+    y0, y1, x0, x1 = max(0, y0 - py), min(h, y1 + py), max(0, x0 - px), min(w, x1 + px)
+    Image.fromarray(out[y0:y1, x0:x1].astype("uint8"), "RGB").save(dest, "JPEG", quality=85,
+                                                                   optimize=True, progressive=True)
+
+
+def clean_photos(products, log):
+    try:
+        import numpy, PIL, scipy  # noqa: F401
+    except ImportError:
+        log.append("photo cleanup skipped: Pillow/numpy/scipy not installed")
+        return
+    os.makedirs(MEDIA_DIR, exist_ok=True)
+    jobs = {}
+    for p in products:
+        for c in p["colors"]:
+            for k in ("front_flat", "back_flat"):
+                u = c["images"].get(k)
+                if u and u.startswith("http") and "lanesevenapparel.com" in u:
+                    name = re.sub(r"\.\w+$", "", u.rsplit("/", 1)[-1]) + ".jpg"
+                    jobs[u] = name
+
+    def run(item):
+        u, name = item
+        dest = os.path.join(MEDIA_DIR, name)
+        if os.path.exists(dest):
+            return u, name, None
+        try:
+            clean_photo(u, dest)
+            return u, name, None
+        except Exception as e:
+            return u, None, f"{type(e).__name__}: {e}"
+    done, failed = {}, 0
+    with ThreadPoolExecutor(8) as ex:
+        for u, name, err in ex.map(run, jobs.items()):
+            if name:
+                done[u] = f"{MEDIA_URL}/{name}"
+            else:
+                failed += 1
+                log.append(f"photo cleanup failed, original kept: {u.rsplit('/', 1)[-1]} ({err})")
+    for p in products:
+        for c in p["colors"]:
+            for k in ("front_flat", "back_flat"):
+                u = c["images"].get(k)
+                if u in done:
+                    c["images"][k] = done[u]
+    keep = set(n for n in jobs.values())
+    for f in os.listdir(MEDIA_DIR):           # drop photos Lane Seven replaced
+        if f not in keep:
+            os.remove(os.path.join(MEDIA_DIR, f))
+    log.append(f"photos: {len(done)} cleaned (white background, cropped), {failed} failed")
+
+
 def main():
     if not (L7_ID and L7_PW):
         print("LANE7_ID / LANE7_PASSWORD missing")
@@ -345,6 +465,8 @@ def main():
                 products.append(res)
             else:
                 failed.append(pid)
+
+    clean_photos(products, logs)
 
     if len(products) < 0.7 * len(ids):
         print(f"::error::Only {len(products)}/{len(ids)} styles built - not overwriting {OUT}")
