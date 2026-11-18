@@ -216,9 +216,23 @@ def media_by_code(root, style):
         mv = VIEW.match(name[len(pre):])
         if not mv:
             continue
-        code, view = mv.group(1).upper(), mv.group(3).lower()
-        out.setdefault(code, {}).setdefault(view_slot(view), url)
-        out[code].setdefault("_views", set()).add(view)
+        code, seq, view = mv.group(1).upper(), int(mv.group(2)), mv.group(3).lower()
+        d = out.setdefault(code, {})
+        d.setdefault("_views", set()).add(view)
+        if "flat" in view:
+            # Lane Seven numbers its flats inconsistently (flat/flat2, flat1/flat2,
+            # flat2/flat3, or a lone flat2): the lowest-numbered flat is the
+            # front, the next one the back.
+            n = re.search(r"flat(\d*)", view).group(1)
+            d.setdefault("_flats", {}).setdefault((int(n or 0), seq), url)
+        else:
+            d.setdefault(view_slot(view), url)
+    for d in out.values():
+        flats = [u for _, u in sorted(d.pop("_flats", {}).items())]
+        if flats:
+            d["front_flat"] = flats[0]
+        if len(flats) > 1:
+            d["back_flat"] = flats[1]
     return out
 
 
