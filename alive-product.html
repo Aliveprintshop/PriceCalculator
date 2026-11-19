@@ -1444,7 +1444,14 @@
   #alive-flow .allprod::before{content:"";width:11px;height:11px;border-left:2.4px solid currentColor;border-bottom:2.4px solid currentColor;transform:rotate(45deg);margin-left:5px;}
   #alive-flow .shell{padding-top:2px;}
   #alive-flow .pcard{padding-top:6px;}
-  #alive-flow .pcard .style,#alive-flow .pcard .blurb,#alive-flow .pcard .revline{display:none !important;}
+  #alive-flow .pcard .blurb,#alive-flow .pcard .revline{display:none !important;}
+  /* brand and style number share the first line; the name sits under them */
+  #alive-flow .pcard{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:8px;align-items:start;}
+  #alive-flow .pcard>*{grid-column:1/-1;min-width:0;}
+  #alive-flow .pcard>.brand{grid-column:1;grid-row:1;}
+  #alive-flow .pcard>.style{grid-column:2;grid-row:1;margin:0;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:inherit;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #alive-flow .pcard>.style .sty-c{display:none;}
+  #alive-flow .pcard>h2{grid-row:2;}
   #alive-flow .pcard .brand{font-size:11px;letter-spacing:.08em;margin:0 0 2px;}
   #alive-flow .pcard h2{font-size:19px;line-height:1.2;margin:0 0 8px;}
   #alive-flow #f-stripwrap{display:none !important;}
@@ -3745,7 +3752,7 @@ function productCard(overlayHtml, foot, rail, strip){
   return '<div class="pcard">' +
     '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee || /^5000B?$/i.test(String(p.style)) ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
     '<h2>' + esc(cleanName(p)) + '</h2>' +
-    '<div class="style">Style #' + esc(p.style) + (c ? ' — ' + esc(c.name) : '') + '</div>' +
+    '<div class="style">Style #' + esc(p.style) + (c ? '<span class="sty-c"> — ' + esc(c.name) + '</span>' : '') + '</div>' +
     /* Blurb and rating only on the design step; step 2 is about sizes. */
     (S.phase === 'artwork' ? (blurb(p) ? '<p class="blurb">' + esc(blurb(p)) + '</p>' : '') + reviewLine() : '') +
     /* The stage box holds a locked height (see lockStageHeight) so swapping
