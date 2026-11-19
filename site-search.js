@@ -1,16 +1,24 @@
 /* =====================================================================
-   ALIVE · Header search bar for aliveprintshop.com (Austin, 2026-11-18)
+   ALIVE · Site header search for aliveprintshop.com
+   (Austin, 2026-11-18; two-line header 2026-11-18 evening)
 
    Loaded by one <script> tag in the Elementor "Main Header" HTML widget
-   (bddddaf). Everything else lives here, so changes ship with a normal
-   GitHub upload and no WordPress edit.
+   (bddddaf). The header's LAYOUT (two lines, like Custom Ink) is CSS in that
+   same widget (<style id="aps-header-layout">, copy in
+   snippets/wp-header-layout.css) so it is right from the first paint. This
+   file adds the pieces: the search bar, the "Talk to a real person" phone
+   link, and Contact Us inside the phone menu.
 
-   - Desktop (>=1025px): a search bar between the logo and the menu.
-   - Phone/tablet: a full-width bar under the header row.
+   Desktop (>=1025px):  [logo] [ search ............ ] [phone] [cart]
+                        Home Products Services ...   [Contact] [Place order]
+   Phone/tablet:        [menu]      [logo]      [cart]
+                        [ search .............................. ]
+
    - Typing shows up to 6 matching products (photo, name, brand, "from"
      price), ranked like the /products/ search. Click one to open it.
-   - Enter or "See all results" opens /products/?q=<words>#search-<words>,
-     which the products grid turns into the same search.
+   - Enter or "See all results" opens /products/?q=<words>#search-<words>.
+   - ON /products/ the header bar is the page's only search: it filters the
+     product grid as you type (no dropdown) and the grid hides its own box.
 
    Data: search-index.json (built by split-products.py on every publish),
    fetched the first time the shopper focuses the box.
@@ -56,36 +64,39 @@
     'text-decoration:none!important;cursor:pointer;}'+
   '.aps-sb-all:hover,.aps-sb-all.on{background:#f2f6fc;}'+
   '.aps-sb-msg{padding:14px;font-size:14px;color:#4b5563;}'+
-  /* phone row */
-  '.aps-sb-row{display:none;width:100%;box-sizing:border-box;padding:0 14px 12px;}'+
-  '.aps-sb-row .aps-sb{margin:0;max-width:none;flex:none;}'+
-  '@media(max-width:1024px){.aps-sb-desk{display:none!important;}.aps-sb-row{display:block;}'+
-    'header.aps-sb-host{flex-wrap:wrap!important;}}'+
-  '@media(min-width:1321px){.aps-sb-row{display:none!important;}}'+
   '.aps-sb .aps-sb-x{margin:0!important;padding:0!important;width:30px!important;height:30px!important;min-height:0!important;'+
     'line-height:28px!important;background:transparent!important;border:0!important;box-shadow:none!important;color:#6b7280!important;font-size:20px!important;}'+
-  '.aps-sb-desk .aps-sb-dd{min-width:440px;}'+
-  /* Desktop header layout with the bar in it: the right-hand buttons take only
-     the room they need, the menu never shrinks (it would overlap the cart), and
-     the bar takes what is left. The header's content column is 1440px here
-     (1312px + room for the bar). */
-  '@media(min-width:1321px){'+
-    'header.aps-sb-host.elementor-element-92c3014{padding-left:max(32px,calc((100% - 1440px) / 2))!important;padding-right:max(32px,calc((100% - 1440px) / 2))!important;}'+
-    'header.aps-sb-host .elementor-element-08286aa{width:auto!important;flex:0 0 auto!important;}'+
-    'header.aps-sb-host .elementor-element-645e597{flex:1 1 auto!important;width:auto!important;min-width:0!important;gap:24px!important;}'+
-    'header.aps-sb-host .elementor-widget-nav-menu{flex:0 0 auto!important;}'+
-    '.aps-sb-desk{flex:1 1 300px!important;min-width:200px!important;max-width:560px!important;margin:0!important;}}'+
-  /* Narrow desktops (no room in the row): use the full-width bar under the header. */
-  '@media(min-width:1025px) and (max-width:1320px){.aps-sb-desk{display:none!important;}'+
-    '.aps-sb-row{display:block!important;}.aps-sb-row .aps-sb{max-width:640px;margin:0 auto;}'+
-    'header.aps-sb-host{flex-wrap:wrap!important;}}';
+  /* the bar in the header (its place in the two lines is set by the header CSS) */
+  '.aps-sb-main{margin:0!important;}'+
+  '@media(min-width:1025px){.aps-sb-main{flex:1 1 360px!important;max-width:680px!important;min-width:220px!important;}.aps-sb-main .aps-sb-dd{min-width:440px;}}'+
+  '@media(max-width:1024px){.aps-sb-main{flex:0 0 100%!important;max-width:none!important;min-width:0!important;}'+
+    '.aps-sb-main .aps-sb-in{height:42px!important;line-height:42px!important;font-size:16px!important;}}'+
+  '.aps-sb-ghost{pointer-events:none;}'+
+  /* "Talk to a real person" (desktop only) */
+  '.aps-hphone{display:none;align-items:center;gap:10px;text-decoration:none!important;color:#1e1e1e!important;white-space:nowrap;line-height:1.2;}'+
+  '.aps-hphone svg{width:26px;height:26px;flex:none;color:#1e1e1e;}'+
+  '.aps-hphone small{display:block;font-size:13px;color:#4b5563;}'+
+  '.aps-hphone b{display:block;font-size:15px;font-weight:700;color:#1b6cce;}'+
+  '.aps-hphone:hover b{text-decoration:underline;}'+
+  '@media(min-width:1025px){.aps-hphone{display:flex;}}'+
+  /* Contact Us + call, added under "Place Your Order" in the phone menu */
+  '.aps-pop-extra{display:flex;flex-direction:column;gap:12px;margin-top:12px;}'+
+  '.aps-pop-extra a{display:flex;align-items:center;justify-content:center;box-sizing:border-box;text-decoration:none!important;}'+
+  '.aps-pop-contact{border:1.5px solid #1e1e1e;color:#1e1e1e!important;background:#fff;font-weight:700;}'+
+  '.aps-pop-call{color:#1b6cce!important;font-weight:700;font-size:15px;padding:6px 0;}'+
+  /* /products/: the header bar is the only search. Hide the page's own phone
+     search box and keep Filters + category chips on one line. */
+  'body.aps-onesearch #agb-q{display:none!important;}'+
+  'body.aps-onesearch #agb{display:flex!important;align-items:center;gap:8px;padding-top:8px!important;padding-bottom:8px!important;}'+
+  'body.aps-onesearch #agb .agb-row{flex:none!important;}'+
+  'body.aps-onesearch #agb .agb-chips{flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;}';
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
   /* ---------------- search engine (copy of index.html) ---------------- */
   var SEARCH_SYNONYMS={
     tee:['t shirt','tshirt'], tshirt:['t shirt','tee'], tshirts:['t shirt','tee'],
     hat:['cap','headwear'], hats:['cap','headwear'], cap:['hat','headwear'],
-    caps:['hat','headwear'], beanie:['beanie','knit cap'], beanies:['beanie','knit cap'],
+    caps:['hat','headwear'], beanie:['beanie','knit cap','knit hat','watch cap','toque'], beanies:['beanie','knit cap','knit hat','watch cap','toque'],
     trucker:['mesh back','trucker'],
     hoodie:['hooded','hoodie'], hoodies:['hooded','hoodie'],
     hoody:['hooded','hoodie'], sweatshirt:['sweatshirt','fleece'],
@@ -199,6 +210,7 @@
       '<button type="button" class="aps-sb-x" aria-label="Clear search">&times;</button></form>'+
       '<div class="aps-sb-dd" role="listbox"></div>';
     var input=w.querySelector('input'),dd=w.querySelector('.aps-sb-dd'),form=w.querySelector('form');
+    if(window.innerWidth<480)input.placeholder='Search t-shirts, hoodies, hats…';
     var sel=-1,t=null;
     function opts(){return dd.querySelectorAll('.aps-sb-it,.aps-sb-all');}
     function setSel(i){var o=opts();sel=i;for(var k=0;k<o.length;k++)o[k].classList.toggle('on',k===i);}
@@ -220,8 +232,13 @@
       h+='<a class="aps-sb-all" href="'+resultsUrl(q)+'">See all '+r.total.toLocaleString()+' results for “'+esc(q.trim())+'” &rarr;</a>';
       dd.innerHTML=h;w.classList.add('open');
     }
-    input.addEventListener('focus',function(){load();if(input.value.trim())render();});
-    input.addEventListener('input',function(){clearTimeout(t);t=setTimeout(render,90);});
+    input.addEventListener('focus',function(){if(GRID)return;load();if(input.value.trim())render();});
+    input.addEventListener('input',function(){
+      clearTimeout(t);
+      /* /products/: filter the grid itself, no dropdown */
+      if(GRID){w.classList.toggle('has-q',!!input.value.trim());t=setTimeout(function(){gridSearch(input.value);},200);return;}
+      t=setTimeout(render,90);
+    });
     input.addEventListener('keydown',function(e){
       var o=opts();
       if(e.key==='ArrowDown'&&o.length){e.preventDefault();setSel(Math.min(sel+1,o.length-1));}
@@ -230,11 +247,13 @@
       else if(e.key==='Enter'&&sel>-1&&o[sel]){e.preventDefault();o[sel].click();}
     });
     form.addEventListener('submit',function(e){
-      e.preventDefault();var q=input.value.trim();if(!q)return;
+      e.preventDefault();var q=input.value.trim();
+      if(GRID){clearTimeout(t);gridSearch(input.value);input.blur();scrollToGrid();if(q)track('search',{search_term:q,source:'header_products'});return;}
+      if(!q)return;
       track('search',{search_term:q,source:'header'});
       window.location.href=resultsUrl(q);
     });
-    w.querySelector('.aps-sb-x').addEventListener('click',function(){input.value='';render();input.focus();});
+    w.querySelector('.aps-sb-x').addEventListener('click',function(){input.value='';if(GRID){w.classList.remove('has-q');gridSearch('');}else render();input.focus();});
     dd.addEventListener('mousedown',function(e){e.preventDefault();});   /* keep focus while clicking */
     dd.addEventListener('click',function(e){
       var a=e.target.closest&&e.target.closest('.aps-sb-it');
@@ -244,32 +263,91 @@
     input.addEventListener('blur',function(){setTimeout(function(){if(!w.contains(document.activeElement))close();},150);});
     /* Keep the words in the box on the products page so shoppers can refine. */
     try{var pq=new URLSearchParams(location.search).get('q');if(pq&&/^\/products/.test(location.pathname)){input.value=pq;w.classList.add('has-q');}}catch(e){}
+    INPUTS.push(input);
     return w;
   }
 
-  /* ---------------- place it in the header ---------------- */
+  /* ---------------- /products/: drive the product grid ---------------- */
+  var GRID=null,GRID_ORIGIN='https://aliveprintshop.github.io',INPUTS=[];
+  function gridSend(m){try{GRID.contentWindow.postMessage(m,GRID_ORIGIN);}catch(e){}}
+  function gridSearch(q){gridSend({type:'alive-grid-search',q:q});}
+  function scrollToGrid(){
+    try{var hd=document.querySelector('header.elementor-element-92c3014:not(.elementor-sticky__spacer)');
+      var top=GRID.getBoundingClientRect().top+window.pageYOffset-(hd?hd.getBoundingClientRect().bottom:0)-8;
+      if(window.pageYOffset>top)window.scrollTo({top:Math.max(0,top),behavior:'smooth'});}catch(e){}
+  }
+  function gridSetup(){
+    GRID=document.getElementById('alive-frame');
+    if(!GRID)return;
+    document.body.classList.add('aps-onesearch');
+    function hello(){gridSend({type:'alive-ext-search'});}
+    hello();GRID.addEventListener('load',hello);
+    window.addEventListener('message',function(e){
+      if(e.origin!==GRID_ORIGIN)return;var d=e.data||{};
+      if(d.type==='alive-gridready')hello();
+      /* the grid reports its search words (e.g. cleared by a category chip): show them in the bar */
+      if(d.type==='alive-gridmodel'&&d.model&&typeof d.model.q==='string'){
+        INPUTS.forEach(function(i){if(document.activeElement!==i&&i.value!==d.model.q){i.value=d.model.q;
+          var w=i.closest('.aps-sb');if(w)w.classList.toggle('has-q',!!d.model.q.trim());}});
+      }
+    },false);
+  }
+
+  /* ---------------- phone link ---------------- */
+  var HEADSET='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19c0 1.5-1.5 2.5-4 2.5h-2"/></svg>';
+  function phone(){
+    var a=document.createElement('a');a.className='aps-hphone';a.href='tel:+17026856270';
+    a.innerHTML=HEADSET+'<span><small>Talk to a real person</small><b>702-685-6270</b></span>';
+    a.addEventListener('click',function(){track('click_call',{source:'header'});});
+    return a;
+  }
+
+  /* ---------------- place them in the header ---------------- */
   function mount(){
-    var headers=document.querySelectorAll('header.elementor-element-92c3014, [data-elementor-type="header"] header');
-    if(!headers.length)headers=document.querySelectorAll('header');
+    var headers=document.querySelectorAll('header.elementor-element-92c3014');
     var done=0;
     headers.forEach(function(hd){
       if(hd.querySelector('.aps-sb'))return;
-      if(hd.classList.contains('elementor-sticky__spacer'))return;   /* invisible clone */
-      /* Desktop: between the logo and the menu. */
+      var ghost=hd.classList.contains('elementor-sticky__spacer');   /* invisible copy that holds the page's place */
       var logo=hd.querySelector('.elementor-widget-image, .elementor-widget-theme-site-logo');
-      if(logo&&logo.parentNode){
-        var d=build('aps-sb-desk');
-        logo.parentNode.insertBefore(d,logo.nextSibling);
-        logo.parentNode.style.flexWrap='nowrap';
-      }
-      /* Phone/tablet: a full-width row under the header. */
-      var r=document.createElement('div');r.className='aps-sb-row';r.appendChild(build('aps-sb-mob'));
-      hd.appendChild(r);
-      hd.classList.add('aps-sb-host');   /* lets the phone row wrap under the header */
+      if(!logo||!logo.parentNode)return;
+      var bar;
+      if(ghost){bar=document.createElement('div');bar.className='aps-sb aps-sb-main aps-sb-ghost';bar.setAttribute('aria-hidden','true');
+        bar.innerHTML='<form><input class="aps-sb-in" type="text" tabindex="-1"></form>';}
+      else bar=build('aps-sb-main');
+      logo.parentNode.insertBefore(bar,logo.nextSibling);
+      var cart=hd.querySelector('.elementor-element-c9fb1e4');
+      var ph=phone();if(ghost){ph.setAttribute('aria-hidden','true');ph.tabIndex=-1;}
+      if(cart&&cart.parentNode)cart.parentNode.insertBefore(ph,cart);else bar.parentNode.insertBefore(ph,bar.nextSibling);
+      hd.classList.add('aps-hready');
       done++;
     });
     return done;
   }
-  function boot(){if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}}
+
+  /* ---------------- phone menu: add Contact Us + call ---------------- */
+  function popupExtras(){
+    var pm=document.getElementById('elementor-popup-modal-101');
+    if(!pm||pm.querySelector('.aps-pop-extra'))return;
+    var btn=null;pm.querySelectorAll('a.elementor-button').forEach(function(a){if(!btn&&/place your order/i.test(a.textContent))btn=a;});
+    if(!btn)return;
+    var wid=btn.closest('.elementor-widget')||btn.parentNode;
+    var cs=getComputedStyle(btn),x=document.createElement('div');x.className='aps-pop-extra';
+    x.innerHTML='<a class="aps-pop-contact" href="/contact-us/">Contact Us</a><a class="aps-pop-call" href="tel:+17026856270">Call 702-685-6270</a>';
+    var c=x.firstChild;c.style.height=btn.offsetHeight+'px';c.style.borderRadius=cs.borderRadius;c.style.fontSize=cs.fontSize;c.style.fontFamily=cs.fontFamily;
+    wid.parentNode.insertBefore(x,wid.nextSibling);
+    x.querySelector('.aps-pop-call').addEventListener('click',function(){track('click_call',{source:'phone_menu'});});
+  }
+  function watchPopup(){
+    if(window.jQuery)window.jQuery(document).on('elementor/popup/show',function(){setTimeout(popupExtras,0);});
+    document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.elementor-element-bda4dae');if(a)setTimeout(popupExtras,450);},true);
+  }
+
+  function boot(){
+    gridSetup();watchPopup();
+    if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}
+    /* Elementor makes the invisible copy of a sticky header a moment later */
+    setTimeout(mount,600);setTimeout(mount,2000);
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
