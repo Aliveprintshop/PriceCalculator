@@ -1468,6 +1468,12 @@
   #alive-flow .pcard-foot:has(.sw:nth-child(8)) .swmore[hidden]{display:block !important;}
 }
 /* ---- Background Remover panel (19 Nov 2026) ---- */
+#alive-flow .tools button[data-tool="bgtool"]{font-size:8px;letter-spacing:0;line-height:1.1;}
+@media(max-width:767px){
+  #alive-flow .tools{flex-wrap:nowrap;}
+  #alive-flow .tools button{width:auto;flex:1 1 0;min-width:0;}
+  #alive-flow .tools button[data-tool="bgtool"]{flex:1.7 1 0;}
+}
 #alive-flow .tipbox.bgtool .tb{max-width:520px;padding:16px 18px 16px;overflow:auto;max-height:100%;}
 #alive-flow .bgt-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
 #alive-flow .bgt-head h4{margin:0 !important;font-size:16px;}
