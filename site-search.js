@@ -89,7 +89,24 @@
   'body.aps-onesearch #agb-q{display:none!important;}'+
   'body.aps-onesearch #agb{display:flex!important;align-items:center;gap:8px;padding-top:8px!important;padding-bottom:8px!important;}'+
   'body.aps-onesearch #agb .agb-row{flex:none!important;}'+
-  'body.aps-onesearch #agb .agb-chips{flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;}';
+  'body.aps-onesearch #agb .agb-chips{flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;}'+
+  /* Product pages (/insta-price) on phones and tablets: an app-style header with
+     one line (menu, logo, search icon, cart). The search bar opens under it. */
+  '.aps-sbtn{display:none;}'+
+  '@media(max-width:1024px){'+
+    'header.aps-compact .aps-sb-main{display:none!important;}'+
+    'header.aps-compact.aps-sopen .aps-sb-main{display:block!important;}'+
+    'header.aps-compact .aps-sbtn{display:flex;order:3;flex:0 0 44px;width:44px;height:44px;align-items:center;justify-content:center;'+
+      'border:0!important;background:transparent!important;color:#1e1e1e!important;padding:0!important;margin:0!important;cursor:pointer;box-shadow:none!important;}'+
+    'header.aps-compact .aps-sbtn svg{width:22px;height:22px;}'+
+    'header.aps-compact .elementor-element-bda4dae{flex-basis:88px!important;}}'+
+  /* Phones: slimmer price bar on the product page (label and price share a line). */
+  '@media(max-width:767px){'+
+    '#alive-hostbar .ahb-in{padding:8px 14px!important;}'+
+    '#alive-hostbar .ahb-l{display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:6px;}'+
+    '#alive-hostbar .ahb-k{order:2;}'+
+    '#alive-hostbar .ahb-v{order:1;}'+
+    '#alive-hostbar .ahb-s{order:3;flex-basis:100%;}}';
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
   /* ---------------- search engine (copy of index.html) ---------------- */
@@ -269,6 +286,7 @@
 
   /* ---------------- /products/: drive the product grid ---------------- */
   var GRID=null,GRID_ORIGIN='https://aliveprintshop.github.io',INPUTS=[];
+  var PRODUCT_PAGE=/^\/insta-price/.test(location.pathname)||!!document.querySelector('iframe[src*="alive-product"]');
   function gridSend(m){try{GRID.contentWindow.postMessage(m,GRID_ORIGIN);}catch(e){}}
   function gridSearch(q){gridSend({type:'alive-grid-search',q:q});}
   function scrollToGrid(){
@@ -319,6 +337,16 @@
       var cart=hd.querySelector('.elementor-element-c9fb1e4');
       var ph=phone();if(ghost){ph.setAttribute('aria-hidden','true');ph.tabIndex=-1;}
       if(cart&&cart.parentNode)cart.parentNode.insertBefore(ph,cart);else bar.parentNode.insertBefore(ph,bar.nextSibling);
+      if(PRODUCT_PAGE){
+        hd.classList.add('aps-compact');
+        if(!ghost){
+          var sb=document.createElement('button');sb.type='button';sb.className='aps-sbtn';sb.setAttribute('aria-label','Search products');sb.setAttribute('aria-expanded','false');
+          sb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>';
+          sb.addEventListener('click',function(){var open=!hd.classList.contains('aps-sopen');hd.classList.toggle('aps-sopen',open);sb.setAttribute('aria-expanded',open?'true':'false');
+            if(open){var i=hd.querySelector('.aps-sb-main input');if(i)setTimeout(function(){i.focus();},0);}});
+          if(cart&&cart.parentNode)cart.parentNode.insertBefore(sb,cart);
+        }
+      }
       hd.classList.add('aps-hready');
       done++;
     });
