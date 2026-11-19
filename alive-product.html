@@ -1467,6 +1467,36 @@
   #alive-flow .pcard-foot .swatches.artsw:not(.clipped){flex-wrap:wrap !important;overflow:visible !important;max-height:none !important;}
   #alive-flow .pcard-foot:has(.sw:nth-child(8)) .swmore[hidden]{display:block !important;}
 }
+/* ---- Background Remover panel (19 Nov 2026) ---- */
+#alive-flow .tipbox.bgtool .tb{max-width:520px;padding:16px 18px 16px;overflow:auto;max-height:100%;}
+#alive-flow .bgt-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+#alive-flow .bgt-head h4{margin:0 !important;font-size:16px;}
+#alive-flow .bgt-close{width:40px;height:40px;border:0;background:transparent;font-size:26px;line-height:1;color:var(--text2);cursor:pointer;border-radius:50%;}
+#alive-flow .bgt-stage{display:flex;align-items:center;justify-content:center;padding:8px;border-radius:12px;border:1px solid var(--border);
+  background:repeating-conic-gradient(#e7eaee 0 25%,#fff 0 50%) 0 0/18px 18px;overflow:hidden;}
+#alive-flow .bgt-cv{display:block;max-width:100%;width:auto;height:auto;}
+#alive-flow .bgt-cv.tapping{cursor:crosshair;}
+#alive-flow .bgt-msg{margin-top:10px;font-size:13px;color:var(--text2);line-height:1.45;}
+#alive-flow .bgt-acts{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+#alive-flow .bgt-acts button,#alive-flow .bgt-foot button{min-height:44px;border-radius:12px;font-family:var(--disp);font-weight:800;font-size:13px;cursor:pointer;
+  border:1px solid var(--border);background:#fff;color:var(--text);padding:0 14px;}
+#alive-flow .bgt-acts .bgt-primary,#alive-flow .bgt-foot .bgt-done{background:var(--blue,#1b6cce);border-color:var(--blue,#1b6cce);color:#fff;}
+#alive-flow .bgt-acts button:disabled,#alive-flow .bgt-foot button:disabled{opacity:.45;cursor:default;}
+#alive-flow .bgt-tap{display:flex;align-items:center;justify-content:center;gap:8px;}
+#alive-flow .bgt-tap svg{width:18px;height:18px;}
+#alive-flow .bgt-tap.on{border:2px solid var(--blue,#1b6cce) !important;background:#eaf2fc !important;color:var(--blue,#1b6cce) !important;}
+#alive-flow .bgt-hint{margin:0;font-size:13px;color:var(--text2);text-align:center;}
+#alive-flow .bgt-every{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);min-height:36px;justify-content:center;}
+#alive-flow .bgt-every input{width:18px;height:18px;}
+#alive-flow .bgt-isl{border:1px solid #f9a8d4;background:#fdf2f8;border-radius:12px;padding:10px 12px;}
+#alive-flow .bgt-isl p{margin:0 0 8px;font-size:13.5px;color:var(--text);}
+#alive-flow .bgt-row{display:flex;gap:8px;}
+#alive-flow .bgt-row button{flex:1;}
+#alive-flow .bgt-foot{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;margin-top:14px;}
+@media(max-width:767px){
+  #alive-flow .tipbox.bgtool{place-items:end center;padding:0;}
+  #alive-flow .tipbox.bgtool .tb{max-width:none;border-radius:20px 20px 0 0;padding:12px 14px 18px;}
+}
 </style>
 </head>
 <body>
@@ -2568,13 +2598,93 @@ var AliveBgRemove=(function(){
       width:w,height:h,
       removedPct:pct,
       bgHex:hex(bg.rgb),
+      bgCols:bg.cols,
       bgCount:bg.cols.length,
       tolerance:tol,
       downscaled:sc<1
     };
   }
 
-  return {run:run,_findBg:findBg,_flood:flood};
+  return {run:run,_findBg:findBg,_flood:flood,_feather:feather};
+})();
+
+/* Background Remover, second half (19 Nov 2026). The automatic remover above can
+   only clear background that touches the edge of the file, so the counter of an
+   "O" or white trapped inside a badge stayed solid and printed as ink. These
+   work on the image the customer sees in the Background Remover panel:
+   - islands(): closed-in areas that match the removed background colour, so the
+     panel can show them in pink and offer to remove them (never silently: a
+     white part of a logo can be meant to print).
+   - tapMask(): what one tap removes, either the touching patch of that colour
+     or that colour everywhere.
+   - clear(): make a mask transparent and soften its edge with the same feather
+     the remover uses, so the cut doesn't leave a halo. */
+var AliveBgTool=(function(){
+  function dist(r,g,b,c){var x=r-c[0],y=g-c[1],z=b-c[2];return Math.sqrt(x*x+y*y+z*z);}
+  function near(data,i,cols,tol){
+    var p=i*4; if(data[p+3]<128)return false;
+    for(var c=0;c<cols.length;c++)if(dist(data[p],data[p+1],data[p+2],cols[c])<=tol)return true;
+    return false;
+  }
+  function opaque(data){var n=0;for(var i=3;i<data.length;i+=4)if(data[i]>=128)n++;return n;}
+  function islands(data,w,h,cols,tol){
+    var seen=new Uint8Array(w*h),mask=new Uint8Array(w*h),count=0,px=0;
+    var minPx=Math.max(12,Math.round(w*h*0.00015)),q=new Int32Array(w*h);
+    for(var s=0;s<w*h;s++){
+      if(seen[s]||!near(data,s,cols,tol))continue;
+      var head=0,tail=0,edge=false;q[tail++]=s;seen[s]=1;
+      while(head<tail){
+        var i=q[head++],y=(i/w)|0,x=i-y*w;
+        if(x===0||y===0||x===w-1||y===h-1)edge=true;
+        if(x>0&&!seen[i-1]&&near(data,i-1,cols,tol)){seen[i-1]=1;q[tail++]=i-1;}
+        if(x<w-1&&!seen[i+1]&&near(data,i+1,cols,tol)){seen[i+1]=1;q[tail++]=i+1;}
+        if(y>0&&!seen[i-w]&&near(data,i-w,cols,tol)){seen[i-w]=1;q[tail++]=i-w;}
+        if(y<h-1&&!seen[i+w]&&near(data,i+w,cols,tol)){seen[i+w]=1;q[tail++]=i+w;}
+      }
+      if(edge||tail<minPx)continue;
+      for(var k=0;k<tail;k++)mask[q[k]]=1;
+      count++;px+=tail;
+    }
+    return {count:count,mask:mask,px:px};
+  }
+  /* Tolerance from the noise around the tapped pixel: a clean PNG gets a tight
+     match, a JPEG's mottled colour a wider one. */
+  function seedTol(data,w,h,x,y,seed){
+    var sq=0,n=0;
+    for(var dy=-3;dy<=3;dy++)for(var dx=-3;dx<=3;dx++){
+      var xx=x+dx,yy=y+dy; if(xx<0||yy<0||xx>=w||yy>=h)continue;
+      var p=(yy*w+xx)*4; if(data[p+3]<128)continue;
+      var d=dist(data[p],data[p+1],data[p+2],seed); if(d<60){sq+=d*d;n++;}
+    }
+    var sd=n?Math.sqrt(sq/n):0;
+    return Math.max(26,Math.min(80,22+sd*3));
+  }
+  function tapMask(data,w,h,x,y,everywhere){
+    x=Math.max(0,Math.min(w-1,Math.round(x)));y=Math.max(0,Math.min(h-1,Math.round(y)));
+    var p=(y*w+x)*4;
+    if(data[p+3]<128)return {empty:true};
+    var seed=[data[p],data[p+1],data[p+2]],cols=[seed],tol=seedTol(data,w,h,x,y,seed);
+    var mask=new Uint8Array(w*h),count=0;
+    if(everywhere){
+      for(var i=0;i<w*h;i++)if(near(data,i,cols,tol)){mask[i]=1;count++;}
+    }else{
+      var q=new Int32Array(w*h),head=0,tail=0,s=y*w+x;q[tail++]=s;mask[s]=1;
+      while(head<tail){
+        var j=q[head++],yy=(j/w)|0,xx=j-yy*w;
+        if(xx>0&&!mask[j-1]&&near(data,j-1,cols,tol)){mask[j-1]=1;q[tail++]=j-1;}
+        if(xx<w-1&&!mask[j+1]&&near(data,j+1,cols,tol)){mask[j+1]=1;q[tail++]=j+1;}
+        if(yy>0&&!mask[j-w]&&near(data,j-w,cols,tol)){mask[j-w]=1;q[tail++]=j-w;}
+        if(yy<h-1&&!mask[j+w]&&near(data,j+w,cols,tol)){mask[j+w]=1;q[tail++]=j+w;}
+      }
+      count=tail;
+    }
+    return {mask:mask,count:count,cols:cols,tol:tol,all:count>=opaque(data)*0.96};
+  }
+  function clear(data,w,h,mask,cols,tol){
+    for(var i=0;i<mask.length;i++)if(mask[i])data[i*4+3]=0;
+    try{AliveBgRemove._feather(data,w,h,mask,cols,tol);}catch(e){}
+  }
+  return {islands:islands,tapMask:tapMask,clear:clear};
 })();
 
 var AliveArtColors=(function(){
@@ -4667,9 +4777,11 @@ function tools(){
       if(!d || !d.src || d.noPreview) return '';
       var ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M4 21h16"/><path d="m14.6 3.6 5.8 5.8-8.2 8.2H6.6l-2.9-2.9a2 2 0 0 1 0-2.8z"/></svg>';
-      if(d.bgRemoved) return '<button type="button" data-tool="undobg">' + ico + 'Undo BG</button>';
-      return '<button type="button" data-tool="bg"' + (d.bgBusy ? ' disabled' : '') + '>' + ico +
-        (d.bgBusy ? 'Working' : 'Remove BG') + '</button>';
+      /* One button for everything background: it opens the Background Remover
+         panel (remove, leftover spots, tap to remove, undo, restore). Renamed
+         from "Remove BG", which customers didn't understand (19 Nov 2026). */
+      return '<button type="button" data-tool="bgtool"' + (d.bgBusy ? ' disabled' : '') + '>' + ico +
+        (d.bgBusy ? 'Working' : 'Background Remover') + '</button>';
     })() +
     /* Save is NOT gated on having a layer selected the way the placement tools
        are — it acts on the whole design, not on one piece of art. */
@@ -4956,6 +5068,165 @@ function undoBg(k){
   if(d.bgPrev.ink) S.inks[k] = d.bgPrev.ink;
   d.inkAuto = d.bgPrev.inkAuto || 0; d.inkAsk = d.bgPrev.inkAsk || '';
   d.bgRemoved = false; d.bgPrev = null; d.bgMsg = ''; render();
+}
+
+/* ---- Background Remover panel (19 Nov 2026) ----------------------------
+   Opens from the "Background Remover" tool. Works on a copy of the artwork
+   (up to 2000px) on a checkerboard so it is obvious what is clear:
+   1. Remove background: the automatic remover above. Afterwards it looks for
+      closed-in spots of the same colour (the inside of an O), shows them in
+      pink and asks before removing them.
+   2. Tap to remove a color: one tap clears that patch, or that colour
+      everywhere. Also the way out when the automatic remover gives up.
+   Undo steps back one change; Restore original goes back to the upload;
+   Done puts the result on the shirt (same fields removeBg sets). The
+   customer's original file is still what gets uploaded for the art team. */
+var BGT_MAX = 2000;
+function openBgTool(k){
+  var d = S.art[k]; if(!d || !d.src || d.noPreview) return;
+  var old = root.querySelector('.tipbox.bgtool'); if(old) old.remove();
+  var orig = d.bgPrev ? d.bgPrev.src : d.src;
+  var T = {cv:null, ctx:null, w:0, h:0, data:null, hist:[], tap:false, every:false, isl:null, islInfo:null,
+           auto:!!d.bgRemoved, msg:'', busy:false, changed:false};
+  var box = openBox('<div class="tb bgt" role="dialog" aria-modal="true" aria-label="Background Remover">' +
+    '<div class="bgt-head"><h4>Background Remover</h4><button type="button" class="bgt-close" aria-label="Close">&times;</button></div>' +
+    '<div class="bgt-stage"><canvas class="bgt-cv"></canvas></div>' +
+    '<div class="bgt-msg" aria-live="polite"></div><div class="bgt-acts"></div>' +
+    '<div class="bgt-foot"><button type="button" class="bgt-undo">Undo</button>' +
+    '<button type="button" class="bgt-reset">Restore original</button>' +
+    '<button type="button" class="bgt-done">Done</button></div></div>', 'tipbox bgtool');
+  var cv = box.querySelector('.bgt-cv'), msgEl = box.querySelector('.bgt-msg'), acts = box.querySelector('.bgt-acts');
+  T.cv = cv; T.ctx = cv.getContext('2d', {willReadFrequently:true});
+  function fitStage(){
+    var st = box.querySelector('.bgt-stage'), avail = box.clientHeight || 600;
+    st.style.maxHeight = Math.max(180, Math.round(avail * 0.46)) + 'px';
+    cv.style.maxHeight = Math.max(160, Math.round(avail * 0.46) - 16) + 'px';
+  }
+  function load(src, cb){
+    var im = new Image();
+    im.onload = function(){
+      var W = im.naturalWidth, H = im.naturalHeight, sc = Math.min(1, BGT_MAX / Math.max(W, H));
+      T.w = cv.width = Math.max(1, Math.round(W * sc)); T.h = cv.height = Math.max(1, Math.round(H * sc));
+      T.ctx.clearRect(0, 0, T.w, T.h); T.ctx.drawImage(im, 0, 0, T.w, T.h);
+      try{ T.data = T.ctx.getImageData(0, 0, T.w, T.h); }catch(e){ T.data = null; }
+      cb && cb();
+    };
+    im.onerror = function(){ T.msg = 'We could not open this file here.'; ui(); };
+    im.src = src;
+  }
+  function draw(){
+    if(!T.data) return;
+    T.ctx.putImageData(T.data, 0, 0);
+    if(T.isl && T.isl.count){
+      var ov = T.ctx.createImageData(T.w, T.h), m = T.isl.mask, o = ov.data;
+      for(var i = 0; i < m.length; i++) if(m[i]){ var p = i * 4; o[p] = 236; o[p+1] = 72; o[p+2] = 153; o[p+3] = 200; }
+      var tmp = document.createElement('canvas'); tmp.width = T.w; tmp.height = T.h; tmp.getContext('2d').putImageData(ov, 0, 0);
+      T.ctx.drawImage(tmp, 0, 0);
+    }
+  }
+  /* One undo step = the pixels that changed and their old values. */
+  function step(fn){
+    var before = T.data.data.slice(); fn();
+    var a = T.data.data, idx = [], vals = [];
+    for(var i = 0; i < a.length; i += 4){
+      if(a[i] !== before[i] || a[i+1] !== before[i+1] || a[i+2] !== before[i+2] || a[i+3] !== before[i+3]){
+        idx.push(i); vals.push(before[i], before[i+1], before[i+2], before[i+3]);
+      }
+    }
+    if(idx.length){ T.hist.push({idx:idx, vals:vals, auto:T.auto}); if(T.hist.length > 20) T.hist.shift(); T.changed = true; }
+    return idx.length;
+  }
+  function ui(){
+    var h = '';
+    if(!T.auto) h += '<button type="button" class="bgt-auto bgt-primary"' + (T.busy ? ' disabled' : '') + '>' + (T.busy ? 'Working…' : 'Remove background') + '</button>';
+    if(T.isl && T.isl.count)
+      h += '<div class="bgt-isl"><p>We found <b>' + T.isl.count + ' leftover spot' + (T.isl.count > 1 ? 's' : '') + '</b> inside your design (shown in pink). Remove ' + (T.isl.count > 1 ? 'them' : 'it') + ' too?</p>' +
+        '<div class="bgt-row"><button type="button" class="bgt-islyes bgt-primary">Remove ' + (T.isl.count > 1 ? 'them' : 'it') + '</button><button type="button" class="bgt-islno">Keep ' + (T.isl.count > 1 ? 'them' : 'it') + '</button></div></div>';
+    h += '<button type="button" class="bgt-tap' + (T.tap ? ' on' : '') + '" aria-pressed="' + (T.tap ? 'true' : 'false') + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v3"/><path d="M17 12a2 2 0 0 1 4 0v3a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.4L4 15a2 2 0 0 1 3.4-2L9 15"/></svg>' +
+      'Tap to remove a color</button>';
+    if(T.tap) h += '<p class="bgt-hint">Tap any color in the picture to remove it.</p>' +
+      '<label class="bgt-every"><input type="checkbox"' + (T.every ? ' checked' : '') + '> Remove that color everywhere in the design</label>';
+    acts.innerHTML = h;
+    msgEl.textContent = T.msg || ''; msgEl.style.display = T.msg ? '' : 'none';
+    box.querySelector('.bgt-undo').disabled = !T.hist.length;
+    box.querySelector('.bgt-reset').disabled = !T.changed && !d.bgRemoved;
+    cv.classList.toggle('tapping', T.tap);
+    var a = acts.querySelector('.bgt-auto'); if(a) a.onclick = runAuto;
+    var y = acts.querySelector('.bgt-islyes'); if(y) y.onclick = function(){
+      var isl = T.isl, info = T.islInfo; T.isl = null;
+      var n = step(function(){ AliveBgTool.clear(T.data.data, T.w, T.h, isl.mask, info.cols, info.tol); });
+      T.msg = n ? 'Leftover spots removed.' : ''; draw(); ui(); };
+    var no = acts.querySelector('.bgt-islno'); if(no) no.onclick = function(){ T.isl = null; T.msg = ''; draw(); ui(); };
+    acts.querySelector('.bgt-tap').onclick = function(){ T.tap = !T.tap; T.msg = ''; ui(); };
+    var ev = acts.querySelector('.bgt-every input'); if(ev) ev.onchange = function(){ T.every = ev.checked; };
+  }
+  function runAuto(){
+    if(T.busy || !T.data) return;
+    T.busy = true; T.msg = ''; ui();
+    setTimeout(function(){
+      var r; try{ r = AliveBgRemove.run(cv); }catch(e){ r = {ok:false}; }
+      if(!r || !r.ok){
+        T.busy = false; T.tap = true;
+        T.msg = (r && r.reason === 'already-transparent') ? 'This design already has a clear background. Tap any color left over to remove it.'
+              : 'We couldn’t remove this background automatically. Tap the background in the picture to remove it.';
+        ui(); return;
+      }
+      var im = new Image();
+      im.onload = function(){
+        step(function(){
+          var c2 = document.createElement('canvas'); c2.width = T.w; c2.height = T.h;
+          var x2 = c2.getContext('2d', {willReadFrequently:true}); x2.drawImage(im, 0, 0, T.w, T.h);
+          var nd = x2.getImageData(0, 0, T.w, T.h).data; T.data.data.set(nd);
+        });
+        T.auto = true; T.busy = false;
+        var info = {cols:r.bgCols || [[255,255,255]], tol:r.tolerance || 40};
+        var isl = AliveBgTool.islands(T.data.data, T.w, T.h, info.cols, info.tol);
+        T.isl = isl.count ? isl : null; T.islInfo = info;
+        T.msg = isl.count ? '' : 'Background removed. See a spot we missed? Use Tap to remove a color.';
+        draw(); ui();
+      };
+      im.src = r.dataUrl;
+    }, 30);
+  }
+  cv.addEventListener('click', function(e){
+    if(!T.tap || !T.data || T.busy) return;
+    var rc = cv.getBoundingClientRect(); if(!rc.width || !rc.height) return;
+    var x = (e.clientX - rc.left) / rc.width * T.w, y = (e.clientY - rc.top) / rc.height * T.h;
+    var m = AliveBgTool.tapMask(T.data.data, T.w, T.h, x, y, T.every);
+    if(m.empty){ T.msg = 'That spot is already clear.'; ui(); return; }
+    if(m.all){ T.msg = 'That would remove the whole design, so we left it alone.'; ui(); return; }
+    T.isl = null;
+    step(function(){ AliveBgTool.clear(T.data.data, T.w, T.h, m.mask, m.cols, m.tol); });
+    T.msg = ''; draw(); ui();
+  });
+  box.querySelector('.bgt-undo').onclick = function(){
+    var hs = T.hist.pop(); if(!hs) return;
+    var a = T.data.data; for(var i = 0; i < hs.idx.length; i++){ var p = hs.idx[i]; a[p] = hs.vals[i*4]; a[p+1] = hs.vals[i*4+1]; a[p+2] = hs.vals[i*4+2]; a[p+3] = hs.vals[i*4+3]; }
+    T.auto = hs.auto; T.isl = null; T.msg = ''; T.changed = T.hist.length > 0 || T.changed; draw(); ui();
+  };
+  box.querySelector('.bgt-reset').onclick = function(){
+    load(orig, function(){ T.hist = []; T.auto = false; T.isl = null; T.tap = false; T.msg = 'Back to your original file.'; T.changed = true; T.restored = true; draw(); ui(); });
+  };
+  function close(){ box.remove(); }
+  box.querySelector('.bgt-close').onclick = close;
+  box.querySelector('.bgt-done').onclick = function(){
+    if(!T.changed || !T.data){ close(); return; }
+    T.isl = null; draw();
+    var url; try{ url = cv.toDataURL('image/png'); }catch(e){ close(); return; }
+    close();
+    if(T.restored && !T.hist.length){ if(d.bgPrev) undoBg(k); else render(); return; }
+    if(!d.bgPrev) d.bgPrev = {src:d.src, thumb:d.thumb, colors:d.colors, photoish:d.photoish, ink:S.inks[k], inkAuto:d.inkAuto, inkAsk:d.inkAsk};
+    d.src = url; d.bgRemoved = true; d.bgMsg = '';
+    var im2 = new Image();
+    im2.onload = function(){ var det = {ok:false}; try{ det = AliveArtColors.detect(im2); }catch(e){}
+      if(det.ok){ d.colors = det.colors || []; d.photoish = !!det.photoish;
+        if(det.count && !det.photoish){ S.inks[k] = Math.min(E.MAX_INK, det.count); d.inkAuto = S.inks[k]; d.inkAsk = ''; } }
+      d.thumb = thumbFrom(im2); render(); };
+    im2.src = url;
+  };
+  load(d.src, function(){ fitStage(); draw(); ui(); });
+  fitStage(); ui();
 }
 
 /* "Send my design later": ask for the ink colors so the price is real. */
@@ -5306,7 +5577,8 @@ function render(){
       mbar(mctaState().label, mctaState().off, barSub());
   }
   /* An open ink-color question survives a redraw (e.g. when the upload finishes). */
-  var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); });
+  var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); })
+    .concat([].slice.call(root.querySelectorAll('.tipbox.bgtool')));   /* Background Remover stays open while an upload finishes */
   root.innerHTML = html;
   keep.forEach(function(b){ root.appendChild(b); });
   lockStageHeight();
@@ -5493,6 +5765,7 @@ function wire(){
   });
   root.querySelectorAll('[data-tool]').forEach(function(b){
     b.onclick = function(){
+      if(b.dataset.tool === 'bgtool'){ var tk = toolTarget(); if(tk) openBgTool(tk); return; }
       if(b.dataset.tool === 'bg' || b.dataset.tool === 'undobg'){
         var bk = toolTarget(); if(!bk) return;
         if(b.dataset.tool === 'bg') removeBg(bk); else undoBg(bk);
