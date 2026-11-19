@@ -343,8 +343,17 @@
     document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.elementor-element-bda4dae');if(a)setTimeout(popupExtras,450);},true);
   }
 
+  /* ---------------- phones: the home page buttons read "Get Started →" ---------------- */
+  function mobileCta(){
+    var els=document.querySelectorAll('.elementor-element-a92765d .elementor-button-text, .elementor-element-46f7cda .elementor-button-text');
+    if(!els.length||!window.matchMedia)return;
+    var mq=window.matchMedia('(max-width: 767px)');
+    function apply(){els.forEach(function(t){if(t.dataset.apsOrig==null)t.dataset.apsOrig=t.textContent;t.textContent=mq.matches?'Get Started \u2192':t.dataset.apsOrig;});}
+    apply();if(mq.addEventListener)mq.addEventListener('change',apply);
+  }
+
   function boot(){
-    gridSetup();watchPopup();
+    gridSetup();watchPopup();mobileCta();
     if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}
     /* Elementor makes the invisible copy of a sticky header a moment later */
     setTimeout(mount,600);setTimeout(mount,2000);
