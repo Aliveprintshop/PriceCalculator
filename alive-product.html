@@ -1416,6 +1416,49 @@
 #alive-flow .disc-note{position:absolute;left:8px;top:100%;margin-top:4px;color:#15803d;font-size:11px;font-weight:700;letter-spacing:.1px;white-space:nowrap;background:none;line-height:1.2;}
 @media(max-width:560px){#alive-flow .disc-note{left:50%;transform:translateX(-50%);margin-top:2px;font-size:9.5px;}}
 @media(prefers-reduced-motion:reduce){#alive-flow .disc-badge.pop{animation:none;}}
+/* ---- Phones: app-style layout (19 Nov 2026) ------------------------------
+   Austin approved the app-style demo (claude/deploy-log-2026-11-19-*). Phones
+   only (<=767px); tablets and desktop are unchanged.
+   - slim 3-step progress line, with the back arrow (All products / Back to
+     design) as an icon beside it
+   - product name above the shirt; no style line, blurb or reviews line
+   - Front/Back sits on the photo; the thumbnail strip is hidden
+   - colors are one swipe row right under the photo, with the color name and
+     "Show all N colors" on the line beneath */
+@media(max-width:767px){
+  #alive-flow{position:relative;}
+  #alive-flow .steps{border-bottom:0;}
+  #alive-flow .steps-in{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.5fr);gap:8px;align-items:start;height:auto !important;padding:12px 14px 6px 56px !important;max-width:none;}
+  #alive-flow .steps .rule{display:none !important;}
+  #alive-flow .steps .stp{display:grid !important;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:6px;row-gap:5px;height:auto !important;min-width:0;padding:0 !important;margin:0;background:none;border:0;text-align:left;}
+  #alive-flow .steps .stp::before{content:"";grid-column:1/-1;height:3px;border-radius:999px;background:#E3E7EC;}
+  #alive-flow .steps .stp.now::before,#alive-flow .steps .stp.done::before{background:var(--blue,#1B6CCE);}
+  #alive-flow .steps .stp .dot{display:none !important;}
+  #alive-flow .steps .stp .nm{font-size:10.5px !important;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6B7280;line-height:1.2;white-space:nowrap;margin:0 !important;}
+  #alive-flow .steps .stp.now .nm{color:var(--blue,#1B6CCE);}
+  #alive-flow .steps .stp.done .nm{color:#374151;}
+  #alive-flow .steps .disc-badge{position:static !important;transform:none !important;margin:0 !important;font-size:9.5px !important;padding:2px 6px !important;justify-self:start;animation:none !important;box-shadow:none;}
+  #alive-flow .steps .disc-badge svg{width:10px;height:10px;}
+  #alive-flow .steps .disc-note{display:none;}
+  #alive-flow .allprod{position:absolute;top:0;left:6px;z-index:5;margin:0 !important;width:44px;height:44px;min-height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:0 !important;color:var(--text,#1E1E1E);}
+  #alive-flow .allprod::before{content:"";width:11px;height:11px;border-left:2.4px solid currentColor;border-bottom:2.4px solid currentColor;transform:rotate(45deg);margin-left:5px;}
+  #alive-flow .shell{padding-top:2px;}
+  #alive-flow .pcard{padding-top:6px;}
+  #alive-flow .pcard .style,#alive-flow .pcard .blurb,#alive-flow .pcard .revline{display:none !important;}
+  #alive-flow .pcard .brand{font-size:11px;letter-spacing:.08em;margin:0 0 2px;}
+  #alive-flow .pcard h2{font-size:19px;line-height:1.2;margin:0 0 8px;}
+  #alive-flow #f-stripwrap{display:none !important;}
+  #alive-flow .pcard .sides{position:relative;z-index:3;width:max-content;max-width:100%;margin:-58px auto 14px;padding:4px;gap:4px;background:#fff;border-radius:999px;box-shadow:0 4px 14px rgba(16,24,40,.14);}
+  #alive-flow .pcard-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:10px;padding-top:2px;}
+  #alive-flow .pcard-foot .swatches{grid-column:1/-1;grid-row:1;}
+  #alive-flow .pcard-foot .fhead{grid-column:1;grid-row:2;margin:0;min-width:0;}
+  #alive-flow .pcard-foot .fhead .aux{display:none;}
+  #alive-flow .pcard-foot .swmore{grid-column:2;grid-row:2;margin:0;min-height:44px;}
+  #alive-flow .pcard-foot .swatches.clipped{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;overflow-y:hidden !important;max-height:none !important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 4px !important;}
+  #alive-flow .pcard-foot .swatches.clipped::-webkit-scrollbar{display:none;}
+  #alive-flow .pcard-foot .swatches.clipped .sw{flex:0 0 auto;}
+  #alive-flow .pcard-foot:has(.sw:nth-child(8)) .swmore[hidden]{display:block !important;}
+}
 </style>
 </head>
 <body>
