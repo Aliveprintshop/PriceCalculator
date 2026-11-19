@@ -4397,7 +4397,8 @@ function designSnapshot(){
     var d = S.art[k]; if(!d) return;
     out[k] = {name:d.name, url:d.url || '', key:d.key || '', place:d.place,
               colors:d.colors || [], photoish:!!d.photoish, noPreview:!!d.noPreview,
-              inkAuto:d.inkAuto || 0, bgRemoved:!!d.bgRemoved};
+              inkAuto:d.inkAuto || 0, bgRemoved:!!d.bgRemoved,
+              editUrl:(d.bgRemoved && d.editFor === d.src && d.editUrl) || '', editKey:(d.bgRemoved && d.editFor === d.src && d.editKey) || ''};
   });
   return {
     style: S.p.style,
@@ -5523,6 +5524,36 @@ function saveAllMockups(){
   if(!sides.length) return null;
   return Promise.all(sides.map(saveMockup)).then(function(r){ return r.filter(Boolean); });
 }
+/* The customer's EDITED design — what the Background Remover left — saved as
+   its own file next to the original, so the order carries both: the original
+   for the art team, and the cleaned-up version the customer approved on the
+   mockup. Named "<original> (background removed).png"; the Orders dashboard
+   recognises that name and labels it.
+
+   Keyed on the exact image (editFor === src), so a second edit uploads again
+   and undoing the removal sends nothing. Never blocks: a failed upload just
+   means the order carries the original only, as it always did. */
+function saveEdited(k){
+  var d = S.art[k];
+  if(!d || !d.bgRemoved || !d.src) return null;
+  if(d.editFor === d.src && d.editP) return d.editP;
+  if(d.editFor === d.src && d.editUrl) return Promise.resolve({url:d.editUrl, key:d.editKey || ''});
+  if(!/^data:image\//.test(d.src)) return null;
+  var src = d.src, base = String(d.name || 'artwork').replace(/\.[a-z0-9]{1,5}$/i, '').slice(0, 80) || 'artwork';
+  d.editFor = src; d.editUrl = ''; d.editKey = '';
+  d.editP = fetch(src).then(function(r){ return r.blob(); })
+    .then(function(b){ return uploadMockup(b, k, base + ' (background removed).png'); })
+    .then(function(res){
+      if(res && res.url && d.editFor === src){ d.editUrl = res.url; d.editKey = res.key || ''; }
+      else if(d.editFor === src) d.editP = null;   /* failed: try again at Add to cart */
+      return res;
+    })['catch'](function(){ if(d.editFor === src) d.editP = null; return null; });
+  return d.editP;
+}
+function saveAllEdited(){
+  var ps = S.locs.map(saveEdited).filter(Boolean);
+  return ps.length ? Promise.all(ps) : null;
+}
 /* The breakpoint the two-column CSS uses. Kept in JS as well because the two
    layouts are different DOM, not just different CSS — colours move between
    columns, which no amount of `order` can do. */
@@ -5654,7 +5685,7 @@ function go(phase, scroll){
   /* Start building and uploading the mockup the moment the customer leaves the
      design step, so it is already done when they add to cart. Fire and forget —
      it must never hold up moving on. */
-  if(phase !== 'artwork' && S.phase === 'artwork'){ try{ saveAllMockups(); }catch(e){} }
+  if(phase !== 'artwork' && S.phase === 'artwork'){ try{ saveAllMockups(); }catch(e){} try{ saveAllEdited(); }catch(e){} }
   /* Every route into a step runs through here -- the Continue bar, the numbered
      step chips and the auto-advance -- so this is the one place that sees them
      all. Without it the funnel cannot tell someone who reached the size grid and
@@ -5958,6 +5989,8 @@ function addToCart(){
      in which case saveMockup hands back the cached promise and this is free. */
   var mockP = null; try{ mockP = saveAllMockups(); }catch(e){ mockP = null; }
   if(mockP) waits.push(mockP);
+  var editP = null; try{ editP = saveAllEdited(); }catch(e){ editP = null; }
+  if(editP) waits.push(editP);
   if(pend.length){
     pend.forEach(function(k){ var d = S.art[k]; if(d.uploadFailed || !d.upP) upload(k, d.file, d.fileName); });
     waits.push(Promise.all(pend.map(function(k){ return S.art[k].upP; })));
@@ -5977,6 +6010,11 @@ function addToCartNow(){
     var d = S.art[k]; if(!d) return;
     var f = {location:LOC[k].label, name:d.name, url:d.url || ''};
     if(!d.url) f.pending = true;            /* checkout flags files that never reached storage */
+    if(d.bgRemoved){
+      f.bgRemoved = true;
+      if(d.editUrl && d.editFor === d.src){ f.editedUrl = d.editUrl; f.editedKey = d.editKey || '';
+        f.editedName = String(d.name || 'artwork').replace(/\.[a-z0-9]{1,5}$/i, '').slice(0, 80) + ' (background removed).png'; }
+    }
     files.push(f); byLoc[LOC[k].label] = f;
   });
   var placeNotes = S.locs.filter(function(k){ return S.art[k] && S.art[k].src && LOC[k].side; }).map(function(k){
@@ -6029,7 +6067,8 @@ function addToCartNow(){
           var d = S.art[k]; if(!d) return;
           out[k] = {name:d.name, url:d.url || '', key:d.key || '', place:d.place,
                     colors:d.colors || [], photoish:!!d.photoish, noPreview:!!d.noPreview,
-                    inkAuto:d.inkAuto || 0, bgRemoved:!!d.bgRemoved};
+                    inkAuto:d.inkAuto || 0, bgRemoved:!!d.bgRemoved,
+              editUrl:(d.bgRemoved && d.editFor === d.src && d.editUrl) || '', editKey:(d.bgRemoved && d.editFor === d.src && d.editKey) || ''};
         });
         return out;
       })()
@@ -6065,10 +6104,14 @@ function applySnapshot(e){
     if(!LOC[k]) return;
     var a = e.art[k];
     /* src comes from the uploaded copy, so the design redraws where it was. */
-    S.art[k] = {name:a.name, src:a.url || '', thumb:a.url || '', colors:a.colors || [],
+    /* A design the customer cleaned up comes back as the cleaned copy, and
+       is known to be saved already, so it is not uploaded a second time. */
+    var shown = (a.bgRemoved && a.editUrl) || a.url || '';
+    S.art[k] = {name:a.name, src:shown, thumb:shown, colors:a.colors || [],
                 photoish:!!a.photoish, url:a.url || '', key:a.key || '', uploadFailed:false,
                 noPreview:!!a.noPreview, place:a.place || defaultPlace(k),
-                inkAuto:a.inkAuto || 0, inkSet:true, bgRemoved:!!a.bgRemoved};
+                inkAuto:a.inkAuto || 0, inkSet:true, bgRemoved:!!a.bgRemoved,
+                editUrl:a.editUrl || '', editKey:a.editKey || '', editFor:a.editUrl ? shown : ''};
   });
 }
 

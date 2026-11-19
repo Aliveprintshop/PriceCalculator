@@ -872,6 +872,20 @@ root.AliveEngine={
       upcharges: upcharges,
       addons: (it.addonList || []).slice(),
       line_total: lineTotal,
+      /* What the website knows about this line beyond the columns: the item
+         notes (ink estimates, where the design sits), artwork to follow,
+         artwork that never finished uploading, PCNA promo items and designs
+         whose background the customer removed. The Worker keeps the whole
+         payload and the dashboard reads these back from it. Until 19 Nov 2026
+         they only reached GHL. */
+      notes: it.notes || '',
+      artwork_later: !!it.artworkLater,
+      art_missing: (it.artworkFiles || []).filter(function (f) { return f && f.pending && !f.url; })
+        .map(function (f) { return f.location || 'artwork'; }),
+      pcna: !!(it.pricingProduct && it.pricingProduct._pcna),
+      bg_removed: (it.artworkFiles || []).filter(function (f) { return f && f.bgRemoved; })
+        .map(function (f) { return f.location || 'artwork'; }),
+      promo_code: it.promoCodeAtAdd || '',
       imprints: locs.map(function (loc) {
         return {
           location: LOC_LABEL[loc] || loc,
@@ -897,6 +911,18 @@ root.AliveEngine={
           url: a.url, r2_key: a.key || null,
           bytes: a.bytes || a.size || null, mime: a.mime || a.type || null
         });
+        /* The customer's cleaned-up copy from the Background Remover, saved
+           by the product page. Same location, so it sits beside the original
+           on the dashboard; the name is what labels it there. */
+        if (a.editedUrl) {
+          out.push({
+            kind: 'artwork', line_no: i + 1,
+            location: LOC_LABEL[a.location] || a.location || null,
+            filename: a.editedName || 'artwork (background removed).png',
+            url: a.editedUrl, r2_key: a.editedKey || null,
+            bytes: null, mime: 'image/png'
+          });
+        }
       });
       /* Mockups. The product page saves the composite to R2 when the customer
          leaves the artwork step and puts the URLs on the cart item as
@@ -998,6 +1024,9 @@ root.AliveEngine={
       rush_fee: +(+(ctx.rushFee || 0)).toFixed(2),
       stripe_session_id: ctx.stripeSessionId,
       customer_note: f.notes || null,
+      /* Set when the payment page could not be opened: the order is still
+         recorded in full, and the dashboard says to call the customer. */
+      checkout_issue: ctx.checkoutIssue || null,
       items: items,
       files: buildFiles(ctx.items)
     };
@@ -2120,66 +2149,51 @@ function shippingText(){
   var f = S.form;
   return [f.addr1, f.addr2, f.city + ', ' + f.state + ' ' + f.zip].filter(function(x){ return String(x||'').trim(); }).join(', ');
 }
-/* Same fields cart.html sends, so the GoHighLevel workflow mapping keeps working. */
-function buildPayload(){
-  var items = S.items, promo = CART.getPromo(), miss = missingArtwork(), f = S.form, ship = shipInfo();
+/* GoHighLevel gets the CONTACT, not the order.
+
+   Since 19 Nov 2026 the Orders dashboard is the one place the whole order
+   lives: items, sizes, print locations, every artwork file (and the
+   customer's edited copy), the mockups and every note. GHL gets who the
+   customer is, the order number, the total for the pipeline value, and a
+   link straight to the order on the dashboard.
+
+   The field names are the ones the "APS - order form - price calcuator"
+   workflow already maps (firstName … totalPriceValue, noteText), so the
+   workflow keeps working: its note is now a short pointer instead of the
+   full order. Sent AFTER the order is recorded, so it can carry the number. */
+var ORDERS_ADMIN = 'https://alive-orders.austin-662.workers.dev/admin';
+function ghlPayload(orderNo, ref){
+  var items = S.items, f = S.form, ship = shipInfo(), sp = stripePromo();
   var parts = String(f.name||'').trim().split(/\s+/), firstName = parts[0] || '', lastName = parts.slice(1).join(' ');
   var subtotal = +items.reduce(function(s, it){ return s + (+it.lineTotal || 0); }, 0).toFixed(2);
-  var savings = +items.reduce(function(s, it){ return s + (+it.promoSavingsTotal || 0); }, 0).toFixed(2);
-  var sp = stripePromo(), spOff = promoOff(subtotal + ship.cost);
-  var pieces = items.reduce(function(s, it){ return s + (it.qty|0); }, 0);
-  function sizesOf(it){ return it.sizes ? Object.keys(it.sizes).map(function(k){ return k + ':' + it.sizes[k]; }).join(', ') : ''; }
-  var itemsText = items.map(function(it, i){
-    return '#' + (i+1) + ' ' + it.brand + ' ' + it.style + ' ' + it.productName + ' (' + it.color + ') — ' + it.qty + ' pcs (' + sizesOf(it) + ') — ' + it.decoLabel + ' on ' + (it.locations || []).join(', ') +
-      (isPcna(it) ? ' [PCNA promo item — order from PCNA]' : it.decoMethod === 'sp' ? ' [Front ' + (it.frontColors || 1) + 'c, Back ' + (it.backColors || 1) + 'c]' : '') +
-      (it.addonList && it.addonList.length ? ' — Addons: ' + it.addonList.join(', ') : '') + ' — ' + it.turnaroundLabel +
-      ' — Unit $' + (+it.unitPrice).toFixed(2) + ', Line $' + (+it.lineTotal).toFixed(2) + (it.artworkLink ? ' — Artwork: ' + it.artworkLink : '') + (it.notes ? ' — Notes: ' + it.notes : '');
-  }).join('\n');
-  var itemsBlock = items.map(function(it, i){
-    var L = ['Item #' + (i+1) + ': ' + it.brand + ' ' + it.style + ' ' + it.productName + ' (' + it.color + ')',
-      '  Qty: ' + it.qty + ' pcs (' + sizesOf(it) + ')',
-      '  Decoration: ' + it.decoLabel + (isPcna(it) ? ' [PCNA promo item — order from PCNA]' : it.decoMethod === 'sp' ? ' [Front ' + (it.frontColors || 1) + 'c, Back ' + (it.backColors || 1) + 'c]' : ''),
-      '  Locations: ' + ((it.locations || []).join(', ') || '—')];
-    if(it.addonList && it.addonList.length) L.push('  Add-ons: ' + it.addonList.join(', '));
-    L.push('  Turnaround: ' + it.turnaroundLabel);
-    L.push('  Price: $' + (+it.unitPrice).toFixed(2) + '/unit, $' + (+it.lineTotal).toFixed(2) + ' line total');
-    if(it.promoCodeAtAdd) L.push('  Promo: ' + it.promoCodeAtAdd);
-    if(it.artworkLater) L.push('  *** ARTWORK TO FOLLOW — customer will email it ***');
-    var up = (it.artworkFiles || []).filter(function(x){ return x && x.url; });
-    if(up.length) L.push('  Artwork files: ' + up.map(function(x){ return (x.location ? x.location + ': ' : '') + x.url; }).join(' | '));
-    var pend = (it.artworkFiles || []).filter(function(x){ return x && x.pending && !x.url; });
-    if(pend.length) L.push('  *** ARTWORK NOT RECEIVED: ' + pend.map(function(x){ return x.location || 'artwork'; }).join(', ') + ' ***');
-    if(it.notes) L.push('  Notes: ' + it.notes);
-    return L.join('\n');
-  }).join('\n\n');
-  var allArt = []; items.forEach(function(it){ (it.artworkFiles || []).forEach(function(x){ if(x && x.url) allArt.push(x.url); }); });
-  var artworkHtml = items.map(function(it){ return (it.artworkFiles || []).filter(function(x){ return x.url; }).map(function(x){
-    return /\.(png|jpe?g|gif|webp)$/i.test(x.name || '') ? '<a href="' + x.url + '" target="_blank"><img src="' + x.url + '" alt="' + esc(x.name) + '" style="max-width:280px;max-height:280px;margin:6px;border:1px solid #ddd;border-radius:6px;"></a>'
-      : '<div style="margin:6px;">&#128206; <a href="' + x.url + '" target="_blank">' + esc(x.name || 'artwork') + '</a></div>'; }).join(''); }).join('');
+  var spOff = promoOff(subtotal + ship.cost);
+  var preTax = +(subtotal + ship.cost - spOff).toFixed(2);
+  var link = orderNo ? ORDERS_ADMIN + '?order=' + orderNo : ORDERS_ADMIN;
   var submittedAt = new Date().toISOString();
-  var noteText = (miss.length ? '⚠️ ARTWORK MISSING — DO NOT SCHEDULE FOR PRINT\nReference ' + orderRef() + '\nMissing: ' + miss.map(function(m){ return m.location; }).join(', ') + '\n--------------------------------------------\n\n' : '') +
-    '🛍 NEW ORDER\nSubmitted: ' + submittedAt + '\nSource: New checkout (product page v3)\n\n' +
-    '— CUSTOMER —\nName: ' + (firstName + ' ' + lastName).trim() + '\nCompany: ' + (f.company || '—') + '\nEmail: ' + (f.email || '—') + '\nPhone: ' + (f.phone || '—') + '\nDelivery: ' + shippingText() + '\n\n' +
-    '— ORDER (' + items.length + ' ' + (items.length === 1 ? 'item' : 'items') + ', ' + pieces + ' pcs) —\n' + itemsBlock + '\n\n' +
-    '— ARTWORK FILES (' + allArt.length + ') —\n' + (allArt.length ? allArt.join('\n') : 'None uploaded') + '\n\n' +
-    '— PRICING —\nSubtotal: $' + (subtotal + savings).toFixed(2) + '\n' + (savings > 0 ? 'Promo ' + (promo ? promo.code : '') + ': -$' + savings.toFixed(2) + '\n' : '') +
-    'Products total: $' + subtotal.toFixed(2) + '\nShipping: ' + (S.ship === 'pickup' ? 'Pickup (free)' : '$' + ship.cost.toFixed(2) + ' (' + boxesText(ship.boxes) + ' × $' + CONFIG.shipPerBox + ' flat rate)') +
-    (spOff ? '\nPromo ' + sp.code + ' ($' + spOff.toFixed(2) + ' off, applied in Stripe): -$' + spOff.toFixed(2) : '') +
-    '\nTotal (before tax): $' + (subtotal + ship.cost - spOff).toFixed(2) + '\n\n— CUSTOMER NOTES —\n' + (f.notes || '—');
+  var noteText = '🛍 NEW WEBSITE ORDER' + (orderNo ? ' #' + orderNo : '') + '\n' +
+    'Total (before tax): $' + preTax.toFixed(2) + '\n' +
+    'Reference: ' + ref + '\n\n' +
+    (orderNo
+      ? 'Full order, artwork and notes: ' + link
+      : 'Order number not assigned yet — find it on the Orders dashboard by the customer\'s email: ' + link);
   return {
     firstName:firstName, lastName:lastName, email:f.email, phone:f.phone, company:f.company,
-    shippingAddress:shippingText(), orderNotes:f.notes, itemCount:items.length, pieceCount:pieces,
-    cartSubtotal:'$' + (subtotal + savings).toFixed(2), cartTotal:'$' + subtotal.toFixed(2), cartTotalValue:subtotal,
+    orderNumber:orderNo ? String(orderNo) : '', orderLink:link,
     totalPrice:'$' + subtotal.toFixed(2), totalPriceValue:subtotal,
-    promoCode:promo ? promo.code : '', promoSavings:'$' + (savings + spOff).toFixed(2), promoSavingsValue:+(savings + spOff).toFixed(2),
-    items:JSON.stringify(items.map(function(it){ var c = Object.assign({}, it); delete c.pricingProduct; delete c.mock; return c; })),
-    itemsSummary:itemsText, itemsBlock:itemsBlock, artworkLinks:allArt.join('\n'), mockupLinks:'', mockupCount:0,
-    artworkHtml:artworkHtml, noteText:noteText, source:'New checkout (product page v3)', submittedAt:submittedAt,
-    deliveryMethod:S.ship === 'pickup' ? 'pickup' : 'ship', shippingBoxes:ship.boxes, shippingCost:'$' + ship.cost.toFixed(2), shippingCostValue:ship.cost,
-    orderTotalWithShipping:'$' + (subtotal + ship.cost - spOff).toFixed(2)
+    cartTotal:'$' + subtotal.toFixed(2), cartTotalValue:subtotal,
+    orderTotalWithShipping:'$' + preTax.toFixed(2),
+    noteText:noteText, source:'New checkout (product page v3)', submittedAt:submittedAt,
+    paymentStatus:'awaiting_payment', orderRef:ref
   };
 }
-
+/* Queued by the browser, so it survives the redirect to payment. */
+function sendGhl(orderNo, ref){
+  var payload = ghlPayload(orderNo, ref), fd = new FormData();
+  Object.keys(payload).forEach(function(k){ var v = payload[k]; fd.append(k, v == null ? '' : String(v)); });
+  var sent = false;
+  try{ if(navigator.sendBeacon) sent = navigator.sendBeacon(CONFIG.ghlWebhook, fd); }catch(e){}
+  if(!sent){ try{ fetch(CONFIG.ghlWebhook, {method:'POST', body:fd, keepalive:true}).catch(function(){}); }catch(e){} }
+}
 /* =====================================================================
    SAVE A MOCKUP THAT WAS NEVER SAVED
    ---------------------------------------------------------------------
@@ -2413,14 +2427,31 @@ function submit(){
      beacon and /create-session instead of being stacked on top of them.
      Awaited further down, just before the order is recorded. */
   var mockWork = saveMissingMockups();
-  var ref = orderRef(), payload = buildPayload();
-  var fd = new FormData();
-  Object.keys(payload).forEach(function(k){ var v = payload[k]; fd.append(k, v == null ? '' : (typeof v === 'object' ? JSON.stringify(v) : String(v))); });
-  fd.append('paymentStatus', 'awaiting_payment'); fd.append('orderRef', ref);
-  /* Queued by the browser, so it survives the redirect to payment. */
-  var sent = false;
-  try{ if(navigator.sendBeacon) sent = navigator.sendBeacon(CONFIG.ghlWebhook, fd); }catch(e){}
-  if(!sent){ try{ fetch(CONFIG.ghlWebhook, {method:'POST', body:fd, keepalive:true}).catch(function(){}); }catch(e){} }
+  var ref = orderRef();
+  /* One GHL ping per Place order tap, whichever way it ends. */
+  var ghlSent = false;
+  function ghlOnce(no){ if(ghlSent) return; ghlSent = true; sendGhl(no, ref); }
+  /* The payment page could not be opened. The customer is told to call; the
+     shop still gets the whole order on the dashboard (under Awaiting payment,
+     with a note to call them) instead of only what GHL used to carry. */
+  var paying = false;   /* a payment session exists: never record this tap as "did not open" */
+  function recordUnpaid(why){
+    if(paying) return;
+    var AO = window.AliveOrders;
+    if(!AO){ ghlOnce(null); return; }
+    mockWork.then(function(){
+      return AO.recordOrder({
+        items: S.items, form: S.form, totals: totals(),
+        shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
+        turnaround: S.rush, orderRef: ref,
+        rushFee: S.rush === 'std' ? 0 : rushExtra(S.rush),
+        discount: totals().off, promoCode: stripePromo() ? stripePromo().code : '',
+        stripeSessionId: null,
+        checkoutIssue: 'The payment page did not open (' + why + '). The customer was asked to call — take payment by phone.'
+      });
+    }).then(function(rec){ ghlOnce(rec && rec.ok ? rec.order_no : null); },
+            function(){ ghlOnce(null); });
+  }
   S.busy = true; render();
   var f = S.form, t = totals(), embed = !!CONFIG.stripeKey;
   if(embed) loadStripe().catch(function(){});   /* warm up while the session is created */
@@ -2441,6 +2472,7 @@ function submit(){
       try{ sessionStorage.setItem('alive_pending_purchase', JSON.stringify({currency:'USD', value:tt.grand, shipping:tt.ship, items:gaItems()})); }catch(e){}
       track('add_payment_info', {currency:'USD', value:tt.grand, payment_type:'stripe', items:gaItems()});
       if(res.ok && j.id){
+        paying = true;
         /* Record the order before the customer goes to pay. recordOrder never
            rejects and never blocks payment: on failure it stashes the payload
            and retries on the next page load, the customer pays regardless, and
@@ -2481,15 +2513,17 @@ function submit(){
           stripeSessionId: j.id
         }).then(function(rec){
           if(rec && rec.ok) S.orderNo = rec.order_no;
+          ghlOnce(rec && rec.ok ? rec.order_no : null);
           if(embed && j.clientSecret){ S.pay = {secret:j.clientSecret, id:j.id, url:j.url}; render(); return; }
           if(j.url){ nav(j.url); return; }
         });
         });
       }
       if(j.promoError){ var pe = CART.getPromo(); if(pe && pe.welcome && !/\$250/.test(j.error || '')) welcomeSpent(); CART.setPromo(null); S.promoOpen = true; S.promoErr = j.error || 'That code can’t be used.'; }
+      if(!j.promoError) recordUnpaid(String((res.j && res.j.error) || 'payment service error').slice(0, 160));
       S.busy = false; S.err = esc((res.j && res.j.error) || 'We couldn’t start payment. Please try again.') + (j.promoError ? ' We removed the code — your total is updated.' : ''); render();
     })
-    .catch(function(){ S.busy = false;
+    .catch(function(){ recordUnpaid('could not reach the payment service'); S.busy = false;
       S.err = 'We couldn’t reach our payment service. Your order details reached us — <a href="' + CONFIG.phoneHref + '">call ' + CONFIG.phone + '</a> and we’ll finish it by phone.'; render(); });
 }
 
@@ -2521,7 +2555,7 @@ function renderDone(){
       if(once(sig)) track('begin_checkout', {currency:'USD', value:t.total, items:gaItems()});
       try{ cartSnap('checkout'); }catch(e){} } });
 })();
-window.__ALIVE_CHECKOUT__ = {S:S, render:render, totals:totals, buildPayload:buildPayload, boxCount:boxCount, encodeCart:encodeCart, decodeCart:decodeCart, shareUrl:shareUrl};
+window.__ALIVE_CHECKOUT__ = {S:S, render:render, totals:totals, ghlPayload:ghlPayload, boxCount:boxCount, encodeCart:encodeCart, decodeCart:decodeCart, shareUrl:shareUrl};
 })();
 
 </script>
