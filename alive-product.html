@@ -4030,7 +4030,7 @@ function colorExtra(c){
 }
 function swBtn(c, i){
   var up = colorUp(c) > 0, so = soldOut(c);
-  return '<button class="sw' + (i === S.color ? ' on' : '') + (up ? ' up' : '') + (so ? ' so' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + (up ? ' (specialty color, costs more)' : '') + (so ? ' (sold out at our supplier)' : '') + '" aria-label="' + esc(c.name) + (up ? ', specialty color' : '') + (so ? ', sold out' : '') + '"></button>';
+  return '<button class="sw' + (i === S.color ? ' on' : '') + (up ? ' up' : '') + (so ? ' so' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + (up ? ' (specialty color, costs more)' : '') + (so ? ' (sold out)' : '') + '" aria-label="' + esc(c.name) + (up ? ', specialty color' : '') + (so ? ', sold out' : '') + '"></button>';
 }
 function colorNote(){
   var c = S.colors[S.color], x = colorExtra(c);
@@ -4043,7 +4043,7 @@ function colorFoot(){
   var sw = S.colors.map(function(c, i){
     return swBtn(c, i);
   }).join('');
-  return '<div class="fhead"><span class="lbl">Color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b>' + colorNote() + (soldOut(S.colors[S.color]) ? ' <span class="sonote">Sold out at our supplier</span>' : '') + '</span>' +
+  return '<div class="fhead"><span class="lbl">Color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b>' + colorNote() + (soldOut(S.colors[S.color]) ? ' <span class="sonote">Sold out</span>' : '') + '</span>' +
     '<span class="aux">' + colorAux(S.colors.length) + '</span></div>' +
     '<div class="swatches">' + sw + '</div>';
 }
@@ -4102,8 +4102,8 @@ function stockShort(){
 }
 function stockWarn(){
   var sh = stockShort(); if(!sh.length) return '';
-  var list = sh.map(function(x){ return x.size === 'OSFA' || isOneSize() ? x.have + ' available' : x.size + ' (' + x.have + ' available)'; }).join(', ');
-  return 'Our supplier shows less than you need' + (isOneSize() ? ': ' : ' in ') + list + '. You can still order. We’ll check stock and contact you if anything needs to change.';
+  var list = sh.map(function(x){ return isOneSize() ? x.have.toLocaleString('en-US') : x.have.toLocaleString('en-US') + ' in ' + x.size; }).join(', ');
+  return 'We only have ' + list + ' in stock right now. You can still order, and we’ll contact you if anything needs to change.';
 }
 function stockRefresh(){
   root.querySelectorAll('.size[data-sz]').forEach(function(cell){
@@ -4112,7 +4112,7 @@ function stockRefresh(){
   var one = root.querySelector('.stk1'); if(one) one.innerHTML = S.p && isOneSize() ? stockHtml(oneSizeKey(), +S.qty || 0) : '';
   var w = root.querySelector('.stkwarn'); if(w){ var t = stockWarn(); w.textContent = t; w.hidden = !t; }
 }
-function stockAux(){ return S.stock ? '<span class="aux stkaux">Supplier stock · updated hourly</span>' : ''; }
+function stockAux(){ return S.stock ? '<span class="aux stkaux">Stock updated hourly</span>' : ''; }
 function sizeFoot(){
   if(isOneSize()) return oneSizeFoot();
   var cells = (S.p.available_sizes || []).map(function(sz){
@@ -6236,7 +6236,7 @@ function addToCartNow(){
   var notes = [];
   if(S.mode === 'later') notes.push('ARTWORK TO FOLLOW — customer will email it.' + (S.method === 'sp' ? ' Ink colors are the customer’s estimate — confirm on the proof.' : ''));
   var shortStock = stockShort();
-  if(shortStock.length) notes.push('STOCK CHECK: supplier showed only ' + shortStock.map(function(x){ return x.have + ' in ' + x.size + ' (ordered ' + x.want + ')'; }).join(', ') + ' at ' + (S.stock && S.stock.t || '') + '.');
+  if(shortStock.length) notes.push('STOCK CHECK: only ' + shortStock.map(function(x){ return x.have + ' in stock in ' + x.size + ' (ordered ' + x.want + ')'; }).join(', ') + ' at ' + (S.stock && S.stock.t || '') + '.');
   notes = notes.concat(inkNotes, placeNotes);
   var lm = {}; S.locs.forEach(function(k){ lm[k] = S.method; });
   var upTot = E.upchargeTotal(S.p, cfg, sizes);
