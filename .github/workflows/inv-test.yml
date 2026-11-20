@@ -1,0 +1,25 @@
+name: Inventory connection test (Lane Seven + PCNA)
+
+# Manual only. Reads stock for one sample product per supplier; prints counts, no prices.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test inventory services
+        env:
+          LANE7_ID: ${{ secrets.LANE7_ID }}
+          LANE7_PASSWORD: ${{ secrets.LANE7_PASSWORD }}
+          PCNA_ID: ${{ secrets.PCNA_ID }}
+          PCNA_PASSWORD: ${{ secrets.PCNA_PASSWORD }}
+        run: python inv_test.py
