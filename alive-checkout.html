@@ -334,8 +334,8 @@
 #alive-flow .backcart{display:inline-block;margin:0 0 12px;font-weight:700;}
 #alive-flow .upgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 #alive-flow .upc{border:1px solid var(--border);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0;}
-#alive-flow .upimg{background:var(--bg,#f4f5f7);border-radius:var(--r);overflow:hidden;display:flex;justify-content:center;}
-#alive-flow .upimg .mk{width:78%;}
+#alive-flow .upimg{background:none;border-radius:var(--r);overflow:hidden;display:flex;justify-content:center;align-items:center;}
+#alive-flow .upimg .mk{width:82%;background:none;}
 #alive-flow .upb{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 auto;}
 #alive-flow .upk{font-family:var(--disp);font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);}
 #alive-flow .upb b{font-size:14px;line-height:1.25;}
@@ -348,7 +348,7 @@
   #alive-flow .upgrid{grid-template-columns:1fr;}
   #alive-flow .upc{flex-direction:row;align-items:center;}
   #alive-flow .upimg{width:96px;flex:0 0 96px;}
-  #alive-flow .upimg .mk{width:86%;}
+  #alive-flow .upimg .mk{width:92%;}
 }
 #alive-flow .restored{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue-dark);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:13.5px;font-weight:600;}
 /* ---- payment step (Stripe's form sits on this page) ---- */
@@ -1716,7 +1716,7 @@ function editUrl(it, step){
    design / Edit sizes, the Worker's re-pricing and the dashboard all treat it
    the same. Prices come from the same engine; the Worker re-prices on pay. */
 var UPSELL_POOL = ['IND4000','BC3001','BC3501','LS14004','112','PC78H','1717'];
-var UP = {raw:{}, state:'idle', added:{}};
+var UP = {raw:{}, state:'idle', added:{}, ar:{}};
 function upLog(){ try{ return JSON.parse(sessionStorage.getItem('alive_upsell_added') || '{}'); }catch(e){ return {}; } }
 function upSource(){
   /* Any apparel line can lead the suggestions. One with a placed design shows
@@ -1854,7 +1854,9 @@ function upBuild(src, raw){
     unitPrice:unit, lineTotal:E.lineTotal(p, cfg, sizes), sizeUpchargeTotal:E.upchargeTotal(p, cfg, sizes), sizeUpchargePerSize:{},
     promoCodeAtAdd:'', promoDiscountAtAdd:cfg.promoDiscount,
     pricingProduct:keep, source:'cart-upsell', upsellFrom:src.id || '',
-    mock:{side:side, img:img, ar:box ? box[4] : 2/3, crop:box ? box.slice(0, 4) : null, layers:layers},
+    /* The photo's real shape, measured in the browser (UP.ar), beats the
+       catalog's note of it: a wrong one stretches the garment. */
+    mock:{side:side, img:img, ar:UP.ar[img] || (box ? box[4] : 2/3), crop:box ? box.slice(0, 4) : null, layers:layers},
     mockupUrl:'', mockupUrls:{},
     edit:{color:idx, colorName:c.name || '', method:m, locs:locs.slice(), inks:ink, mode: src.artworkLater ? 'later' : ((src.edit && src.edit.mode) || 'upload'), side:side,
           sizes:JSON.parse(JSON.stringify(sizes)), qty:q, est:q, art:editArt},
@@ -1886,7 +1888,7 @@ function upsellCard(){
     '<p class="cnote">' + (art ? 'Same design, same print.' : 'Same design and print as your ' + esc(upSource().productName || 'order') + '.') + ' Added to this order so it all ships together.</p>' +
     '<div class="upgrid">' + picks.map(function(it){
       var line = priceItem(it, S.addon, S.rush).line;
-      return '<div class="upc"><div class="upimg">' + mockHtml(it.mock) + '</div>' +
+      return '<div class="upc"><div class="upimg" data-ar="' + it.mock.ar + '">' + mockHtml(it.mock) + '</div>' +
         '<div class="upb"><span class="upk">' + esc(it._kind) + '</span><b>' + esc(it.productName) + '</b>' +
         '<span class="ups">' + esc(it.color) + ' · ' + money(line / it.qty) + '/pc</span>' +
         '<button type="button" class="upadd" data-upsell="' + esc(it.style) + '">Add ' + it.qty + ' · ' + money(line) + '</button></div></div>';
@@ -2408,6 +2410,16 @@ function wire(){
     goStage('details'); }; });
   root.querySelectorAll('[data-tocart]').forEach(function(b){ b.onclick = function(){ goStage('cart'); }; });
   root.querySelectorAll('[data-upsell]').forEach(function(b){ b.onclick = function(){ upsellAdd(b.dataset.upsell); }; });
+  root.querySelectorAll('.upimg img.mk-g').forEach(function(img){
+    function check(){
+      if(!img.naturalWidth || !img.naturalHeight) return;
+      var nat = img.naturalWidth / img.naturalHeight, src = img.getAttribute('src'), shown = +img.closest('.upimg').dataset.ar;
+      if(UP.ar[src] && Math.abs(UP.ar[src] - nat) < 0.005) return;
+      UP.ar[src] = nat;
+      if(Math.abs(shown - nat) > 0.01 && S.stage === 'cart' && !S.pay && !S.done){ clearTimeout(UP.t); UP.t = setTimeout(render, 30); }
+    }
+    if(img.complete) check(); else img.addEventListener('load', check);
+  });
   root.querySelectorAll('[data-share]').forEach(function(b){ b.onclick = openShare; });
   root.querySelectorAll('[data-navto]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-mock]').forEach(function(b){ b.onclick = function(){
