@@ -2496,7 +2496,7 @@ function wire(){
   root.querySelectorAll('[data-upsell]').forEach(function(b){ b.onclick = function(){ upsellAdd(b.dataset.upsell); }; });
   root.querySelectorAll('[data-upsize]').forEach(function(b){ b.onclick = function(){
     UP.open = UP.open === b.dataset.upsize ? null : b.dataset.upsize; render();
-    var pn = root.querySelector('#up-panel'); if(pn){ var i = pn.querySelector('input'); if(i) i.focus({preventScroll:true}); scrollToEl(pn); } }; });
+    var pn = root.querySelector('#up-panel'); if(pn){ var i = pn.querySelector('input'); if(i) i.focus({preventScroll:true}); scrollToEl(root.querySelector('.upsell')); } }; });
   root.querySelectorAll('[data-upclose]').forEach(function(b){ b.onclick = function(){ UP.open = null; render(); }; });
   root.querySelectorAll('[data-upq]').forEach(function(inp){ inp.oninput = function(){
     var v = inp.value.replace(/\D/g, '').slice(0, 5); if(inp.value !== v) inp.value = v;
