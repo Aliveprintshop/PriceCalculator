@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-20T17:46:13Z",
+ "generated_at": "2026-11-20T17:47:02Z",
  "source": "S&S Activewear API v2",
  "brands": [
   "Imperial",
@@ -7421,7 +7421,7 @@
    "category": "Caps",
    "subcategory": "Headwear",
    "description": "100% polyester, sublimated printed fabric. Classic fit. Structured stand-up mesh windshield. Five-panel, mid-profile with rope braid . Flat bill, green underbill. Performance moisture-management sweatband. Leather strap, Imperial flip buckle and grommets.",
-   "case_price": 13.5,
+   "case_price": 9.2,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -7558,166 +7558,6 @@
        192,
        981,
        809,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Frog Skin Camo/ Green",
-     "code": "98",
-     "hex": "#51695D",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/112041_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/112041_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/112041_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       151,
-       983,
-       850,
-       800
-      ],
-      "b": [
-       19,
-       192,
-       981,
-       808,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Green Floral",
-     "code": "14",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/100650_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/100650_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/100650_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       190,
-       983,
-       811,
-       800
-      ],
-      "b": [
-       19,
-       226,
-       983,
-       776,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Hawaiin Biome",
-     "code": "99",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/97214_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/97214_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/97214_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       21,
-       121,
-       981,
-       876,
-       800
-      ],
-      "b": [
-       19,
-       204,
-       983,
-       799,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Hawaiin Sky",
-     "code": "11",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/97216_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/97216_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/97216_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       179,
-       981,
-       823,
-       800
-      ],
-      "b": [
-       19,
-       223,
-       981,
-       777,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Throwback Black",
-     "code": "15",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/100651_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/100651_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/100651_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       172,
-       983,
-       830,
-       800
-      ],
-      "b": [
-       19,
-       214,
-       983,
-       786,
        800
       ]
      }
@@ -13790,7 +13630,7 @@
    "category": "Women's",
    "subcategory": "Fleece - Premium - Crew",
    "description": "6.5 oz./yd², (210 gm) 80/20 ring-spun cotton/polyester with 100% cotton 40 singles face yarn . Heather colors are 52/48 cotton/polyester. Camo colors are 80/20 cotton/polyester with 100% cotton 40 singles face yarn with water-based camouflage print. Pre-laundered. Split-stitched double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at cuffs. Tear away label (Tie-Dye Cotton Candy has a woven label) .",
-   "case_price": 15.59,
+   "case_price": 12.05,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -13807,7 +13647,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 1.13
+    "2XL": 1.42
    },
    "colors": [
     {
@@ -13840,40 +13680,6 @@
        19,
        956,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "98",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103012_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103012_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103012_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103012_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103012_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103012_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       23,
-       19,
-       979,
-       982,
-       800
-      ],
-      "b": [
-       29,
-       17,
-       973,
-       983,
        800
       ]
      }
@@ -14015,40 +13821,6 @@
      }
     },
     {
-     "name": "Tie Dye Cotton Candy",
-     "code": "10",
-     "hex": "#FBD6E1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103017_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103017_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103017_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103017_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103017_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103017_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       23,
-       19,
-       977,
-       982,
-       800
-      ],
-      "b": [
-       34,
-       19,
-       966,
-       982,
-       800
-      ]
-     }
-    },
-    {
      "name": "White",
      "code": "00",
      "hex": "#FFFFFF",
@@ -14095,7 +13867,7 @@
    "category": "Women's",
    "subcategory": "Fleece - Premium - Hood",
    "description": "6.5 oz./yd² (US), 10.8 oz./L yd (CA), 80/20 ring-spun cotton/polyester with 100% cotton face, 40 singles. Grey Heather is 52/48 cotton/polyester. Camo colors are water-based camouflaged print. Pre-laundered . Split-stitched double-needle sewing on all seams. 3/8” flat drawcord. Twill neck tape. 1x1 ribbing at cuffs. Sewn eyelets. Tear away label ( Tie-Dye Cotton Candy has a woven label) .",
-   "case_price": 20.17,
+   "case_price": 17.3,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -14112,7 +13884,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 2.59
+    "2XL": 2.99
    },
    "colors": [
     {
@@ -14320,40 +14092,6 @@
      }
     },
     {
-     "name": "Tie Dye Cotton Candy",
-     "code": "32",
-     "hex": "#FBD6E1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/97530_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/97530_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/97530_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/97530_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/97530_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/97530_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       87,
-       19,
-       913,
-       982,
-       800
-      ],
-      "b": [
-       74,
-       21,
-       926,
-       982,
-       800
-      ]
-     }
-    },
-    {
      "name": "White",
      "code": "01",
      "hex": "#FFFFFF",
@@ -14417,44 +14155,9 @@
     "2XL"
    ],
    "size_upcharges": {
-    "XL": 5.1,
     "2XL": 0.5
    },
    "colors": [
-    {
-     "name": "Alpine Green",
-     "code": "23",
-     "hex": "#193E34",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/68747_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/68747_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/68747_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/68747_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/68747_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/68747_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       40,
-       19,
-       960,
-       982,
-       800
-      ],
-      "b": [
-       25,
-       17,
-       977,
-       983,
-       800
-      ]
-     }
-    },
     {
      "name": "Black",
      "code": "50",
@@ -15886,7 +15589,7 @@
    "category": "Youth",
    "subcategory": "Outerwear",
    "description": "100% polyester fabric with interior water-resistant coating. Waterproof pressure resistance: 600 mm. Matte finish #4 reverse coil zipper. Single layer body with fine mesh hood liner. Three panel hood & scuba neck. Welt pockets with mesh pocket bags. Elastic cuffs and waistband. Self-neck tape with locker loop in center back. Tear away label.",
-   "case_price": 17.0,
+   "case_price": 14.68,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -15933,40 +15636,6 @@
        19,
        966,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black/ Forest Camo",
-     "code": "61",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/77181_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/77181_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/77181_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/77181_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/77181_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/77181_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       38,
-       17,
-       962,
-       983,
-       800
-      ],
-      "b": [
-       34,
-       17,
-       966,
-       983,
        800
       ]
      }
@@ -17056,7 +16725,7 @@
    "category": "Outerwear",
    "subcategory": "Outerwear",
    "description": "82 Gm, 100% polyester fabric with interior water-resistant coating. Waterproof pressure resistance: 600 mm. No lining . Matte finish eyelets and zippers. #4 zipper with zipper pull & rubber zipper pull tab. Reversed zipper tape. Single layer body with fine mesh hood liner. Three panel hood. Scuba neck. Self-neck tape. Welt pockets with mesh pocket bags. Tightening toggle at waistband. Elastic cuffs. Locker loop in center back . Tear away label.",
-   "case_price": 20.01,
+   "case_price": 17.07,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -17074,8 +16743,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 1.94,
-    "3XL": 1.94
+    "2XL": 1.71,
+    "3XL": 1.71
    },
    "colors": [
     {
@@ -17173,40 +16842,6 @@
        36,
        17,
        964,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "98",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/86989_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/86989_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/86989_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/86989_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/86989_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/86989_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       36,
-       17,
-       966,
-       983,
-       800
-      ],
-      "b": [
-       42,
-       17,
-       960,
        983,
        800
       ]
@@ -17348,7 +16983,7 @@
    "category": "Outerwear",
    "subcategory": "Outerwear",
    "description": "2.5 oz./yd² (US) 4.5 oz./L yd (CA), 100% polyester fabric with interior water-resistant coating. Waterproof pressure resistance: 600 mm. No lining. Matte finish eyelets and zippers. #4 zipper with zipper pull & rubber zipper pull tab. Reversed zipper tape. Single layer body with fine mesh hood liner. Three panel hood. Scuba neck. Self-neck tape. Welt pockets with mesh pocket bags. Tightening toggle at waistband. Elastic cuffs. Locker loop in center back. Tear away label.",
-   "case_price": 20.22,
+   "case_price": 16.5,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -17366,8 +17001,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 1.73,
-    "3XL": 1.73
+    "2XL": 2.28,
+    "3XL": 2.28
    },
    "colors": [
     {
@@ -17467,74 +17102,6 @@
        38,
        17,
        962,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "98",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/81909_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/81909_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/81909_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/81909_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/81909_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/81909_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       55,
-       19,
-       945,
-       982,
-       800
-      ],
-      "b": [
-       42,
-       17,
-       958,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black/ Forest Camo",
-     "code": "61",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/69358_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/69358_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69358_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/69358_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/69358_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/69358_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       40,
-       17,
-       962,
-       983,
-       800
-      ],
-      "b": [
-       21,
-       17,
-       979,
        983,
        800
       ]
@@ -17743,40 +17310,6 @@
      }
     },
     {
-     "name": "Forest Camo",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/65063_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/65063_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/65063_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/65063_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/65063_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/65063_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       48,
-       17,
-       954,
-       983,
-       800
-      ],
-      "b": [
-       48,
-       17,
-       954,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Graphite",
      "code": "09",
      "hex": "#4F4F4F",
@@ -17975,40 +17508,6 @@
        48,
        19,
        952,
-       982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "White Camo",
-     "code": "02",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/89317_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/89317_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/89317_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/89317_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/89317_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/89317_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       65,
-       19,
-       937,
-       981,
-       800
-      ],
-      "b": [
-       63,
-       19,
-       937,
        982,
        800
       ]
@@ -18251,8 +17750,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 5.67,
-    "3XL": 5.67
+    "2XL": 2.88,
+    "3XL": 2.88
    },
    "colors": [
     {
@@ -18322,36 +17821,6 @@
        800
       ]
      }
-    },
-    {
-     "name": "White",
-     "code": "00",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/50448_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/50448_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       78,
-       19,
-       924,
-       982,
-       800
-      ],
-      "b": [
-       78,
-       19,
-       922,
-       982,
-       800
-      ]
-     }
     }
    ],
    "source": "ss",
@@ -18366,7 +17835,7 @@
    "category": "Women's",
    "subcategory": "Outerwear",
    "description": "100% polyester fabric with interior water-resistant coating. Waterproof pressure resistance: 600 mm. Matte finish eyelets and zippers. #4 zipper with zipper pull . Reversed zipper tape. Single layer body with fine mesh hood liner. Three panel hood. Scuba neck. Self-neck tape. Tightening toggle at waistband. Elastic cuffs. Locker loop in center back. Tear away label.",
-   "case_price": 21.01,
+   "case_price": 17.97,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -18383,7 +17852,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 2.94
+    "2XL": 3.32
    },
    "colors": [
     {
@@ -18421,40 +17890,6 @@
      }
     },
     {
-     "name": "Black Camo",
-     "code": "98",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/89808_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/89808_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/89808_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/89808_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/89808_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/89808_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       42,
-       17,
-       958,
-       983,
-       800
-      ],
-      "b": [
-       55,
-       17,
-       947,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Blush/ White Zipper",
      "code": "30",
      "hex": "#EED3D0",
@@ -18484,40 +17919,6 @@
        19,
        937,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "White Camo",
-     "code": "01",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/89810_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/89810_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/89810_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/89810_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/89810_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/89810_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       46,
-       19,
-       954,
-       982,
-       800
-      ],
-      "b": [
-       48,
-       17,
-       952,
-       983,
        800
       ]
      }
@@ -18873,7 +18274,7 @@
    "category": "Outerwear",
    "subcategory": "Outerwear",
    "description": "100% nylon 330D with interior PU waterproof coating. Nylon outer shell: waterproof coating = level 3. Inner PU coating: breathability/permeability = 5,000. Water pressure resistance = 10,000 mm. Dyed to match neck taping. #5 dyed-to-match body coil zipper. Matte metal zipper pull. Rubber zipper pull tab. Zipper garage. Single layer body with fine mesh hood liner. Matte nickel metal eyelets. Three panel hood. Scuba neck. Round poly drawcord. Hidden snaps inside front pocket flap. Side slit pockets. Tightening toggle at waistband. Elastic cuffs. Tear away label.",
-   "case_price": 30.1,
+   "case_price": 25.99,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -18891,8 +18292,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 2.4,
-    "3XL": 2.4
+    "2XL": 2.86,
+    "3XL": 2.86
    },
    "colors": [
     {
@@ -18930,40 +18331,6 @@
      }
     },
     {
-     "name": "Black Camo",
-     "code": "99",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/93012_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/93012_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/93012_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/93012_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/93012_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/93012_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       67,
-       19,
-       935,
-       982,
-       800
-      ],
-      "b": [
-       74,
-       19,
-       928,
-       982,
-       800
-      ]
-     }
-    },
-    {
      "name": "Classic Navy",
      "code": "65",
      "hex": "#032E54",
@@ -18993,40 +18360,6 @@
        17,
        916,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/69062_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/69062_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69062_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/69062_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/69062_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/69062_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       70,
-       17,
-       934,
-       983,
-       800
-      ],
-      "b": [
-       74,
-       19,
-       928,
-       982,
        800
       ]
      }
@@ -19078,7 +18411,7 @@
    "category": "Outerwear",
    "subcategory": "Outerwear",
    "description": "100% nylon 330D with interior PU waterproof coating. Nylon outer shell: waterproof coating = level 3. Inner PU coating: breathability/permeability = 5,000. Water pressure resistance = 10,000 mm. Classic fit. Unlined hood. No lining. Self-neck tape. Antique brass eyelets (black/black color = matte black metal eyelets). Antique brass 6 snap front closure (black/black color = matte black metal snaps). Elastic cuffs. Underarm grommets. Drawcord closure at hood and bottom opening. Tear away label.",
-   "case_price": 29.45,
+   "case_price": 26.12,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -19096,8 +18429,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 2.35,
-    "3XL": 2.35
+    "2XL": 5.03,
+    "3XL": 5.03
    },
    "colors": [
     {
@@ -19232,40 +18565,6 @@
        36,
        917,
        964,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/69363_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/69363_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69363_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/69363_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/69363_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/69363_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       44,
-       18,
-       956,
-       981,
-       800
-      ],
-      "b": [
-       50,
-       17,
-       952,
-       983,
        800
       ]
      }
@@ -19895,7 +19194,7 @@
    "category": "Bottoms",
    "subcategory": "Bottoms",
    "description": "8.5 oz./yd² (US) 14.2 oz./L yd (CA), 80/20 ring-spun cotton/polyester blend fleece with 100% cotton face, 32 singles . Grey Heather is 52/48 cotton/polyester. Relaxed fit with tapered knee opening. Elastic waistband with shoestring drawcord. Sewn eyelets. Sewn fly detail. Back pocket & jersey lined hand pockets. Tear away label.",
-   "case_price": 13.21,
+   "case_price": 11.33,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -19912,7 +19211,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 2.1
+    "2XL": 2.01
    },
    "colors": [
     {
@@ -19979,74 +19278,6 @@
        19,
        898,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "51",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/87533_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/87533_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/87533_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/87533_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/87533_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/87533_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       87,
-       19,
-       913,
-       982,
-       800
-      ],
-      "b": [
-       95,
-       17,
-       907,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/86211_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/86211_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/86211_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/86211_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/86211_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/86211_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       74,
-       17,
-       926,
-       983,
-       800
-      ],
-      "b": [
-       80,
-       17,
-       922,
-       983,
        800
       ]
      }
@@ -20395,7 +19626,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "8.5 oz./yd² (280gm) 80/20 ring-spun cotton/polyester 3-end fleece with 100% cotton face yarns on solid colors, 32 singles. Ash Heather is 70/30 cotton/polyester. Grey Heather is 52/48 cotton/polyester. Premium midweight. Oversized fit . Drop shoulder. No drawcord. Double layer single piece hood . Blindstitch sewing on all seams for an understated simplified design. 1x1 ribbing at cuff and waistband. Pouch pocket. Tear away label (woven label on Pigment Black).",
-   "case_price": 19.96,
+   "case_price": 14.95,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -20413,8 +19644,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 2.89,
-    "3XL": 2.89
+    "2XL": 3.54,
+    "3XL": 3.54
    },
    "colors": [
     {
@@ -20884,40 +20115,6 @@
      }
     },
     {
-     "name": "Pigment Black",
-     "code": "51",
-     "hex": "#4B4B4B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/112917_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/112917_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/112917_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/112917_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/112917_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/112917_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       95,
-       17,
-       905,
-       983,
-       800
-      ],
-      "b": [
-       97,
-       17,
-       903,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Sandstone",
      "code": "73",
      "hex": "#94795D",
@@ -21156,7 +20353,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Crew",
    "description": "10 oz./yd² (330gm) 70/30 ring-spun cotton/polyester 3-end fleece with 100% cotton face yarns on solid colors, 32 singles. Deadwood Tree Camo is 70/30 cotton/polyester . Ash & Grey Heather are 52/48 ring-spun cotton/polyester. Generous fit. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at cuff and waistband. Tear away label.",
-   "case_price": 19.75,
+   "case_price": 14.95,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -21174,8 +20371,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 1.57,
-    "3XL": 1.57
+    "2XL": 3.07,
+    "3XL": 3.07
    },
    "colors": [
     {
@@ -21409,38 +20606,6 @@
        31,
        17,
        971,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Deadwood Tree Camo",
-     "code": "98",
-     "hex": "#B0B7BC",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140119_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140119_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140119_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       36,
-       19,
-       964,
-       982,
-       800
-      ],
-      "b": [
-       36,
-       17,
-       964,
        983,
        800
       ]
@@ -21765,7 +20930,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "10 oz./yd² (330 gm) 70/30 ring-spun cotton/polyester blend 3-end fleece with 100% cotton face yarn, 32 singles. Deadwood Tree Camo is 70/30 cotton/polyester . Heather colors are 52/48 cotton/polyester. Boxy fit with drop shoulder. No drawcord. Double layer 1-piece hood . Blind stitch sewing on all seams for an understated simplified design. Tear away label (woven label on Pigment Black).",
-   "case_price": 26.49,
+   "case_price": 18.75,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -21783,8 +20948,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 1.68,
-    "3XL": 1.68
+    "2XL": 1.11,
+    "3XL": 1.11
    },
    "colors": [
     {
@@ -22050,72 +21215,6 @@
      }
     },
     {
-     "name": "Darkwood Tree Camo",
-     "code": "99",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140794_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140794_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140794_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       82,
-       17,
-       918,
-       983,
-       800
-      ],
-      "b": [
-       87,
-       17,
-       915,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Deadwood Tree Camo",
-     "code": "98",
-     "hex": "#B0B7BC",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135106_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/135106_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/135106_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/135106_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/135106_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/135106_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       89,
-       17,
-       911,
-       983,
-       800
-      ],
-      "b": [
-       93,
-       17,
-       909,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Grey Heather",
      "code": "09",
      "hex": "#B0B7BC",
@@ -22175,40 +21274,6 @@
        17,
        901,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Pigment Black",
-     "code": "10",
-     "hex": "#4B4B4B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/115800_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/115800_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/115800_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/115800_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/115800_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/115800_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       89,
-       17,
-       911,
-       983,
-       800
-      ],
-      "b": [
-       104,
-       19,
-       896,
-       982,
        800
       ]
      }
@@ -22421,7 +21486,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "10 oz./yd² (US) 16.7 oz./L yd (CA), 70/30 ring-spun cotton/polyester blend 3-end fleece with 100% cotton face, 32 singles (Solids & Houndstooth) . Deadwood Tree Camo is 70/30 cotton/polyester . Camo colors are 75/25 cotton/polyester, (Forest Camo, Black Camo, Tiger Camo, Army Camo, Snow Camo & Duck Camo) . Heather colors are 52/48 cotton/polyester, (Ash Heather, Charcoal Heather, Gunmetal Heather & Grey Heather) . Safety colors are 52/48 cotton/polyester with 65/35 polyester/cotton face yarn. Generous fit. Fleece lined hood. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at cuffs and waistband. Nickel eyelets. Tear away label .",
-   "case_price": 29.95,
+   "case_price": 16.85,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -22441,8 +21506,10 @@
     "5XL"
    ],
    "size_upcharges": {
-    "2XL": 1.0,
-    "3XL": 1.0
+    "2XL": 4.17,
+    "3XL": 4.17,
+    "4XL": 7.67,
+    "5XL": 9.38
    },
    "colors": [
     {
@@ -22508,36 +21575,6 @@
        53,
        17,
        949,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Army Camo",
-     "code": "62",
-     "hex": "#344512",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/41744_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/41744_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       63,
-       17,
-       937,
-       983,
-       800
-      ],
-      "b": [
-       84,
-       17,
-       916,
        983,
        800
       ]
@@ -22639,40 +21676,6 @@
        17,
        949,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "51",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79655_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79655_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79655_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79655_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79655_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79655_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       67,
-       19,
-       935,
-       982,
-       800
-      ],
-      "b": [
-       70,
-       19,
-       930,
-       982,
        800
       ]
      }
@@ -22950,138 +21953,6 @@
      }
     },
     {
-     "name": "Darkwood Tree Camo",
-     "code": "84",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140477_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140477_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140477_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       70,
-       17,
-       930,
-       983,
-       800
-      ],
-      "b": [
-       67,
-       17,
-       935,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Deadwood Tree Camo",
-     "code": "93",
-     "hex": "#B0B7BC",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135140_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/135140_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/135140_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/135140_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/135140_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/135140_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       89,
-       17,
-       909,
-       983,
-       800
-      ],
-      "b": [
-       70,
-       17,
-       930,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Desert Duck Camo",
-     "code": "97",
-     "hex": "#AB9381",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/144333_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/144333_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/144333_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       63,
-       17,
-       937,
-       983,
-       800
-      ],
-      "b": [
-       89,
-       17,
-       913,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Duck Camo",
-     "code": "76",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/100669_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/100669_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/100669_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/100669_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/100669_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/100669_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       82,
-       19,
-       920,
-       982,
-       800
-      ],
-      "b": [
-       74,
-       17,
-       930,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Dusty Pink",
      "code": "31",
      "hex": "#FBD6E1",
@@ -23145,40 +22016,6 @@
        19,
        926,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "61",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/69869_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/69869_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69869_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/69869_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/69869_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/69869_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       46,
-       17,
-       954,
-       983,
-       800
-      ],
-      "b": [
-       61,
-       17,
-       939,
-       983,
        800
       ]
      }
@@ -23315,40 +22152,6 @@
        17,
        909,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Houndstooth",
-     "code": "02",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/99356_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/99356_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/99356_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/99356_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/99356_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/99356_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       91,
-       19,
-       909,
-       982,
-       800
-      ],
-      "b": [
-       84,
-       19,
-       916,
-       982,
        800
       ]
      }
@@ -23626,38 +22429,6 @@
      }
     },
     {
-     "name": "Realtree APX Camo",
-     "code": "03",
-     "hex": "#193E34",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/142606_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/142606_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/142606_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       87,
-       17,
-       915,
-       983,
-       800
-      ],
-      "b": [
-       91,
-       17,
-       911,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Red",
      "code": "70",
      "hex": "#C10933",
@@ -23930,40 +22701,6 @@
      }
     },
     {
-     "name": "Snow Camo",
-     "code": "01",
-     "hex": "#BAB8B8",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/41745_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/41745_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/41745_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/41745_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/41745_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/41745_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       78,
-       18,
-       924,
-       981,
-       800
-      ],
-      "b": [
-       80,
-       17,
-       920,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Storm Blue",
      "code": "44",
      "hex": "#5C6D87",
@@ -23993,40 +22730,6 @@
        19,
        926,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Tiger Camo",
-     "code": "99",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/76802_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/76802_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/76802_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/76802_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/76802_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/76802_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       38,
-       17,
-       964,
-       983,
-       800
-      ],
-      "b": [
-       57,
-       17,
-       945,
-       983,
        800
       ]
      }
@@ -24078,7 +22781,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "10 oz./yd² (US), 16.7 oz./L yd (CA), 70/30 ring-spun cotton/polyester blend fleece with 100% cotton face, 32 singles. Heather colors are 52/48 cotton/polyester. Forest Camo is 75/25 cotton/polyester. Generous fit. Fleece lined hood. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at cuffs and waistband. Nickel eyelets. #5 nickel kissing zipper. Tear away label .",
-   "case_price": 27.53,
+   "case_price": 21.7,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -24099,8 +22802,11 @@
     "6XL"
    ],
    "size_upcharges": {
-    "2XL": 1.14,
-    "3XL": 1.14
+    "2XL": 1.72,
+    "3XL": 1.72,
+    "4XL": 2.44,
+    "5XL": 3.99,
+    "6XL": 5.22
    },
    "colors": [
     {
@@ -24224,40 +22930,6 @@
        36,
        922,
        964,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79656_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79656_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79656_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79656_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79656_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79656_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       55,
-       19,
-       945,
-       982,
-       800
-      ],
-      "b": [
-       63,
-       17,
-       937,
-       983,
        800
       ]
      }
@@ -24870,7 +23542,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "12.5 oz./yd² (420gm), 75/25 ring-spun cotton/polyester 3-end fleece with 100% cotton face yarns on solid colors, 21 singles. Grey Heather is 52/48 ring-spun cotton/polyester. Premium heavyweight. Specialty yarns for a durable dry hand feel. Oversized fit . Drop shoulder. No drawcord. Double layer single piece hood . Blindstitch sewing on all seams for an understated simplified design. 100% cotton 1x1 ribbing at cuff and waistband. Tear away label (woven label on Pigment Black).",
-   "case_price": 28.88,
+   "case_price": 22.05,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -24888,8 +23560,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 2.7,
-    "3XL": 2.7
+    "2XL": 3.25,
+    "3XL": 3.25
    },
    "colors": [
     {
@@ -25129,40 +23801,6 @@
        800
       ]
      }
-    },
-    {
-     "name": "Pigment Black",
-     "code": "10",
-     "hex": "#4B4B4B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/110246_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/110246_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/110246_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/110246_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/110246_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/110246_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       65,
-       17,
-       937,
-       983,
-       800
-      ],
-      "b": [
-       72,
-       17,
-       930,
-       983,
-       800
-      ]
-     }
     }
    ],
    "source": "ss",
@@ -25177,7 +23815,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "12.5 oz./yd² (420gm), 75/25 ring-spun cotton/polyester 3-end fleece with 100% cotton face yarns on solid colors, 21 singles. Grey Heather is 52/48 ring-spun cotton/polyester. Premium heavyweight. Specialty yarns for a durable dry hand feel. Oversized fit. Drop shoulder. No drawcord. Double layer single piece hood. #5 nickel kissing zipper. Blindstitch sewing on all seams for an understated simplified design. 100% cotton 1x1 ribbing at cuff and waistband. Tear away label (woven label on Pigment Black).",
-   "case_price": 32.5,
+   "case_price": 24.65,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -25243,38 +23881,6 @@
        21,
        981,
        981,
-       800
-      ],
-      "b": [
-       80,
-       17,
-       920,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Pigment Black",
-     "code": "10",
-     "hex": "#4B4B4B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140805_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140805_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140805_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       44,
-       19,
-       956,
-       982,
        800
       ],
       "b": [
@@ -26529,7 +25135,7 @@
    "category": "Accessories",
    "subcategory": "Accessories",
    "description": "8 oz./yd² (US), 13.4 oz/L yd (CA), 52/48 ring-spun cotton/polyester blend, 32 singles. 1\" self-hem with double needle top stitch sewing on all four edges. Included 1 natural colored drawcord with antique finish metal tips (Blanket ships folded, and the drawcord is loose) .",
-   "case_price": 21.7,
+   "case_price": 16.57,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -26607,38 +25213,6 @@
      }
     },
     {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79657_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79657_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/79657_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       14,
-       329,
-       998,
-       751,
-       800
-      ],
-      "b": [
-       19,
-       194,
-       983,
-       808,
-       800
-      ]
-     }
-    },
-    {
      "name": "Midnight Navy",
      "code": "86",
      "hex": "#234163",
@@ -26698,38 +25272,6 @@
        302,
        870,
        696,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Red Buffalo Plaid",
-     "code": "70",
-     "hex": "#C10933",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/86723_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/86723_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/86723_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       23,
-       302,
-       961,
-       699,
-       800
-      ],
-      "b": [
-       19,
-       201,
-       981,
-       801,
        800
       ]
      }
@@ -27271,7 +25813,7 @@
    "category": "Infant & Toddler",
    "subcategory": "Fleece - Premium - Hood",
    "description": "6.5 oz./yd², 52/48 ring-spun cotton/polyester blend, 32 singles. Raglan sleeves. Unlined hood. Reverse coverstitch sewing. Twill neck tape. 1x1 ribbing at cuff, and waistband. Tear away label.",
-   "case_price": 9.36,
+   "case_price": 8.21,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -27474,40 +26016,6 @@
        53,
        19,
        951,
-       982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Nickel Heather/ Forest Camo",
-     "code": "98",
-     "hex": "#7E8083",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79658_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79658_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79658_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79658_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79658_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79658_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       40,
-       17,
-       962,
-       983,
-       800
-      ],
-      "b": [
-       55,
-       19,
-       947,
        982,
        800
       ]
@@ -27986,7 +26494,7 @@
    "category": "Infant & Toddler",
    "subcategory": "Bottoms",
    "description": "6.5 oz./yd², 52/48 ring-spun cotton/polyester blend, 32 singles. Relaxed fit. Elastic waistband. Flat drawcord. Sewn eyelets. Sewn fly detail. Back pocket. Jersey lined hand pockets. 1x1 ribbing at cuffs. Tear away label.",
-   "case_price": 10.21,
+   "case_price": 8.89,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -28028,40 +26536,6 @@
       ],
       "b": [
        299,
-       17,
-       701,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo Heather",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103438_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103438_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103438_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103438_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103438_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103438_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       277,
-       17,
-       725,
-       983,
-       800
-      ],
-      "b": [
-       301,
        17,
        701,
        983,
@@ -28116,7 +26590,7 @@
    "category": "Infant & Toddler",
    "subcategory": "Bottoms",
    "description": "6.5 oz./yd², 52/48 ring-spun cotton/polyester blend, 32 singles. Relaxed fit. Elastic waistband. Flat drawcord. Sewn eyelets. Sewn fly detail. Back pocket. Jersey lined hand pockets. Tapered knee opening. Tear away label.",
-   "case_price": 8.74,
+   "case_price": 7.59,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -28161,40 +26635,6 @@
        19,
        935,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo Heather",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103441_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103441_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103441_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103441_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103441_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103441_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       46,
-       19,
-       958,
-       982,
-       800
-      ],
-      "b": [
-       63,
-       17,
-       939,
-       983,
        800
       ]
      }
@@ -28816,7 +27256,7 @@
    "category": "Youth",
    "subcategory": "Fleece - Premium - Hood",
    "description": "6.5 oz./yd² (US), 10.85 oz/L yd (CA) 52/48 ring-spun cotton/polyester blend, 32 singles. Raglan sleeves. Unlined hood. Reverse coverstitch sewing. Twill neck tape. No drawcord. 1x1 ribbing at cuffs and waistband. Tear away label.",
-   "case_price": 11.89,
+   "case_price": 10.46,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -29022,40 +27462,6 @@
        17,
        915,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Nickel Heather/ Forest Camo",
-     "code": "98",
-     "hex": "#7E8083",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79659_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79659_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79659_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79659_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79659_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79659_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       72,
-       19,
-       930,
-       982,
-       800
-      ],
-      "b": [
-       99,
-       19,
-       903,
-       982,
        800
       ]
      }
@@ -29507,7 +27913,7 @@
    "category": "Youth",
    "subcategory": "Bottoms",
    "description": "6.5 oz./yd², 52/48 ring-spun cotton/polyester blend, 32 singles. Relaxed fit. Elastic waistband. Flat drawcord. Sewn eyelets. Sewn fly detail. Back pocket. Jersey lined hand pockets. 1x1 ribbing at cuffs. Tear away label.",
-   "case_price": 12.56,
+   "case_price": 10.99,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -29552,40 +27958,6 @@
        313,
        17,
        689,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo Heather",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103432_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103432_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103432_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103432_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103432_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103432_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       258,
-       17,
-       744,
-       983,
-       800
-      ],
-      "b": [
-       292,
-       17,
-       708,
        983,
        800
       ]
@@ -29638,7 +28010,7 @@
    "category": "Youth",
    "subcategory": "Bottoms",
    "description": "6.5 oz./yd², 52/48 ring-spun cotton/polyester blend, 32 singles. Relaxed fit. Elastic waistband. Flat drawcord. Sewn eyelets. Sewn fly detail. Back pocket. Jersey lined hand pockets. Tapered knee opening. Tear away label.",
-   "case_price": 10.99,
+   "case_price": 9.43,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -29684,40 +28056,6 @@
        17,
        920,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo Heather",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103435_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103435_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103435_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103435_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103435_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103435_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       84,
-       19,
-       918,
-       982,
-       800
-      ],
-      "b": [
-       84,
-       19,
-       918,
-       982,
        800
       ]
      }
@@ -29769,7 +28107,7 @@
    "category": "T-Shirts",
    "subcategory": "T-Shirts - Long Sleeve",
    "description": "5.3 oz./yd²., 100% ring-spun cotton, 26 singles. Grey Heather is 60/40 cotton/polyester. Standard fit. 1x1 neck ribbing. Jersey neck taping. Side seams. Tear away label.",
-   "case_price": 10.75,
+   "case_price": 9.75,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -30169,38 +28507,6 @@
      }
     },
     {
-     "name": "Realtree APX Camo",
-     "code": "03",
-     "hex": "#193E34",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/142608_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/142608_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/142608_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       48,
-       19,
-       952,
-       982,
-       800
-      ],
-      "b": [
-       61,
-       19,
-       939,
-       982,
-       800
-      ]
-     }
-    },
-    {
      "name": "White",
      "code": "00",
      "hex": "#FFFFFF",
@@ -30236,7 +28542,7 @@
    "category": "T-Shirts",
    "subcategory": "T-Shirts - Premium",
    "description": "5.3 oz./yd², (180 gm) 100% ring-spun cotton, 26 singles. Grey Heather is 60/40 cotton/polyester. 1x1 ribbing. Jersey neck taping. Side seams. Tear away label.",
-   "case_price": 7.75,
+   "case_price": 7.0,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -30255,9 +28561,9 @@
     "4XL"
    ],
    "size_upcharges": {
-    "2XL": 0.75,
-    "3XL": 0.75,
-    "4XL": 2.0
+    "2XL": 1.0,
+    "3XL": 1.0,
+    "4XL": 2.5
    },
    "colors": [
     {
@@ -31073,36 +29379,6 @@
      }
     },
     {
-     "name": "Realtree APX Camo",
-     "code": "03",
-     "hex": "#193E34",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/142607_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/142607_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       38,
-       19,
-       962,
-       982,
-       800
-      ],
-      "b": [
-       21,
-       17,
-       981,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "White",
      "code": "00",
      "hex": "#FFFFFF",
@@ -31420,7 +29696,7 @@
    "category": "Women's",
    "subcategory": "Bottoms",
    "description": "7 oz./yd² (US) 11.7 oz./L yd (CA), 52/48 ring-spun cotton/polyester blend 3-end fleece. Wave wash garment-washed for softness and unique color. Classic fit . Blindstitch & coverstitch sewing. Elastic waistband with shoestring drawcord. 1x1 ribbing at ankle cuffs. Sewn eyelets. Jersey lined hand pockets. Woven label.",
-   "case_price": 22.63,
+   "case_price": 20.32,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -31437,7 +29713,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 2.61
+    "2XL": 2.87
    },
    "colors": [
     {
@@ -31470,40 +29746,6 @@
        19,
        706,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo Heather",
-     "code": "96",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/102995_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/102995_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/102995_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/102995_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/102995_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/102995_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       294,
-       19,
-       708,
-       982,
-       800
-      ],
-      "b": [
-       299,
-       17,
-       703,
-       983,
        800
       ]
      }
@@ -31606,40 +29848,6 @@
        17,
        699,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo Heather",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/92913_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/92913_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/92913_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/92913_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/92913_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/92913_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       273,
-       19,
-       727,
-       982,
-       800
-      ],
-      "b": [
-       292,
-       19,
-       710,
-       982,
        800
       ]
      }
@@ -31759,7 +29967,7 @@
    "category": "Women's",
    "subcategory": "Bottoms",
    "description": "7 oz./yd², (230 gm) 55/45 ring-spun cotton/polyester blend 3-end fleece. Wave wash garment-washed for softness and unique color. Classic fit. Blindstitch & coverstitch sewing. Elastic waistband with shoestring drawcord. Sewn eyelets. Jersey lined hand pockets. Woven label.",
-   "case_price": 13.01,
+   "case_price": 10.91,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -31776,7 +29984,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 1.54
+    "2XL": 1.81
    },
    "colors": [
     {
@@ -31809,40 +30017,6 @@
        180,
        983,
        821,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo Heather",
-     "code": "98",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103024_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103024_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103024_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103024_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103024_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103024_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       202,
-       983,
-       799,
-       800
-      ],
-      "b": [
-       19,
-       175,
-       983,
-       825,
        800
       ]
      }
@@ -31945,40 +30119,6 @@
        155,
        983,
        845,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo Heather",
-     "code": "62",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/103028_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/103028_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103028_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/103028_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/103028_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/103028_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       199,
-       983,
-       803,
-       800
-      ],
-      "b": [
-       19,
-       197,
-       983,
-       804,
        800
       ]
      }
@@ -32708,7 +30848,7 @@
    "category": "Women's",
    "subcategory": "Fleece - Premium - Hood",
    "description": "7 oz./yd², (230 gm) 52/48 ring-spun cotton/polyester blend 3-end fleece. Wave wash garment-washed for softness and unique color. Boxy fit. Set-in sleeves. No drawcord. Blindstitch. 1x1 ribbing at waist and sleeves. Twill neck tape. Tear away label.",
-   "case_price": 18.75,
+   "case_price": 16.17,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -32725,7 +30865,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 2.0
+    "2XL": 1.9
    },
    "colors": [
     {
@@ -32829,38 +30969,6 @@
      }
     },
     {
-     "name": "Pigment Black",
-     "code": "51",
-     "hex": "#4B4B4B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140806_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140806_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140806_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       38,
-       17,
-       962,
-       983,
-       800
-      ],
-      "b": [
-       53,
-       17,
-       947,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Sage",
      "code": "54",
      "hex": "#96AAAB",
@@ -32907,7 +31015,7 @@
    "category": "Women's",
    "subcategory": "Fleece - Premium - Crew",
    "description": "7 oz./yd², (230 gm) 52/48 ring-spun cotton/polyester blend 3-end fleece. Wave wash garment-washed for softness and unique color. Boxy fit. Set-in sleeves. Blindstitch sewing . 1x1 ribbing at waist and sleeves. Twill neck tape. Tear away label.",
-   "case_price": 15.0,
+   "case_price": 13.25,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -32924,7 +31032,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 1.0
+    "2XL": 1.5
    },
    "colors": [
     {
@@ -33019,38 +31127,6 @@
        19,
        962,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Pigment Black",
-     "code": "10",
-     "hex": "#4B4B4B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140811_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140811_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140811_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       41,
-       983,
-       959,
-       800
-      ],
-      "b": [
-       25,
-       17,
-       975,
-       983,
        800
       ]
      }
@@ -34895,7 +32971,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Crew",
    "description": "9 oz./yd², 80/20 ring-spun cotton/polyester blend with 100% cotton face, 30 singles. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at cuffs and waistband. Woven label.",
-   "case_price": 24.22,
+   "case_price": 22.74,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -34913,8 +32989,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 1.35,
-    "3XL": 1.35
+    "2XL": 1.1,
+    "3XL": 1.1
    },
    "colors": [
     {
@@ -35151,40 +33227,6 @@
        19,
        971,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Tie Dye Sunset Swirl",
-     "code": "11",
-     "hex": "#FBD6E1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/97457_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/97457_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/97457_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/97457_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/97457_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/97457_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       31,
-       19,
-       973,
-       982,
-       800
-      ],
-      "b": [
-       19,
-       26,
-       981,
-       976,
        800
       ]
      }
@@ -36732,7 +34774,7 @@
    "category": "Bottoms",
    "subcategory": "Bottoms",
    "description": "9 oz./yd², 80/20 ring-spun cotton/polyester blend with 100% cotton face, 30 singles. Relaxed fit . Elastic waistband with flat drawcord. 1x1 ribbing at ankle cuffs. Sewn eyelets. Sewn fly detail. Back pocket & jersey lined hand pockets. Woven label.",
-   "case_price": 22.32,
+   "case_price": 20.16,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -36749,7 +34791,7 @@
     "2XL"
    ],
    "size_upcharges": {
-    "2XL": 1.22
+    "2XL": 3.38
    },
    "colors": [
     {
@@ -36821,40 +34863,6 @@
      }
     },
     {
-     "name": "Tie Dye Cotton Candy",
-     "code": "31",
-     "hex": "#FBD6E1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/95766_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/95766_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/95766_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/95766_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/95766_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/95766_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       267,
-       19,
-       735,
-       982,
-       800
-      ],
-      "b": [
-       299,
-       19,
-       701,
-       982,
-       800
-      ]
-     }
-    },
-    {
      "name": "Tie Dye Navy",
      "code": "65",
      "hex": "#212B3E",
@@ -36917,40 +34925,6 @@
        294,
        19,
        708,
-       982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Tie Dye Sunset Swirl",
-     "code": "40",
-     "hex": "#FBD6E1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/95768_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/95768_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/95768_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/95768_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/95768_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/95768_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       279,
-       19,
-       723,
-       982,
-       800
-      ],
-      "b": [
-       288,
-       19,
-       712,
        982,
        800
       ]
@@ -37669,7 +35643,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Hood",
    "description": "7.5 oz./yd², 70/30 ring-spun cotton/polyester blend French terry, 32 singles. Black & Charcoal Heather are 55/45 cotton/polyester blend French terry. Pre-laundered. Unisex, slim fit. Unlined hood. Split stitch double needle sewing. 1x1 ribbing at cuffs and waistband. Antique nickel tipped flat natural drawcord. #5 antique nickel exposed zipper. Natural-colored exposed zipper tape . Media pocket and eyelet in front pocket. Thumbhole on cuffs. Twill neck tape. Tear away label.",
-   "case_price": 21.91,
+   "case_price": 23.65,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -37686,10 +35660,7 @@
     "2XL",
     "3XL"
    ],
-   "size_upcharges": {
-    "2XL": 1.74,
-    "3XL": 1.74
-   },
+   "size_upcharges": {},
    "colors": [
     {
      "name": "Black",
@@ -39455,7 +37426,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Premium - Crew",
    "description": "8.5 oz./yd² (US) 14.1 oz./L yd, (CA), (280gm) Solid & Camo Colors are 80/20 ring-spun cotton/polyester with 100% cotton, 32 singles face yarn. Ash Heather is 58/42 ring-spun cotton/polyester. Grey Heather & Gunmetal Heather are 75/25 ring-spun cotton/polyester. All other Heather Colors are 55/45 ring-spun cotton/polyester (Charcoal Heather, Classic Navy Heather, Royal Heather, Army Heather) . 3-end fleece. Standard fit. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at collar, cuffs and waistband. Tear away label.",
-   "case_price": 13.6,
+   "case_price": 10.08,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -39475,9 +37446,10 @@
     "5XL"
    ],
    "size_upcharges": {
-    "2XL": 1.71,
-    "3XL": 1.71,
-    "5XL": 1.03
+    "2XL": 2.08,
+    "3XL": 2.08,
+    "4XL": 3.23,
+    "5XL": 4.55
    },
    "colors": [
     {
@@ -39642,40 +37614,6 @@
        17,
        973,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "99",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/104383_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/104383_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/104383_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/104383_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/104383_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/104383_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       34,
-       19,
-       966,
-       981,
-       800
-      ],
-      "b": [
-       42,
-       19,
-       958,
-       982,
        800
       ]
      }
@@ -39885,38 +37823,6 @@
      }
     },
     {
-     "name": "Deadwood Tree Camo",
-     "code": "97",
-     "hex": "#B0B7BC",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140118_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140118_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140118_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       27,
-       17,
-       973,
-       983,
-       800
-      ],
-      "b": [
-       34,
-       17,
-       966,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Dusty Sage",
      "code": "44",
      "hex": "#BFCACC",
@@ -39946,40 +37852,6 @@
        23,
        983,
        979,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79634_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79634_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79634_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79634_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79634_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79634_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       34,
-       18,
-       966,
-       981,
-       800
-      ],
-      "b": [
-       42,
-       19,
-       958,
-       982,
        800
       ]
      }
@@ -40658,7 +38530,7 @@
    "category": "Youth",
    "subcategory": "Fleece - Premium - Hood",
    "description": "8.5 oz./yd² (US) 14.1 oz./L yd (CA), (280gm) Solid Colors are 80/20 ring-spun cotton/polyester with 100% cotton 32 singles face yarn. Grey Heather is 75/25 ring-spun cotton/polyester. All other Heather Colors are 55/45 ring-spun cotton/polyester (Charcoal Heather & Royal Heather) . 3-end fleece. Standard fit. Split stitch double-needle sewing on all seams. Jersey lined hood, no drawcord. Twill neck tape. 1x1 ribbing at cuffs & waistband. Tear away label.",
-   "case_price": 13.57,
+   "case_price": 10.35,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -40750,40 +38622,6 @@
        17,
        941,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "97",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/94538_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/94538_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/94538_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/94538_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/94538_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/94538_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       93,
-       19,
-       909,
-       982,
-       800
-      ],
-      "b": [
-       55,
-       19,
-       945,
-       982,
        800
       ]
      }
@@ -40921,95 +38759,6 @@
        17,
        941,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Deadwood Tree Camo",
-     "code": "91",
-     "hex": "#B0B7BC",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135295_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/135295_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/135295_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       44,
-       17,
-       954,
-       983,
-       800
-      ],
-      "b": [
-       34,
-       17,
-       968,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Duck Camo",
-     "code": "92",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135296_f_fl.jpg",
-      "back_flat": null,
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       99,
-       19,
-       901,
-       982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79672_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79672_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79672_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79672_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79672_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79672_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       97,
-       19,
-       905,
-       982,
-       800
-      ],
-      "b": [
-       106,
-       19,
-       892,
-       982,
        800
       ]
      }
@@ -41564,7 +39313,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Core - Hood",
    "description": "8.5 oz./yd² (US) 14.1 oz./L yd, (CA), (280gm) Solid Colors & Camo are 80/20 ring-spun cotton/polyester with 100% cotton 32 singles face yarn. Gunmetal Heather & Grey Heather are 75/25 ring-spun cotton/polyester. Ash Heather is 60/40 ring-spun cotton/polyester. All other Heather & Safety Colors are 55/45 ring-spun cotton/polyester. 3-end fleece. Standard fit. Jersey lined hood . Metal eyelets. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at collar, cuffs and waistband. Tear away label.",
-   "case_price": 15.21,
+   "case_price": 9.5,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -41584,10 +39333,10 @@
     "5XL"
    ],
    "size_upcharges": {
-    "2XL": 1.45,
-    "3XL": 1.45,
-    "4XL": 2.99,
-    "5XL": 4.49
+    "2XL": 1.49,
+    "3XL": 1.49,
+    "4XL": 3.71,
+    "5XL": 5.6
    },
    "colors": [
     {
@@ -41754,40 +39503,6 @@
        19,
        975,
        982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Black Camo",
-     "code": "99",
-     "hex": "#1B1D1E",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/79639_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/79639_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79639_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/79639_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/79639_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/79639_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       50,
-       17,
-       952,
-       983,
-       800
-      ],
-      "b": [
-       48,
-       17,
-       954,
-       983,
        800
       ]
      }
@@ -42065,95 +39780,6 @@
      }
     },
     {
-     "name": "Deadwood Tree Camo",
-     "code": "89",
-     "hex": "#B0B7BC",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140571_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140571_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/140571_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/140571_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/140571_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/140571_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       91,
-       21,
-       909,
-       935,
-       800
-      ],
-      "b": [
-       76,
-       20,
-       924,
-       963,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Desert Duck Camo",
-     "code": "97",
-     "hex": "#AB9381",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/144334_f_fl.jpg",
-      "back_flat": null,
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       63,
-       17,
-       937,
-       983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Duck Camo",
-     "code": "88",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/140572_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/140572_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/140572_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       53,
-       17,
-       947,
-       983,
-       800
-      ],
-      "b": [
-       68,
-       17,
-       932,
-       983,
-       800
-      ]
-     }
-    },
-    {
      "name": "Dusty Pink",
      "code": "44",
      "hex": "#FBD6E1",
@@ -42216,40 +39842,6 @@
        63,
        19,
        937,
-       982,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/76813_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/76813_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/76813_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/76813_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/76813_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/76813_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       21,
-       28,
-       981,
-       976,
-       800
-      ],
-      "b": [
-       48,
-       19,
-       954,
        982,
        800
       ]
@@ -43181,7 +40773,7 @@
    "category": "Sweatshirts/Fleece",
    "subcategory": "Fleece - Core - Hood",
    "description": "8.5 oz./yd² (US) 14.1 oz./L yd, (CA), (280gm) Solid Colors are 80/20 ring-spun cotton/polyester with 100% cotton 32 singles face yarn. Gunmetal Heather & Grey Heather are 75/25 ring-spun cotton/polyester. All other Heather Colors are 55/45 ring-spun cotton/polyester (Charcoal Heather, Classic Navy Heather, & Army Heather) . 3-end fleece. Standard fit. Jersey lined hood . Metal eyelets. #5 metal kissing zipper. Split stitch double-needle sewing on all seams. Twill neck tape. 1x1 ribbing at collar, cuffs and waistband. Tear away label.",
-   "case_price": 17.65,
+   "case_price": 14.21,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -43199,8 +40791,8 @@
     "3XL"
    ],
    "size_upcharges": {
-    "2XL": 1.71,
-    "3XL": 1.71
+    "2XL": 2.22,
+    "3XL": 2.22
    },
    "colors": [
     {
@@ -43499,29 +41091,6 @@
      }
     },
     {
-     "name": "Forest Camo",
-     "code": "98",
-     "hex": "#706B57",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/83661_f_fl.jpg",
-      "back_flat": null,
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       89,
-       22,
-       911,
-       926,
-       800
-      ]
-     }
-    },
-    {
      "name": "Grey Heather",
      "code": "35",
      "hex": "#B0B7BC",
@@ -43619,40 +41188,6 @@
        17,
        962,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Navy",
-     "code": "65",
-     "hex": "#032E54",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/31220_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/31220_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/31220_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/31220_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/31220_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/31220_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       78,
-       19,
-       922,
-       982,
-       800
-      ],
-      "b": [
-       70,
-       19,
-       932,
-       982,
        800
       ]
      }
@@ -45681,7 +43216,7 @@
    "category": "Caps",
    "subcategory": "Headwear",
    "description": "65/35 polyester/cotton twill. Structured, five-panel, mid-profile. Pre-curved visor. Sewn eyelets. Snapback closure. Tear away label.",
-   "case_price": 3.85,
+   "case_price": 3.4,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -45983,38 +43518,6 @@
      }
     },
     {
-     "name": "Natural/ Camo Green",
-     "code": "96",
-     "hex": "#DDD5C1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135770_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/135770_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/135770_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       94,
-       981,
-       908,
-       800
-      ],
-      "b": [
-       19,
-       140,
-       979,
-       862,
-       800
-      ]
-     }
-    },
-    {
      "name": "Natural/ Charcoal",
      "code": "24",
      "hex": "#DDD5C1",
@@ -46143,38 +43646,6 @@
      }
     },
     {
-     "name": "Natural/ Mossy Oak Breakup",
-     "code": "97",
-     "hex": "#DDD5C1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135769_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/135769_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/135769_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       94,
-       981,
-       906,
-       800
-      ],
-      "b": [
-       19,
-       138,
-       981,
-       862,
-       800
-      ]
-     }
-    },
-    {
      "name": "Natural/ Navy",
      "code": "06",
      "hex": "#DDD5C1",
@@ -46200,38 +43671,6 @@
       "b": [
        19,
        136,
-       981,
-       862,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Natural/ Realtree All Purpose",
-     "code": "98",
-     "hex": "#DDD5C1",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/135768_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/135768_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/135768_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       94,
-       981,
-       906,
-       800
-      ],
-      "b": [
-       19,
-       138,
        981,
        862,
        800
@@ -47833,7 +45272,7 @@
    "category": "Caps",
    "subcategory": "Headwear",
    "description": "55/45 cotton/polyester twill . 100% polyester mesh back. Structured, six-panel, mid-profile. Pre-curved sandwich visor. Hook-and-loop closure. Tear away label.",
-   "case_price": 3.75,
+   "case_price": 3.3,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -48290,70 +45729,6 @@
        192,
        983,
        811,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Green Camo/ Black",
-     "code": "24",
-     "hex": "#A29189",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/70989_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/70989_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/70989_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       153,
-       983,
-       847,
-       800
-      ],
-      "b": [
-       19,
-       173,
-       983,
-       828,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Green Camo/ Tan",
-     "code": "62",
-     "hex": "#616545",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/39451_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/39451_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/39451_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       43,
-       155,
-       927,
-       797,
-       800
-      ],
-      "b": [
-       19,
-       184,
-       983,
-       820,
        800
       ]
      }
@@ -50469,7 +47844,7 @@
    "category": "Caps",
    "subcategory": "Headwear",
    "description": "100% cotton bio-washed chino twill. Unstructured, six-panel, low-profile. Pre-curved visor. Self-fabric tri-glide buckle closure - antique brass. Tear away label.",
-   "case_price": 4.25,
+   "case_price": 3.75,
    "case_sale_price": null,
    "sale_start_date": null,
    "sale_end_date": null,
@@ -50547,38 +47922,6 @@
      }
     },
     {
-     "name": "Black Duck Camo",
-     "code": "99",
-     "hex": "#000000",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/141635_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/141635_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/141635_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       153,
-       983,
-       847,
-       800
-      ],
-      "b": [
-       19,
-       150,
-       983,
-       850,
-       800
-      ]
-     }
-    },
-    {
      "name": "Black/ Stone Stitch",
      "code": "51",
      "hex": "#1B151A",
@@ -50638,38 +47981,6 @@
        173,
        983,
        828,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Brown Duck Camo",
-     "code": "98",
-     "hex": "#A52A2A",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/141636_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/141636_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/141636_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       148,
-       983,
-       852,
-       800
-      ],
-      "b": [
-       19,
-       148,
-       983,
-       852,
        800
       ]
      }
@@ -50835,36 +48146,6 @@
      }
     },
     {
-     "name": "Green Camo",
-     "code": "62",
-     "hex": "#605951",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/20501_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/20501_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       19,
-       202,
-       983,
-       799,
-       800
-      ],
-      "b": [
-       19,
-       180,
-       983,
-       821,
-       800
-      ]
-     }
-    },
-    {
      "name": "Grey",
      "code": "35",
      "hex": "#7B8A8E",
@@ -50892,38 +48173,6 @@
        185,
        983,
        815,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Grey Camo",
-     "code": "36",
-     "hex": "#747474",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/32680_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/32680_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/32680_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       162,
-       983,
-       840,
-       800
-      ],
-      "b": [
-       19,
-       185,
-       981,
-       816,
        800
       ]
      }
@@ -51473,38 +48722,6 @@
      }
     },
     {
-     "name": "Pink Camo",
-     "code": "04",
-     "hex": "#C0869B",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/32671_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/32671_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/32671_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       167,
-       983,
-       833,
-       800
-      ],
-      "b": [
-       19,
-       189,
-       983,
-       813,
-       800
-      ]
-     }
-    },
-    {
      "name": "Purple",
      "code": "67",
      "hex": "#3A385E",
@@ -51659,38 +48876,6 @@
        23,
        182,
        979,
-       816,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Tan Camo",
-     "code": "37",
-     "hex": "#B59F88",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/39076_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/39076_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/Color/39076_d_fl.jpg"
-      ]
-     },
-     "crop": {
-      "f": [
-       19,
-       148,
-       981,
-       852,
-       800
-      ],
-      "b": [
-       19,
-       185,
-       983,
        816,
        800
       ]
