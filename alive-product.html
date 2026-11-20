@@ -211,6 +211,13 @@
   position:relative;flex:none;}
 #alive-flow .sw.on{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--blue);}
 #alive-flow .sw:hover{transform:scale(1.08);}
+/* Full-screen mockup view (openFullView). */
+#alive-flow .fvwrap{position:fixed;inset:0;z-index:2147483000;background:#f5f7fa;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;cursor:zoom-out;}
+#alive-flow .fvwrap .stage{cursor:default;box-shadow:none;background:transparent;}
+#alive-flow .fvwrap .fvx{position:absolute;top:14px;right:18px;width:44px;height:44px;border-radius:50%;border:1px solid #d5dbe3;
+  background:#fff;font-size:28px;line-height:40px;cursor:pointer;color:#111;}
+#alive-flow .fvwrap .fvcap{font:800 12px/1 var(--disp,system-ui);letter-spacing:.08em;text-transform:uppercase;color:#555;}
 /* Specialty colour (camo, pattern ...): a small "+" mark; it costs more. */
 #alive-flow .sw.up::before{content:"+";position:absolute;top:-5px;right:-5px;width:14px;height:14px;
   border-radius:50%;background:#1e6fd9;color:#fff;font:800 11px/14px var(--disp,system-ui);text-align:center;
@@ -1039,14 +1046,29 @@
      productCard() writes from EDITOR_MAX_H — capping its height here instead
      would fight its aspect-ratio and stretch the garment (object-fit:fill), so
      this rule deliberately skips it. */
-  #alive-flow .shell.dual .colL .stage:not(.cropped){max-height:400px !important;}
+  #alive-flow .shell.dual .colL .stage:not(.cropped){max-height:560px !important;}
   #alive-flow .shell.dual .colL .stage{margin-block:auto;}
   /* The upload box grows to take up the slack, so the right column reaches the
      same bottom line as the photo instead of the photo being cut down further. */
-  #alive-flow .shell.dual .colR .lcards{flex:1;}
+  /* Upload box: a compact fixed height (Austin, 20 Nov 2026: it was taking
+     up the whole column). The photo is now the tall side instead. */
   #alive-flow .shell.dual .colR .lcard{display:flex;flex-direction:column;}
-  #alive-flow .shell.dual .colR .lcard .slot{flex:1;}
-  #alive-flow .shell.dual .colR .lcard .later{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  #alive-flow .shell.dual .colR .lcard .slot{flex:none;min-height:0;height:132px;}
+  #alive-flow .shell.dual .colR .lcard .later{display:flex;flex-direction:column;justify-content:center;}
+  /* Title block at the top of the right column; reassurance line + full view on the photo card. */
+  #alive-flow .shell.dual .colR .headcard{padding:18px 20px 16px;margin-bottom:14px;}
+  #alive-flow .shell.dual .colR .headcard h2{margin:2px 0 2px;}
+  #alive-flow .deskcard .assure{display:flex;gap:10px;align-items:flex-start;background:#eef6ff;border:1px solid #cfe2fb;
+    color:#1b3f6b;border-radius:12px;padding:10px 14px;margin:0 0 12px;font-size:13.5px;line-height:1.4;}
+  #alive-flow .deskcard .assure svg{width:20px;height:20px;flex:none;color:#1e6fd9;margin-top:1px;}
+  #alive-flow .deskcard .assure b{color:#0f2e55;}
+  #alive-flow .deskcard .stagebox{position:relative;}
+  #alive-flow .fullview{position:absolute;top:6px;right:6px;z-index:5;display:inline-flex;align-items:center;gap:6px;
+    padding:7px 11px;border-radius:999px;border:1px solid var(--line,#dde3ea);background:rgba(255,255,255,.94);
+    font:800 11px/1 var(--disp,system-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--text,#111);cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);}
+  #alive-flow .fullview svg{width:15px;height:15px;}
+  #alive-flow .fullview:hover{color:var(--blue,#1e6fd9);border-color:var(--blue,#1e6fd9);}
   /* The "Upload a design for Front…" note is lifted out of the flow so the two
      cards finish on the same line. It hangs just below the right card instead of
      shortening it, which is what made the bottom edges disagree. */
@@ -3737,7 +3759,7 @@ function wireStrip(){
 /* Photo cap for the placement editor. 400 on the desktop two-column layout, to
    match the CSS cap on an uncropped stage (both live behind min-width:980px);
    the old 540 below that, where the photo has the full width to itself. */
-function EDITOR_MAX_H_fn(){ return window.innerWidth >= 980 ? 400 : 540; }
+function EDITOR_MAX_H_fn(){ return window.innerWidth >= 980 ? 560 : 540; }
 /* ---------------------------------------------- product blurb + reviews */
 /* One short line saying who the piece is for. Written from the category plus
    price position inside that category, because 3,100 products can't each have
@@ -3876,20 +3898,71 @@ function productCard(overlayHtml, foot, rail, strip){
   var sides = colorBack(c)
     ? '<div class="sides"><button type="button" data-side="front" class="' + (S.gal == null && S.side === 'front' ? 'on' : '') + '">Front</button>' +
       '<button type="button" data-side="back" class="' + (S.gal == null && S.side === 'back' ? 'on' : '') + '">Back</button></div>' : '';
-  return '<div class="pcard">' +
-    '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee || /^5000B?$/i.test(String(p.style)) ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
-    '<h2>' + esc(cleanName(p)) + '</h2>' +
-    '<div class="style">Style #' + esc(p.style) + (c ? '<span class="sty-c"> — ' + esc(c.name) + '</span>' : '') + '</div>' +
-    /* Blurb and rating only on the design step; step 2 is about sizes. */
-    (S.phase === 'artwork' ? (blurb(p) ? '<p class="blurb">' + esc(blurb(p)) + '</p>' : '') + reviewLine() : '') +
+  /* Desktop (two columns): the name, style and rating sit at the top of the
+     RIGHT column (prodHead) so the photo gets the whole left card, with a
+     short reassurance line above it and a full-view button on it.
+     Austin, 20 Nov 2026. Phones keep the title above the photo. */
+  var desk = !!_twoColNow;
+  return '<div class="pcard' + (desk ? ' deskcard' : '') + '">' +
+    (desk ? '<div class="assure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>' +
+            '<span><b>Free design review included.</b> We make sure your design is placed correctly and email you a final proof before anything prints.</span></div>'
+          : prodHead(p, c)) +
     /* The stage box holds a locked height (see lockStageHeight) so swapping
        between the garment and a square work photo never resizes the page. */
     '<div class="stagebox" id="f-stagebox"' + (S.stageH ? ' style="min-height:' + S.stageH + 'px"' : '') + '>' +
+    (desk ? '<button type="button" class="fullview" data-fullview="1" title="View full screen" aria-label="View the mockup full screen">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Full view</button>' : '') +
     '<div class="stage' + (editor ? '' : ' compact') + (box ? ' cropped' : '') + '"' + stageStyle + '>' +
       '<div class="stage-art" id="f-stage"' + artStyle + '>' + heroMedia(c, p) + imprintBoxHtml(p) +
       (editor && S.gal == null ? (overlayHtml || '') : '') + '</div>' + heroVidBtn() + '</div></div>' +
     sides + (strip || '') + (foot ? '<div class="pcard-foot">' + foot + '</div>' : '') + (rail || '') +
   '</div>';
+}
+/* Brand, name, style and (design step only) blurb + rating. */
+function prodHead(p, c){
+  return '<div class="brand">' + esc(p.brand || '') + (p._dealBasicTee || /^5000B?$/i.test(String(p.style)) ? ' <span class="bv">★ Best value</span>' : '') + '</div>' +
+    '<h2>' + esc(cleanName(p)) + '</h2>' +
+    '<div class="style">Style #' + esc(p.style) + (c ? '<span class="sty-c"> — ' + esc(c.name) + '</span>' : '') + '</div>' +
+    /* Blurb and rating only on the design step; step 2 is about sizes. */
+    (S.phase === 'artwork' ? (blurb(p) ? '<p class="blurb">' + esc(blurb(p)) + '</p>' : '') + reviewLine() : '');
+}
+function deskHead(){
+  if(!_twoColNow || !S.p) return '';
+  return '<div class="pcard headcard">' + prodHead(S.p, S.colors[S.color]) + '</div>';
+}
+/* Full-screen view of the mockup as it stands: a copy of the stage, scaled to
+   the window, without the drag handles. Layers are positioned in % so the
+   copy is exact at any size. Esc, the X or a click outside closes it. */
+function openFullView(){
+  var st = document.querySelector('#f-stagebox .stage'); if(!st) return;
+  closeFullView();
+  var r = st.getBoundingClientRect(), ratio = r.width / Math.max(1, r.height);
+  var cl = st.cloneNode(true);
+  cl.removeAttribute('id');
+  cl.querySelectorAll('[id]').forEach(function(e){ e.removeAttribute('id'); });
+  cl.querySelectorAll('.h,.hint,.fullview,button,.ibox,.imprint').forEach(function(e){ e.remove(); });
+  cl.querySelectorAll('.layer.sel').forEach(function(e){ e.classList.remove('sel'); });
+  var box = document.createElement('div');
+  box.className = 'fvwrap'; box.id = 'f-fullview';
+  box.innerHTML = '<button type="button" class="fvx" aria-label="Close full view">&times;</button>' +
+    '<div class="fvcap">' + esc(cleanName(S.p)) + (S.colors[S.color] ? ' · ' + esc(S.colors[S.color].name) : '') + ' · ' + (S.side === 'back' ? 'Back' : 'Front') + '</div>';
+  box.onclick = function(e){ if(e.target === box || e.target.classList.contains('fvx')) closeFullView(); };
+  root.appendChild(box);
+  /* On aliveprintshop.com the page is an iframe as tall as its content, so
+     "the screen" is the slice of it the visitor can see (placeOverlay), not the
+     iframe's own height. Sized to that slice, below the site header and above
+     the price bar. */
+  placeOverlay(box);
+  var vh = box.clientHeight || window.innerHeight, vw = box.clientWidth || window.innerWidth;
+  var h = Math.min(vh - 120, (vw * 0.92) / ratio), w = h * ratio;
+  cl.style.cssText += ';width:' + Math.round(w) + 'px;height:' + Math.round(h) + 'px;max-height:none;max-width:none;margin:0;aspect-ratio:auto;';
+  box.appendChild(cl);
+  document.addEventListener('keydown', fvKey, true);
+}
+function fvKey(e){ if(e.key === 'Escape'){ e.preventDefault(); closeFullView(); } }
+function closeFullView(){
+  var b = document.getElementById('f-fullview'); if(b) b.remove();
+  document.removeEventListener('keydown', fvKey, true);
 }
 function cleanName(p){
   var n = String(p.name || '').replace(/&amp;/g,'&');
@@ -5638,6 +5711,7 @@ function render(){
            photo rather than below it. So desktop keeps the original: Print,
            then colours, then the design. */
         '<div class="colL">' + productCard(overlay(), twoCol ? '' : artColorFoot(), detailsAcc(S.p), tools() + mediaStrip(c)) + '</div><div class="colR">' +
+          deskHead() +
           (twoCol ? optsBlock() : '') +
           (twoCol && artColorFoot() ? '<div class="pcard gcard"><div class="pcard-foot">' + artColorFoot() + '</div></div>' : '') +
           '<div class="sec-lbl">Your design' + tip('artwork,colors') + '</div>' +
@@ -5658,7 +5732,7 @@ function render(){
     html = stepper(2) +
       '<div class="wrap">' +
       '<button type="button" class="allprod" data-goto="artwork">&larr; Back to design</button>' +
-      '<div class="shell solo dual locked"><div class="colL">' + productCard(overlay(), '', '') + '</div><div class="colR">' +
+      '<div class="shell solo dual locked"><div class="colL">' + productCard(overlay(), '', '') + '</div><div class="colR">' + deskHead() +
         '<div class="pcard sizecard">' + sizeFoot() + priceBreaks() + taFoot() + '</div>' +
         accBlock('accGuar', 'Your design is in good hands', whyAlive(), 'ghacc') +
         accBlock('accHelp', 'Need a hand?', helpBar(), 'helpacc') +
@@ -5667,7 +5741,8 @@ function render(){
   }
   /* An open ink-color question survives a redraw (e.g. when the upload finishes). */
   var keep = [].slice.call(root.querySelectorAll('.tipbox[data-keep]')).filter(function(b){ return inkPending(b.getAttribute('data-keep')); })
-    .concat([].slice.call(root.querySelectorAll('.tipbox.bgtool')));   /* Background Remover stays open while an upload finishes */
+    .concat([].slice.call(root.querySelectorAll('.tipbox.bgtool')))   /* Background Remover stays open while an upload finishes */
+    .concat([].slice.call(root.querySelectorAll('.fvwrap')));         /* so does the full-screen view */
   root.innerHTML = html;
   keep.forEach(function(b){ root.appendChild(b); });
   lockStageHeight();
@@ -5852,6 +5927,7 @@ function wire(){
       startDrag(e, k, h || 'move');
     });
   });
+  root.querySelectorAll('[data-fullview]').forEach(function(b){ b.onclick = function(e){ e.stopPropagation(); openFullView(); }; });
   root.querySelectorAll('[data-tool]').forEach(function(b){
     b.onclick = function(){
       if(b.dataset.tool === 'bgtool'){ var tk = toolTarget(); if(tk) openBgTool(tk); return; }
