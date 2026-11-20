@@ -323,6 +323,32 @@
 #alive-flow .shareacts .dbtn{flex:1;background:#fff;}
 #alive-flow .sharemsg{min-height:18px;font-size:12.5px;font-weight:700;color:var(--green);margin-top:6px;}
 #alive-flow .sharebox .small{font-size:12px;margin-top:12px;}
+/* ---- cart step + upsell (20 Nov 2026) ---- */
+#alive-flow .cnote{margin:-4px 0 12px;font-size:13px;color:var(--text2);line-height:1.45;}
+#alive-flow .ships + .cnote{margin:12px 0 0;}
+#alive-flow .cnote a{color:var(--blue);font-weight:700;}
+#alive-flow .cnote.small{margin:12px 0 0;font-size:12px;color:var(--text3);}
+#alive-flow .cartitems .hd b{font-size:13px;color:var(--text3);font-weight:700;}
+#alive-flow .sorder .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+#alive-flow .backcart{display:inline-block;margin:0 0 12px;font-weight:700;}
+#alive-flow .upgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+#alive-flow .upc{border:1px solid var(--border);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0;}
+#alive-flow .upimg{background:var(--bg,#f4f5f7);border-radius:var(--r);overflow:hidden;display:flex;justify-content:center;}
+#alive-flow .upimg .mk{width:78%;}
+#alive-flow .upb{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 auto;}
+#alive-flow .upk{font-family:var(--disp);font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);}
+#alive-flow .upb b{font-size:14px;line-height:1.25;}
+#alive-flow .ups{font-size:12.5px;color:var(--text2);}
+#alive-flow .upadd{margin-top:auto;min-height:44px;border:1.5px solid var(--blue);color:var(--blue);background:#fff;border-radius:var(--r);
+  font-family:var(--disp);font-weight:800;font-size:13px;padding:8px 10px;cursor:pointer;}
+#alive-flow .upadd:hover{background:var(--blue);color:#fff;}
+#alive-flow .upb b + .ups{margin-bottom:8px;}
+@media(max-width:640px){
+  #alive-flow .upgrid{grid-template-columns:1fr;}
+  #alive-flow .upc{flex-direction:row;align-items:center;}
+  #alive-flow .upimg{width:96px;flex:0 0 96px;}
+  #alive-flow .upimg .mk{width:86%;}
+}
 #alive-flow .restored{background:var(--blue-light);border:1px solid var(--blue);color:var(--blue-dark);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:13.5px;font-weight:600;}
 /* ---- payment step (Stripe's form sits on this page) ---- */
 #alive-flow .payhd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
@@ -1464,7 +1490,10 @@ function readyDate(rush){ return addBizDays(productionStart(), E.turnaroundDays(
 var S = {
   items: CART.getItems(), rush:'std', addon:{neck:false, hem:false, bag:false},
   ship:'ship', form:{name:'',email:'',phone:'',company:'',addr1:'',addr2:'',city:'',state:'',zip:'',notes:''},
-  bad:{}, err:'', busy:false, promoOpen:false, promoErr:'', done:null, reup:{}
+  bad:{}, err:'', busy:false, promoOpen:false, promoErr:'', done:null, reup:{},
+  /* Cart first (products, rush, finishing, add-more), then Checkout (details,
+     delivery, payment). Austin, 20 Nov 2026. */
+  stage: qp('step') === 'checkout' ? 'details' : 'cart'
 };
 /* If they asked us to email them their mockup on the product page, we already
    have their address — prefilling it means that earlier ask SAVED them a step
@@ -1673,6 +1702,195 @@ function editUrl(it, step){
   return CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(it.style || '') +
     '&edit=' + encodeURIComponent(it.id || '') + (step === 'sizes' ? '&step=sizes' : '');
 }
+/* ------------------------------------------------------------ cart upsell
+   "Your logo looks great on these too" (Austin, 20 Nov 2026). Takes the last
+   item that has a placed design and offers up to three other garments with
+   the same artwork, method, locations and ink count, at the method minimum
+   (24 screen print, 12 embroidery / full color), sizes M and L split evenly.
+   The new line is built exactly like one from the product page, so Edit
+   design / Edit sizes, the Worker's re-pricing and the dashboard all treat it
+   the same. Prices come from the same engine; the Worker re-prices on pay. */
+var UPSELL_POOL = ['IND4000','BC3001','BC3501','LS14004','112','PC78H','1717'];
+var UP = {raw:{}, state:'idle', added:{}};
+function upLog(){ try{ return JSON.parse(sessionStorage.getItem('alive_upsell_added') || '{}'); }catch(e){ return {}; } }
+function upSource(){
+  var src = null;
+  S.items.forEach(function(it){
+    if(!priceable(it) || isPcna(it) || (it.pricingProduct && it.pricingProduct._drinkware) || it.artworkLater) return;
+    if(!(it.mock && it.mock.layers && it.mock.layers.length && it.edit && it.edit.art && Object.keys(it.edit.art).length)) return;
+    if(['sp','ht','em'].indexOf(it.decoMethod) < 0) return;
+    src = it;
+  });
+  return src;
+}
+function upLoad(){
+  if(UP.state !== 'idle' || !upSource()) return;
+  UP.state = 'loading';
+  var base = 'https://aliveprintshop.github.io/PriceCalculator/p/';
+  Promise.all(UPSELL_POOL.map(function(st){
+    return fetch(base + encodeURIComponent(st.replace(/[^A-Z0-9_-]/gi, '_')) + '.json')
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){ if(j && j.product) UP.raw[st] = j.product; })
+      .catch(function(){});
+  })).then(function(){ UP.state = 'ready'; if(!S.done && !S.pay && S.stage === 'cart') render(); });
+}
+function upSortColors(list){
+  var out = list.slice();
+  out.sort(function(a, b){
+    var an = (a.name || '').toLowerCase(), bn = (b.name || '').toLowerCase();
+    if(an === 'black' && bn !== 'black') return -1; if(bn === 'black' && an !== 'black') return 1;
+    if(an === 'white' && bn !== 'white') return -1; if(bn === 'white' && an !== 'white') return 1;
+    return an.localeCompare(bn);
+  });
+  return out;
+}
+function upFront(c){ var i = c.images || {}; return i.front_flat || i.front_model || i.back_flat || ''; }
+function upBack(c){ var i = c.images || {}; return i.back_flat || i.back_model || ''; }
+function upName(p){
+  var n = String(p.name || '').replace(/&amp;/g, '&');
+  n = n.replace(new RegExp('[.\\s]*' + String(p.style).replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\s*$'), '');
+  n = n.replace(/^(.*?)\s-\s/, function(m, brand){ return brand.toLowerCase() === String(p.brand || '').toLowerCase() ? '' : m; });
+  var b = String(p.brand || '');
+  if(b && n.toLowerCase().indexOf(b.toLowerCase() + ' ') === 0) n = n.slice(b.length + 1);
+  return n.replace(/\s+/g, ' ').trim() || p.style;
+}
+function upKind(p){
+  var t = E.productType(p), n = String(p.name || '').toLowerCase();
+  if(t === 'hat' || t === 'beanie') return 'Cap';
+  if(/hood/.test(n)) return 'Hoodie';
+  if(/crew/.test(n)) return 'Crewneck';
+  if(/long sleeve/.test(n)) return 'Long sleeve';
+  if(t === 'tshirt') return 'Tee';
+  return 'Apparel';
+}
+var UP_KEEP = ['style','name','brand','category','case_price','case_sale_price','size_upcharges','available_sizes',
+  '_dealBasicTee','_drinkware','_dwMatrix','_blank','_pcna','_decoLabel'];
+function upBuild(src, raw){
+  var p = E.prepare(raw, false); if(!p) return null;
+  var m = src.decoMethod;
+  if(E.decoMethods(p).indexOf(m) < 0) return null;
+  var colors = upSortColors((raw.colors || []).filter(function(c){ return c && c.images && upFront(c); }));
+  var plain = colors.filter(function(c){ return !(+c.upcharge > 0); });
+  if(!plain.length) return null;
+  var want = String(src.color || '').toLowerCase(), c = null;
+  plain.forEach(function(x){ if(!c && String(x.name || '').toLowerCase() === want) c = x; });
+  plain.forEach(function(x){ if(!c && String(x.name || '').toLowerCase() === 'black') c = x; });
+  c = c || plain[0];
+  var avail = E.locations(p, m); if(!avail.length) return null;
+  var keys = avail.map(function(l){ return l.key; }), label = {};
+  avail.forEach(function(l){ label[l.key] = String(l.label || l.key).replace(/\s*\(.*\)\s*$/, ''); });
+  var art = src.edit.art, srcKeys = Object.keys(art);
+  var mainKey = ['front','front-center','left-chest','right-chest','back'].filter(function(k){ return art[k]; })[0] || srcKeys[0];
+  var locs = srcKeys.filter(function(k){ return keys.indexOf(k) > -1; });
+  var from = {}; locs.forEach(function(k){ from[k] = k; });
+  if(!locs.length){ locs = [keys[0]]; from[keys[0]] = mainKey; }
+  var lm = {}; locs.forEach(function(k){ lm[k] = m; });
+  var inks = (src.edit && src.edit.inks) || {}, ink = {};
+  locs.forEach(function(k){ ink[k] = Math.max(1, +inks[from[k]] || +inks.front || 1); });
+  var q = m === 'sp' ? 24 : 12, zs = p.available_sizes || [], sizes = {};
+  if(zs.length <= 1) sizes[zs[0] || 'OSFA'] = q;
+  else if(zs.indexOf('M') > -1 && zs.indexOf('L') > -1){ sizes.M = q / 2; sizes.L = q / 2; }
+  else { var mid = Math.floor(zs.length / 2); sizes[zs[Math.max(0, mid - 1)]] = q / 2; sizes[zs[mid]] = (sizes[zs[mid]] || 0) + q / 2; }
+  var cfg = {qty:q, locs:locs, locMethod:lm, frontColors: lm.front === 'sp' ? ink.front : 1, backColors: lm.back === 'sp' ? ink.back : 1,
+             addons:{neck:false, hem:false, bag:false}, rush:'std', promoDiscount: promoDiscount()};
+  var unit = E.unitPrice(p, cfg); if(unit == null) return null;
+  /* Where the design sits: a cap gets the cap spot; garment to garment keeps the
+     customer's own placement (flat lays share the 2:3 frame). */
+  var isCap = E.productType(p) === 'hat' || E.productType(p) === 'beanie';
+  var srcCap = ['hat','beanie'].indexOf(E.productType(src.pricingProduct)) > -1;
+  function placeFor(k){
+    var a = art[from[k]] || {}, pl = a.place || {cx:0.5, cy:0.4, w:0.3, rot:0};
+    if(isCap) return k === 'back' ? {cx:0.5, cy:0.22, w:0.12, rot:0} : {cx:0.5, cy:0.19, w:0.17, rot:0};
+    if(srcCap || from[k] !== k) return k === 'left-chest' ? {cx:0.62, cy:0.33, w:0.12, rot:0} : k === 'back' ? {cx:0.5, cy:0.37, w:0.34, rot:0} : {cx:0.5, cy:0.40, w:0.30, rot:0};
+    return {cx:pl.cx, cy:pl.cy, w:pl.w, rot:pl.rot || 0};
+  }
+  var side = (src.mock && src.mock.side === 'back' && locs.indexOf('back') > -1) ? 'back' : 'front';
+  var img = side === 'back' ? (upBack(c) || upFront(c)) : upFront(c);
+  var ck = c.crop && c.crop[side === 'back' ? 'b' : 'f'];
+  var box = (ck && ck.length === 5 && ck[4] > 0) ? ck.map(function(v){ return v / 1000; }) : null;
+  var layers = [];
+  locs.forEach(function(k){
+    var view = (k === 'back') ? 'back' : (k === 'left-sleeve' || k === 'right-sleeve' || k === 'left-side' || k === 'right-side') ? null : 'front';
+    if(view !== side) return;
+    var sl = null; (src.mock.layers || []).forEach(function(l){ if(!sl && l.k === from[k]) sl = l; });
+    if(!sl) sl = src.mock.layers[0];
+    var pl = placeFor(k);
+    layers.push({k:k, src:sl.src || '', url:sl.url || '', cx:+(+pl.cx).toFixed(4), cy:+(+pl.cy).toFixed(4), w:+(+pl.w).toFixed(4), rot:+(+pl.rot || 0).toFixed(2)});
+  });
+  var files = [], byLoc = {}, editArt = {};
+  locs.forEach(function(k){
+    var a = art[from[k]] || {}, sf = null;
+    (src.artworkFiles || []).forEach(function(f){ if(!sf && f && a.url && f.url === a.url) sf = f; });
+    var f = Object.assign({}, sf || {name:a.name || 'artwork', url:a.url || ''}, {location:label[k]});
+    if(!f.url) f.pending = true;
+    files.push(f); byLoc[label[k]] = f;
+    editArt[k] = Object.assign({}, a, {place:placeFor(k)});
+  });
+  var up = files.filter(function(f){ return f.url; }).map(function(f){ return f.location + ': ' + f.url; });
+  var keep = {}; UP_KEEP.forEach(function(k){ if(p[k] !== undefined) keep[k] = p[k]; });
+  var idx = 0; colors.forEach(function(x, j){ if(x === c) idx = j; });
+  var inkNotes = locs.map(function(k){ return label[k] + ': ' + (m === 'em' ? 'embroidery' : m === 'ht' ? 'full color' : ink[k] + '-color print'); });
+  var name = upName(p);
+  return {
+    style:p.style, productName:name, brand:p.brand || '', color:c.name || '', productImage:upFront(c),
+    decoMethod:E.orderMethod(p, cfg), decoLabel:E.methodLabel(m), locMethod:lm, locations:locs.slice(),
+    frontColors: lm.front === 'sp' ? ink.front : null, backColors: lm.back === 'sp' ? ink.back : null,
+    qty:q, sizes:sizes, addons:{neck:false, hem:false, bag:false}, addonList:[], rush:'std',
+    turnaroundLabel:'Standard (' + E.turnaroundDays('std', false) + ' business days)',
+    artworkLink:up.join('\n'), artworkFiles:files, artworkByLocation:byLoc, artworkNote:up.join(', '), artworkLater:false,
+    notes:['Added from a cart suggestion: same artwork as the ' + (src.productName || src.style) + ' (' + (src.color || '') + '). Check placement on the proof.'].concat(inkNotes).join(' · '),
+    unitPrice:unit, lineTotal:E.lineTotal(p, cfg, sizes), sizeUpchargeTotal:E.upchargeTotal(p, cfg, sizes), sizeUpchargePerSize:{},
+    promoCodeAtAdd:'', promoDiscountAtAdd:cfg.promoDiscount,
+    pricingProduct:keep, source:'cart-upsell', upsellFrom:src.id || '',
+    mock:{side:side, img:img, ar:box ? box[4] : 2/3, crop:box ? box.slice(0, 4) : null, layers:layers},
+    mockupUrl:'', mockupUrls:{},
+    edit:{color:idx, colorName:c.name || '', method:m, locs:locs.slice(), inks:ink, mode:(src.edit && src.edit.mode) || 'upload', side:side,
+          sizes:JSON.parse(JSON.stringify(sizes)), qty:q, est:q, art:editArt},
+    _kind:upKind(p)
+  };
+}
+function upPicks(){
+  var src = upSource(); if(!src || UP.state !== 'ready') return [];
+  var have = {}, types = {};
+  S.items.forEach(function(it){ have[String(it.style).toUpperCase()] = 1; if(priceable(it)) types[upKind(it.pricingProduct)] = 1; });
+  var out = [];
+  UPSELL_POOL.forEach(function(st){
+    if(have[st.toUpperCase()] || !UP.raw[st]) return;
+    var it = null; try{ it = upBuild(src, UP.raw[st]); }catch(e){ if(window.console) console.warn('[Alive checkout] upsell', st, e); }
+    if(it) out.push(it);
+  });
+  /* Something different first: a hoodie order is offered tees before more hoodies. */
+  var seen = {};
+  out.sort(function(a, b){ return (types[a._kind] ? 1 : 0) - (types[b._kind] ? 1 : 0); });
+  out = out.filter(function(it){ if(seen[it._kind]) return false; seen[it._kind] = 1; return true; });
+  return out.slice(0, 3);
+}
+function upsellCard(){
+  upLoad();
+  var picks = upPicks(); if(!picks.length) return '';
+  UP.picks = {}; picks.forEach(function(it){ UP.picks[it.style] = it; });
+  return '<div class="card upsell"><div class="hd"><h2>Your logo looks great on these too</h2></div>' +
+    '<p class="cnote">Same design, same print. Added to this order so it all ships together.</p>' +
+    '<div class="upgrid">' + picks.map(function(it){
+      var line = priceItem(it, S.addon, S.rush).line;
+      return '<div class="upc"><div class="upimg">' + mockHtml(it.mock) + '</div>' +
+        '<div class="upb"><span class="upk">' + esc(it._kind) + '</span><b>' + esc(it.productName) + '</b>' +
+        '<span class="ups">' + esc(it.color) + ' · ' + money(line / it.qty) + '/pc</span>' +
+        '<button type="button" class="upadd" data-upsell="' + esc(it.style) + '">Add ' + it.qty + ' · ' + money(line) + '</button></div></div>';
+    }).join('') + '</div>' +
+    '<p class="cnote small">Adds ' + picks[0].qty + ' pieces in the sizes shown on the item. Change sizes or colors after adding.</p></div>';
+}
+function upsellAdd(style){
+  var it = UP.picks && UP.picks[style]; if(!it) return;
+  var item = JSON.parse(JSON.stringify(it)); delete item._kind;
+  item.id = 'ci_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  item.addedAt = new Date().toISOString();
+  var items = CART.getItems(); items.push(item); CART.setItems(items);
+  S.items = CART.getItems(); applyOptions();
+  track('add_to_cart', {currency:'USD', value:+(+item.lineTotal).toFixed(2), items:[{item_id:String(item.style), item_name:item.productName, item_brand:item.brand, item_variant:item.color, price:+(+item.unitPrice).toFixed(2), quantity:item.qty}]});
+  render();
+  var el = root.querySelector('.cartitems'); if(el) scrollToEl(el);
+}
 /* ------------------------------------------------------------ render */
 var LOC_LABEL = {'front':'Front','back':'Back','left-sleeve':'Left sleeve','right-sleeve':'Right sleeve','left-chest':'Left chest',
   'right-chest':'Right chest','front-center':'Front center','left-side':'Left side','right-side':'Right side'};
@@ -1801,41 +2019,91 @@ function render(){
     wire(); broadcast(); return;
   }
   var t = totals(), pickup = S.ship === 'pickup', promo = CART.getPromo();
+  if(S.stage === 'details') renderDetails(t, pickup, promo); else renderCart(t, promo);
+  wire(); placeBar(); broadcast();
+}
+function promoRow(promo, off, t){
+  if(!(promo && promo.code)) return '';
+  return '<div class="row promo"><span>' + (promo.code === BF.code ? 'Black Friday ' + money(BF.amountOff) + ' off' : 'Promo ' + esc(promo.code)) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (off ? '−' + money(off) : (promoShortBy() ? 'add ' + money(promoShortBy()) + ' more to use' : 'applied')) + '</b></div>';
+}
+function promoInput(promo){
+  /* The Black Friday code is applied for the customer, so it must not take
+     the code box away from someone holding a better one. Keep it reachable;
+     a typed code still only replaces it if it is worth more. */
+  return (promo && promo.code && promo.code !== BF.code ? '' : (S.promoOpen
+    ? '<div class="promo-in"><input id="co-promo" placeholder="Promo code" autocomplete="off"><button type="button" class="dbtn" data-applypromo="1">Apply</button></div>' + (S.promoErr ? '<div class="perr">' + esc(S.promoErr) + '</div>' : '')
+    : '<button type="button" class="linkbtn promo-link" data-openpromo="1">' + (promo && promo.code === BF.code ? 'Have a different code?' : 'Have a promo code?') + '</button>'));
+}
+/* Real figures off the Google Business Profile, 1 Oct 2026. Keep this in
+   step with CONFIG.reviews on the product page — both are typed in. */
+var RATING = '<div class="rating"><span class="stars">★★★★★</span> <b>4.9</b> from 295 Google reviews</div>';
+function rushCard(){
+  /* Turnaround is the decision customers care about most, so it leads the cart. */
+  return '<div class="card"><div class="hd"><h2 class="h2t">Need it sooner?' + tip('turnaround') + '</h2></div>' +
+    '<p class="cnote">One turnaround covers the whole order. The date is when it leaves our shop.</p><div class="ships">' +
+    rushRow('std', 'Standard — ' + E.turnaroundDays('std', false) + ' business days') + rushRow('rush', '7 business day rush') + rushRow('super', '5 business day rush') +
+    '</div><p class="cnote">Need it in 3 days? <a href="' + CONFIG.phoneHref + '">Call ' + esc(CONFIG.phone) + '</a> and we’ll check the schedule.</p></div>';
+}
+function addonCard(){
+  return ADDONS.some(function(a){ return addonPieces(a) > 0; })
+    ? '<div class="card"><div class="hd"><h2>Finish it properly</h2></div><div class="ships">' + ADDONS.map(addonRow).join('') + '</div></div>' : '';
+}
+/* ---- Step 3: the cart -------------------------------------------------- */
+function renderCart(t, promo){
+  var items = S.items.map(itemHtml).join('');
+  var offC = promoOff(t.total), sub = +(t.total - offC).toFixed(2);
+  var tot = '<div class="card tot">' +
+      '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
+      (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
+      (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
+      promoRow(promo, offC, t) +
+      '<div class="row"><span>Shipping &amp; tax</span><b class="num">Next step</b></div>' +
+      '<div class="row big"><span>Subtotal</span><span class="v num">' + money(sub) + '</span></div>' +
+      '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
+      promoInput(promo) +
+      (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
+      '<button class="cta submit-d" type="button" data-next="1">Continue to checkout &rarr;</button>' +
+      '<div class="paynote">Proof before we print · 100% print guarantee</div>' + RATING +
+    '</div>';
+  root.innerHTML = stepper() +
+    '<div class="wrap"><div class="co">' +
+      '<div>' +
+        (S.restored ? '<div class="restored">We loaded the cart that was shared with you — ' + S.restored + ' ' + (S.restored === 1 ? 'item' : 'items') + '. Check the sizes, then place your order.</div>' : '') +
+        '<div class="card cartitems"><div class="hd"><h2>Your cart</h2><b class="num">' + S.items.length + ' ' + (S.items.length === 1 ? 'item' : 'items') + '</b></div>' + items +
+          '<button class="addmore" type="button" data-products="1">+ Add another product</button>' + shareBtn() + '</div>' +
+        rushCard() + addonCard() + upsellCard() +
+      '</div>' +
+      '<div class="side">' + tot + '</div>' +
+    '</div></div>' +
+    '<div class="bar"><div class="bar-in"><div><div class="k">Subtotal</div><div class="v num">' + money(sub) + '</div>' +
+      '<div class="s num">' + t.pieces + ' pcs · shipping &amp; tax next</div></div>' +
+      '<button class="cta" id="co-next" type="button" data-next="1">Checkout &rarr;</button></div></div>';
+}
+/* ---- Step 4: checkout (details, delivery, payment) ---------------------- */
+function renderDetails(t, pickup, promo){
   var items = S.items.map(itemHtml).join('');
   var summary =
-    '<div class="card sorder"><div class="hd"><h2>Your order</h2></div>' + items +
-      '<button class="addmore" type="button" data-products="1">+ Add another product</button>' + shareBtn() + '</div>' +
+    '<div class="card sorder"><div class="hd"><h2>Your order</h2><button type="button" class="linkbtn" data-tocart="1">Edit cart</button></div>' + items + '</div>' +
     '<div class="card tot">' +
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
-      (promo && promo.code ? '<div class="row promo"><span>' + (promo.code === BF.code ? 'Black Friday ' + money(BF.amountOff) + ' off' : 'Promo ' + esc(promo.code)) + ' <button type="button" class="linkbtn" data-clearpromo="1">remove</button></span><b class="num">' + (t.off ? '−' + money(t.off) : (promoShortBy() ? 'add ' + money(promoShortBy()) + ' more to use' : 'applied')) + '</b></div>' : '') +
+      promoRow(promo, t.off, t) +
       '<div class="row"><span>' + (pickup ? 'Pickup' : t.boxes ? 'Shipping · ' + boxesText(t.boxes) : 'Shipping · included') + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
-      /* The Black Friday code is applied for the customer, so it must not take
-         the code box away from someone holding a better one. Keep it reachable;
-         a typed code still only replaces it if it is worth more. */
-      (promo && promo.code && promo.code !== BF.code ? '' : (S.promoOpen
-        ? '<div class="promo-in"><input id="co-promo" placeholder="Promo code" autocomplete="off"><button type="button" class="dbtn" data-applypromo="1">Apply</button></div>' + (S.promoErr ? '<div class="perr">' + esc(S.promoErr) + '</div>' : '')
-        : '<button type="button" class="linkbtn promo-link" data-openpromo="1">' + (promo && promo.code === BF.code ? 'Have a different code?' : 'Have a promo code?') + '</button>')) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-submit="1"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting secure checkout…' : 'Pay &amp; place order') + '</button>' +
-      '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' +
-      /* Real figures off the Google Business Profile, 1 Oct 2026. Keep this in
-         step with CONFIG.reviews on the product page — both are typed in. */
-      '<div class="rating"><span class="stars">★★★★★</span> <b>4.9</b> from 295 Google reviews</div>' +
+      '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' + RATING +
     '</div>';
-
   root.innerHTML = stepper() +
     '<div class="wrap"><div class="co">' +
       '<div>' +
-        /* The stepper already says Checkout — the h1 just repeated it. */
+        '<button type="button" class="linkbtn backcart" data-tocart="1">&larr; Back to cart</button>' +
         /* Phones: the order sits open at the top (the side column's copy is hidden there). */
-        (S.restored ? '<div class="restored">We loaded the cart that was shared with you — ' + S.restored + ' ' + (S.restored === 1 ? 'item' : 'items') + '. Check the sizes, then place your order.</div>' : '') +
         '<div class="card morder"><div class="hd mo-hd"><h2>Your order</h2><b class="num">' + money(t.grand) + '</b></div>' + items +
-          '<button class="addmore" type="button" data-products="1">+ Add another product</button>' + shareBtn() + '</div>' +
+          '<button class="addmore" type="button" data-tocart="1">Edit cart</button></div>' +
         missBlock() +
         '<div class="card"><div class="hd"><h2>Your details</h2></div>' +
           '<div class="fields two">' + field('name','Full name','text','name') + field('email','Email','email','email') + '</div>' +
@@ -1849,23 +2117,17 @@ function render(){
           '<div class="fields two" style="margin-top:14px">' + field('city','City','text','address-level2') + field('state','State','text','address-level1') + '</div>' +
           '<div class="fields" style="margin-top:14px;max-width:200px">' + field('zip','ZIP code','text','postal-code',' inputmode="numeric"') + '</div>') +
         '</div>' +
-        /* Turnaround sits above the add-ons: the date is the decision customers
-           care about most, so it must be the first thing after the address. */
-        '<div class="card"><div class="hd"><h2 class="h2t">Need it sooner?' + tip('turnaround') + '</h2></div><div class="ships">' +
-          rushRow('std', 'Standard — ' + E.turnaroundDays('std', false) + ' business days') + rushRow('rush', '7 business day rush') + rushRow('super', '5 business day rush') +
-        '</div></div>' +
-        (ADDONS.some(function(a){ return addonPieces(a) > 0; })
-          ? '<div class="card"><div class="hd"><h2>Finish it properly</h2></div><div class="ships">' + ADDONS.map(addonRow).join('') + '</div></div>' : '') +
         '<div class="card"><div class="hd"><h2>Anything else?</h2></div><div class="fields">' + field('notes','Notes for your order <span>(optional)</span>','textarea','') + '</div></div>' +
-        /* Guarantee lines and the help bar removed (Austin, 1 Oct 2026). The
-           same three promises still sit under the Pay button in the summary. */
       '</div>' +
       '<div class="side">' + summary + '</div>' +
     '</div></div>' +
     '<div class="bar"><div class="bar-in"><div><div class="k">Order total</div><div class="v num">' + money(t.grand) + '</div>' +
       '<div class="s num">' + t.pieces + ' pcs · plus tax</div></div>' +
       '<button class="cta" id="co-submit" type="button"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting…' : 'Pay &amp; place order') + '</button></div></div>';
-  wire(); placeBar(); broadcast();
+}
+function goStage(st){
+  S.stage = st; S.err = ''; render();
+  scrollToEl(root.querySelector('.steps'));
 }
 /* ------------------------------------------------------------ pay on this page (Stripe embedded Checkout) */
 function payTotals(){
@@ -2055,12 +2317,15 @@ function discRefresh(){
 /* Checkout has already chosen the best code (bfAutoApply / promoWorth). */
 function discActive(){ try{ return CART.getPromo(); }catch(e){ return null; } }
 function stepper(){
-  var defs = ['Design','Sizes','Checkout'], out = '<div class="steps"><div class="steps-in">';
+  var defs = ['Design','Sizes','Cart','Checkout'], cur = S.stage === 'details' ? 3 : 2, out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(l, i){
-    var done = i < 2;
-    var b = done ? '' : discBadge();
-    out += '<span class="stp ' + (done ? 'done' : 'now') + (b ? ' has-disc' : '') + '"><span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : 3) + '</span><span class="nm">' + l + '</span>' + b + '</span>';
-    if(i < 2) out += '<span class="rule done"></span>';
+    var done = i < cur, now = i === cur;
+    var b = (i === 3 && !done) ? discBadge() : '';
+    var dot = '<span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : (i + 1)) + '</span><span class="nm">' + l + '</span>';
+    out += (done && i === 2)
+      ? '<button type="button" class="stp done" data-tocart="1">' + dot + '</button>'
+      : '<span class="stp ' + (done ? 'done' : now ? 'now' : '') + (b ? ' has-disc' : '') + '">' + dot + b + '</span>';
+    if(i < defs.length - 1) out += '<span class="rule' + (i < cur ? ' done' : '') + '"></span>';
   });
   return out + '</div></div>';
 }
@@ -2123,6 +2388,11 @@ function wire(){
   root.querySelectorAll('[data-edit]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-reup]').forEach(function(b){ b.onclick = function(){ reupload(b.dataset.reup); }; });
   root.querySelectorAll('#co-submit,[data-submit]').forEach(function(b){ b.onclick = submit; });
+  root.querySelectorAll('[data-next]').forEach(function(b){ b.onclick = function(){
+    if(staleItems().length){ S.err = 'One item in your cart has an old price. Remove it and add it again, then continue.'; render(); scrollToEl(root.querySelector('.stale')); return; }
+    goStage('details'); }; });
+  root.querySelectorAll('[data-tocart]').forEach(function(b){ b.onclick = function(){ goStage('cart'); }; });
+  root.querySelectorAll('[data-upsell]').forEach(function(b){ b.onclick = function(){ upsellAdd(b.dataset.upsell); }; });
   root.querySelectorAll('[data-share]').forEach(function(b){ b.onclick = openShare; });
   root.querySelectorAll('[data-navto]').forEach(function(a){ a.onclick = function(e){ e.preventDefault(); nav(a.getAttribute('href')); }; });
   root.querySelectorAll('[data-mock]').forEach(function(b){ b.onclick = function(){
@@ -2420,7 +2690,7 @@ function saveMissingMockups(){
 function submit(){
   S.err = '';
   if(!validate()){ render(); var first = root.querySelector('.f.bad input, .f.bad textarea'); if(first){ first.focus(); scrollToEl(first); } return; }
-  if(staleItems().length){ S.err = 'One item in your cart has an old price. Remove it and add it again, then place your order.'; render(); scrollToEl(root.querySelector('.stale')); return; }
+  if(staleItems().length){ S.stage = 'cart'; S.err = 'One item in your cart has an old price. Remove it and add it again, then place your order.'; render(); scrollToEl(root.querySelector('.stale')); return; }
   if(missingArtwork().length && !S.missAck){ S.err = 'Please confirm you’ll email the artwork we’re missing.'; render(); scrollToEl(root.querySelector('.miss')); return; }
   applyOptions();
   /* Start compositing any unsaved mockups NOW, so the work overlaps the

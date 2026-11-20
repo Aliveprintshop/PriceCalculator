@@ -1449,7 +1449,7 @@
 /* ---- Phones: app-style layout (19 Nov 2026) ------------------------------
    Austin approved the app-style demo (claude/deploy-log-2026-11-19-*). Phones
    only (<=767px); tablets and desktop are unchanged.
-   - slim 3-step progress line, with the back arrow (All products / Back to
+   - slim 4-step progress line (Cart added 20 Nov 2026), with the back arrow (All products / Back to
      design) as an icon beside it
    - product name above the shirt; no style line, blurb or reviews line
    - Front/Back sits on the photo; the thumbnail strip is hidden
@@ -1458,7 +1458,7 @@
 @media(max-width:767px){
   #alive-flow{position:relative;}
   #alive-flow .steps{border-bottom:0;}
-  #alive-flow .steps-in{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.5fr);gap:8px;align-items:start;height:auto !important;padding:12px 14px 6px 56px !important;max-width:none;}
+  #alive-flow .steps-in{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr);gap:6px;align-items:start;height:auto !important;padding:12px 14px 6px 56px !important;max-width:none;}
   #alive-flow .steps .rule{display:none !important;}
   #alive-flow .steps .stp{display:grid !important;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:6px;row-gap:5px;height:auto !important;min-width:0;padding:0 !important;margin:0;background:none;border:0;text-align:left;}
   #alive-flow .steps .stp::before{content:"";grid-column:1/-1;height:3px;border-radius:999px;background:#E3E7EC;}
@@ -1469,6 +1469,8 @@
   #alive-flow .steps .stp.done .nm{color:#374151;}
   #alive-flow .steps .disc-badge{position:static !important;transform:none !important;margin:0 !important;font-size:9.5px !important;padding:2px 6px !important;justify-self:start;animation:none !important;box-shadow:none;}
   #alive-flow .steps .disc-badge svg{width:10px;height:10px;}
+  /* Four steps: the badge sits under CHECKOUT instead of beside it. */
+  #alive-flow .steps .stp.has-disc{grid-template-columns:minmax(0,1fr);}
   #alive-flow .steps .disc-note{display:none;}
   #alive-flow .allprod{position:absolute;top:0;left:6px;z-index:5;margin:0 !important;width:44px;height:44px;min-height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:0 !important;color:var(--text,#1E1E1E);}
   #alive-flow .allprod::before{content:"";width:11px;height:11px;border-left:2.4px solid currentColor;border-bottom:2.4px solid currentColor;transform:rotate(45deg);margin-left:5px;}
@@ -3233,7 +3235,7 @@ var TIPS = {
   includes: ['What the price includes', 'The garment and your decoration as set up on this page — print spots, ink colors or embroidery. Change any of them and the price updates right away. No setup or screen fees.'],
   minimum:  ['Minimum order', 'Screen print: 24 pieces. Embroidery: 12. Full color: 10. Mix sizes however you like — your sizes add up to your total.'],
   sizes:    ['Sizes', '2XL and up use more fabric, so they cost a little more. The extra shows under each size.'],
-  turnaround:['Turnaround', 'Standard is 10 business days, Monday to Friday. Order before 4 PM Las Vegas time and today counts as day one. Rush (7 days) and Super Rush (5 days) are priced right here — the date shown is when your order leaves our shop, so add transit time on top.'],
+  turnaround:['Turnaround', 'Standard is 10 business days, Monday to Friday. Order before 4 PM Las Vegas time and today counts as day one. Rush (7 days) and Super Rush (5 days) are chosen in your cart — the date shown is when your order leaves our shop, so add transit time on top.'],
   artwork:  ['Artwork', 'AI, EPS, PDF, SVG, PSD, PNG, JPG or ZIP, up to 25 MB each. We confirm ink colors and placement on your proof. Nothing prints until you approve it.'],
   method:   ['Decoration', 'Screen print: bold, durable, best value at 24+ and priced by ink colors. Full color: any number of colors or photos, great for small runs. Embroidery: stitched, premium, priced per location.'],
   colors:   ['Ink colors', 'Screen printing is priced by the number of ink colors in your design. The shirt color does not count. Not sure? Pick your best guess — we confirm it on your proof before anything prints.']
@@ -3435,13 +3437,13 @@ function discActive(){
   return p;
 }
 function stepper(cur){
-  var defs = [{n:1,label:'Design'},{n:2,label:'Sizes'},{n:3,label:'Checkout'}];
+  var defs = [{n:1,label:'Design'},{n:2,label:'Sizes'},{n:3,label:'Cart'},{n:4,label:'Checkout'}];
   var out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(s, i){
     var done = s.n < cur, now = s.n === cur;
     var inner = '<span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : s.n) + '</span><span class="nm">' + s.label + '</span>';
     out += done ? '<button type="button" class="stp done" data-goto="' + (s.n === 1 ? 'artwork' : 'sizes') + '">' + inner + '</button>'
-                : (s.n === 3 ? (function(b){ return '<span class="stp ' + (now ? 'now' : '') + (b ? ' has-disc' : '') + '">' + inner + b + '</span>'; })(discBadge())
+                : (s.n === 4 ? (function(b){ return '<span class="stp ' + (now ? 'now' : '') + (b ? ' has-disc' : '') + '">' + inner + b + '</span>'; })(discBadge())
                              : '<span class="stp ' + (now ? 'now' : '') + '">' + inner + '</span>');
     if(i < defs.length - 1) out += '<span class="rule' + (done ? ' done' : '') + '"></span>';
   });
@@ -4129,7 +4131,7 @@ function taFoot(){
   return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span></div>' +
     '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false) + ' business days</span>' +
       '<span class="tadate" data-tadate="std">Ships by ' + fmtDay(taDate('std')) + '</span></div>' +
-    '<div class="tanote">Need it sooner? Upgrade to a rush order at checkout. ' +
+    '<div class="tanote">Need it sooner? Pick a 7 or 5 day rush in your cart, the next step. ' +
     'Dates are when it leaves our shop; transit is on top.</div></div>';
 }
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
@@ -4275,7 +4277,7 @@ function bumpTo(target){
 /* The footer button's words and state, so render() and refreshPrice() agree. */
 function mctaState(){
   if(S.saving) return {label:'Uploading your artwork&hellip;', off:true};
-  var done = S.editId ? 'Save changes &rarr;' : 'Continue to checkout &rarr;';
+  var done = S.editId ? 'Save changes &rarr;' : 'Add to cart &rarr;';
   if(!artReady()) return {label:done, off:true};
   if(sizesReady()) return {label:done, off:false};
   /* Live, not grey: the button says what is missing and takes them to it. */
@@ -6217,6 +6219,8 @@ function applySnapshot(e){
   if(!e) return;
   if(e.method && E.decoMethods(S.p).indexOf(e.method) > -1) setMethod(e.method);
   if(typeof e.color === 'number' && S.colors[e.color]) S.color = e.color;
+  /* Lines added from a cart suggestion carry the colour by name as well. */
+  if(e.colorName) S.colors.forEach(function(c, j){ if(c.name === e.colorName) S.color = j; });
   if(e.locs && e.locs.length){
     var keep = e.locs.filter(function(k){ return LOC[k]; });
     if(keep.length) S.locs = keep;
