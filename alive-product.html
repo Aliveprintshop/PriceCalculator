@@ -3316,6 +3316,12 @@ function defaultPlace(key){
     if(t === 'hat' || t === 'beanie') return {cx:0.5, cy:0.36, w:0.26, rot:0};
     return {cx:0.5, cy:0.5, w:0.34, rot:0};
   }
+  /* S&S hat photos (Imperial etc.) are 4:5 (1000x1250) with the cap filling
+     the frame: crown ~10%-62% tall, so the front logo spot is ~38% down and
+     the back spot sits between the eyelets and the strap opening (~48%).
+     The SanMar numbers below are for 2:3 frames where the cap sits up top,
+     and put the upload button on the crown seam here (Austin 2026-11-20). */
+  if(t === 'hat' && fr > 0.72) return key === 'back' ? {cx:0.5,cy:0.48,w:0.18,rot:0} : {cx:0.5,cy:0.38,w:0.30,rot:0};
   if(t === 'hat')    return key === 'back' ? {cx:0.5,cy:0.22,w:0.12,rot:0} : {cx:0.5,cy:0.19,w:0.17,rot:0};
   if(t === 'beanie') return {cx:0.5, cy:0.30, w:0.20, rot:0};
   if(t === 'bag')    return {cx:0.5, cy:0.52, w:0.36, rot:0};
