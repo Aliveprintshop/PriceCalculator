@@ -228,6 +228,18 @@
   font-size:10px;line-height:13px;text-align:center;font-weight:800;}
 
 /* ---- size grid ------------------------------------------------------- */
+#alive-flow .stkw{display:block;min-height:14px;}
+#alive-flow .stk{display:block;font-style:normal;font-size:10px;font-weight:700;line-height:1.2;margin-top:2px;text-align:center;}
+#alive-flow .stk.ok{color:#0f7a3d;}
+#alive-flow .stk.low{color:#9a5b00;}
+#alive-flow .stk.short{color:#b45309;}
+#alive-flow .stk.out{color:#b42318;}
+#alive-flow .stk1 .stk{text-align:left;font-size:12px;margin-top:8px;}
+#alive-flow .stkwarn{margin-top:10px;padding:10px 12px;border-radius:var(--r);background:#fff7e6;border:1px solid #f5c26b;color:#7a4a00;font-size:12.5px;line-height:1.4;}
+#alive-flow .stkaux{font-size:11px;color:var(--text3);margin-left:auto;padding-left:10px;}
+#alive-flow .sonote{font-size:11.5px;font-weight:700;color:#b42318;margin-left:6px;}
+#alive-flow .sw.so{opacity:.45;}
+#alive-flow .sw.so::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#b42318;transform:translateX(-50%) rotate(45deg);border-radius:2px;}
 #alive-flow .sizes{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:8px;}
 #alive-flow .size{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);
   padding:9px 6px 7px;text-align:center;}
@@ -4017,8 +4029,8 @@ function colorExtra(c){
   return (a != null && b != null && a > b) ? +(a - b).toFixed(2) : +(up * 1.5).toFixed(2);
 }
 function swBtn(c, i){
-  var up = colorUp(c) > 0;
-  return '<button class="sw' + (i === S.color ? ' on' : '') + (up ? ' up' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + (up ? ' (specialty color, costs more)' : '') + '" aria-label="' + esc(c.name) + (up ? ', specialty color' : '') + '"></button>';
+  var up = colorUp(c) > 0, so = soldOut(c);
+  return '<button class="sw' + (i === S.color ? ' on' : '') + (up ? ' up' : '') + (so ? ' so' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + (up ? ' (specialty color, costs more)' : '') + (so ? ' (sold out at our supplier)' : '') + '" aria-label="' + esc(c.name) + (up ? ', specialty color' : '') + (so ? ', sold out' : '') + '"></button>';
 }
 function colorNote(){
   var c = S.colors[S.color], x = colorExtra(c);
@@ -4031,7 +4043,7 @@ function colorFoot(){
   var sw = S.colors.map(function(c, i){
     return swBtn(c, i);
   }).join('');
-  return '<div class="fhead"><span class="lbl">Color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b>' + colorNote() + '</span>' +
+  return '<div class="fhead"><span class="lbl">Color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b>' + colorNote() + (soldOut(S.colors[S.color]) ? ' <span class="sonote">Sold out at our supplier</span>' : '') + '</span>' +
     '<span class="aux">' + colorAux(S.colors.length) + '</span></div>' +
     '<div class="swatches">' + sw + '</div>';
 }
@@ -4047,17 +4059,73 @@ function artColorFoot(){
     '<button type="button" class="swmore" data-swmore="1" hidden>' +
       (S.swOpen ? 'Show fewer' : 'Show all ' + S.colors.length + ' colors') + '</button>';
 }
+/* ---- supplier stock (Austin, 20 Nov 2026) ----------------------------
+   stock/<STYLE>.json is written every hour by stock_build.py (SanMar's
+   hourly stock file + the S&S API). Per size: "In stock", "Only N left"
+   under STOCK_LOW, "Out of stock" at 0. Asking for more than the supplier
+   shows warns but never blocks; the cart line carries a STOCK CHECK note
+   for the team. A colour with every size at 0 gets a sold-out swatch. No
+   file (PCNA, Lane Seven, a miss) = no stock line at all. */
+var STOCK_LOW = 200;
+function stockLoad(){
+  if(!S.p || S.p._pcna || S.p._drinkware) return;
+  var key = String(S.p.style).toUpperCase().replace(/[^A-Z0-9_-]/g, '_');
+  if(S.stockFor === key) return;
+  S.stockFor = key; S.stock = null;
+  var base = CONFIG.productsJson.replace(/products\.json.*$/, 'stock/');
+  fetch(base + encodeURIComponent(key) + '.json', {cache:'no-cache'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){ if(S.stockFor !== key || !j || !j.c) return; S.stock = j; render(); })
+    .catch(function(){});
+}
+function stockMap(c){ return (S.stock && c && S.stock.c[c.name]) || null; }
+function stockOf(sz){ var m = stockMap(S.colors[S.color]); return (m && m[sz] != null) ? +m[sz] : null; }
+function soldOut(c){
+  var m = stockMap(c); if(!m) return false;
+  var ks = Object.keys(m); return ks.length > 0 && ks.every(function(k){ return !(+m[k] > 0); });
+}
+function stockHtml(sz, want){
+  var n = stockOf(sz); if(n == null) return '';
+  if(n <= 0) return '<em class="stk out">Out of stock</em>';
+  if(want > n) return '<em class="stk short">Only ' + n.toLocaleString('en-US') + ' left</em>';
+  if(n < STOCK_LOW) return '<em class="stk low">Only ' + n + ' left</em>';
+  return '<em class="stk ok">In stock</em>';
+}
+function oneSizeKey(){ return (S.p.available_sizes || ['OSFA'])[0] || 'OSFA'; }
+/* Sizes asked for beyond what the supplier shows: [{size, want, have}] */
+function stockShort(){
+  if(!S.stock) return [];
+  var out = [], sizes = isOneSize() ? (function(){ var o = {}; o[oneSizeKey()] = S.qty; return o; })() : S.sizes;
+  Object.keys(sizes || {}).forEach(function(z){ var w = +sizes[z] || 0, n = stockOf(z);
+    if(w > 0 && n != null && w > n) out.push({size:z, want:w, have:n}); });
+  return out;
+}
+function stockWarn(){
+  var sh = stockShort(); if(!sh.length) return '';
+  var list = sh.map(function(x){ return x.size === 'OSFA' || isOneSize() ? x.have + ' available' : x.size + ' (' + x.have + ' available)'; }).join(', ');
+  return 'Our supplier shows less than you need' + (isOneSize() ? ': ' : ' in ') + list + '. You can still order. We’ll check stock and contact you if anything needs to change.';
+}
+function stockRefresh(){
+  root.querySelectorAll('.size[data-sz]').forEach(function(cell){
+    var z = cell.dataset.sz, em = cell.querySelector('.stkw'); if(em) em.innerHTML = stockHtml(z, +S.sizes[z] || 0);
+  });
+  var one = root.querySelector('.stk1'); if(one) one.innerHTML = S.p && isOneSize() ? stockHtml(oneSizeKey(), +S.qty || 0) : '';
+  var w = root.querySelector('.stkwarn'); if(w){ var t = stockWarn(); w.textContent = t; w.hidden = !t; }
+}
+function stockAux(){ return S.stock ? '<span class="aux stkaux">Supplier stock · updated hourly</span>' : ''; }
 function sizeFoot(){
   if(isOneSize()) return oneSizeFoot();
   var cells = (S.p.available_sizes || []).map(function(sz){
     var up = E.sizeUpchargePer(S.p, sz, pricingCfg()), v = S.sizes[sz] || '';
-    return '<div class="size' + (v ? ' has' : '') + '"><label for="f-sz-' + esc(sz) + '">' + esc(sz) + '</label>' +
+    return '<div class="size' + (v ? ' has' : '') + '" data-sz="' + esc(sz) + '"><label for="f-sz-' + esc(sz) + '">' + esc(sz) + '</label>' +
       '<input id="f-sz-' + esc(sz) + '" type="text" inputmode="numeric" data-size="' + esc(sz) + '" value="' + v + '" placeholder="0">' +
-      '<u>' + (up ? '+' + money(up) : '') + '</u></div>';
+      '<u>' + (up ? '+' + money(up) : '') + '</u><span class="stkw">' + stockHtml(sz, +v || 0) + '</span></div>';
   }).join('');
   var a = sizeTotal(), st = a === 0 ? '' : (a >= minQ() ? ' ok' : ' off');
-  return '<div class="fhead"><span class="lbl">Sizes' + tip('sizes,minimum') + '</span></div>' +
+  var sw = stockWarn();
+  return '<div class="fhead"><span class="lbl">Sizes' + tip('sizes,minimum') + '</span>' + stockAux() + '</div>' +
     '<div class="sizes">' + cells + '</div>' +
+    '<div class="stkwarn" role="status"' + (sw ? '' : ' hidden') + '>' + esc(sw) + '</div>' +
     '<div class="sztot' + st + '"><span>Total <i class="szmin">(minimum ' + minQ() + ')</i></span><b class="num">' + a + ' pcs</b></div>' +
     '<div class="minwrap">' + minBody() + '</div>';
 }
@@ -4069,6 +4137,8 @@ function oneSizeFoot(){
       '<button type="button" data-q="-" aria-label="Fewer"' + (S.qty <= minQ() ? ' disabled' : '') + '>&minus;</button>' +
       '<input id="f-qty" type="text" inputmode="numeric" value="' + S.qty + '" aria-label="Quantity">' +
       '<button type="button" data-q="+" aria-label="More">+</button></span></div>' +
+    '<div class="stk1">' + stockHtml(oneSizeKey(), +S.qty || 0) + '</div>' +
+    '<div class="stkwarn" role="status"' + (stockWarn() ? '' : ' hidden') + '>' + esc(stockWarn()) + '</div>' +
     '<div class="sztot ok" style="margin-top:10px"><span>Minimum</span><b class="num">' + minQ() + ' pcs</b></div>';
 }
 /* --------------------------------------------------- turnaround (step 2)
@@ -5790,6 +5860,7 @@ function refreshPrice(){
     var up = E.sizeUpchargePer(S.p, inp.dataset.size, pricingCfg());
     var u2 = inp.parentNode.querySelector('u'); if(u2) u2.textContent = up ? '+' + money(up) : '';
   });
+  stockRefresh();
   var pb = root.querySelector('.pbacc');
   if(pb){
     var tmp = document.createElement('div'); tmp.innerHTML = priceBreaks();
@@ -6163,6 +6234,8 @@ function addToCartNow(){
   });
   var notes = [];
   if(S.mode === 'later') notes.push('ARTWORK TO FOLLOW — customer will email it.' + (S.method === 'sp' ? ' Ink colors are the customer’s estimate — confirm on the proof.' : ''));
+  var shortStock = stockShort();
+  if(shortStock.length) notes.push('STOCK CHECK: supplier showed only ' + shortStock.map(function(x){ return x.have + ' in ' + x.size + ' (ordered ' + x.want + ')'; }).join(', ') + ' at ' + (S.stock && S.stock.t || '') + '.');
   notes = notes.concat(inkNotes, placeNotes);
   var lm = {}; S.locs.forEach(function(k){ lm[k] = S.method; });
   var upTot = E.upchargeTotal(S.p, cfg, sizes);
@@ -6322,6 +6395,7 @@ function boot(data){
   subscribeViewport();
   ensureFrame();
   render();
+  stockLoad();
   /* ?resume=<token> from the mockup email: rebuild their design where they
      left it. Done after the first render so the page is never blank while the
      draft is fetched — it fills in a moment later. */

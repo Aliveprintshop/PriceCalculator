@@ -6,6 +6,10 @@ name: Publish site on push
 # and shares the sanmar-sync concurrency group so the two never deploy at once.
 
 on:
+  # Hourly, to refresh supplier stock (stock_build.py). Same files, fresh stock.
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -15,6 +19,7 @@ on:
       - 'crops-m.json'
       - 'media/**'
       - 'split-products.py'
+      - 'stock_build.py'
       - '.github/workflows/publish.yml'
 
 permissions:
@@ -30,7 +35,7 @@ jobs:
   build:
     # The nightly sync publishes its own result; without this, its products.json
     # push would trigger a second, redundant deploy right behind it.
-    if: github.actor != 'github-actions[bot]'
+    if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -44,6 +49,9 @@ jobs:
       # Identical to the staging step in sync.yml. Keep the two in step: if a new
       # page is added to the site it must be listed in BOTH or it publishes from
       # the nightly and vanishes on the next push (or the other way round).
+      - name: Install paramiko (SanMar SFTP for stock)
+        run: pip install paramiko==3.5.0
+
       - name: Stage Pages artifact
         run: |
           mkdir -p _site/media && if [ -d media ]; then cp -r media/. _site/media/; fi
@@ -72,6 +80,19 @@ jobs:
           fi
 
           echo "Staged for Pages: $(ls _site | tr '\n' ' ')"
+
+      # Supplier stock (SanMar hourly file + S&S API) for the size grid.
+      # Must never block the publish: without it the page just shows no stock line.
+      - name: Supplier stock
+        env:
+          SANMAR_FTP_USER: ${{ secrets.SANMAR_FTP_USER }}
+          SANMAR_FTP_PASSWORD: ${{ secrets.SANMAR_FTP_PASSWORD }}
+          SS_ACCOUNT: ${{ secrets.SS_ACCOUNT }}
+          SS_API_KEY: ${{ secrets.SS_API_KEY }}
+        run: |
+          if [ -f stock_build.py ]; then
+            timeout 900 python stock_build.py products.json _site/stock || echo "::warning::stock_build.py failed - site publishes without stock"
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

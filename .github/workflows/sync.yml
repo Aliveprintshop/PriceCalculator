@@ -165,6 +165,19 @@ jobs:
 
           echo "Staged for Pages: $(ls _site | tr '\n' ' ')"
 
+      # Supplier stock (SanMar hourly file + S&S API) for the size grid.
+      # Must never block the publish: without it the page just shows no stock line.
+      - name: Supplier stock
+        env:
+          SANMAR_FTP_USER: ${{ secrets.SANMAR_FTP_USER }}
+          SANMAR_FTP_PASSWORD: ${{ secrets.SANMAR_FTP_PASSWORD }}
+          SS_ACCOUNT: ${{ secrets.SS_ACCOUNT }}
+          SS_API_KEY: ${{ secrets.SS_API_KEY }}
+        run: |
+          if [ -f stock_build.py ]; then
+            timeout 900 python stock_build.py products.json _site/stock || echo "::warning::stock_build.py failed - site publishes without stock"
+          fi
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

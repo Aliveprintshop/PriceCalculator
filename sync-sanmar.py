@@ -471,6 +471,9 @@ def parse_sdl(sdl_path: Path, sales_by_key: dict, limit=None):
             if color_name not in entry["_colors_by_name"]:
                 entry["_colors_by_name"][color_name] = {
                     "name": color_name,
+                    # SanMar's inventory key for this style+colour: joins the hourly
+                    # stock file (sanmar_dip.txt) to this colour (stock_build.py).
+                    "ikey": inv_key or None,
                     "code": row.get("SANMAR_MAINFRAME_COLOR", "").strip()
                             or row.get("COLORCAT", "").strip()
                             or color_name[:4].upper(),
