@@ -43,7 +43,7 @@ ONE_SIZE = {"ADJUSTABLE", "ONE SIZE", "ADJ", "OS", "OSFA", "ONE SIZE FITS ALL"}
 
 LOG = []
 PREMIUMS = []   # (brand, style, premium colours, colours, max % above usual)
-PREMIUM = os.environ.get("SS_PREMIUM", "hide").strip().lower()   # "price" once the checkout Worker adds colors[].upcharge
+PREMIUM = os.environ.get("SS_PREMIUM", "price").strip().lower()
 
 
 def log(s):
