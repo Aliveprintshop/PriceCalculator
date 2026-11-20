@@ -211,6 +211,14 @@
   position:relative;flex:none;}
 #alive-flow .sw.on{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--blue);}
 #alive-flow .sw:hover{transform:scale(1.08);}
+/* Specialty colour (camo, pattern ...): a small "+" mark; it costs more. */
+#alive-flow .sw.up::before{content:"+";position:absolute;top:-5px;right:-5px;width:14px;height:14px;
+  border-radius:50%;background:#1e6fd9;color:#fff;font:800 11px/14px var(--disp,system-ui);text-align:center;
+  box-shadow:0 0 0 1.5px #fff;pointer-events:none;z-index:1;}
+#alive-flow .upnote{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#e8f1fc;
+  color:#1e6fd9;font-size:11px;font-weight:800;letter-spacing:0;text-transform:none;}
+#alive-flow .upkey{display:inline-block;width:13px;height:13px;border-radius:50%;background:#1e6fd9;color:#fff;
+  font-size:10px;line-height:13px;text-align:center;font-weight:800;}
 
 /* ---- size grid ------------------------------------------------------- */
 #alive-flow .sizes{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:8px;}
@@ -3894,22 +3902,62 @@ function cleanName(p){
 }
 
 /* ------------------------------------------------------------ COLOR + SIZES */
+/* Specialty colours (S&S camo, tie-dye, pigment-dyed ...) cost more than the
+   style's regular colours. The sync writes each one's blank-cost difference
+   as colors[].upcharge; picking one re-prices the product with that added to
+   case_price - exactly what the checkout Worker does from the same file - so
+   every colour stays in one product. Austin, 2026-11-20. */
+function colorUp(c){ var v = c ? +c.upcharge : 0; return v > 0 ? v : 0; }
+function hasColorUp(){ return !!(S.raw && (S.raw.colors || []).some(function(c){ return colorUp(c) > 0; })); }
+function applyColorPrice(){
+  if(!S.raw || S.raw._pcna || !hasColorUp()) return;
+  var up = colorUp(S.colors[S.color]);
+  if(S.pBase && S._upFor === up) return;
+  if(!S.pBase) S.pBase = S.p;
+  if(!up){ S.p = S.pBase; S._upFor = 0; return; }
+  var r = JSON.parse(JSON.stringify(S.raw));
+  if(r.case_price != null) r.case_price = +(+r.case_price + up).toFixed(2);
+  if(r.case_sale_price != null) r.case_sale_price = +(+r.case_sale_price + up).toFixed(2);
+  var p = E.prepare(r, false);
+  if(p){ S.p = p; S._upFor = up; }
+}
+/* What the selected specialty colour adds per piece at the current setup. */
+function colorExtra(c){
+  var up = colorUp(c); if(!up || !S.pBase) return 0;
+  var cfg = pricingCfg(), a = null, b = null;
+  try{ var r = JSON.parse(JSON.stringify(S.raw));
+       if(r.case_price != null) r.case_price = +(+r.case_price + up).toFixed(2);
+       if(r.case_sale_price != null) r.case_sale_price = +(+r.case_sale_price + up).toFixed(2);
+       a = E.unitPrice(E.prepare(r, false), cfg); b = E.unitPrice(S.pBase, cfg); }catch(e){}
+  return (a != null && b != null && a > b) ? +(a - b).toFixed(2) : +(up * 1.5).toFixed(2);
+}
+function swBtn(c, i){
+  var up = colorUp(c) > 0;
+  return '<button class="sw' + (i === S.color ? ' on' : '') + (up ? ' up' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + (up ? ' (specialty color, costs more)' : '') + '" aria-label="' + esc(c.name) + (up ? ', specialty color' : '') + '"></button>';
+}
+function colorNote(){
+  var c = S.colors[S.color], x = colorExtra(c);
+  return x > 0 ? ' <span class="upnote">+' + money(x) + '/pc</span>' : '';
+}
+function colorAux(n){
+  return n + (n === 1 ? ' color' : ' colors') + (hasColorUp() ? ' · <span class="upkey">+</span> specialty' : '');
+}
 function colorFoot(){
   var sw = S.colors.map(function(c, i){
-    return '<button class="sw' + (i === S.color ? ' on' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>';
+    return swBtn(c, i);
   }).join('');
-  return '<div class="fhead"><span class="lbl">Color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b></span>' +
-    '<span class="aux">' + S.colors.length + (S.colors.length === 1 ? ' color' : ' colors') + '</span></div>' +
+  return '<div class="fhead"><span class="lbl">Color: <b>' + esc((S.colors[S.color]||{}).name || '') + '</b>' + colorNote() + '</span>' +
+    '<span class="aux">' + colorAux(S.colors.length) + '</span></div>' +
     '<div class="swatches">' + sw + '</div>';
 }
 /* Artwork step: try the design on other garment colors without leaving. */
 function artColorFoot(){
   if(S.colors.length < 2) return '';
   var sw = S.colors.map(function(c, i){
-    return '<button class="sw' + (i === S.color ? ' on' : '') + '" data-color="' + i + '" type="button" style="' + swatchStyle(c) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>';
+    return swBtn(c, i);
   }).join('');
-  return '<div class="fhead"><span class="lbl">' + (S.p && S.p._drinkware ? 'Color' : 'Garment color') + ': <b>' + esc((S.colors[S.color]||{}).name || '') + '</b></span>' +
-    '<span class="aux">' + S.colors.length + ' colors</span></div>' +
+  return '<div class="fhead"><span class="lbl">' + (S.p && S.p._drinkware ? 'Color' : 'Garment color') + ': <b>' + esc((S.colors[S.color]||{}).name || '') + '</b>' + colorNote() + '</span>' +
+    '<span class="aux">' + colorAux(S.colors.length) + '</span></div>' +
     '<div class="swatches artsw' + (S.swOpen ? '' : ' clipped') + '" id="f-artsw">' + sw + '</div>' +
     '<button type="button" class="swmore" data-swmore="1" hidden>' +
       (S.swOpen ? 'Show fewer' : 'Show all ' + S.colors.length + ' colors') + '</button>';
@@ -4181,7 +4229,7 @@ function pcnaSwitch(style){
   if(!raw || key === String(S.p.style).toUpperCase()) return;
   var p = E.prepare(raw, true); if(!p) return;
   var colorName = (S.colors[S.color] || {}).name;
-  S.raw = raw; S.p = p;
+  S.raw = raw; S.p = p; S.pBase = null; S._upFor = null;
   S.colors = sortColors((p.colors || []).filter(function(c){ return c && c.images && colorFront(c); }));
   S.color = 0; S.colors.forEach(function(c, j){ if(c.name === colorName) S.color = j; });
   render();
@@ -5565,6 +5613,7 @@ var PHONE_PX = 640;
 var _phoneNow = null;
 
 function render(){
+  try{ applyColorPrice(); }catch(e){}
   ensurePreviews();
   var c = S.colors[S.color];
   var twoCol = window.innerWidth >= TWO_COL_PX;
@@ -6156,7 +6205,7 @@ function boot(data){
   if(window.buildHexLookup) buildHexLookup(rows);
   var p = raw && E.prepare(raw, manual);
   if(!p) return fail('We could not find that product just now.');
-  S.raw = raw; S.p = p;
+  S.raw = raw; S.p = p; S.pBase = null; S._upFor = null;
   if(p._pcna) pcnaPreload();
   S.colors = sortColors((p.colors || []).filter(function(c){ return c && c.images && colorFront(c); }));
   if(!S.colors.length) return fail('We could not load photos for this product.');

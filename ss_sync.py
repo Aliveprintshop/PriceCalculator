@@ -43,7 +43,7 @@ ONE_SIZE = {"ADJUSTABLE", "ONE SIZE", "ADJ", "OS", "OSFA", "ONE SIZE FITS ALL"}
 
 LOG = []
 PREMIUMS = []   # (brand, style, premium colours, colours, max % above usual)
-PREMIUM = os.environ.get("SS_PREMIUM", "hide").strip().lower()
+PREMIUM = os.environ.get("SS_PREMIUM", "hide").strip().lower()   # "price" once the checkout Worker adds colors[].upcharge
 
 
 def log(s):
@@ -267,9 +267,13 @@ def build(style, skus, site_keys, site_brand_style):
     # per style, so the style is priced at its USUAL colour price - the price
     # most colours have (anything within 10% counts, priced at the dearest of
     # them) - and size upcharges come from those colours.
-    # Colours that cost more than that are "premium" and follow PREMIUM:
-    #   hide - not shown (default: never undercharge, never overcharge)
-    #   max  - every colour priced at the dearest colour (overcharges most)
+    # Colours that cost more than that are "specialty" (camo, tie-dye, pigment
+    # dyed ...) and follow PREMIUM:
+    #   price - (default, Austin 2026-11-20) kept in the same product with
+    #           colors[].upcharge = their extra blank cost; the product page and
+    #           the checkout Worker add it to case_price when that colour is picked
+    #   hide  - not shown
+    #   max   - every colour priced at the dearest colour (overcharges most)
     grid, colours = collections.defaultdict(dict), collections.OrderedDict()
     for k in sorted(skus, key=lambda k: (str(k.get("colorName")), str(k.get("sizeOrder") or ""))):
         pr = price_of(k)
@@ -299,20 +303,21 @@ def build(style, skus, site_keys, site_brand_style):
         regular = set(grid)
     else:
         regular = set(grid) - premium
+    shown = set(grid) - premium if PREMIUM == "hide" else set(grid)
     base = max(cbase[c] for c in regular)
     if premium:
         pct = round(100 * (max(cbase[c] for c in premium) / usual - 1))
         PREMIUMS.append((brand, st, len(premium), len(grid), pct))
-        if PREMIUM == "hide":
-            log(f"{brand} {st}: {len(premium)} of {len(grid)} colours cost more than the usual colour "
-                f"(up to +{pct}%), hidden: {', '.join(sorted(premium))}")
+        log(f"{brand} {st}: {len(premium)} of {len(grid)} colours cost more than the usual colour "
+            f"(up to +{pct}%), {'hidden' if PREMIUM == 'hide' else 'priced separately' if PREMIUM == 'price' else 'style priced at the dearest'}: "
+            f"{', '.join(sorted(premium))}")
     by_size = {}
     for c in regular:
         for sz, v in grid[c].items():
             by_size[sz] = max(by_size.get(sz, 0), v)
     upcharges = {s: round(v - base, 2) for s, v in by_size.items() if v - base > 0.004}
     sizes = sorted(by_size, key=size_key)
-    colours = collections.OrderedDict((c, k) for c, k in colours.items() if c in regular)
+    colours = collections.OrderedDict((c, k) for c, k in colours.items() if c in shown)
 
     out_colours, no_back = [], 0
     for name, k in colours.items():
@@ -326,6 +331,7 @@ def build(style, skus, site_keys, site_brand_style):
         hx = str(k.get("color1") or "").lstrip("#")
         gallery = [u for u in (img(k.get("colorOnModelBackImage")), img(k.get("colorOnModelSideImage")),
                                img(k.get("colorDirectSideImage"))) if u]
+        extra = round(cbase[name] - base, 2) if (PREMIUM == "price" and name in premium) else 0
         out_colours.append({
             "name": re.sub(r"\s+", " ", name).strip(),
             "code": k.get("colorCode") or name,
@@ -335,6 +341,8 @@ def build(style, skus, site_keys, site_brand_style):
                        "front_model": img(k.get("colorOnModelFrontImage")),
                        "back_model": None, "side_model": None, "gallery": gallery},
         })
+        if extra > 0.004:
+            out_colours[-1]["upcharge"] = extra
     if not out_colours:
         return None, f"{brand} {st}: no colour has a flat front photo, skipped"
     if no_back:
