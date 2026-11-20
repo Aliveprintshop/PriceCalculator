@@ -165,7 +165,7 @@ jobs:
 
           echo "Staged for Pages: $(ls _site | tr '\n' ' ')"
 
-      # Supplier stock (SanMar hourly file + S&S API) for the size grid.
+      # Supplier stock (SanMar hourly file + S&S, Lane Seven, PCNA APIs) for the size grid.
       # Must never block the publish: without it the page just shows no stock line.
       - name: Supplier stock
         env:
@@ -173,6 +173,10 @@ jobs:
           SANMAR_FTP_PASSWORD: ${{ secrets.SANMAR_FTP_PASSWORD }}
           SS_ACCOUNT: ${{ secrets.SS_ACCOUNT }}
           SS_API_KEY: ${{ secrets.SS_API_KEY }}
+          LANE7_ID: ${{ secrets.LANE7_ID }}
+          LANE7_PASSWORD: ${{ secrets.LANE7_PASSWORD }}
+          PCNA_ID: ${{ secrets.PCNA_ID }}
+          PCNA_PASSWORD: ${{ secrets.PCNA_PASSWORD }}
         run: |
           if [ -f stock_build.py ]; then
             timeout 900 python stock_build.py products.json _site/stock || echo "::warning::stock_build.py failed - site publishes without stock"

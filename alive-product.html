@@ -4061,14 +4061,14 @@ function artColorFoot(){
 }
 /* ---- supplier stock (Austin, 20 Nov 2026) ----------------------------
    stock/<STYLE>.json is written every hour by stock_build.py (SanMar's
-   hourly stock file + the S&S API). Per size: "In stock", "Only N left"
+   hourly stock file + the S&S, Lane Seven and PCNA APIs). Per size: "In stock", "Only N left"
    under STOCK_LOW, "Out of stock" at 0. Asking for more than the supplier
    shows warns but never blocks; the cart line carries a STOCK CHECK note
    for the team. A colour with every size at 0 gets a sold-out swatch. No
-   file (PCNA, Lane Seven, a miss) = no stock line at all. */
+   file (manual products, a miss) = no stock line at all. */
 var STOCK_LOW = 200;
 function stockLoad(){
-  if(!S.p || S.p._pcna || S.p._drinkware) return;
+  if(!S.p) return;
   var key = String(S.p.style).toUpperCase().replace(/[^A-Z0-9_-]/g, '_');
   if(S.stockFor === key) return;
   S.stockFor = key; S.stock = null;
@@ -4388,6 +4388,7 @@ function pcnaSwitch(style){
   S.colors = sortColors((p.colors || []).filter(function(c){ return c && c.images && colorFront(c); }));
   S.color = 0; S.colors.forEach(function(c, j){ if(c.name === colorName) S.color = j; });
   render();
+  stockLoad();
 }
 root.addEventListener('click', function(e){
   var b = e.target && e.target.closest ? e.target.closest('[data-pcnastyle]') : null;

@@ -193,12 +193,155 @@ def ss_stock(products):
     return out
 
 
+# ------------------------------------------------------------------ PromoStandards (Lane Seven, PCNA)
+def _esc(s):
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _soap(url, xml, action="getInventoryLevels"):
+    for i in range(3):
+        req = urllib.request.Request(url, data=xml.encode(), method="POST",
+                                     headers={"Content-Type": "text/xml; charset=utf-8", "SOAPAction": action})
+        try:
+            with urllib.request.urlopen(req, timeout=90) as r:
+                return r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or i == 2:
+                return e.read().decode("utf-8", "replace")
+        except Exception:
+            if i == 2:
+                return ""
+        time.sleep(3 * (i + 1))
+    return ""
+
+
+def _xml(raw):
+    import xml.etree.ElementTree as ET
+    try:
+        return ET.fromstring(raw)
+    except Exception:
+        return None
+
+
+def _L(t):
+    return t.rsplit("}", 1)[-1]
+
+
+def _txt(e, name):
+    for c in e.iter():
+        if _L(c.tag) == name and c.text and c.text.strip():
+            return c.text.strip()
+    return ""
+
+
+def _pool(fn, items, workers=4):
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        return list(ex.map(fn, items))
+
+
+def lane7_stock(products):
+    """Lane Seven Inventory 1.2.1: per style, quantity by colour code + size."""
+    uid, pw = os.environ.get("LANE7_ID", "").strip(), os.environ.get("LANE7_PASSWORD", "").strip()
+    if not uid or not pw:
+        log("::warning::Lane Seven secrets missing - no Lane Seven stock")
+        return {}
+    url = "https://promostandards.lanesevenapparel.com/inventory.php"
+    ns = "http://www.promostandards.org/WSDL/InventoryService/1.0.0/"
+    mine = [p for p in products if p.get("source") == "lane7"]
+
+    def one(p):
+        st = str(p["style"])
+        x = (f'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="{ns}">'
+             f'<soapenv:Header/><soapenv:Body><ns:Request><ns:wsVersion>1.2.1</ns:wsVersion>'
+             f'<ns:id>{_esc(uid)}</ns:id><ns:password>{_esc(pw)}</ns:password>'
+             f'<ns:productID>{_esc(p.get("vendor_style") or st)}</ns:productID><ns:productIDtype>Supplier</ns:productIDtype>'
+             f'</ns:Request></soapenv:Body></soapenv:Envelope>')
+        root = _xml(_soap(url, x))
+        if root is None:
+            return st, None
+        code2name = {str(c.get("code") or "").upper(): c["name"] for c in p.get("colors") or []}
+        out = collections.defaultdict(dict)
+        for v in root.iter():
+            if _L(v.tag) != "ProductVariationInventory":
+                continue
+            col = code2name.get(_txt(v, "attributeColor").upper())
+            if not col:
+                continue
+            sz = norm_size(_txt(v, "attributeSize"))
+            sz = {"XXL": "2XL", "XXXL": "3XL"}.get(sz, sz)
+            try:
+                q = int(float(_txt(v, "quantityAvailable") or 0))
+            except ValueError:
+                continue
+            out[col][sz] = out[col].get(sz, 0) + max(0, q)
+        return st, out or None
+
+    res = {st: d for st, d in _pool(one, mine) if d}
+    log(f"  Lane Seven: {len(res)}/{len(mine)} styles")
+    return res
+
+
+def pcna_stock(products):
+    """PCNA Inventory 2.0.0: quantity per part (colour). One-size items keyed by their one size."""
+    uid, pw = os.environ.get("PCNA_ID", "").strip(), os.environ.get("PCNA_PASSWORD", "").strip()
+    if not uid or not pw:
+        log("::warning::PCNA secrets missing - no PCNA stock")
+        return {}
+    url = "https://psinventory200.pcna.online"
+    ns = ('xmlns:ns="http://www.promostandards.org/WSDL/Inventory/2.0.0/" '
+          'xmlns:shar="http://www.promostandards.org/WSDL/Inventory/2.0.0/SharedObjects/"')
+    mine = [p for p in products if p.get("source") == "pcna"]
+    ids = sorted({str(p.get("_pcnaId") or p["style"]) for p in mine})
+
+    def one(pid):
+        x = (f'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" {ns}><soapenv:Header/>'
+             f'<soapenv:Body><ns:GetInventoryLevelsRequest><shar:wsVersion>2.0.0</shar:wsVersion>'
+             f'<shar:id>{_esc(uid)}</shar:id><shar:password>{_esc(pw)}</shar:password>'
+             f'<shar:productId>{_esc(pid)}</shar:productId></ns:GetInventoryLevelsRequest></soapenv:Body></soapenv:Envelope>')
+        root = _xml(_soap(url, x))
+        parts = {}
+        if root is not None:
+            for v in root.iter():
+                if _L(v.tag) != "PartInventory":
+                    continue
+                part = _txt(v, "partId")
+                qa = [c for c in v if _L(c.tag) == "quantityAvailable"]
+                try:
+                    q = int(float(_txt(qa[0], "value"))) if qa else 0
+                except ValueError:
+                    q = 0
+                parts[part.upper()] = (max(0, q), _txt(v, "partColor"))
+        return pid, parts
+
+    by_id = dict(_pool(one, ids))
+    res = {}
+    for p in mine:
+        parts = by_id.get(str(p.get("_pcnaId") or p["style"])) or {}
+        if not parts:
+            continue
+        key = (p.get("available_sizes") or ["Qty"])[0] or "Qty"
+        cols = {}
+        for c in p.get("colors") or []:
+            hit = parts.get(str(c.get("sku") or "").upper())
+            if hit is None:
+                for q, pc in parts.values():
+                    if norm(re.sub(r"\(.*\)", "", pc)) == norm(c["name"]):
+                        hit = (q, pc); break
+            if hit is not None:
+                cols[c["name"]] = {key: hit[0]}
+        if cols:
+            res[str(p["style"])] = cols
+    log(f"  PCNA: {len(ids)} products asked, {len(res)}/{len(mine)} styles with stock")
+    return res
+
+
 def main():
     doc = json.load(open(CATALOG, encoding="utf-8"))
     products = doc.get("products", doc) if isinstance(doc, dict) else doc
     OUT.mkdir(parents=True, exist_ok=True)
     meta = {"t": NOW, "styles": {}}
-    for vend, fn in (("sanmar", sanmar_stock), ("ss", ss_stock)):
+    for vend, fn in (("sanmar", sanmar_stock), ("ss", ss_stock), ("lane7", lane7_stock), ("pcna", pcna_stock)):
         try:
             data = fn(products)
         except Exception as e:
