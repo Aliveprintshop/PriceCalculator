@@ -3954,7 +3954,9 @@ function openFullView(){
      the price bar. */
   placeOverlay(box);
   var vh = box.clientHeight || window.innerHeight, vw = box.clientWidth || window.innerWidth;
-  var h = Math.min(vh - 120, (vw * 0.92) / ratio), w = h * ratio;
+  /* The WordPress price bar sits over the bottom ~80px of that slice. */
+  if(HOST) box.style.paddingBottom = '84px';
+  var h = Math.min(vh - (HOST ? 200 : 120), (vw * 0.92) / ratio), w = h * ratio;
   cl.style.cssText += ';width:' + Math.round(w) + 'px;height:' + Math.round(h) + 'px;max-height:none;max-width:none;margin:0;aspect-ratio:auto;';
   box.appendChild(cl);
   document.addEventListener('keydown', fvKey, true);
