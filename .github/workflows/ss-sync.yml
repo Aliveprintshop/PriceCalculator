@@ -1,0 +1,65 @@
+name: S&S Activewear sync
+
+# Weekly (+ manual): builds ss-products.json from the S&S Activewear API
+# (Imperial, Independent Trading Co., Valucap) in the same shape as SanMar
+# products, commits it, then starts the nightly SanMar sync, which merges it
+# into products.json and publishes the site. The summary shows counts, never prices.
+on:
+  schedule:
+    - cron: '41 14 * * 4'   # Thursdays 14:41 UTC (6:41am PST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: ss-sync
+  cancel-in-progress: false
+
+jobs:
+  ss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install photo tools (crop boxes)
+        run: pip install --quiet pillow numpy
+
+      - name: Build ss-products.json
+        env:
+          SS_ACCOUNT: ${{ secrets.SS_ACCOUNT }}
+          SS_API_KEY: ${{ secrets.SS_API_KEY }}
+        run: python ss_sync.py
+
+      - name: Commit ss-products.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B main
+            git reset origin/main
+            git add ss-products.json
+            if git diff --staged --quiet; then
+              echo "No changes to ss-products.json"
+              git checkout -- .
+              break
+            fi
+            git commit -m "chore: S&S sync $(date -u +%Y-%m-%d)"
+            if git push origin main; then git checkout -- .; break; fi
+            echo "Push rejected, retrying ($attempt/3)"; sleep 5
+          done
+
+      # Pushes made with the workflow token don't start other workflows, so
+      # start the nightly sync directly: it merges S&S into products.json
+      # and publishes the site.
+      - name: Publish (run the catalog sync)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run sync.yml --ref main

@@ -70,6 +70,15 @@ jobs:
             python merge-pcna.py products.json lane7-products.json || echo "::warning::Lane Seven merge failed - site publishes without Lane Seven"
           fi
 
+      # S&S Activewear (weekly ss-sync.yml writes ss-products.json in the SanMar
+      # shape: Imperial, Independent Trading Co., Valucap). Same merge script; a
+      # failure must not block the publish.
+      - name: Merge S&S Activewear
+        run: |
+          if [ -f merge-pcna.py ] && [ -f ss-products.json ]; then
+            python merge-pcna.py products.json ss-products.json || echo "::warning::S&S merge failed - site publishes without S&S"
+          fi
+
       - name: Show summary
         run: |
           echo "products.json size: $(wc -c < products.json) bytes"
