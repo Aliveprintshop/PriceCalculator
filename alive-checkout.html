@@ -324,6 +324,7 @@
 #alive-flow .sharemsg{min-height:18px;font-size:12.5px;font-weight:700;color:var(--green);margin-top:6px;}
 #alive-flow .sharebox .small{font-size:12px;margin-top:12px;}
 /* ---- cart step + upsell (20 Nov 2026) ---- */
+#alive-flow .shipnote{font-size:12.5px;color:var(--text3);margin-top:6px;}
 #alive-flow .cnote{margin:-4px 0 12px;font-size:13px;color:var(--text2);line-height:1.45;}
 #alive-flow .ships + .cnote{margin:12px 0 0;}
 #alive-flow .cnote a{color:var(--blue);font-weight:700;}
@@ -1390,6 +1391,8 @@ function once(key){ try{ if(sessionStorage.getItem(key)) return false; sessionSt
 function broadcast(){
   var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
   try{ window.parent.postMessage({type:'alive-resize', height:h, page:'cart'}, '*'); }catch(e){}
+  /* The header bag on aliveprintshop.com shows this number (site-search.js). */
+  try{ window.parent.postMessage({type:'alive-cart-count', n:(S.items || []).length}, 'https://aliveprintshop.com'); }catch(e){}
 }
 window.addEventListener('load', broadcast); window.addEventListener('resize', broadcast);
 if(window.ResizeObserver) new ResizeObserver(broadcast).observe(document.body);
@@ -1489,7 +1492,9 @@ function readyDate(rush){ return addBizDays(productionStart(), E.turnaroundDays(
 /* ------------------------------------------------------------ state */
 var S = {
   items: CART.getItems(), rush:'std', addon:{neck:false, hem:false, bag:false},
-  ship:'ship', form:{name:'',email:'',phone:'',company:'',addr1:'',addr2:'',city:'',state:'',zip:'',notes:''},
+  /* Pickup by default so the total doesn't jump between Cart and Checkout;
+     shipping is added only when the customer picks it (Austin, 20 Nov 2026). */
+  ship:'pickup', form:{name:'',email:'',phone:'',company:'',addr1:'',addr2:'',city:'',state:'',zip:'',notes:''},
   bad:{}, err:'', busy:false, promoOpen:false, promoErr:'', done:null, reup:{},
   /* Cart first (products, rush, finishing, add-more), then Checkout (details,
      delivery, payment). Austin, 20 Nov 2026. */
@@ -1714,14 +1719,16 @@ var UPSELL_POOL = ['IND4000','BC3001','BC3501','LS14004','112','PC78H','1717'];
 var UP = {raw:{}, state:'idle', added:{}};
 function upLog(){ try{ return JSON.parse(sessionStorage.getItem('alive_upsell_added') || '{}'); }catch(e){ return {}; } }
 function upSource(){
-  var src = null;
+  /* Any apparel line can lead the suggestions. One with a placed design shows
+     it on the suggestions; one whose artwork comes later still gets them. */
+  var src = null, withArt = null;
   S.items.forEach(function(it){
-    if(!priceable(it) || isPcna(it) || (it.pricingProduct && it.pricingProduct._drinkware) || it.artworkLater) return;
-    if(!(it.mock && it.mock.layers && it.mock.layers.length && it.edit && it.edit.art && Object.keys(it.edit.art).length)) return;
+    if(!priceable(it) || isPcna(it) || (it.pricingProduct && it.pricingProduct._drinkware)) return;
     if(['sp','ht','em'].indexOf(it.decoMethod) < 0) return;
     src = it;
+    if(!it.artworkLater && it.mock && it.mock.layers && it.mock.layers.length) withArt = it;
   });
-  return src;
+  return withArt || src;
 }
 function upLoad(){
   if(UP.state !== 'idle' || !upSource()) return;
@@ -1779,13 +1786,14 @@ function upBuild(src, raw){
   var avail = E.locations(p, m); if(!avail.length) return null;
   var keys = avail.map(function(l){ return l.key; }), label = {};
   avail.forEach(function(l){ label[l.key] = String(l.label || l.key).replace(/\s*\(.*\)\s*$/, ''); });
-  var art = src.edit.art, srcKeys = Object.keys(art);
+  var art = (src.edit && src.edit.art) || {}, srcKeys = Object.keys(art);
+  if(!srcKeys.length) srcKeys = (src.locations || ['front']).slice();
   var mainKey = ['front','front-center','left-chest','right-chest','back'].filter(function(k){ return art[k]; })[0] || srcKeys[0];
   var locs = srcKeys.filter(function(k){ return keys.indexOf(k) > -1; });
   var from = {}; locs.forEach(function(k){ from[k] = k; });
   if(!locs.length){ locs = [keys[0]]; from[keys[0]] = mainKey; }
   var lm = {}; locs.forEach(function(k){ lm[k] = m; });
-  var inks = (src.edit && src.edit.inks) || {}, ink = {};
+  var inks = (src.edit && src.edit.inks) || {front:src.frontColors || 1, back:src.backColors || 1}, ink = {};
   locs.forEach(function(k){ ink[k] = Math.max(1, +inks[from[k]] || +inks.front || 1); });
   var q = m === 'sp' ? 24 : 12, zs = p.available_sizes || [], sizes = {};
   if(zs.length <= 1) sizes[zs[0] || 'OSFA'] = q;
@@ -1804,6 +1812,7 @@ function upBuild(src, raw){
     if(srcCap || from[k] !== k) return k === 'left-chest' ? {cx:0.62, cy:0.33, w:0.12, rot:0} : k === 'back' ? {cx:0.5, cy:0.37, w:0.34, rot:0} : {cx:0.5, cy:0.40, w:0.30, rot:0};
     return {cx:pl.cx, cy:pl.cy, w:pl.w, rot:pl.rot || 0};
   }
+  var srcLayers = (src.mock && src.mock.layers) || [];
   var side = (src.mock && src.mock.side === 'back' && locs.indexOf('back') > -1) ? 'back' : 'front';
   var img = side === 'back' ? (upBack(c) || upFront(c)) : upFront(c);
   var ck = c.crop && c.crop[side === 'back' ? 'b' : 'f'];
@@ -1812,14 +1821,17 @@ function upBuild(src, raw){
   locs.forEach(function(k){
     var view = (k === 'back') ? 'back' : (k === 'left-sleeve' || k === 'right-sleeve' || k === 'left-side' || k === 'right-side') ? null : 'front';
     if(view !== side) return;
-    var sl = null; (src.mock.layers || []).forEach(function(l){ if(!sl && l.k === from[k]) sl = l; });
-    if(!sl) sl = src.mock.layers[0];
+    if(!srcLayers.length || src.artworkLater) return;
+    var sl = null; srcLayers.forEach(function(l){ if(!sl && l.k === from[k]) sl = l; });
+    if(!sl) sl = srcLayers[0];
     var pl = placeFor(k);
     layers.push({k:k, src:sl.src || '', url:sl.url || '', cx:+(+pl.cx).toFixed(4), cy:+(+pl.cy).toFixed(4), w:+(+pl.w).toFixed(4), rot:+(+pl.rot || 0).toFixed(2)});
   });
   var files = [], byLoc = {}, editArt = {};
   locs.forEach(function(k){
-    var a = art[from[k]] || {}, sf = null;
+    if(src.artworkLater) return;
+    var a = art[from[k]], sf = null;
+    if(!a) return;
     (src.artworkFiles || []).forEach(function(f){ if(!sf && f && a.url && f.url === a.url) sf = f; });
     var f = Object.assign({}, sf || {name:a.name || 'artwork', url:a.url || ''}, {location:label[k]});
     if(!f.url) f.pending = true;
@@ -1837,16 +1849,16 @@ function upBuild(src, raw){
     frontColors: lm.front === 'sp' ? ink.front : null, backColors: lm.back === 'sp' ? ink.back : null,
     qty:q, sizes:sizes, addons:{neck:false, hem:false, bag:false}, addonList:[], rush:'std',
     turnaroundLabel:'Standard (' + E.turnaroundDays('std', false) + ' business days)',
-    artworkLink:up.join('\n'), artworkFiles:files, artworkByLocation:byLoc, artworkNote:up.join(', '), artworkLater:false,
+    artworkLink: src.artworkLater ? 'Customer will email artwork after checkout.' : up.join('\n'), artworkFiles:files, artworkByLocation:byLoc, artworkNote:up.join(', '), artworkLater:!!src.artworkLater,
     notes:['Added from a cart suggestion: same artwork as the ' + (src.productName || src.style) + ' (' + (src.color || '') + '). Check placement on the proof.'].concat(inkNotes).join(' · '),
     unitPrice:unit, lineTotal:E.lineTotal(p, cfg, sizes), sizeUpchargeTotal:E.upchargeTotal(p, cfg, sizes), sizeUpchargePerSize:{},
     promoCodeAtAdd:'', promoDiscountAtAdd:cfg.promoDiscount,
     pricingProduct:keep, source:'cart-upsell', upsellFrom:src.id || '',
     mock:{side:side, img:img, ar:box ? box[4] : 2/3, crop:box ? box.slice(0, 4) : null, layers:layers},
     mockupUrl:'', mockupUrls:{},
-    edit:{color:idx, colorName:c.name || '', method:m, locs:locs.slice(), inks:ink, mode:(src.edit && src.edit.mode) || 'upload', side:side,
+    edit:{color:idx, colorName:c.name || '', method:m, locs:locs.slice(), inks:ink, mode: src.artworkLater ? 'later' : ((src.edit && src.edit.mode) || 'upload'), side:side,
           sizes:JSON.parse(JSON.stringify(sizes)), qty:q, est:q, art:editArt},
-    _kind:upKind(p)
+    _kind:upKind(p), _art:layers.length > 0
   };
 }
 function upPicks(){
@@ -1869,8 +1881,9 @@ function upsellCard(){
   upLoad();
   var picks = upPicks(); if(!picks.length) return '';
   UP.picks = {}; picks.forEach(function(it){ UP.picks[it.style] = it; });
-  return '<div class="card upsell"><div class="hd"><h2>Your logo looks great on these too</h2></div>' +
-    '<p class="cnote">Same design, same print. Added to this order so it all ships together.</p>' +
+  var art = picks[0]._art;
+  return '<div class="card upsell"><div class="hd"><h2>' + (art ? 'Your logo looks great on these too' : 'Add more to this order') + '</h2></div>' +
+    '<p class="cnote">' + (art ? 'Same design, same print.' : 'Same design and print as your ' + esc(upSource().productName || 'order') + '.') + ' Added to this order so it all ships together.</p>' +
     '<div class="upgrid">' + picks.map(function(it){
       var line = priceItem(it, S.addon, S.rush).line;
       return '<div class="upc"><div class="upimg">' + mockHtml(it.mock) + '</div>' +
@@ -1882,7 +1895,7 @@ function upsellCard(){
 }
 function upsellAdd(style){
   var it = UP.picks && UP.picks[style]; if(!it) return;
-  var item = JSON.parse(JSON.stringify(it)); delete item._kind;
+  var item = JSON.parse(JSON.stringify(it)); delete item._kind; delete item._art;
   item.id = 'ci_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
   item.addedAt = new Date().toISOString();
   var items = CART.getItems(); items.push(item); CART.setItems(items);
@@ -2057,8 +2070,10 @@ function renderCart(t, promo){
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       promoRow(promo, offC, t) +
-      '<div class="row"><span>Shipping &amp; tax</span><b class="num">Next step</b></div>' +
-      '<div class="row big"><span>Subtotal</span><span class="v num">' + money(sub) + '</span></div>' +
+      '<div class="row"><span>Pickup at our shop</span><b class="num">Free</b></div>' +
+      '<div class="row"><span>Sales tax</span><b class="num">At payment</b></div>' +
+      '<div class="row big"><span>Total</span><span class="v num">' + money(sub) + '</span></div>' +
+      '<div class="shipnote">Want it shipped? Choose shipping at checkout ($' + CONFIG.shipPerBox + ' per box).</div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
       promoInput(promo) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
@@ -2075,8 +2090,8 @@ function renderCart(t, promo){
       '</div>' +
       '<div class="side">' + tot + '</div>' +
     '</div></div>' +
-    '<div class="bar"><div class="bar-in"><div><div class="k">Subtotal</div><div class="v num">' + money(sub) + '</div>' +
-      '<div class="s num">' + t.pieces + ' pcs · shipping &amp; tax next</div></div>' +
+    '<div class="bar"><div class="bar-in"><div><div class="k">Order total</div><div class="v num">' + money(sub) + '</div>' +
+      '<div class="s num">' + t.pieces + ' pcs · plus tax</div></div>' +
       '<button class="cta" id="co-next" type="button" data-next="1">Checkout &rarr;</button></div></div>';
 }
 /* ---- Step 4: checkout (details, delivery, payment) ---------------------- */
@@ -2109,8 +2124,8 @@ function renderDetails(t, pickup, promo){
           '<div class="fields two">' + field('name','Full name','text','name') + field('email','Email','email','email') + '</div>' +
           '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
-          shipRow('ship', 'Ship it to me', boxCount() ? 'Flat $' + CONFIG.shipPerBox + ' per box · your order fits in ' + boxesText(boxCount()) : 'Shipping is included in your promo item prices', boxCount() ? money(boxCount() * CONFIG.shipPerBox) : 'Included') +
-          shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') + '</div>' +
+          shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') +
+          shipRow('ship', 'Ship it to me', boxCount() ? 'Flat $' + CONFIG.shipPerBox + ' per box · your order fits in ' + boxesText(boxCount()) : 'Shipping is included in your promo item prices', boxCount() ? '+' + money(boxCount() * CONFIG.shipPerBox) : 'Included') + '</div>' +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
           '<div class="fields" style="margin-top:14px">' + field('addr2','Apt, suite, floor <span>(optional)</span>','text','address-line2') + '</div>' +

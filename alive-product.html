@@ -3160,6 +3160,8 @@ var root = document.getElementById('alive-flow');
 function broadcast(){
   var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
   try{ window.parent.postMessage({type:'alive-resize', height:h, page:'product'}, '*'); }catch(e){}
+  /* The header bag on aliveprintshop.com shows this number (site-search.js). */
+  try{ window.parent.postMessage({type:'alive-cart-count', n:CART.getItems().length}, 'https://aliveprintshop.com'); }catch(e){}
 }
 window.addEventListener('load', broadcast);
 window.addEventListener('resize', broadcast);

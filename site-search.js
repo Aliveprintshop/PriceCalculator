@@ -380,8 +380,42 @@
     apply();if(mq.addEventListener)mq.addEventListener('change',apply);
   }
 
+  /* ---------------- cart count on the header bag (Austin, 20 Nov 2026) ----------------
+     The cart lives in the github.io pages' storage, which this page can't read.
+     The product and cart pages post {type:'alive-cart-count', n} up to us; we keep
+     the last number here so every page (home, /products/ …) can show it. */
+  var CC_KEY='aps_cart_count';
+  function ccGet(){try{return Math.max(0,parseInt(localStorage.getItem(CC_KEY)||'0',10)||0);}catch(e){return 0;}}
+  function ccDraw(){
+    var n=ccGet();
+    document.querySelectorAll('.elementor-element-c9fb1e4 a.elementor-icon').forEach(function(a){
+      var b=a.querySelector('.aps-cc');
+      if(!n){if(b)b.remove();a.setAttribute('aria-label','Cart');return;}
+      if(!b){b=document.createElement('span');b.className='aps-cc';b.setAttribute('aria-hidden','true');a.appendChild(b);}
+      b.textContent=n>99?'99+':String(n);
+      a.setAttribute('aria-label','Cart, '+n+' item'+(n===1?'':'s'));
+    });
+  }
+  (function(){
+    var st=document.createElement('style');
+    st.textContent='.elementor-element-c9fb1e4 a.elementor-icon{position:relative;}'+
+      '.aps-cc{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#1B6CCE;color:#fff;'+
+      'font:800 11px/19px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;box-sizing:border-box;pointer-events:none;'+
+      'box-shadow:0 0 0 2px #fff;}';
+    document.head.appendChild(st);
+    window.addEventListener('message',function(e){
+      if(e.origin!=='https://aliveprintshop.github.io')return;
+      var d=e.data;if(!d||d.type!=='alive-cart-count')return;
+      var n=Math.max(0,parseInt(d.n,10)||0);
+      try{localStorage.setItem(CC_KEY,String(n));}catch(x){}
+      ccDraw();
+    });
+    window.addEventListener('storage',function(e){if(e.key===CC_KEY)ccDraw();});
+  })();
+
   function boot(){
     gridSetup();watchPopup();mobileCta();
+    ccDraw();setTimeout(ccDraw,600);setTimeout(ccDraw,2000);
     if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}
     /* Elementor makes the invisible copy of a sticky header a moment later */
     setTimeout(mount,600);setTimeout(mount,2000);
