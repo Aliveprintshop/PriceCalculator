@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T17:58:19.025696+00:00",
+  "generated_at": "2026-11-20T18:44:38.916295+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -760020,6 +760020,171 @@
           }
         },
         {
+          "name": "Frog Skin Camo/ Green",
+          "code": "98",
+          "hex": "#51695D",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/112041_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/112041_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/112041_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.3,
+          "crop": {
+            "f": [
+              19,
+              151,
+              983,
+              850,
+              800
+            ],
+            "b": [
+              19,
+              192,
+              981,
+              808,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Green Floral",
+          "code": "14",
+          "hex": "#FFFFFF",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/100650_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/100650_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/100650_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.3,
+          "crop": {
+            "f": [
+              19,
+              190,
+              983,
+              811,
+              800
+            ],
+            "b": [
+              19,
+              226,
+              983,
+              776,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Hawaiin Biome",
+          "code": "99",
+          "hex": "#FFFFFF",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/97214_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/97214_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/97214_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.3,
+          "crop": {
+            "f": [
+              21,
+              121,
+              981,
+              876,
+              800
+            ],
+            "b": [
+              19,
+              204,
+              983,
+              799,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Hawaiin Sky",
+          "code": "11",
+          "hex": "#FFFFFF",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/97216_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/97216_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/97216_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.3,
+          "crop": {
+            "f": [
+              19,
+              179,
+              981,
+              823,
+              800
+            ],
+            "b": [
+              19,
+              223,
+              981,
+              777,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Throwback Black",
+          "code": "15",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/100651_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/100651_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/100651_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.3,
+          "crop": {
+            "f": [
+              19,
+              172,
+              983,
+              830,
+              800
+            ],
+            "b": [
+              19,
+              214,
+              983,
+              786,
+              800
+            ]
+          }
+        },
+        {
           "name": "Winter Blue",
           "code": "19",
           "hex": "#3474A6",
@@ -766142,6 +766307,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "98",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103012_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103012_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103012_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103012_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103012_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103012_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.31,
+          "crop": {
+            "f": [
+              23,
+              19,
+              979,
+              982,
+              800
+            ],
+            "b": [
+              29,
+              17,
+              973,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Blush",
           "code": "30",
           "hex": "#EED3D0",
@@ -766272,6 +766472,41 @@
               36,
               19,
               964,
+              982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Tie Dye Cotton Candy",
+          "code": "10",
+          "hex": "#FBD6E1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103017_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103017_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103017_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103017_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103017_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103017_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.54,
+          "crop": {
+            "f": [
+              23,
+              19,
+              977,
+              982,
+              800
+            ],
+            "b": [
+              34,
+              19,
+              966,
               982,
               800
             ]
@@ -766549,6 +766784,41 @@
           }
         },
         {
+          "name": "Tie Dye Cotton Candy",
+          "code": "32",
+          "hex": "#FBD6E1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/97530_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/97530_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/97530_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/97530_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/97530_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/97530_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.87,
+          "crop": {
+            "f": [
+              87,
+              19,
+              913,
+              982,
+              800
+            ],
+            "b": [
+              74,
+              21,
+              926,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "White",
           "code": "01",
           "hex": "#FFFFFF",
@@ -766615,6 +766885,41 @@
         "2XL": 0.5
       },
       "colors": [
+        {
+          "name": "Alpine Green",
+          "code": "23",
+          "hex": "#193E34",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/68747_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/68747_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/68747_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/68747_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/68747_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/68747_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.1,
+          "crop": {
+            "f": [
+              40,
+              19,
+              960,
+              982,
+              800
+            ],
+            "b": [
+              25,
+              17,
+              977,
+              983,
+              800
+            ]
+          }
+        },
         {
           "name": "Black",
           "code": "50",
@@ -768098,6 +768403,41 @@
           }
         },
         {
+          "name": "Black/ Forest Camo",
+          "code": "61",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/77181_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/77181_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/77181_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/77181_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/77181_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/77181_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.32,
+          "crop": {
+            "f": [
+              38,
+              17,
+              962,
+              983,
+              800
+            ],
+            "b": [
+              34,
+              17,
+              966,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Black/ Graphite",
           "code": "51",
           "hex": "#1B1D1E",
@@ -769305,6 +769645,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "98",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/86989_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/86989_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/86989_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/86989_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/86989_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/86989_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.94,
+          "crop": {
+            "f": [
+              36,
+              17,
+              966,
+              983,
+              800
+            ],
+            "b": [
+              42,
+              17,
+              960,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Blush",
           "code": "30",
           "hex": "#EED3D0",
@@ -769565,6 +769940,76 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "98",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/81909_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/81909_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/81909_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/81909_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/81909_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/81909_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.72,
+          "crop": {
+            "f": [
+              55,
+              19,
+              945,
+              982,
+              800
+            ],
+            "b": [
+              42,
+              17,
+              958,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Black/ Forest Camo",
+          "code": "61",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/69358_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/69358_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69358_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/69358_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/69358_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/69358_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.72,
+          "crop": {
+            "f": [
+              40,
+              17,
+              962,
+              983,
+              800
+            ],
+            "b": [
+              21,
+              17,
+              979,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Black/ Graphite",
           "code": "51",
           "hex": "#1B1D1E",
@@ -769761,6 +770206,41 @@
               48,
               17,
               952,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/65063_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/65063_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/65063_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/65063_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/65063_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/65063_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.72,
+          "crop": {
+            "f": [
+              48,
+              17,
+              954,
+              983,
+              800
+            ],
+            "b": [
+              48,
+              17,
+              954,
               983,
               800
             ]
@@ -769965,6 +770445,41 @@
               48,
               19,
               952,
+              982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "White Camo",
+          "code": "02",
+          "hex": "#FFFFFF",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/89317_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/89317_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/89317_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/89317_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/89317_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/89317_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.72,
+          "crop": {
+            "f": [
+              65,
+              19,
+              937,
+              981,
+              800
+            ],
+            "b": [
+              63,
+              19,
+              937,
               982,
               800
             ]
@@ -770278,6 +770793,37 @@
               800
             ]
           }
+        },
+        {
+          "name": "White",
+          "code": "00",
+          "hex": "#FFFFFF",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/50448_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/50448_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 5.67,
+          "crop": {
+            "f": [
+              78,
+              19,
+              924,
+              982,
+              800
+            ],
+            "b": [
+              78,
+              19,
+              922,
+              982,
+              800
+            ]
+          }
         }
       ],
       "source": "ss",
@@ -770347,6 +770893,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "98",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/89808_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/89808_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/89808_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/89808_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/89808_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/89808_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.04,
+          "crop": {
+            "f": [
+              42,
+              17,
+              958,
+              983,
+              800
+            ],
+            "b": [
+              55,
+              17,
+              947,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Blush/ White Zipper",
           "code": "30",
           "hex": "#EED3D0",
@@ -770376,6 +770957,41 @@
               19,
               937,
               982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "White Camo",
+          "code": "01",
+          "hex": "#FFFFFF",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/89810_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/89810_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/89810_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/89810_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/89810_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/89810_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.04,
+          "crop": {
+            "f": [
+              46,
+              19,
+              954,
+              982,
+              800
+            ],
+            "b": [
+              48,
+              17,
+              952,
+              983,
               800
             ]
           }
@@ -770788,6 +771404,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "99",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/93012_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/93012_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/93012_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/93012_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/93012_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/93012_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.11,
+          "crop": {
+            "f": [
+              67,
+              19,
+              935,
+              982,
+              800
+            ],
+            "b": [
+              74,
+              19,
+              928,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "Classic Navy",
           "code": "65",
           "hex": "#032E54",
@@ -770817,6 +771468,41 @@
               17,
               916,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/69062_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/69062_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69062_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/69062_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/69062_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/69062_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.11,
+          "crop": {
+            "f": [
+              70,
+              17,
+              934,
+              983,
+              800
+            ],
+            "b": [
+              74,
+              19,
+              928,
+              982,
               800
             ]
           }
@@ -771022,6 +771708,41 @@
               36,
               917,
               964,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/69363_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/69363_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69363_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/69363_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/69363_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/69363_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.33,
+          "crop": {
+            "f": [
+              44,
+              18,
+              956,
+              981,
+              800
+            ],
+            "b": [
+              50,
+              17,
+              952,
+              983,
               800
             ]
           }
@@ -771735,6 +772456,76 @@
               19,
               898,
               982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Black Camo",
+          "code": "51",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/87533_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/87533_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/87533_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/87533_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/87533_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/87533_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.88,
+          "crop": {
+            "f": [
+              87,
+              19,
+              913,
+              982,
+              800
+            ],
+            "b": [
+              95,
+              17,
+              907,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/86211_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/86211_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/86211_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/86211_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/86211_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/86211_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.88,
+          "crop": {
+            "f": [
+              74,
+              17,
+              926,
+              983,
+              800
+            ],
+            "b": [
+              80,
+              17,
+              922,
+              983,
               800
             ]
           }
@@ -772572,6 +773363,41 @@
           }
         },
         {
+          "name": "Pigment Black",
+          "code": "51",
+          "hex": "#4B4B4B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/112917_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/112917_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/112917_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/112917_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/112917_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/112917_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.01,
+          "crop": {
+            "f": [
+              95,
+              17,
+              905,
+              983,
+              800
+            ],
+            "b": [
+              97,
+              17,
+              903,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Sandstone",
           "code": "73",
           "hex": "#94795D",
@@ -773063,6 +773889,39 @@
               31,
               17,
               971,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Deadwood Tree Camo",
+          "code": "98",
+          "hex": "#B0B7BC",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140119_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140119_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140119_d_fl.jpg"
+            ]
+          },
+          "upcharge": 4.8,
+          "crop": {
+            "f": [
+              36,
+              19,
+              964,
+              982,
+              800
+            ],
+            "b": [
+              36,
+              17,
+              964,
               983,
               800
             ]
@@ -773672,6 +774531,74 @@
           }
         },
         {
+          "name": "Darkwood Tree Camo",
+          "code": "99",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140794_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140794_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140794_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.74,
+          "crop": {
+            "f": [
+              82,
+              17,
+              918,
+              983,
+              800
+            ],
+            "b": [
+              87,
+              17,
+              915,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Deadwood Tree Camo",
+          "code": "98",
+          "hex": "#B0B7BC",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135106_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/135106_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/135106_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/135106_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/135106_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/135106_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.74,
+          "crop": {
+            "f": [
+              89,
+              17,
+              911,
+              983,
+              800
+            ],
+            "b": [
+              93,
+              17,
+              909,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Grey Heather",
           "code": "09",
           "hex": "#B0B7BC",
@@ -773731,6 +774658,41 @@
               17,
               901,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Pigment Black",
+          "code": "10",
+          "hex": "#4B4B4B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/115800_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/115800_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/115800_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/115800_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/115800_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/115800_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.2,
+          "crop": {
+            "f": [
+              89,
+              17,
+              911,
+              983,
+              800
+            ],
+            "b": [
+              104,
+              19,
+              896,
+              982,
               800
             ]
           }
@@ -774038,6 +775000,37 @@
           }
         },
         {
+          "name": "Army Camo",
+          "code": "62",
+          "hex": "#344512",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/41744_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/41744_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              63,
+              17,
+              937,
+              983,
+              800
+            ],
+            "b": [
+              84,
+              17,
+              916,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Ash Heather",
           "code": "18",
           "hex": "#B0B7BC",
@@ -774133,6 +775126,41 @@
               17,
               949,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Black Camo",
+          "code": "51",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79655_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79655_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79655_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79655_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79655_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79655_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              67,
+              19,
+              935,
+              982,
+              800
+            ],
+            "b": [
+              70,
+              19,
+              930,
+              982,
               800
             ]
           }
@@ -774410,6 +775438,142 @@
           }
         },
         {
+          "name": "Darkwood Tree Camo",
+          "code": "84",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140477_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140477_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140477_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              70,
+              17,
+              930,
+              983,
+              800
+            ],
+            "b": [
+              67,
+              17,
+              935,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Deadwood Tree Camo",
+          "code": "93",
+          "hex": "#B0B7BC",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135140_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/135140_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/135140_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/135140_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/135140_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/135140_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              89,
+              17,
+              909,
+              983,
+              800
+            ],
+            "b": [
+              70,
+              17,
+              930,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Desert Duck Camo",
+          "code": "97",
+          "hex": "#AB9381",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/144333_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/144333_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/144333_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              63,
+              17,
+              937,
+              983,
+              800
+            ],
+            "b": [
+              89,
+              17,
+              913,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Duck Camo",
+          "code": "76",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/100669_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/100669_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/100669_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/100669_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/100669_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/100669_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              82,
+              19,
+              920,
+              982,
+              800
+            ],
+            "b": [
+              74,
+              17,
+              930,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Dusty Pink",
           "code": "31",
           "hex": "#FBD6E1",
@@ -774473,6 +775637,41 @@
               19,
               926,
               982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "61",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/69869_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/69869_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/69869_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/69869_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/69869_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/69869_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              46,
+              17,
+              954,
+              983,
+              800
+            ],
+            "b": [
+              61,
+              17,
+              939,
+              983,
               800
             ]
           }
@@ -774609,6 +775808,41 @@
               17,
               909,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Houndstooth",
+          "code": "02",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/99356_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/99356_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/99356_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/99356_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/99356_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/99356_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.68,
+          "crop": {
+            "f": [
+              91,
+              19,
+              909,
+              982,
+              800
+            ],
+            "b": [
+              84,
+              19,
+              916,
+              982,
               800
             ]
           }
@@ -774886,6 +776120,39 @@
           }
         },
         {
+          "name": "Realtree APX Camo",
+          "code": "03",
+          "hex": "#193E34",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/142606_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/142606_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/142606_d_fl.jpg"
+            ]
+          },
+          "upcharge": 13.1,
+          "crop": {
+            "f": [
+              87,
+              17,
+              915,
+              983,
+              800
+            ],
+            "b": [
+              91,
+              17,
+              911,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Red",
           "code": "70",
           "hex": "#C10933",
@@ -775158,6 +776425,41 @@
           }
         },
         {
+          "name": "Snow Camo",
+          "code": "01",
+          "hex": "#BAB8B8",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/41745_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/41745_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/41745_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/41745_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/41745_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/41745_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              78,
+              18,
+              924,
+              981,
+              800
+            ],
+            "b": [
+              80,
+              17,
+              920,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Storm Blue",
           "code": "44",
           "hex": "#5C6D87",
@@ -775187,6 +776489,41 @@
               19,
               926,
               982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Tiger Camo",
+          "code": "99",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/76802_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/76802_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/76802_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/76802_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/76802_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/76802_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.31,
+          "crop": {
+            "f": [
+              38,
+              17,
+              964,
+              983,
+              800
+            ],
+            "b": [
+              57,
+              17,
+              945,
+              983,
               800
             ]
           }
@@ -775387,6 +776724,41 @@
               36,
               922,
               964,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79656_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79656_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79656_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79656_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79656_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79656_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.83,
+          "crop": {
+            "f": [
+              55,
+              19,
+              945,
+              982,
+              800
+            ],
+            "b": [
+              63,
+              17,
+              937,
+              983,
               800
             ]
           }
@@ -776258,6 +777630,41 @@
               800
             ]
           }
+        },
+        {
+          "name": "Pigment Black",
+          "code": "10",
+          "hex": "#4B4B4B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/110246_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/110246_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/110246_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/110246_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/110246_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/110246_d_fl.jpg"
+            ]
+          },
+          "upcharge": 6.83,
+          "crop": {
+            "f": [
+              65,
+              17,
+              937,
+              983,
+              800
+            ],
+            "b": [
+              72,
+              17,
+              930,
+              983,
+              800
+            ]
+          }
         }
       ],
       "source": "ss",
@@ -776338,6 +777745,39 @@
               21,
               981,
               981,
+              800
+            ],
+            "b": [
+              80,
+              17,
+              920,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Pigment Black",
+          "code": "10",
+          "hex": "#4B4B4B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140805_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140805_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140805_d_fl.jpg"
+            ]
+          },
+          "upcharge": 7.85,
+          "crop": {
+            "f": [
+              44,
+              19,
+              956,
+              982,
               800
             ],
             "b": [
@@ -777670,6 +779110,39 @@
           }
         },
         {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79657_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79657_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/79657_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.13,
+          "crop": {
+            "f": [
+              14,
+              329,
+              998,
+              751,
+              800
+            ],
+            "b": [
+              19,
+              194,
+              983,
+              808,
+              800
+            ]
+          }
+        },
+        {
           "name": "Midnight Navy",
           "code": "86",
           "hex": "#234163",
@@ -777729,6 +779202,39 @@
               302,
               870,
               696,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Red Buffalo Plaid",
+          "code": "70",
+          "hex": "#C10933",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/86723_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/86723_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/86723_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.13,
+          "crop": {
+            "f": [
+              23,
+              302,
+              961,
+              699,
+              800
+            ],
+            "b": [
+              19,
+              201,
+              981,
+              801,
               800
             ]
           }
@@ -778479,6 +779985,41 @@
           }
         },
         {
+          "name": "Nickel Heather/ Forest Camo",
+          "code": "98",
+          "hex": "#7E8083",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79658_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79658_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79658_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79658_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79658_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79658_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.15,
+          "crop": {
+            "f": [
+              40,
+              17,
+              962,
+              983,
+              800
+            ],
+            "b": [
+              55,
+              19,
+              947,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "Nickel/ Carbon",
           "code": "36",
           "hex": "#7E8083",
@@ -779001,6 +780542,41 @@
           }
         },
         {
+          "name": "Forest Camo Heather",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103438_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103438_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103438_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103438_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103438_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103438_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.32,
+          "crop": {
+            "f": [
+              277,
+              17,
+              725,
+              983,
+              800
+            ],
+            "b": [
+              301,
+              17,
+              701,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Nickel",
           "code": "35",
           "hex": "#7E8083",
@@ -779092,6 +780668,41 @@
               19,
               935,
               982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo Heather",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103441_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103441_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103441_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103441_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103441_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103441_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.15,
+          "crop": {
+            "f": [
+              46,
+              19,
+              958,
+              982,
+              800
+            ],
+            "b": [
+              63,
+              17,
+              939,
+              983,
               800
             ]
           }
@@ -779924,6 +781535,41 @@
           }
         },
         {
+          "name": "Nickel Heather/ Forest Camo",
+          "code": "98",
+          "hex": "#7E8083",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79659_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79659_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79659_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79659_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79659_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79659_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.43,
+          "crop": {
+            "f": [
+              72,
+              19,
+              930,
+              982,
+              800
+            ],
+            "b": [
+              99,
+              19,
+              903,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "Nickel/ Carbon",
           "code": "36",
           "hex": "#7E8083",
@@ -780421,6 +782067,41 @@
           }
         },
         {
+          "name": "Forest Camo Heather",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103432_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103432_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103432_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103432_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103432_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103432_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.57,
+          "crop": {
+            "f": [
+              258,
+              17,
+              744,
+              983,
+              800
+            ],
+            "b": [
+              292,
+              17,
+              708,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Nickel",
           "code": "35",
           "hex": "#7E8083",
@@ -780513,6 +782194,41 @@
               17,
               920,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo Heather",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103435_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103435_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103435_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103435_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103435_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103435_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.56,
+          "crop": {
+            "f": [
+              84,
+              19,
+              918,
+              982,
+              800
+            ],
+            "b": [
+              84,
+              19,
+              918,
+              982,
               800
             ]
           }
@@ -780958,6 +782674,39 @@
               42,
               19,
               960,
+              982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Realtree APX Camo",
+          "code": "03",
+          "hex": "#193E34",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/142608_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/142608_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/142608_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.0,
+          "crop": {
+            "f": [
+              48,
+              19,
+              952,
+              982,
+              800
+            ],
+            "b": [
+              61,
+              19,
+              939,
               982,
               800
             ]
@@ -781836,6 +783585,37 @@
           }
         },
         {
+          "name": "Realtree APX Camo",
+          "code": "03",
+          "hex": "#193E34",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/142607_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/142607_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 0.75,
+          "crop": {
+            "f": [
+              38,
+              19,
+              962,
+              982,
+              800
+            ],
+            "b": [
+              21,
+              17,
+              981,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "White",
           "code": "00",
           "hex": "#FFFFFF",
@@ -782208,6 +783988,41 @@
           }
         },
         {
+          "name": "Black Camo Heather",
+          "code": "96",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/102995_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/102995_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/102995_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/102995_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/102995_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/102995_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.31,
+          "crop": {
+            "f": [
+              294,
+              19,
+              708,
+              982,
+              800
+            ],
+            "b": [
+              299,
+              17,
+              703,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Blush",
           "code": "31",
           "hex": "#EED3D0",
@@ -782305,6 +784120,41 @@
               17,
               699,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo Heather",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/92913_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/92913_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/92913_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/92913_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/92913_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/92913_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.31,
+          "crop": {
+            "f": [
+              273,
+              19,
+              727,
+              982,
+              800
+            ],
+            "b": [
+              292,
+              19,
+              710,
+              982,
               800
             ]
           }
@@ -782479,6 +784329,41 @@
           }
         },
         {
+          "name": "Black Camo Heather",
+          "code": "98",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103024_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103024_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103024_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103024_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103024_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103024_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.1,
+          "crop": {
+            "f": [
+              19,
+              202,
+              983,
+              799,
+              800
+            ],
+            "b": [
+              19,
+              175,
+              983,
+              825,
+              800
+            ]
+          }
+        },
+        {
           "name": "Blush",
           "code": "30",
           "hex": "#EED3D0",
@@ -782576,6 +784461,41 @@
               155,
               983,
               845,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo Heather",
+          "code": "62",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/103028_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/103028_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/103028_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/103028_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/103028_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/103028_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.1,
+          "crop": {
+            "f": [
+              19,
+              199,
+              983,
+              803,
+              800
+            ],
+            "b": [
+              19,
+              197,
+              983,
+              804,
               800
             ]
           }
@@ -783426,6 +785346,39 @@
           }
         },
         {
+          "name": "Pigment Black",
+          "code": "51",
+          "hex": "#4B4B4B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140806_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140806_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140806_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.58,
+          "crop": {
+            "f": [
+              38,
+              17,
+              962,
+              983,
+              800
+            ],
+            "b": [
+              53,
+              17,
+              947,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Sage",
           "code": "54",
           "hex": "#96AAAB",
@@ -783584,6 +785537,39 @@
               19,
               962,
               982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Pigment Black",
+          "code": "10",
+          "hex": "#4B4B4B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140811_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140811_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140811_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.75,
+          "crop": {
+            "f": [
+              19,
+              41,
+              983,
+              959,
+              800
+            ],
+            "b": [
+              25,
+              17,
+              975,
+              983,
               800
             ]
           }
@@ -785687,6 +787673,41 @@
               800
             ]
           }
+        },
+        {
+          "name": "Tie Dye Sunset Swirl",
+          "code": "11",
+          "hex": "#FBD6E1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/97457_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/97457_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/97457_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/97457_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/97457_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/97457_d_fl.jpg"
+            ]
+          },
+          "upcharge": 1.48,
+          "crop": {
+            "f": [
+              31,
+              19,
+              973,
+              982,
+              800
+            ],
+            "b": [
+              19,
+              26,
+              981,
+              976,
+              800
+            ]
+          }
         }
       ],
       "source": "ss",
@@ -787320,6 +789341,41 @@
           }
         },
         {
+          "name": "Tie Dye Cotton Candy",
+          "code": "31",
+          "hex": "#FBD6E1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/95766_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/95766_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/95766_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/95766_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/95766_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/95766_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.16,
+          "crop": {
+            "f": [
+              267,
+              19,
+              735,
+              982,
+              800
+            ],
+            "b": [
+              299,
+              19,
+              701,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "Tie Dye Navy",
           "code": "65",
           "hex": "#212B3E",
@@ -787382,6 +789438,41 @@
               294,
               19,
               708,
+              982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Tie Dye Sunset Swirl",
+          "code": "40",
+          "hex": "#FBD6E1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/95768_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/95768_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/95768_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/95768_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/95768_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/95768_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.16,
+          "crop": {
+            "f": [
+              279,
+              19,
+              723,
+              982,
+              800
+            ],
+            "b": [
+              288,
+              19,
+              712,
               982,
               800
             ]
@@ -790076,6 +792167,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "99",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/104383_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/104383_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/104383_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/104383_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/104383_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/104383_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.52,
+          "crop": {
+            "f": [
+              34,
+              19,
+              966,
+              981,
+              800
+            ],
+            "b": [
+              42,
+              19,
+              958,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "Bone",
           "code": "26",
           "hex": "#EEEADF",
@@ -790280,6 +792406,39 @@
           }
         },
         {
+          "name": "Deadwood Tree Camo",
+          "code": "97",
+          "hex": "#B0B7BC",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140118_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140118_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140118_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.52,
+          "crop": {
+            "f": [
+              27,
+              17,
+              973,
+              983,
+              800
+            ],
+            "b": [
+              34,
+              17,
+              966,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Dusty Sage",
           "code": "44",
           "hex": "#BFCACC",
@@ -790309,6 +792468,41 @@
               23,
               983,
               979,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79634_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79634_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79634_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79634_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79634_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79634_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.52,
+          "crop": {
+            "f": [
+              34,
+              18,
+              966,
+              981,
+              800
+            ],
+            "b": [
+              42,
+              19,
+              958,
+              982,
               800
             ]
           }
@@ -791084,6 +793278,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "97",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/94538_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/94538_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/94538_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/94538_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/94538_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/94538_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.22,
+          "crop": {
+            "f": [
+              93,
+              19,
+              909,
+              982,
+              800
+            ],
+            "b": [
+              55,
+              19,
+              945,
+              982,
+              800
+            ]
+          }
+        },
+        {
           "name": "Bone",
           "code": "04",
           "hex": "#EEEADF",
@@ -791216,6 +793445,98 @@
               17,
               941,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Deadwood Tree Camo",
+          "code": "91",
+          "hex": "#B0B7BC",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135295_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/135295_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/135295_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.22,
+          "crop": {
+            "f": [
+              44,
+              17,
+              954,
+              983,
+              800
+            ],
+            "b": [
+              34,
+              17,
+              968,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Duck Camo",
+          "code": "92",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135296_f_fl.jpg",
+            "back_flat": null,
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 3.22,
+          "crop": {
+            "f": [
+              99,
+              19,
+              901,
+              982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79672_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79672_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79672_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79672_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79672_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79672_d_fl.jpg"
+            ]
+          },
+          "upcharge": 3.22,
+          "crop": {
+            "f": [
+              97,
+              19,
+              905,
+              982,
+              800
+            ],
+            "b": [
+              106,
+              19,
+              892,
+              982,
               800
             ]
           }
@@ -791965,6 +794286,41 @@
           }
         },
         {
+          "name": "Black Camo",
+          "code": "99",
+          "hex": "#1B1D1E",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/79639_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/79639_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/79639_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/79639_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/79639_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/79639_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.71,
+          "crop": {
+            "f": [
+              50,
+              17,
+              952,
+              983,
+              800
+            ],
+            "b": [
+              48,
+              17,
+              954,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Blue Aqua",
           "code": "05",
           "hex": "#96D8F1",
@@ -792237,6 +794593,98 @@
           }
         },
         {
+          "name": "Deadwood Tree Camo",
+          "code": "89",
+          "hex": "#B0B7BC",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140571_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140571_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/140571_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/140571_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/140571_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/140571_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.71,
+          "crop": {
+            "f": [
+              91,
+              21,
+              909,
+              935,
+              800
+            ],
+            "b": [
+              76,
+              20,
+              924,
+              963,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Desert Duck Camo",
+          "code": "97",
+          "hex": "#AB9381",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/144334_f_fl.jpg",
+            "back_flat": null,
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 5.71,
+          "crop": {
+            "f": [
+              63,
+              17,
+              937,
+              983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Duck Camo",
+          "code": "88",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/140572_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/140572_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/140572_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.71,
+          "crop": {
+            "f": [
+              53,
+              17,
+              947,
+              983,
+              800
+            ],
+            "b": [
+              68,
+              17,
+              932,
+              983,
+              800
+            ]
+          }
+        },
+        {
           "name": "Dusty Pink",
           "code": "44",
           "hex": "#FBD6E1",
@@ -792299,6 +794747,41 @@
               63,
               19,
               937,
+              982,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/76813_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/76813_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/76813_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/76813_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/76813_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/76813_d_fl.jpg"
+            ]
+          },
+          "upcharge": 5.71,
+          "crop": {
+            "f": [
+              21,
+              28,
+              981,
+              976,
+              800
+            ],
+            "b": [
+              48,
+              19,
+              954,
               982,
               800
             ]
@@ -793548,6 +796031,30 @@
           }
         },
         {
+          "name": "Forest Camo",
+          "code": "98",
+          "hex": "#706B57",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/83661_f_fl.jpg",
+            "back_flat": null,
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 3.44,
+          "crop": {
+            "f": [
+              89,
+              22,
+              911,
+              926,
+              800
+            ]
+          }
+        },
+        {
           "name": "Grey Heather",
           "code": "35",
           "hex": "#B0B7BC",
@@ -793645,6 +796152,41 @@
               17,
               962,
               983,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Navy",
+          "code": "65",
+          "hex": "#032E54",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/31220_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/31220_b_fl.jpg",
+            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/31220_omf_fl.jpg",
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/ModelColor/31220_omb_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/ModelColor/31220_oms_fl.jpg",
+              "https://cdn.ssactivewear.com/Images/Color/31220_d_fl.jpg"
+            ]
+          },
+          "upcharge": 2.22,
+          "crop": {
+            "f": [
+              78,
+              19,
+              922,
+              982,
+              800
+            ],
+            "b": [
+              70,
+              19,
+              932,
+              982,
               800
             ]
           }
@@ -795975,6 +798517,39 @@
           }
         },
         {
+          "name": "Natural/ Camo Green",
+          "code": "96",
+          "hex": "#DDD5C1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135770_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/135770_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/135770_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.45,
+          "crop": {
+            "f": [
+              19,
+              94,
+              981,
+              908,
+              800
+            ],
+            "b": [
+              19,
+              140,
+              979,
+              862,
+              800
+            ]
+          }
+        },
+        {
           "name": "Natural/ Charcoal",
           "code": "24",
           "hex": "#DDD5C1",
@@ -796103,6 +798678,39 @@
           }
         },
         {
+          "name": "Natural/ Mossy Oak Breakup",
+          "code": "97",
+          "hex": "#DDD5C1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135769_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/135769_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/135769_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.45,
+          "crop": {
+            "f": [
+              19,
+              94,
+              981,
+              906,
+              800
+            ],
+            "b": [
+              19,
+              138,
+              981,
+              862,
+              800
+            ]
+          }
+        },
+        {
           "name": "Natural/ Navy",
           "code": "06",
           "hex": "#DDD5C1",
@@ -796128,6 +798736,39 @@
             "b": [
               19,
               136,
+              981,
+              862,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Natural/ Realtree All Purpose",
+          "code": "98",
+          "hex": "#DDD5C1",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/135768_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/135768_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/135768_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.45,
+          "crop": {
+            "f": [
+              19,
+              94,
+              981,
+              906,
+              800
+            ],
+            "b": [
+              19,
+              138,
               981,
               862,
               800
@@ -798186,6 +800827,72 @@
               192,
               983,
               811,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Green Camo/ Black",
+          "code": "24",
+          "hex": "#A29189",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/70989_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/70989_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/70989_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.45,
+          "crop": {
+            "f": [
+              19,
+              153,
+              983,
+              847,
+              800
+            ],
+            "b": [
+              19,
+              173,
+              983,
+              828,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Green Camo/ Tan",
+          "code": "62",
+          "hex": "#616545",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/39451_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/39451_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/39451_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.45,
+          "crop": {
+            "f": [
+              43,
+              155,
+              927,
+              797,
+              800
+            ],
+            "b": [
+              19,
+              184,
+              983,
+              820,
               800
             ]
           }
@@ -800379,6 +803086,39 @@
           }
         },
         {
+          "name": "Black Duck Camo",
+          "code": "99",
+          "hex": "#000000",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/141635_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/141635_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/141635_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.5,
+          "crop": {
+            "f": [
+              19,
+              153,
+              983,
+              847,
+              800
+            ],
+            "b": [
+              19,
+              150,
+              983,
+              850,
+              800
+            ]
+          }
+        },
+        {
           "name": "Black/ Stone Stitch",
           "code": "51",
           "hex": "#1B151A",
@@ -800438,6 +803178,39 @@
               173,
               983,
               828,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Brown Duck Camo",
+          "code": "98",
+          "hex": "#A52A2A",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/141636_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/141636_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/141636_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.5,
+          "crop": {
+            "f": [
+              19,
+              148,
+              983,
+              852,
+              800
+            ],
+            "b": [
+              19,
+              148,
+              983,
+              852,
               800
             ]
           }
@@ -800603,6 +803376,37 @@
           }
         },
         {
+          "name": "Green Camo",
+          "code": "62",
+          "hex": "#605951",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/20501_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/20501_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": []
+          },
+          "upcharge": 0.5,
+          "crop": {
+            "f": [
+              19,
+              202,
+              983,
+              799,
+              800
+            ],
+            "b": [
+              19,
+              180,
+              983,
+              821,
+              800
+            ]
+          }
+        },
+        {
           "name": "Grey",
           "code": "35",
           "hex": "#7B8A8E",
@@ -800630,6 +803434,39 @@
               185,
               983,
               815,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Grey Camo",
+          "code": "36",
+          "hex": "#747474",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/32680_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/32680_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/32680_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.5,
+          "crop": {
+            "f": [
+              19,
+              162,
+              983,
+              840,
+              800
+            ],
+            "b": [
+              19,
+              185,
+              981,
+              816,
               800
             ]
           }
@@ -801179,6 +804016,39 @@
           }
         },
         {
+          "name": "Pink Camo",
+          "code": "04",
+          "hex": "#C0869B",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/32671_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/32671_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/32671_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.5,
+          "crop": {
+            "f": [
+              19,
+              167,
+              983,
+              833,
+              800
+            ],
+            "b": [
+              19,
+              189,
+              983,
+              813,
+              800
+            ]
+          }
+        },
+        {
           "name": "Purple",
           "code": "67",
           "hex": "#3A385E",
@@ -801333,6 +804203,39 @@
               23,
               182,
               979,
+              816,
+              800
+            ]
+          }
+        },
+        {
+          "name": "Tan Camo",
+          "code": "37",
+          "hex": "#B59F88",
+          "pms": null,
+          "images": {
+            "front_flat": "https://cdn.ssactivewear.com/Images/Color/39076_f_fl.jpg",
+            "back_flat": "https://cdn.ssactivewear.com/Images/Color/39076_b_fl.jpg",
+            "front_model": null,
+            "back_model": null,
+            "side_model": null,
+            "gallery": [
+              "https://cdn.ssactivewear.com/Images/Color/39076_d_fl.jpg"
+            ]
+          },
+          "upcharge": 0.5,
+          "crop": {
+            "f": [
+              19,
+              148,
+              981,
+              852,
+              800
+            ],
+            "b": [
+              19,
+              185,
+              983,
               816,
               800
             ]
