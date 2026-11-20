@@ -398,6 +398,16 @@ def main():
         for k in get("/products/", {"styleid": ",".join(ids[i:i + 20])}):
             skus[k.get("styleID")].append(k)
 
+    # Which S&S price is lowest? Counts only, no values (public summary).
+    cmp = collections.Counter()
+    for ks in skus.values():
+        for k in ks:
+            cu, ca = float(k.get("customerPrice") or 0), float(k.get("casePrice") or 0)
+            if cu and ca:
+                cmp["account price below case price" if cu < ca - 0.004 else
+                    "account price above case price" if cu > ca + 0.004 else "account price = case price"] += 1
+    log("price check: " + ", ".join(f"{k} {v}" for k, v in sorted(cmp.items())))
+
     products, skipped = [], []
     for s in sorted(mine, key=lambda s: (s["brandName"], str(s["styleName"]))):
         res, why = build(s, skus.get(s["styleID"], []), site_keys, site_brand_style)
