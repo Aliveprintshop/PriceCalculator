@@ -344,6 +344,19 @@
   font-family:var(--disp);font-weight:800;font-size:13px;padding:8px 10px;cursor:pointer;}
 #alive-flow .upadd:hover{background:var(--blue);color:#fff;}
 #alive-flow .upb b + .ups{margin-bottom:8px;}
+#alive-flow .upm{font-size:11.5px;color:var(--text3);margin:-4px 0 8px;}
+#alive-flow .upadd.on{background:var(--blue);color:#fff;}
+#alive-flow .uppanel{margin-top:14px;border:1.5px solid var(--blue);border-radius:var(--r);padding:14px;background:#f7faff;}
+#alive-flow .uph{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-size:14px;}
+#alive-flow .upsz{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px;}
+#alive-flow .upszc{display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:6px 4px;}
+#alive-flow .upszc span{font-family:var(--disp);font-size:11px;font-weight:800;color:var(--text2);}
+#alive-flow .upszc input{width:100%;border:0;background:none;text-align:center;font-family:var(--disp);font-size:17px;font-weight:800;min-height:32px;}
+#alive-flow .upszc input:focus{outline:2px solid var(--blue);border-radius:6px;}
+#alive-flow .upfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap;}
+#alive-flow .uptot{font-size:13px;color:var(--text2);font-weight:600;}
+#alive-flow .upgo{margin-top:0;padding:10px 18px;}
+#alive-flow .upgo:disabled{opacity:.45;cursor:not-allowed;background:#fff;color:var(--blue);}
 @media(max-width:640px){
   #alive-flow .upgrid{grid-template-columns:1fr;}
   #alive-flow .upc{flex-direction:row;align-items:center;}
@@ -1715,8 +1728,13 @@ function editUrl(it, step){
    The new line is built exactly like one from the product page, so Edit
    design / Edit sizes, the Worker's re-pricing and the dashboard all treat it
    the same. Prices come from the same engine; the Worker re-prices on pay. */
-var UPSELL_POOL = ['IND4000','BC3001','BC3501','LS14004','112','PC78H','1717'];
-var UP = {raw:{}, state:'idle', added:{}, ar:{}};
+/* Smart mix (Austin, 20 Nov 2026): one-size items (cap, tote, tumbler) add in
+   one tap; garments open a size picker first. With garments in the cart the
+   order is cap, tote, then a garment kind they don't have yet; without, a tee
+   and a tote lead. */
+var UPSELL_POOL = ['112','BG424','1603-15','BC3001','IND4000','BC3501','LS14004','1717','PC78H'];
+var UP_GARMENT = {Tee:1, Hoodie:1, 'Long sleeve':1, Crewneck:1, Apparel:1};
+var UP = {raw:{}, state:'idle', added:{}, ar:{}, open:null, sz:{}};
 function upLog(){ try{ return JSON.parse(sessionStorage.getItem('alive_upsell_added') || '{}'); }catch(e){ return {}; } }
 function upSource(){
   /* Any apparel line can lead the suggestions. One with a placed design shows
@@ -1725,6 +1743,8 @@ function upSource(){
   S.items.forEach(function(it){
     if(!priceable(it) || isPcna(it) || (it.pricingProduct && it.pricingProduct._drinkware)) return;
     if(['sp','ht','em'].indexOf(it.decoMethod) < 0) return;
+    /* A line the customer added from a suggestion never leads the next ones. */
+    if(it.source === 'cart-upsell') return;
     src = it;
     if(!it.artworkLater && it.mock && it.mock.layers && it.mock.layers.length) withArt = it;
   });
@@ -1764,6 +1784,8 @@ function upName(p){
 function upKind(p){
   var t = E.productType(p), n = String(p.name || '').toLowerCase();
   if(t === 'hat' || t === 'beanie') return 'Cap';
+  if(t === 'drinkware' || (p && p._drinkware)) return /mug/.test(n) ? 'Mug' : /tumbler/.test(n) ? 'Tumbler' : 'Drinkware';
+  if(t === 'bag') return /tote/.test(n) ? 'Tote' : 'Bag';
   if(/hood/.test(n)) return 'Hoodie';
   if(/crew/.test(n)) return 'Crewneck';
   if(/long sleeve/.test(n)) return 'Long sleeve';
@@ -1772,10 +1794,13 @@ function upKind(p){
 }
 var UP_KEEP = ['style','name','brand','category','case_price','case_sale_price','size_upcharges','available_sizes',
   '_dealBasicTee','_drinkware','_dwMatrix','_blank','_pcna','_decoLabel'];
-function upBuild(src, raw){
-  var p = E.prepare(raw, false); if(!p) return null;
-  var m = src.decoMethod;
-  if(E.decoMethods(p).indexOf(m) < 0) return null;
+function upBuild(src, raw, sizesIn){
+  var p = E.prepare(raw, !!raw._pcna); if(!p) return null;
+  var ptype = E.productType(p), dm = E.decoMethods(p), m = src.decoMethod;
+  /* A cap is embroidered and a tote is full color when the order is screen
+     printed: each suggestion uses a method that item can actually take. */
+  if(dm.indexOf(m) < 0) m = (ptype === 'hat' || ptype === 'beanie') && dm.indexOf('em') > -1 ? 'em' : dm.indexOf('ht') > -1 ? 'ht' : dm[0];
+  if(!m) return null;
   var colors = upSortColors((raw.colors || []).filter(function(c){ return c && c.images && upFront(c); }));
   var plain = colors.filter(function(c){ return !(+c.upcharge > 0); });
   if(!plain.length) return null;
@@ -1795,20 +1820,37 @@ function upBuild(src, raw){
   var lm = {}; locs.forEach(function(k){ lm[k] = m; });
   var inks = (src.edit && src.edit.inks) || {front:src.frontColors || 1, back:src.backColors || 1}, ink = {};
   locs.forEach(function(k){ ink[k] = Math.max(1, +inks[from[k]] || +inks.front || 1); });
-  var q = m === 'sp' ? 24 : 12, zs = p.available_sizes || [], sizes = {};
-  if(zs.length <= 1) sizes[zs[0] || 'OSFA'] = q;
-  else if(zs.indexOf('M') > -1 && zs.indexOf('L') > -1){ sizes.M = q / 2; sizes.L = q / 2; }
-  else { var mid = Math.floor(zs.length / 2); sizes[zs[Math.max(0, mid - 1)]] = q / 2; sizes[zs[mid]] = (sizes[zs[mid]] || 0) + q / 2; }
-  var cfg = {qty:q, locs:locs, locMethod:lm, frontColors: lm.front === 'sp' ? ink.front : 1, backColors: lm.back === 'sp' ? ink.back : 1,
+  var zs = p.available_sizes || [], sizes = {};
+  var oneSize = zs.length <= 1 || ptype === 'hat' || ptype === 'beanie' || ptype === 'bag' || ptype === 'drinkware' || !!p._drinkware;
+  var cfg = {qty:24, locs:locs, locMethod:lm, frontColors: lm.front === 'sp' ? ink.front : 1, backColors: lm.back === 'sp' ? ink.back : 1,
              addons:{neck:false, hem:false, bag:false}, rush:'std', promoDiscount: promoDiscount()};
+  var minQ = E.minQty(p, cfg) || 24, q;
+  if(oneSize){
+    var key = zs.indexOf('OSFA') > -1 ? 'OSFA' : (zs[0] || 'OSFA');
+    q = Math.max(minQ, 24); sizes[key] = q;
+  } else if(sizesIn){
+    Object.keys(sizesIn).forEach(function(z){ var n = +sizesIn[z] || 0; if(n > 0) sizes[z] = n; });
+    q = Object.keys(sizes).reduce(function(t, z){ return t + sizes[z]; }, 0);
+    if(!q) return null;
+  } else {
+    /* Display only (price per piece at the minimum); the customer picks sizes. */
+    q = Math.max(minQ, 24);
+    if(zs.indexOf('M') > -1 && zs.indexOf('L') > -1){ sizes.M = q / 2; sizes.L = q / 2; } else sizes[zs[Math.floor(zs.length / 2)]] = q;
+  }
+  cfg.qty = q;
   var unit = E.unitPrice(p, cfg); if(unit == null) return null;
   /* Where the design sits: a cap gets the cap spot; garment to garment keeps the
      customer's own placement (flat lays share the 2:3 frame). */
-  var isCap = E.productType(p) === 'hat' || E.productType(p) === 'beanie';
-  var srcCap = ['hat','beanie'].indexOf(E.productType(src.pricingProduct)) > -1;
+  var isCap = ptype === 'hat' || ptype === 'beanie';
+  var srcType = E.productType(src.pricingProduct), srcOdd = ['hat','beanie','bag','drinkware'].indexOf(srcType) > -1;
   function placeFor(k){
     var a = art[from[k]] || {}, pl = a.place || {cx:0.5, cy:0.4, w:0.3, rot:0};
+    var ib = (Array.isArray(c.imprintBox) && c.imprintBox.length === 4) ? c.imprintBox : (Array.isArray(p._imprintBox) && p._imprintBox.length === 4 ? p._imprintBox : null);
+    if(ib) return {cx:ib[0] + ib[2] / 2, cy:ib[1] + ib[3] / 2, w:Math.min(ib[2], ib[3] * 2.5) * 0.9, rot:0};
     if(isCap) return k === 'back' ? {cx:0.5, cy:0.22, w:0.12, rot:0} : {cx:0.5, cy:0.19, w:0.17, rot:0};
+    if(ptype === 'bag') return {cx:0.5, cy:0.52, w:0.36, rot:0};
+    if(ptype === 'drinkware') return {cx:0.5, cy:0.5, w:0.34, rot:0};
+    var srcCap = srcOdd;
     if(srcCap || from[k] !== k) return k === 'left-chest' ? {cx:0.62, cy:0.33, w:0.12, rot:0} : k === 'back' ? {cx:0.5, cy:0.37, w:0.34, rot:0} : {cx:0.5, cy:0.40, w:0.30, rot:0};
     return {cx:pl.cx, cy:pl.cy, w:pl.w, rot:pl.rot || 0};
   }
@@ -1845,7 +1887,7 @@ function upBuild(src, raw){
   var name = upName(p);
   return {
     style:p.style, productName:name, brand:p.brand || '', color:c.name || '', productImage:upFront(c),
-    decoMethod:E.orderMethod(p, cfg), decoLabel:E.methodLabel(m), locMethod:lm, locations:locs.slice(),
+    decoMethod:E.orderMethod(p, cfg), decoLabel:(p._pcna && p._decoLabel) ? p._decoLabel : E.methodLabel(m), locMethod:lm, locations:locs.slice(),
     frontColors: lm.front === 'sp' ? ink.front : null, backColors: lm.back === 'sp' ? ink.back : null,
     qty:q, sizes:sizes, addons:{neck:false, hem:false, bag:false}, addonList:[], rush:'std',
     turnaroundLabel:'Standard (' + E.turnaroundDays('std', false) + ' business days)',
@@ -1860,49 +1902,91 @@ function upBuild(src, raw){
     mockupUrl:'', mockupUrls:{},
     edit:{color:idx, colorName:c.name || '', method:m, locs:locs.slice(), inks:ink, mode: src.artworkLater ? 'later' : ((src.edit && src.edit.mode) || 'upload'), side:side,
           sizes:JSON.parse(JSON.stringify(sizes)), qty:q, est:q, art:editArt},
-    _kind:upKind(p), _art:layers.length > 0
+    _kind:upKind(p), _art:layers.length > 0, _one:oneSize, _min:minQ, _sizes:zs.slice(), _m:m
   };
 }
 function upPicks(){
   var src = upSource(); if(!src || UP.state !== 'ready') return [];
-  var have = {}, types = {};
-  S.items.forEach(function(it){ have[String(it.style).toUpperCase()] = 1; if(priceable(it)) types[upKind(it.pricingProduct)] = 1; });
-  var out = [];
+  var have = {}, kinds = {}, garments = false;
+  S.items.forEach(function(it){
+    have[String(it.style).toUpperCase()] = 1;
+    if(priceable(it)){ var k = upKind(it.pricingProduct); kinds[k] = 1; if(UP_GARMENT[k]) garments = true; }
+  });
+  var built = [];
   UPSELL_POOL.forEach(function(st){
     if(have[st.toUpperCase()] || !UP.raw[st]) return;
     var it = null; try{ it = upBuild(src, UP.raw[st]); }catch(e){ if(window.console) console.warn('[Alive checkout] upsell', st, e); }
-    if(it) out.push(it);
+    if(it && !kinds[it._kind]) built.push(it);
   });
-  /* Something different first: a hoodie order is offered tees before more hoodies. */
-  var seen = {};
-  out.sort(function(a, b){ return (types[a._kind] ? 1 : 0) - (types[b._kind] ? 1 : 0); });
-  out = out.filter(function(it){ if(seen[it._kind]) return false; seen[it._kind] = 1; return true; });
-  return out.slice(0, 3);
+  var order = garments ? ['Cap', 'Tote', 'Tee', 'Hoodie', 'Long sleeve', 'Crewneck', 'Tumbler', 'Mug', 'Drinkware', 'Bag']
+                       : ['Tee', 'Tote', 'Hoodie', 'Cap', 'Long sleeve', 'Crewneck', 'Tumbler', 'Mug', 'Drinkware', 'Bag'];
+  var rank = function(k){ var i = order.indexOf(k); return i < 0 ? 99 : i; };
+  built.sort(function(a, b){ return rank(a._kind) - rank(b._kind); });
+  /* One of each kind; with garments in the cart, exactly one garment among the three. */
+  var seen = {}, out = [], g = 0;
+  built.forEach(function(it){
+    if(out.length >= 3 || seen[it._kind]) return;
+    if(garments && UP_GARMENT[it._kind] && g >= 1) return;
+    seen[it._kind] = 1; if(UP_GARMENT[it._kind]) g++; out.push(it);
+  });
+  return out;
 }
 function upsellCard(){
   upLoad();
   var picks = upPicks(); if(!picks.length) return '';
   UP.picks = {}; picks.forEach(function(it){ UP.picks[it.style] = it; });
-  var art = picks[0]._art;
+  if(UP.open && !UP.picks[UP.open]) UP.open = null;
+  var art = picks.some(function(it){ return it._art; });
   return '<div class="card upsell"><div class="hd"><h2>' + (art ? 'Your logo looks great on these too' : 'Add more to this order') + '</h2></div>' +
-    '<p class="cnote">' + (art ? 'Same design, same print.' : 'Same design and print as your ' + esc(upSource().productName || 'order') + '.') + ' Added to this order so it all ships together.</p>' +
+    '<p class="cnote">' + (art ? 'Same design, added to this order so it all ships together.' : 'Same design as your ' + esc(upSource().productName || 'order') + ', added to this order so it all ships together.') + '</p>' +
     '<div class="upgrid">' + picks.map(function(it){
-      var line = priceItem(it, S.addon, S.rush).line;
-      return '<div class="upc"><div class="upimg" data-ar="' + it.mock.ar + '">' + mockHtml(it.mock) + '</div>' +
+      var line = priceItem(it, S.addon, S.rush).line, per = money(line / it.qty) + '/pc';
+      var btn = it._one
+        ? '<button type="button" class="upadd" data-upsell="' + esc(it.style) + '">Add ' + it.qty + ' · ' + money(line) + '</button>'
+        : '<button type="button" class="upadd' + (UP.open === it.style ? ' on' : '') + '" data-upsize="' + esc(it.style) + '" aria-expanded="' + (UP.open === it.style) + '">Choose sizes</button>';
+      return '<div class="upc' + (UP.open === it.style ? ' open' : '') + '"><div class="upimg" data-ar="' + it.mock.ar + '">' + mockHtml(it.mock) + '</div>' +
         '<div class="upb"><span class="upk">' + esc(it._kind) + '</span><b>' + esc(it.productName) + '</b>' +
-        '<span class="ups">' + esc(it.color) + ' · ' + money(line / it.qty) + '/pc</span>' +
-        '<button type="button" class="upadd" data-upsell="' + esc(it.style) + '">Add ' + it.qty + ' · ' + money(line) + '</button></div></div>';
-    }).join('') + '</div>' +
-    '<p class="cnote small">Adds ' + picks[0].qty + ' pieces in the sizes shown on the item. Change sizes or colors after adding.</p></div>';
+        '<span class="ups">' + esc(it.color) + ' · ' + (it._one ? per : 'from ' + per) + '</span>' +
+        (it._one && it._m !== upSource().decoMethod ? '<span class="upm">' + esc(it.decoLabel) + '</span>' : '') + btn + '</div></div>';
+    }).join('') + '</div>' + upPanel() + '</div>';
 }
-function upsellAdd(style){
+/* The size picker for a garment suggestion: sizes, a running total against the
+   minimum, and an Add button that only wakes up once the minimum is met. */
+function upPanel(){
+  var it = UP.open && UP.picks && UP.picks[UP.open]; if(!it) return '';
+  var sz = UP.sz[it.style] || (UP.sz[it.style] = {});
+  return '<div class="uppanel" id="up-panel"><div class="uph"><b>' + esc(it._kind) + ' · ' + esc(it.color) + ': choose sizes</b>' +
+      '<button type="button" class="linkbtn" data-upclose="1">Cancel</button></div>' +
+    '<div class="upsz">' + it._sizes.map(function(z){
+      return '<label class="upszc"><span>' + esc(z) + '</span><input type="text" inputmode="numeric" data-upq="' + esc(z) + '" value="' + (sz[z] || '') + '" placeholder="0" aria-label="' + esc(z) + ' quantity"></label>';
+    }).join('') + '</div>' +
+    '<div class="upfoot"><span class="uptot"></span><button type="button" class="upadd upgo" data-upgo="' + esc(it.style) + '" disabled>Add to order</button></div></div>';
+}
+function upPanelRefresh(){
+  var it = UP.open && UP.picks && UP.picks[UP.open], box = root.querySelector('#up-panel'); if(!it || !box) return;
+  var sz = UP.sz[it.style] || {}, total = Object.keys(sz).reduce(function(t, z){ return t + (+sz[z] || 0); }, 0);
+  var tot = box.querySelector('.uptot'), go = box.querySelector('[data-upgo]'), min = it._min || 24;
+  if(total >= min){
+    var built = upBuild(upSource(), UP.raw[it.style], sz), line = built ? priceItem(built, S.addon, S.rush).line : null;
+    tot.textContent = total + ' pcs' + (line != null ? ' · ' + money(line / total) + '/pc' : '');
+    go.disabled = !built; go.textContent = built ? 'Add ' + total + ' · ' + money(line) : 'Add to order';
+  } else {
+    tot.textContent = total + ' pcs · minimum ' + min + (total ? ' (add ' + (min - total) + ' more)' : '');
+    go.disabled = true; go.textContent = 'Add to order';
+  }
+}
+function upsellAdd(style, sizes){
   var it = UP.picks && UP.picks[style]; if(!it) return;
-  var item = JSON.parse(JSON.stringify(it)); delete item._kind; delete item._art;
+  if(sizes){ it = upBuild(upSource(), UP.raw[style], sizes); if(!it) return; }
+  else if(!it._one) return;
+  var item = JSON.parse(JSON.stringify(it));
+  ['_kind','_art','_one','_min','_sizes','_m'].forEach(function(k){ delete item[k]; });
   item.id = 'ci_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
   item.addedAt = new Date().toISOString();
   var items = CART.getItems(); items.push(item); CART.setItems(items);
   S.items = CART.getItems(); applyOptions();
   track('add_to_cart', {currency:'USD', value:+(+item.lineTotal).toFixed(2), items:[{item_id:String(item.style), item_name:item.productName, item_brand:item.brand, item_variant:item.color, price:+(+item.unitPrice).toFixed(2), quantity:item.qty}]});
+  UP.open = null; delete UP.sz[style];
   render();
   var el = root.querySelector('.cartitems'); if(el) scrollToEl(el);
 }
@@ -2410,6 +2494,17 @@ function wire(){
     goStage('details'); }; });
   root.querySelectorAll('[data-tocart]').forEach(function(b){ b.onclick = function(){ goStage('cart'); }; });
   root.querySelectorAll('[data-upsell]').forEach(function(b){ b.onclick = function(){ upsellAdd(b.dataset.upsell); }; });
+  root.querySelectorAll('[data-upsize]').forEach(function(b){ b.onclick = function(){
+    UP.open = UP.open === b.dataset.upsize ? null : b.dataset.upsize; render();
+    var pn = root.querySelector('#up-panel'); if(pn){ var i = pn.querySelector('input'); if(i) i.focus({preventScroll:true}); scrollToEl(pn); } }; });
+  root.querySelectorAll('[data-upclose]').forEach(function(b){ b.onclick = function(){ UP.open = null; render(); }; });
+  root.querySelectorAll('[data-upq]').forEach(function(inp){ inp.oninput = function(){
+    var v = inp.value.replace(/\D/g, '').slice(0, 5); if(inp.value !== v) inp.value = v;
+    var sz = UP.sz[UP.open] || (UP.sz[UP.open] = {}), n = parseInt(v, 10) || 0;
+    if(n) sz[inp.dataset.upq] = n; else delete sz[inp.dataset.upq];
+    upPanelRefresh(); }; });
+  root.querySelectorAll('[data-upgo]').forEach(function(b){ b.onclick = function(){ upsellAdd(b.dataset.upgo, UP.sz[b.dataset.upgo] || {}); }; });
+  upPanelRefresh();
   root.querySelectorAll('.upimg img.mk-g').forEach(function(img){
     function check(){
       if(!img.naturalWidth || !img.naturalHeight) return;
