@@ -42,6 +42,8 @@ SIZE_ORDER = ["2T", "3T", "4T", "5T", "5/6", "5/6T", "XXS", "XS", "S", "M", "L",
 ONE_SIZE = {"ADJUSTABLE", "ONE SIZE", "ADJ", "OS", "OSFA", "ONE SIZE FITS ALL"}
 
 LOG = []
+PREMIUMS = []   # (brand, style, premium colours, colours, max % above usual)
+PREMIUM = os.environ.get("SS_PREMIUM", "hide").strip().lower()
 
 
 def log(s):
@@ -260,27 +262,57 @@ def build(style, skus, site_keys, site_brand_style):
         key = f"{BRANDS.get(brand, norm(brand)[:3])}-{st}"
         log(f"{brand} {st}: style number already used by another brand on the site, added as {key}")
 
-    # price per size: the highest across colours (white and heathers can differ)
-    by_size, colours = {}, collections.OrderedDict()
+    # S&S prices each colour separately: most colours share one price, while
+    # some (camo, tie-dye, heathers...) cost more. The site has one blank price
+    # per style, so the style is priced at its USUAL colour price - the price
+    # most colours have (anything within 10% counts, priced at the dearest of
+    # them) - and size upcharges come from those colours.
+    # Colours that cost more than that are "premium" and follow PREMIUM:
+    #   hide - not shown (default: never undercharge, never overcharge)
+    #   max  - every colour priced at the dearest colour (overcharges most)
+    grid, colours = collections.defaultdict(dict), collections.OrderedDict()
     for k in sorted(skus, key=lambda k: (str(k.get("colorName")), str(k.get("sizeOrder") or ""))):
         pr = price_of(k)
         if pr <= 0:
             continue
+        cname = k.get("colorName") or "Standard"
         sz = size_name(k.get("sizeName"))
-        by_size[sz] = max(by_size.get(sz, 0), pr)
-        colours.setdefault(k.get("colorName") or "Standard", k)
-    if not by_size:
+        grid[cname][sz] = max(grid[cname].get(sz, 0), pr)
+        colours.setdefault(cname, k)
+    if not grid:
         return None, f"{brand} {st}: no price, skipped"
 
-    # The base price is the regular size: OSFA for a cap that also comes in an
-    # XL fit (Imperial X210P), XS-XL for apparel, otherwise the cheapest size.
-    if "OSFA" in by_size:
-        std = [by_size["OSFA"]]
+    def base_of(g):
+        # the regular size: OSFA for a cap that also comes in an XL fit
+        # (Imperial X210P), XS-XL for apparel, otherwise the cheapest size
+        if "OSFA" in g:
+            return g["OSFA"]
+        return min([v for s, v in g.items() if s in ("XS", "S", "M", "L", "XL")] or list(g.values()))
+
+    cbase = {c: round(base_of(g), 2) for c, g in grid.items()}
+    counts = collections.Counter(cbase.values())
+    usual = min(counts, key=lambda v: (-counts[v], v))
+    # within 10% of the usual price counts as the same tier, priced at the
+    # dearest colour in it so nothing is undercharged
+    premium = {c for c, b in cbase.items() if b > usual * 1.10 + 0.005}
+    if PREMIUM == "max":
+        regular = set(grid)
     else:
-        std = [v for s, v in by_size.items() if s in ("XS", "S", "M", "L", "XL")] or list(by_size.values())
-    base = min(std)
+        regular = set(grid) - premium
+    base = max(cbase[c] for c in regular)
+    if premium:
+        pct = round(100 * (max(cbase[c] for c in premium) / usual - 1))
+        PREMIUMS.append((brand, st, len(premium), len(grid), pct))
+        if PREMIUM == "hide":
+            log(f"{brand} {st}: {len(premium)} of {len(grid)} colours cost more than the usual colour "
+                f"(up to +{pct}%), hidden: {', '.join(sorted(premium))}")
+    by_size = {}
+    for c in regular:
+        for sz, v in grid[c].items():
+            by_size[sz] = max(by_size.get(sz, 0), v)
     upcharges = {s: round(v - base, 2) for s, v in by_size.items() if v - base > 0.004}
     sizes = sorted(by_size, key=size_key)
+    colours = collections.OrderedDict((c, k) for c, k in colours.items() if c in regular)
 
     out_colours, no_back = [], 0
     for name, k in colours.items():
@@ -401,6 +433,10 @@ def main():
              "- Brands: " + ", ".join(f"{b} {n}" for b, n in sorted(per_brand.items())),
              "- Colours: " + str(sum(len(p['colors']) for p in products)),
              "- Categories: " + ", ".join(f"{k} {v}" for k, v in cats.most_common()), ""]
+    if PREMIUMS:
+        lines += [f"## Colours that cost more than the style's usual colour ({PREMIUM})", "",
+                  f"- {len(PREMIUMS)} styles, {sum(x[2] for x in PREMIUMS)} colours", ""]
+        lines += [f"- {b} {s}: {n} of {t} colours, up to +{p}%" for b, s, n, t, p in PREMIUMS] + [""]
     if skipped:
         lines += ["## Skipped", ""] + [f"- {s}" for s in skipped] + [""]
     if LOG:
