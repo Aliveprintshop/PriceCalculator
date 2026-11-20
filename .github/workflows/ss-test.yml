@@ -1,0 +1,36 @@
+name: S&S connection test
+
+# Manual only. Does NOT deploy the site and does NOT touch sync.yml / products.json.
+# The summary shows counts only; no prices are printed (this repo is public).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test S&S Activewear login + the three starting brands
+        env:
+          SS_ACCOUNT: ${{ secrets.SS_ACCOUNT }}
+          SS_API_KEY: ${{ secrets.SS_API_KEY }}
+          SS_OUT: ss-out
+        run: python ss_test.py
+
+      - name: Save the style list (no prices; deleted after 3 days)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ss-test
+          path: ss-out/
+          retention-days: 3
+          if-no-files-found: ignore
