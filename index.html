@@ -2247,7 +2247,7 @@ function renderGrid(){
     var metaHtml=isDw
       ? dwCardMeta(p)
       : '<span class="card-meta-rush">Rush Available</span>'+
-        '<span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
+        '<span class="card-meta-moq">'+(bucketForProduct(p)==='Polos & Button-Downs'?'Embroidery: 12-piece minimum':'Minimum 24 pcs')+' &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
            dealBadge+projStarHtml(it.s)+
            cardImgHtml(p,src,displayName)+
@@ -2349,7 +2349,7 @@ function gbbCardHtml(it){
   var isDw=!!(p&&p._drinkware);
   var metaHtml=isDw
     ? dwCardMeta(p)
-    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">Minimum 24 pcs &middot; 10-day standard turnaround</span>';
+    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">'+(bucketForProduct(p)==='Polos & Button-Downs'?'Embroidery: 12-piece minimum':'Minimum 24 pcs')+' &middot; 10-day standard turnaround</span>';
   return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
          cardImgHtml(p,src,displayName)+
