@@ -8,7 +8,16 @@ from PIL import Image, ImageDraw
 prods = json.load(open("products.json"))["products"]
 bags = [p for p in prods if str(p.get("category", "")).lower().startswith("bag")]
 SIDES = (("f", "front_flat"), ("b", "back_flat"))
+CM = json.load(open("crops-m.json"))
 jobs = []
+for p in bags:
+    e = CM.get(str(p["style"]).upper())
+    if not e or not e.get("m"):
+        continue
+    for c in p.get("colors") or []:
+        u = (c.get("images") or {}).get("front_model")
+        if u:
+            jobs.append((p["style"], c["name"], "card", u, [round(v * 1000) for v in e["m"][:4]] + [round(e["m"][4] * 1000)]))
 for p in bags:
     for c in p.get("colors") or []:
         for side, key in SIDES:
@@ -53,6 +62,13 @@ errs = [r for r in res if r.get("err")]
 print("cut off (>1.5%):", len(bad), "styles:", len({r["style"] for r in bad}), "errors:", len(errs))
 import os
 os.makedirs("audit", exist_ok=True)
+full_by_style = {}
+for r in res:
+    if r.get("side") == "card" and r.get("full"):
+        full_by_style.setdefault(r["style"], []).append(r["full"])
+json.dump(full_by_style, open("audit/bag-card-full.json", "w"))
+print("card views:", sum(1 for r in res if r.get("side") == "card"), "card cut:", sum(1 for r in bad if r["side"] == "card"),
+      "card styles cut:", len({r["style"] for r in bad if r["side"] == "card"}))
 json.dump({"checked": len(res), "bad": [{k: v for k, v in r.items() if k != "_im"} for r in bad],
            "errors": errs[:50]}, open("audit/bag-crops.json", "w"), indent=1)
 # contact sheets, one tile per style (worst view), 24 per sheet
