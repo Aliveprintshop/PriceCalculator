@@ -108,6 +108,7 @@ jobs:
             git reset origin/main
 
             git add products.json
+            git add crops-c.json 2>/dev/null || true
             if git diff --staged --quiet; then
               echo "No changes to products.json — skipping commit"
               git checkout -- .

@@ -748,6 +748,40 @@ def measure_crop(url):
     box = [max(0, box[0] - pad * bw), max(0, box[1] - pad * bh), min(1, box[2] + pad * bw), min(1, box[3] + pad * bh)]
     return [round(v * 1000) for v in box] + [round(W / H * 1000)]
 
+def is_bag(p):
+    return str(p.get("category", "")).strip().lower().startswith("bag")
+
+
+def measure_crop_full(url):
+    """Box around EVERYTHING that is not background, for bags.
+
+    measure_crop keeps the largest connected run of rows/columns, which cuts
+    off thin or pale handles, straps and drawstrings that leave a gap in the
+    row counts (BG85 drawstrings, BG917 shoulder strap). Bags are shot alone on
+    white, so the full extent of non-white pixels is the product.
+    Audit 22 Nov 2026 (tools/bag_crop_audit.py): agrees with the old boxes to
+    within 1.5% on 99% of bag views and fixes the rest."""
+    import io, urllib.request
+    import numpy as np
+    from PIL import Image
+    raw = urllib.request.urlopen(url, timeout=30).read()
+    im = Image.open(io.BytesIO(raw))
+    W, H = im.size
+    im.draft("L", (W // 3, H // 3))
+    g = np.asarray(im.convert("L")).astype(int)
+    h, w = g.shape
+    bg = np.median(np.concatenate([g[0, :], g[-1, :], g[:, 0], g[:, -1]]))
+    m = (g < 246) | (abs(g - bg) > 9)
+    rows = np.where(m.sum(axis=1) >= max(2, int(0.002 * w)))[0]
+    cols = np.where(m.sum(axis=0) >= max(2, int(0.002 * h)))[0]
+    if not len(rows) or not len(cols):
+        return None
+    box = [cols[0] / w, rows[0] / h, (cols[-1] + 1) / w, (rows[-1] + 1) / h]
+    bw, bh, pad = box[2] - box[0], box[3] - box[1], 0.03
+    box = [max(0, box[0] - pad * bw), max(0, box[1] - pad * bh), min(1, box[2] + pad * bw), min(1, box[3] + pad * bh)]
+    return [round(v * 1000) for v in box] + [round(W / H * 1000)]
+
+
 def reconcile_crops(products):
     """Replace a colour's crop box with its siblings' when it disagrees.
 
@@ -766,6 +800,8 @@ def reconcile_crops(products):
     """
     fixed = 0
     for prod in products:
+        if is_bag(prod):
+            continue  # bags are measured whole (measure_crop_full); siblings differ in shape
         for side, _img in CROP_SIDES:
             groups = collections.defaultdict(list)
             for c in prod.get("colors") or []:
@@ -811,20 +847,28 @@ def reconcile_crops(products):
     return products
 
 
-def apply_color_crops(products, path="crops-c.json", max_new=1500):
+def apply_color_crops(products, path="crops-c.json", max_new=4000):
     try:
         data = json.load(open(path, encoding="utf-8")) if Path(path).exists() else {}
     except Exception as e:
         log(f"  crops-c.json unreadable ({e}); measuring from scratch")
         data = {}
-    todo = []
+    todo, bag_todo = [], []
     for p in products:
+        bag = is_bag(p)
         for c in p.get("colors") or []:
             for side, key in CROP_SIDES:
                 u = (c.get("images") or {}).get(key)
                 k = f"{str(p.get('style','')).strip().upper()}|{c.get('name','')}|{side}"
-                if u and (k not in data or data[k][0] != u):
-                    todo.append((k, u))
+                if not u:
+                    continue
+                if bag:
+                    # cached bag boxes are re-measured once with the whole-product method
+                    if k not in data or data[k][0] != u or len(data[k]) < 3 or data[k][2] != "full":
+                        bag_todo.append((k, u, True))
+                elif k not in data or data[k][0] != u:
+                    todo.append((k, u, False))
+    todo = bag_todo + todo
     measured = 0
     if todo:
         try:
@@ -832,16 +876,24 @@ def apply_color_crops(products, path="crops-c.json", max_new=1500):
             todo = todo[:max_new]
             def one(t):
                 try:
-                    return t[0], t[1], measure_crop(t[1])
+                    return t[0], t[1], t[2], (measure_crop_full if t[2] else measure_crop)(t[1])
                 except Exception:
-                    return t[0], t[1], None
+                    return t[0], t[1], t[2], None
             with cf.ThreadPoolExecutor(12) as ex:
-                for k, u, box in ex.map(one, todo):
+                for k, u, full, box in ex.map(one, todo):
                     if box:
-                        data[k] = [u, box]
+                        data[k] = [u, box, "full"] if full else [u, box]
                         measured += 1
         except Exception as e:
             log(f"  crop measuring skipped ({e})")
+    if measured:
+        # Keep the cache so tomorrow's run doesn't measure the same photos again
+        # (sync.yml commits it with products.json).
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, separators=(",", ":"))
+        except Exception as e:
+            log(f"  crops-c.json not saved ({e})")
     applied = 0
     for p in products:
         st = str(p.get("style", "")).strip().upper()
