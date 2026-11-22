@@ -1,0 +1,33 @@
+name: Bag crop audit
+
+# Manual. Checks every bag photo's crop box against the full product and
+# pushes a report + contact sheets to the crop-audit branch.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow numpy
+      - run: python tools/bag_crop_audit.py
+      - name: Push report to crop-audit branch
+        run: |
+          mkdir /tmp/out && cp -r audit /tmp/out/
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan crop-audit
+          git rm -rq --cached .
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r /tmp/out/audit .
+          git add audit
+          git commit -qm "Bag crop audit $(date -u +%F)"
+          git push -f origin crop-audit
