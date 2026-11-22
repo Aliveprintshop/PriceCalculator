@@ -1,0 +1,146 @@
+{
+ "checked": 2634,
+ "bad": [],
+ "errors": [
+  {
+   "style": "INDDUFBAG",
+   "color": "Black",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94590_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94590_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black Camo",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94591_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black Camo",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94591_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black Cheetah",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94592_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black Cheetah",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94592_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black/ Checker Strap",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94593_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Black/ Checker Strap",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94593_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Cheetah",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94594_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Cheetah",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94594_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Forest Camo",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94595_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Forest Camo",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94595_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Polka Dot",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94599_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Polka Dot",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94599_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Southwest",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94596_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Southwest",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94596_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Tiger Camo",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94597_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "Tiger Camo",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94597_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "White Camo",
+   "side": "f",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94598_f_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "style": "INDDUFBAG",
+   "color": "White Camo",
+   "side": "b",
+   "url": "https://cdn.ssactivewear.com/Images/Color/94598_b_fl.jpg",
+   "err": "HTTP Error 403: Forbidden"
+  }
+ ]
+}
