@@ -1,0 +1,3308 @@
+{
+ "generated_at": "2026-11-24T20:08:34Z",
+ "source": "OTTO CAP public catalog",
+ "product_count": 6,
+ "products": [
+  {
+   "style": "31-069",
+   "name": "OTTO CAP 5 Panel Mid Profile Baseball Cap 31-069",
+   "brand": "OTTO CAP",
+   "category": "Caps",
+   "subcategory": "Baseball Caps",
+   "description": "Worn by the Best, Loved by All – The Most Popular Mid Profile Hat Our most popular 5 panel mid profile hat, trusted by brands worldwide and a true staple in modern headwear. Structured and refined, it offers a balanced silhouette that is both modern and timeless. The seamless front panel provides an ideal surface for precise decoration, letting artwork stand out. Built to last, this is the cap brands return to again and again. Key Product Features Cotton Blend Twill - Combines breathable comfort, long-lasting durability, and a soft feel Mid Profile - Our most popular profile, designed for a contoured fit Structured Front Panel - Full buckram construction delivers a firm, defined shape that holds its form Plastic Snap - Premium durable closure for a secure fit and easy adjustment Thinner / Value Sweatband - A cost-effective and lightweight fit",
+   "case_price": 9.7,
+   "case_sale_price": null,
+   "sale_start_date": null,
+   "sale_end_date": null,
+   "msrp": null,
+   "piece_weight_lbs": 0.2,
+   "product_status": "Regular",
+   "discontinued": false,
+   "available_sizes": [
+    "OSFA"
+   ],
+   "size_upcharges": {},
+   "deco_methods": [
+    "em"
+   ],
+   "source": "otto",
+   "colors": [
+    {
+     "name": "Royal",
+     "code": "001",
+     "hex": "#013A71",
+     "otto_sku": "31-069-001",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-001-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-001-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-001-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-001-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-001-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-001-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red",
+     "code": "002",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-002",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-002-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-002-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-002-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-002-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-002-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-002-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black",
+     "code": "003",
+     "hex": "#040203",
+     "otto_sku": "31-069-003",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-003-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy",
+     "code": "004",
+     "hex": "#202946",
+     "otto_sku": "31-069-004",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-004-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-004-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-004-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-004-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-004-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-004-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Orange",
+     "code": "009",
+     "hex": "#FA700B",
+     "otto_sku": "31-069-009",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-009-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-009-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-009-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-009-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-009-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-009-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Maroon",
+     "code": "010",
+     "hex": "#572A31",
+     "otto_sku": "31-069-010",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-010-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-010-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-010-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-010-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-010-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-010-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray",
+     "code": "014",
+     "hex": "#8F908A",
+     "otto_sku": "31-069-014",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-014-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-014-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-014-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-014-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-014-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-014-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "White",
+     "code": "016",
+     "hex": "#F8F8F8",
+     "otto_sku": "31-069-016",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green",
+     "code": "017",
+     "hex": "#193028",
+     "otto_sku": "31-069-017",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-017-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-017-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-017-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-017-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-017-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-017-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Yellow",
+     "code": "020",
+     "hex": "#FDDB24",
+     "otto_sku": "31-069-020",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-020-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-020-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-020-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-020-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-020-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-020-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray",
+     "code": "025",
+     "hex": "#54534F",
+     "otto_sku": "31-069-025",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-025-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-025-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-025-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-025-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-025-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-025-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki",
+     "code": "032",
+     "hex": "#DECBA3",
+     "otto_sku": "31-069-032",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-032-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Yellow",
+     "code": "040",
+     "hex": "#DCF389",
+     "otto_sku": "31-069-040",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-040-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-040-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-040-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-040-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-040-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-040-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Pink",
+     "code": "050",
+     "hex": "#F2ABB9",
+     "otto_sku": "31-069-050-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-050-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-050-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-050-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-050-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-050-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-050-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Royal/Black",
+     "code": "0103",
+     "hex": "#013A71",
+     "otto_sku": "31-069-0103-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0103-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0103-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0103-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0103-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0103-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0103-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Royal/Gray",
+     "code": "0114",
+     "hex": "#013A71",
+     "otto_sku": "31-069-0114",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0114-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0114-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0114-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0114-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0114-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0114-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Royal/White",
+     "code": "0116",
+     "hex": "#013A71",
+     "otto_sku": "31-069-0116",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0116-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0116-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0116-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0116-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0116-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0116-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Royal/Natural",
+     "code": "0131",
+     "hex": "#013A71",
+     "otto_sku": "31-069-0131",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0131-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0131-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0131-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0131-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0131-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0131-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Royal",
+     "code": "0201",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0201",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0201-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0201-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0201-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0201-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0201-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0201-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Black",
+     "code": "0203",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0203",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0203-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0203-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0203-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0203-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0203-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0203-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Navy",
+     "code": "0204",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0204",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0204-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0204-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0204-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0204-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0204-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0204-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Gray",
+     "code": "0214",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0214",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0214-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0214-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0214-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0214-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0214-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0214-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/White",
+     "code": "0216",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0216",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0216-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0216-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0216-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0216-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0216-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0216-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Natural",
+     "code": "0231",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0231",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0231-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0231-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0231-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0231-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0231-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0231-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Khaki",
+     "code": "0232",
+     "hex": "#BC0C30",
+     "otto_sku": "31-069-0232",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0232-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0232-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0232-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0232-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0232-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0232-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Gray",
+     "code": "0314",
+     "hex": "#040203",
+     "otto_sku": "31-069-0314",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0314-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0314-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0314-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0314-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0314-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0314-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/White",
+     "code": "0316",
+     "hex": "#040203",
+     "otto_sku": "31-069-0316",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0316-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0316-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0316-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0316-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0316-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0316-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Charcoal Gray",
+     "code": "0325",
+     "hex": "#040203",
+     "otto_sku": "31-069-0325",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0325-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0325-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0325-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0325-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0325-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0325-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Natural",
+     "code": "0331",
+     "hex": "#040203",
+     "otto_sku": "31-069-0331",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0331-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0331-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0331-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0331-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0331-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0331-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Khaki",
+     "code": "0332",
+     "hex": "#040203",
+     "otto_sku": "31-069-0332",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0332-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0332-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0332-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0332-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0332-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0332-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Gray",
+     "code": "0414",
+     "hex": "#202946",
+     "otto_sku": "31-069-0414",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0414-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0414-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0414-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0414-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0414-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0414-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy/White",
+     "code": "0416",
+     "hex": "#202946",
+     "otto_sku": "31-069-0416",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0416-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0416-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0416-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0416-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0416-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0416-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Natural",
+     "code": "0431",
+     "hex": "#202946",
+     "otto_sku": "31-069-0431",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0431-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0431-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0431-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0431-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0431-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0431-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Khaki",
+     "code": "0432",
+     "hex": "#101630",
+     "otto_sku": "31-069-0432",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0432-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0432-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0432-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0432-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0432-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-0432-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Maroon/Gray",
+     "code": "1014",
+     "hex": "#572A31",
+     "otto_sku": "31-069-1014",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1014-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1014-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1014-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1014-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1014-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1014-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Maroon/White",
+     "code": "1016",
+     "hex": "#572A31",
+     "otto_sku": "31-069-1016",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Maroon/Khaki",
+     "code": "1032",
+     "hex": "#572A31",
+     "otto_sku": "31-069-1032",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1032-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Lavender/Natural",
+     "code": "1331",
+     "hex": "#DFD2A8",
+     "otto_sku": "31-069-1331-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1331-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1331-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1331-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1331-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1331-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1331-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray/Royal",
+     "code": "1401",
+     "hex": "#8F908A",
+     "otto_sku": "31-069-1401",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1401-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1401-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1401-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1401-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1401-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1401-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray/Navy",
+     "code": "1404",
+     "hex": "#8F8E89",
+     "otto_sku": "31-069-1404",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1404-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1404-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1404-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1404-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1404-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1404-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green/White",
+     "code": "1716",
+     "hex": "#193028",
+     "otto_sku": "31-069-1716",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1716-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1716-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1716-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1716-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1716-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1716-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green/Natural",
+     "code": "1731",
+     "hex": "#193028",
+     "otto_sku": "31-069-1731",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1731-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1731-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1731-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1731-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1731-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1731-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green/Khaki",
+     "code": "1732",
+     "hex": "#2A3F2C",
+     "otto_sku": "31-069-1732",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1732-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1732-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1732-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1732-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1732-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-1732-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki/Black",
+     "code": "3203",
+     "hex": "#B29A76",
+     "otto_sku": "31-069-3203",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3203-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3203-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3203-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3203-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3203-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3203-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki/Navy",
+     "code": "3204",
+     "hex": "#B29A76",
+     "otto_sku": "31-069-3204",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3204-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3204-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3204-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3204-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3204-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3204-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki/Brown/Light Olive",
+     "code": "320734",
+     "hex": "#5D503A",
+     "otto_sku": "31-069-320734-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-320734-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-320734-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-320734-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-320734-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-320734-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-320734-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki/Dark Green",
+     "code": "3217",
+     "hex": "#B29A76",
+     "otto_sku": "31-069-3217",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3217-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3217-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3217-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3217-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3217-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-3217-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Pink/White/Pink",
+     "code": "501650",
+     "hex": "#F4ACBA",
+     "otto_sku": "31-069-501650-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-501650-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-501650-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-501650-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-501650-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-501650-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-501650-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Caribbean Green/Natural",
+     "code": "5131",
+     "hex": "#DFD2A8",
+     "otto_sku": "31-069-5131-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-5131-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-5131-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-5131-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-5131-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-5131-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/31-069/31-069-5131-I.medium.jpg"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "style": "116",
+   "name": "OTTO CAP Club Collection 5 Panel Mid Profile Perforated Cap 116",
+   "brand": "OTTO CAP",
+   "category": "Caps",
+   "subcategory": "Performance Caps",
+   "description": "The 116 five-panel performance cap combines modern design with technical comfort. Made from UltraPoly fabric, it offers a smooth, durable feel with light stretch. Laser-cut water-drop perforations enhance airflow, while a COMFY COOL sweatband with sweat control, cooling, moisture-wicking, and UV Guard® technology keeps you comfortable. Finished with a soft TPU snapback and premium interior details. Key Product Features UltraPoly Fabric - Durable and light stretch polyester twill with cooling, UV Guard®, and moisture-wicking technology Laser-Perforated Back - Water-drop perforations maximize ventilation for superior cooling TPU Snapback - Premium closure with softer, flexible design for all-day wear COMFY COOL Sweatband - Advanced stretch with sweat control film, cooling, moisture-wicking and UV Guard® technology Sweat Control Film Tech - Integrated layer on the sweatband blocks moisture ",
+   "case_price": 19.5,
+   "case_sale_price": null,
+   "sale_start_date": null,
+   "sale_end_date": null,
+   "msrp": null,
+   "piece_weight_lbs": 0.2,
+   "product_status": "Regular",
+   "discontinued": false,
+   "available_sizes": [
+    "OSFA"
+   ],
+   "size_upcharges": {},
+   "deco_methods": [
+    "em"
+   ],
+   "source": "otto",
+   "colors": [
+    {
+     "name": "Black",
+     "code": "003",
+     "hex": "#040203",
+     "otto_sku": "116-003-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-003-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-003-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-003-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-003-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-003-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-003-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy",
+     "code": "004",
+     "hex": "#202946",
+     "otto_sku": "116-004-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-004-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-004-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-004-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-004-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-004-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-004-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray",
+     "code": "014",
+     "hex": "#8F908A",
+     "otto_sku": "116-014-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-014-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-014-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-014-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-014-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-014-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-014-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "White",
+     "code": "016",
+     "hex": "#F8F8F8",
+     "otto_sku": "116-016-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray",
+     "code": "025",
+     "hex": "#54534F",
+     "otto_sku": "116-025-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-025-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-025-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-025-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-025-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-025-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-025-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki",
+     "code": "032",
+     "hex": "#DECBA3",
+     "otto_sku": "116-032-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/116/116-032-I.medium.jpg"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "style": "113",
+   "name": "OTTO CAP Club Collection 6 Panel Pro Style Perforated Cap 113",
+   "brand": "OTTO CAP",
+   "category": "Caps",
+   "subcategory": "Performance Caps",
+   "description": "The 113 six-panel performance cap is built to move, breathe, and keep up with long days in the heat. Made with lightweight GridTek™ fabric, it features a textured grid pattern that creates natural air channels for cooling, plus laser-cut perforations on the back for maximum airflow. Includes a premium TPU snapback and a GridTek™ sweatband with sweat control tech to help prevent discoloration. Key Product Features GridTek™ Fabric - Lightweight, enhanced stretch textured grid with cooling, UV Guard®, and moisture-wicking technology Textured Grid - Pattern that creates air channels for enhanced breathability and cooling Laser-Perforated Back - Water-drop perforations maximize ventilation, plus 1.25\" of non-perforated area for decoration TPU Snapback - Premium closure with softer, flexible design for all-day wear GridTek™ Sweatband - Enhanced stretch with cooling, UV Guard®, and moisture-wic",
+   "case_price": 20.5,
+   "case_sale_price": null,
+   "sale_start_date": null,
+   "sale_end_date": null,
+   "msrp": null,
+   "piece_weight_lbs": 0.2,
+   "product_status": "Regular",
+   "discontinued": false,
+   "available_sizes": [
+    "OSFA"
+   ],
+   "size_upcharges": {},
+   "deco_methods": [
+    "em"
+   ],
+   "source": "otto",
+   "colors": [
+    {
+     "name": "Black",
+     "code": "003",
+     "hex": "#040203",
+     "otto_sku": "113-003-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-003-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-003-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-003-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-003-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-003-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-003-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy",
+     "code": "004",
+     "hex": "#202946",
+     "otto_sku": "113-004-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-004-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-004-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-004-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-004-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-004-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-004-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray",
+     "code": "014",
+     "hex": "#8F908A",
+     "otto_sku": "113-014-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-014-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-014-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-014-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-014-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-014-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-014-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "White",
+     "code": "016",
+     "hex": "#F8F8F8",
+     "otto_sku": "113-016-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray",
+     "code": "025",
+     "hex": "#54534F",
+     "otto_sku": "113-025-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-025-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-025-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-025-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-025-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-025-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-025-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki",
+     "code": "032",
+     "hex": "#DECBA3",
+     "otto_sku": "113-032-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/113/113-032-I.medium.jpg"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "style": "120",
+   "name": "OTTO CAP Club Collection 5 Panel Mid Profile Perforated Cap 120",
+   "brand": "OTTO CAP",
+   "category": "Caps",
+   "subcategory": "Performance Caps",
+   "description": "Go the distance with The 120 five-panel performance cap. Heavy-duty ProNyl™ fabric with enhanced stretch construction delivers durability and comfort. Laser-cut water-drop perforations ensure advanced airflow and breathability, while moisture-wicking technology and the COMFY COOL sweatband provide cooling and sweat control. Key Product Features ProNyl™ Fabric - Heavy-duty and enhanced stretch with cooling, UV Guard®, and moisture-wicking technology Heavy-Duty - Advanced fabric with premium hand-feel and superior resilience Laser-Perforated Back - Water-drop perforations maximize ventilation for superior cooling TPU Snapback - Premium closure with softer, flexible design for all-day wear COMFY COOL Sweatband - Advanced stretch with sweat control film, cooling, moisture-wicking and UV Guard® technology Sweat Control Film Tech - Integrated layer on the sweatband blocks moisture from reachin",
+   "case_price": 21.0,
+   "case_sale_price": null,
+   "sale_start_date": null,
+   "sale_end_date": null,
+   "msrp": null,
+   "piece_weight_lbs": 0.2,
+   "product_status": "Regular",
+   "discontinued": false,
+   "available_sizes": [
+    "OSFA"
+   ],
+   "size_upcharges": {},
+   "deco_methods": [
+    "em"
+   ],
+   "source": "otto",
+   "colors": [
+    {
+     "name": "Black",
+     "code": "003",
+     "hex": "#040203",
+     "otto_sku": "120-003-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-003-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-003-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-003-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-003-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-003-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-003-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy",
+     "code": "004",
+     "hex": "#202946",
+     "otto_sku": "120-004-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-004-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-004-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-004-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-004-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-004-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-004-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray",
+     "code": "014",
+     "hex": "#8F908A",
+     "otto_sku": "120-014-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-014-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-014-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-014-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-014-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-014-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-014-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "White",
+     "code": "016",
+     "hex": "#F8F8F8",
+     "otto_sku": "120-016-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray",
+     "code": "025",
+     "hex": "#54534F",
+     "otto_sku": "120-025-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-025-F-2.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-025-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-025-F-2.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-025-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-025-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-025-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki",
+     "code": "032",
+     "hex": "#DECBA3",
+     "otto_sku": "120-032-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-032-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Midnight Green",
+     "code": "119",
+     "hex": "#16381E",
+     "otto_sku": "120-119-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-119-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-119-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-119-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-119-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-119-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/120/120-119-I.medium.jpg"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "style": "18-202",
+   "name": "OTTO CAP 6 Panel Low Profile Dad Hat 18-202",
+   "brand": "OTTO CAP",
+   "category": "Caps",
+   "subcategory": "Dad Hats",
+   "description": "This is the kind of hat you reach for every day. Garment washed pigment dyed fabric gives it a soft, broken-in feel, while the unstructured crown creates a comfortable, low-profile fit. Finished with a metal press buckle for easy adjustment, it’s a timeless, no-fuss essential. Key Product Features Garment Washed Pigment Dyed Cotton Twill - Soft, worn-in fabric with a vintage look and comfortable feel from day one All-Day Wear - Lightweight and comfortable for daily use, from errands to casual outings Unstructured Soft Crown - Conforms to the head more closely Metal Press Buckle - Durable metal construction with secure press-fit closure Standard Cotton Twill Sweatband - Provides soft, reliable comfort all day long",
+   "case_price": 10.3,
+   "case_sale_price": null,
+   "sale_start_date": null,
+   "sale_end_date": null,
+   "msrp": null,
+   "piece_weight_lbs": 0.2,
+   "product_status": "Regular",
+   "discontinued": false,
+   "available_sizes": [
+    "OSFA"
+   ],
+   "size_upcharges": {},
+   "deco_methods": [
+    "em"
+   ],
+   "source": "otto",
+   "colors": [
+    {
+     "name": "Royal",
+     "code": "001",
+     "hex": "#013A71",
+     "otto_sku": "18-202-001",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-001-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-001-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-001-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-001-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-001-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-001-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red",
+     "code": "002",
+     "hex": "#BC0C30",
+     "otto_sku": "18-202-002",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-002-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-002-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-002-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-002-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-002-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-002-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black",
+     "code": "003",
+     "hex": "#040203",
+     "otto_sku": "18-202-003",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-003-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-003-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-003-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-003-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-003-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-003-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Navy",
+     "code": "004",
+     "hex": "#202946",
+     "otto_sku": "18-202-004",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-004-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-004-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-004-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-004-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-004-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-004-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Brown",
+     "code": "007",
+     "hex": "#452A17",
+     "otto_sku": "18-202-007",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-007-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-007-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-007-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-007-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-007-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-007-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Maroon",
+     "code": "010",
+     "hex": "#572A31",
+     "otto_sku": "18-202-010",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-010-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-010-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-010-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-010-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-010-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-010-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Purple",
+     "code": "011",
+     "hex": "#3F2957",
+     "otto_sku": "18-202-011",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-011-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-011-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-011-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-011-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-011-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-011-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "White",
+     "code": "016",
+     "hex": "#F8F8F8",
+     "otto_sku": "18-202-016",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-016-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green",
+     "code": "017",
+     "hex": "#193028",
+     "otto_sku": "18-202-017",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-017-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-017-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-017-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-017-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-017-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-017-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Yellow",
+     "code": "020",
+     "hex": "#FDDB24",
+     "otto_sku": "18-202-020",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-020-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-020-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-020-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-020-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-020-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-020-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Olive",
+     "code": "021",
+     "hex": "#7B7158",
+     "otto_sku": "18-202-021",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-021-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-021-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-021-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-021-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-021-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-021-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray",
+     "code": "025",
+     "hex": "#54534F",
+     "otto_sku": "18-202-025",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-025-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-025-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-025-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-025-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-025-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-025-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Sky Blue",
+     "code": "030",
+     "hex": "#9BB6D3",
+     "otto_sku": "18-202-030",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-030-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-030-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-030-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-030-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-030-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-030-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Khaki",
+     "code": "032",
+     "hex": "#DECBA3",
+     "otto_sku": "18-202-032",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-032-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Stone Gray",
+     "code": "035",
+     "hex": "#DAD7D2",
+     "otto_sku": "18-202-035",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-035-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-035-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-035-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-035-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-035-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-035-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Pink",
+     "code": "050",
+     "hex": "#F2ABB9",
+     "otto_sku": "18-202-050",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-050-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-050-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-050-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-050-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-050-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-050-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Pumpkin Orange",
+     "code": "056",
+     "hex": "#E77721",
+     "otto_sku": "18-202-056",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-056-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-056-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-056-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-056-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-056-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-056-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Azalea",
+     "code": "086",
+     "hex": "#E38CB7",
+     "otto_sku": "18-202-086",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-086-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-086-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-086-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-086-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-086-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-086-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Lake Blue",
+     "code": "104",
+     "hex": "#017DBB",
+     "otto_sku": "18-202-104",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-104-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-104-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-104-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-104-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-104-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-104-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red/Black",
+     "code": "0203",
+     "hex": "#BC0C30",
+     "otto_sku": "18-202-0203",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0203-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0203-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0203-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0203-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0203-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-0203-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/Gray",
+     "code": "0314",
+     "hex": "#040203",
+     "otto_sku": "18-202-0314",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0314-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0314-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0314-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0314-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0314-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-0314-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/Khaki",
+     "code": "0332",
+     "hex": "#040203",
+     "otto_sku": "18-202-0332",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0332-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0332-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0332-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0332-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0332-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-0332-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Gray",
+     "code": "0414",
+     "hex": "#202946",
+     "otto_sku": "18-202-0414",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0414-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0414-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0414-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0414-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0414-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-0414-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Khaki",
+     "code": "0432",
+     "hex": "#101630",
+     "otto_sku": "18-202-0432",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0432-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0432-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0432-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0432-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-0432-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-0432-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green/Khaki",
+     "code": "1732",
+     "hex": "#2A3F2C",
+     "otto_sku": "18-202-1732",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-1732-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-1732-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-1732-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-1732-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-1732-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-1732-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Olive/Khaki",
+     "code": "2132",
+     "hex": "#7A7359",
+     "otto_sku": "18-202-2132",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-2132-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-2132-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-2132-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-2132-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-2132-FB.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki/Navy",
+     "code": "3204",
+     "hex": "#B29A76",
+     "otto_sku": "18-202-3204",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-3204-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-3204-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-3204-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-3204-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/18-202/18-202-3204-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/18-202/18-202-3204-I.medium.png"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "style": "39-165",
+   "name": "OTTO CAP 5 Panel High Crown Mesh Back Trucker Hat 39-165",
+   "brand": "OTTO CAP",
+   "category": "Caps",
+   "subcategory": "Trucker Caps",
+   "description": "*We have a running change to the cap button color. All colorways will eventually have cap button color matching the visor color. During this transition, the products you receive may look slightly different from the photos or your previous order, depending on inventory availability. OTTO CAP®'s World Famous Foam Front Trucker Hats The world’s most recognized foam trucker hat. Trusted by brands, worn worldwide, and built to stand out. Designed with its iconic high crown and premium foam front, this cap gives your designs maximum visibility. Finished with a breathable mesh back and ultra-soft terry cloth sweatband, it’s engineered for all-day comfort and built for customization. Key Product Features Premium Non-Toxic Foam - Specially formulated for embroidery and heat transfers, ensuring it stays crinkle-free for precise, vibrant designs Seamless Front Panel - Foam construction paired with ",
+   "case_price": 6.9,
+   "case_sale_price": null,
+   "sale_start_date": null,
+   "sale_end_date": null,
+   "msrp": null,
+   "piece_weight_lbs": 0.2,
+   "product_status": "Regular",
+   "discontinued": false,
+   "available_sizes": [
+    "OSFA"
+   ],
+   "size_upcharges": {},
+   "deco_methods": [
+    "em",
+    "ht"
+   ],
+   "source": "otto",
+   "colors": [
+    {
+     "name": "Royal",
+     "code": "001",
+     "hex": "#013A71",
+     "otto_sku": "39-165-001-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-001-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-001-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-001-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-001-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-001-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-001-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red",
+     "code": "002",
+     "hex": "#BC0C30",
+     "otto_sku": "39-165-002-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-002-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-002-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-002-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-002-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-002-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-002-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black",
+     "code": "003",
+     "hex": "#040203",
+     "otto_sku": "39-165-003-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-003-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-003-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-003-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-003-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-003-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-003-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Navy",
+     "code": "004",
+     "hex": "#202946",
+     "otto_sku": "39-165-004-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-004-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-004-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-004-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-004-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-004-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-004-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Kelly",
+     "code": "005",
+     "hex": "#007040",
+     "otto_sku": "39-165-005-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-005-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-005-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-005-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-005-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-005-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-005-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Gold",
+     "code": "006",
+     "hex": "#FFA300",
+     "otto_sku": "39-165-006-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-006-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-006-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-006-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-006-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-006-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-006-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Brown",
+     "code": "007",
+     "hex": "#452A17",
+     "otto_sku": "39-165-007-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-007-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-007-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-007-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-007-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-007-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-007-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Columbia Blue",
+     "code": "008",
+     "hex": "#5F8AB4",
+     "otto_sku": "39-165-008-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-008-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-008-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-008-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-008-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-008-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-008-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Neon Orange",
+     "code": "009",
+     "hex": "#FA700B",
+     "otto_sku": "39-165-009-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-009-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-009-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-009-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-009-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-009-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-009-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Maroon",
+     "code": "010",
+     "hex": "#572A31",
+     "otto_sku": "39-165-010-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-010-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Purple",
+     "code": "011",
+     "hex": "#3F2957",
+     "otto_sku": "39-165-011-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-011-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Soft Pink",
+     "code": "012",
+     "hex": "#F6CCD6",
+     "otto_sku": "39-165-012-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-012-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-012-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-012-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-012-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-012-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-012-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Lavender",
+     "code": "013",
+     "hex": "#AEAAC5",
+     "otto_sku": "39-165-013-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-013-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-013-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-013-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-013-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-013-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-013-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Gray",
+     "code": "014",
+     "hex": "#8F908A",
+     "otto_sku": "39-165-014-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-014-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-014-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-014-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-014-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-014-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-014-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Tan",
+     "code": "015",
+     "hex": "#DFC3AD",
+     "otto_sku": "39-165-015-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-015-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-015-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-015-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-015-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-015-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-015-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "White",
+     "code": "016",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-016-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-016-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green",
+     "code": "017",
+     "hex": "#193028",
+     "otto_sku": "39-165-017-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-017-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-017-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-017-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-017-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-017-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-017-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Burgundy",
+     "code": "019",
+     "hex": "#651D31",
+     "otto_sku": "39-165-019-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-019-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-019-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-019-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-019-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-019-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-019-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Olive",
+     "code": "021",
+     "hex": "#7B7158",
+     "otto_sku": "39-165-021-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-021-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Turquoise",
+     "code": "022",
+     "hex": "#019EC9",
+     "otto_sku": "39-165-022-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-022-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-022-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-022-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-022-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-022-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-022-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Jade",
+     "code": "024",
+     "hex": "#018077",
+     "otto_sku": "39-165-024-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-024-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-024-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-024-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-024-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-024-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-024-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray",
+     "code": "025",
+     "hex": "#54534F",
+     "otto_sku": "39-165-025-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-025-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-025-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-025-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-025-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-025-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-025-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Khaki",
+     "code": "032",
+     "hex": "#DECBA3",
+     "otto_sku": "39-165-032-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-032-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Seafoam Green",
+     "code": "038",
+     "hex": "#87C3A1",
+     "otto_sku": "39-165-038-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Yellow",
+     "code": "040",
+     "hex": "#DCF389",
+     "otto_sku": "39-165-040-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-040-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Pink",
+     "code": "050",
+     "hex": "#F2ABB9",
+     "otto_sku": "39-165-050-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-050-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-050-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-050-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-050-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-050-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-050-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Orange",
+     "code": "062",
+     "hex": "#EB5226",
+     "otto_sku": "39-165-062-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-062-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-062-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-062-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-062-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-062-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-062-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Silver Gray",
+     "code": "064",
+     "hex": "#E7E8EA",
+     "otto_sku": "39-165-064-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-064-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-064-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-064-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-064-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-064-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-064-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Green",
+     "code": "088",
+     "hex": "#97CB43",
+     "otto_sku": "39-165-088-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-088-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-088-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-088-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-088-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-088-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-088-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Neon Pink",
+     "code": "089",
+     "hex": "#F34DAF",
+     "otto_sku": "39-165-089-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-089-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-089-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-089-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-089-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-089-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-089-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Cactus Green",
+     "code": "091",
+     "hex": "#83AF7A",
+     "otto_sku": "39-165-091-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Blue",
+     "code": "107",
+     "hex": "#0097CE",
+     "otto_sku": "39-165-107-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-107-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-107-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-107-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-107-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-107-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-107-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Coral",
+     "code": "110",
+     "hex": "#F05B5F",
+     "otto_sku": "39-165-110-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-110-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-110-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-110-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-110-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-110-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-110-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Royal/Royal/White",
+     "code": "010116",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-010116-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010116-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010116-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010116-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010116-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010116-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-010116-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Royal/White/Royal",
+     "code": "011601",
+     "hex": "#193D71",
+     "otto_sku": "39-165-011601-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011601-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011601-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011601-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011601-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-011601-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-011601-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red/Red/Black",
+     "code": "020203",
+     "hex": "#040203",
+     "otto_sku": "39-165-020203-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020203-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020203-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020203-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020203-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020203-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020203-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/Red/White",
+     "code": "020216",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-020216-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020216-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020216-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020216-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020216-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020216-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-020216-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Red/White/Royal",
+     "code": "021601",
+     "hex": "#778CAA",
+     "otto_sku": "39-165-021601-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021601-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021601-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021601-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021601-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021601-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-021601-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red/White/Red",
+     "code": "021602",
+     "hex": "#BD2033",
+     "otto_sku": "39-165-021602-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021602-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021602-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021602-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021602-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021602-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-021602-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red/White/Black",
+     "code": "021603",
+     "hex": "#6D6C6E",
+     "otto_sku": "39-165-021603-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021603-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021603-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021603-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021603-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021603-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-021603-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Red/White/Navy",
+     "code": "021604",
+     "hex": "#7A8091",
+     "otto_sku": "39-165-021604-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021604-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021604-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021604-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021604-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-021604-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-021604-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/Black/Red",
+     "code": "030302",
+     "hex": "#BC0C30",
+     "otto_sku": "39-165-030302-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030302-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030302-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030302-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030302-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030302-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030302-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Black/White",
+     "code": "030316",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-030316-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030316-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030316-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030316-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030316-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030316-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030316-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Black/Charcoal Gray",
+     "code": "030325",
+     "hex": "#54534F",
+     "otto_sku": "39-165-030325-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030325-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030325-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030325-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030325-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030325-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030325-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Black/Neon Pink",
+     "code": "030389",
+     "hex": "#F34DAF",
+     "otto_sku": "39-165-030389-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030389-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030389-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030389-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030389-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030389-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030389-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Gold/Black",
+     "code": "030603",
+     "hex": "#060709",
+     "otto_sku": "39-165-030603-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030603-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030603-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030603-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030603-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-030603-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-030603-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/Gray/Black",
+     "code": "031403",
+     "hex": "#060709",
+     "otto_sku": "39-165-031403-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031403-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031403-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031403-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031403-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031403-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-031403-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/Gray/Charcoal Gray",
+     "code": "031425",
+     "hex": "#6D6C67",
+     "otto_sku": "39-165-031425-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031425-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031425-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031425-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031425-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031425-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031425-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/White",
+     "code": "0316",
+     "hex": "#040203",
+     "otto_sku": "39-165-0316-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-0316-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-0316-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-0316-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-0316-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-0316-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-0316-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/White/Red",
+     "code": "031602",
+     "hex": "#D57B87",
+     "otto_sku": "39-165-031602-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031602-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031602-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031602-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031602-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031602-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-031602-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/White/Black",
+     "code": "031603",
+     "hex": "#040203",
+     "otto_sku": "39-165-031603-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031603-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031603-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031603-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031603-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-031603-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-031603-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Black/Charcoal Gray/Black",
+     "code": "032503",
+     "hex": "#060709",
+     "otto_sku": "39-165-032503-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032503-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032503-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032503-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032503-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032503-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032503-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Charcoal Gray/Charcoal Gray",
+     "code": "032525",
+     "hex": "#040203",
+     "otto_sku": "39-165-032525-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032525-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032525-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032525-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032525-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032525-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-032525-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Black/Neon Pink/Black",
+     "code": "038903",
+     "hex": "#040203",
+     "otto_sku": "39-165-038903-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038903-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038903-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038903-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038903-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-038903-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-038903-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Navy/White",
+     "code": "040416",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-040416-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040416-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040416-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040416-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040416-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040416-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040416-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Navy/Khaki",
+     "code": "040432",
+     "hex": "#B29A76",
+     "otto_sku": "39-165-040432-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040432-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040432-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040432-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040432-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040432-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040432-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Navy/Gold/Navy",
+     "code": "040604",
+     "hex": "#1F2847",
+     "otto_sku": "39-165-040604-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040604-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040604-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040604-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040604-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-040604-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-040604-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Navy/White/Navy",
+     "code": "041604",
+     "hex": "#202946",
+     "otto_sku": "39-165-041604-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-041604-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-041604-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-041604-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-041604-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-041604-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-041604-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Kelly/White/Kelly",
+     "code": "051605",
+     "hex": "#007040",
+     "otto_sku": "39-165-051605-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-051605-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-051605-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-051605-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-051605-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-051605-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-051605-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Brown/Tan/Brown",
+     "code": "071507",
+     "hex": "#452A19",
+     "otto_sku": "39-165-071507-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-071507-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-071507-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-071507-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-071507-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-071507-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-071507-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Neon Orange/Neon Orange/White",
+     "code": "090916",
+     "hex": "#FFFFFF",
+     "otto_sku": "39-165-090916-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-090916-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-090916-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-090916-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-090916-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-090916-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-090916-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Orange/White/Neon Orange",
+     "code": "091609",
+     "hex": "#FA700B",
+     "otto_sku": "39-165-091609-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091609-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091609-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091609-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091609-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-091609-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-091609-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Maroon/Maroon/White",
+     "code": "101016",
+     "hex": "#F9FAFC",
+     "otto_sku": "39-165-101016-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Maroon/White/Maroon",
+     "code": "101610",
+     "hex": "#572A31",
+     "otto_sku": "39-165-101610-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101610-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101610-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101610-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101610-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-101610-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-101610-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Neon Blue/White/Neon Blue",
+     "code": "10716107",
+     "hex": "#0797CB",
+     "otto_sku": "39-165-10716107-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-10716107-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-10716107-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-10716107-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-10716107-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-10716107-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-10716107-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Coral/White/Coral",
+     "code": "11016110",
+     "hex": "#F07879",
+     "otto_sku": "39-165-11016110-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-11016110-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-11016110-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-11016110-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-11016110-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-11016110-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-11016110-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Purple/White/Purple",
+     "code": "111611",
+     "hex": "#3E2856",
+     "otto_sku": "39-165-111611-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-111611-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-111611-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-111611-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-111611-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-111611-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-111611-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Soft Pink/Soft Pink/White",
+     "code": "121216",
+     "hex": "#F9FAFC",
+     "otto_sku": "39-165-121216-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121216-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121216-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121216-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121216-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121216-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121216-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Soft Pink/White/Soft Pink",
+     "code": "121612",
+     "hex": "#F7CDD7",
+     "otto_sku": "39-165-121612-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121612-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121612-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121612-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121612-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-121612-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-121612-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Lavender/White/Lavender",
+     "code": "131613",
+     "hex": "#9C91C6",
+     "otto_sku": "39-165-131613-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-131613-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-131613-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-131613-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-131613-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-131613-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-131613-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green/White/Dark Green",
+     "code": "171617",
+     "hex": "#193028",
+     "otto_sku": "39-165-171617-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171617-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171617-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171617-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171617-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171617-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-171617-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Dark Green/Dark Green/Khaki",
+     "code": "171732",
+     "hex": "#B29A76",
+     "otto_sku": "39-165-171732-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171732-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171732-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171732-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171732-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171732-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-171732-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Light Loden/Brown/Kelly",
+     "code": "180705",
+     "hex": "#7D8965",
+     "otto_sku": "39-165-180705-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-180705-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-180705-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-180705-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-180705-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-180705-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-180705-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Olive/White/Olive",
+     "code": "211621",
+     "hex": "#7A7359",
+     "otto_sku": "39-165-211621-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-211621-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-211621-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-211621-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-211621-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-211621-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-211621-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Olive/Olive/Black",
+     "code": "212103",
+     "hex": "#060709",
+     "otto_sku": "39-165-212103-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-212103-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-212103-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-212103-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-212103-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-212103-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-212103-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Jade/White/Jade",
+     "code": "241624",
+     "hex": "#12817A",
+     "otto_sku": "39-165-241624-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-241624-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-241624-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-241624-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-241624-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-241624-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-241624-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray/White/Charcoal Gray",
+     "code": "251625",
+     "hex": "#54534F",
+     "otto_sku": "39-165-251625-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-251625-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-251625-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-251625-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-251625-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-251625-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-251625-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray/Charcoal Gray/Black",
+     "code": "252503",
+     "hex": "#040203",
+     "otto_sku": "39-165-252503-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252503-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252503-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252503-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252503-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252503-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252503-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Charcoal Gray/Charcoal Gray/White",
+     "code": "252516",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-252516-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252516-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252516-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252516-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252516-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252516-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-252516-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Khaki/Brown/Light Olive/Olive",
+     "code": "32073421",
+     "hex": "#5D503A",
+     "otto_sku": "39-165-32073421-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-32073421-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-32073421-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-32073421-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-32073421-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-32073421-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-32073421-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Seafoam Green/White/Seafoam Green",
+     "code": "381638",
+     "hex": "#97C4B8",
+     "otto_sku": "39-165-381638-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-381638-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-381638-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-381638-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-381638-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-381638-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-381638-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Yellow/White/Neon Yellow",
+     "code": "401640",
+     "hex": "#DBE68A",
+     "otto_sku": "39-165-401640-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-401640-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-401640-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-401640-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-401640-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-401640-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-401640-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Neon Yellow/Neon Yellow/White",
+     "code": "404016",
+     "hex": "#FFFFFF",
+     "otto_sku": "39-165-404016-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-404016-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-404016-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-404016-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-404016-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-404016-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-404016-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Hot Pink/White/Hot Pink",
+     "code": "421642",
+     "hex": "#CD1C6C",
+     "otto_sku": "39-165-421642-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-421642-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-421642-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-421642-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-421642-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-421642-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-421642-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Texas Orange/Texas Orange/White",
+     "code": "444416",
+     "hex": "#F9FAFC",
+     "otto_sku": "39-165-444416-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-444416-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-444416-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-444416-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-444416-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-444416-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-444416-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Pink/White/Pink",
+     "code": "501650",
+     "hex": "#F4ACBA",
+     "otto_sku": "39-165-501650-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-501650-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-501650-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-501650-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-501650-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-501650-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-501650-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Dark Khaki/Dark Khaki/White",
+     "code": "535316",
+     "hex": "#F8F8F8",
+     "otto_sku": "39-165-535316-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-535316-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-535316-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-535316-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-535316-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-535316-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-535316-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Green/White/Neon Green",
+     "code": "881688",
+     "hex": "#98CA45",
+     "otto_sku": "39-165-881688-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-881688-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-881688-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-881688-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-881688-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-881688-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/i/39-165/39-165-881688-A-I.medium.png"
+      ]
+     }
+    },
+    {
+     "name": "Neon Green/Neon Green/White",
+     "code": "888816",
+     "hex": "#FFFFFF",
+     "otto_sku": "39-165-888816-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-888816-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-888816-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-888816-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-888816-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-888816-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-888816-I.medium.jpg"
+      ]
+     }
+    },
+    {
+     "name": "Neon Pink/White/Neon Pink",
+     "code": "891689",
+     "hex": "#E6549D",
+     "otto_sku": "39-165-891689-A",
+     "images": {
+      "front_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-891689-F.medium.jpg",
+      "back_flat": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-891689-B.medium.jpg",
+      "front_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-891689-F.medium.jpg",
+      "back_model": "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-891689-B.medium.jpg",
+      "side_model": null,
+      "gallery": [
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-891689-FB.medium.jpg",
+       "https://s3-us-west-2.amazonaws.com/ottocap/media/products/otto/39-165/39-165-891689-I.medium.jpg"
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}
