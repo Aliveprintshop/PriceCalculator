@@ -1827,14 +1827,14 @@ function upBuild(src, raw, sizesIn){
   var minQ = E.minQty(p, cfg) || 24, q;
   if(oneSize){
     var key = zs.indexOf('OSFA') > -1 ? 'OSFA' : (zs[0] || 'OSFA');
-    q = Math.max(minQ, 24); sizes[key] = q;
+    q = minQ; sizes[key] = q;   /* the method minimum: 12 embroidered caps, 24 screen printed */
   } else if(sizesIn){
     Object.keys(sizesIn).forEach(function(z){ var n = +sizesIn[z] || 0; if(n > 0) sizes[z] = n; });
     q = Object.keys(sizes).reduce(function(t, z){ return t + sizes[z]; }, 0);
     if(!q) return null;
   } else {
     /* Display only (price per piece at the minimum); the customer picks sizes. */
-    q = Math.max(minQ, 24);
+    q = minQ;
     if(zs.indexOf('M') > -1 && zs.indexOf('L') > -1){ sizes.M = q / 2; sizes.L = q / 2; } else sizes[zs[Math.floor(zs.length / 2)]] = q;
   }
   cfg.qty = q;

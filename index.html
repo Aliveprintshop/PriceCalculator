@@ -1410,6 +1410,24 @@ function dwCardMeta(p){
   return '<span class="card-meta-rush">All-Inclusive</span>'+
          '<span class="card-meta-moq">Minimum '+min+' pcs &middot; '+what+'</span>';
 }
+/* Apparel minimums by decoration method, so the card never promises a method
+   the calculator doesn't offer. Mirrors productType()/decoMethods() in
+   alive-product.html: embroidery 12 (EM_MIN_QTY), screen print 24.
+   Caps, beanies, bags, outerwear, polos/knits/wovens: embroidery only.
+   Sweatshirts/fleece: both. Everything else (tees, bottoms...): screen print.
+   Promotional products keep their own minimums in dwCardMeta above. */
+function cardDecoMins(p){
+  var cat=String((p&&p.category)||'').toLowerCase();
+  var em=/cap|bag|outerwear|polo|knit|woven/.test(cat), both=/sweatshirt|fleece/.test(cat);
+  if(both)return 'Embroidery: 12-piece minimum &middot; Screen printing: 24-piece minimum';
+  if(em)return 'Embroidery: 12-piece minimum';
+  return 'Screen printing: 24-piece minimum';
+}
+function garmentCardMeta(p){
+  return '<span class="card-meta-rush">Rush Available</span>'+
+         '<span class="card-meta-moq">'+cardDecoMins(p)+'</span>'+
+         '<span class="card-meta-moq">10-day standard turnaround</span>';
+}
 
 var CATEGORY_BUCKETS=[
   {label:'T-Shirts',              cats:['T-Shirts']},
@@ -2246,8 +2264,7 @@ function renderGrid(){
     var isDw=!!(p&&p._drinkware);
     var metaHtml=isDw
       ? dwCardMeta(p)
-      : '<span class="card-meta-rush">Rush Available</span>'+
-        '<span class="card-meta-moq">'+(bucketForProduct(p)==='Polos & Button-Downs'?'Embroidery: 12-piece minimum':'Minimum 24 pcs')+' &middot; 10-day standard turnaround</span>';
+      : garmentCardMeta(p);
     return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
            dealBadge+projStarHtml(it.s)+
            cardImgHtml(p,src,displayName)+
@@ -2349,7 +2366,7 @@ function gbbCardHtml(it){
   var isDw=!!(p&&p._drinkware);
   var metaHtml=isDw
     ? dwCardMeta(p)
-    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">'+(bucketForProduct(p)==='Polos & Button-Downs'?'Embroidery: 12-piece minimum':'Minimum 24 pcs')+' &middot; 10-day standard turnaround</span>';
+    : garmentCardMeta(p);
   return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
          cardImgHtml(p,src,displayName)+
