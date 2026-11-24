@@ -19,8 +19,8 @@ EXCLUDE_NAME = re.compile(r"\b(socks?|gloves?|mittens?)\b", re.I)
 EXCLUDE_STYLES = {'CTA202', 'CTA207', 'CTA267', 'CT104485', 'CS820', 'CS800', 'LACE'}
 EXCLUDE_NAME_EXACT = {'trucker hat - local supplier'}
 BUCKETS = [('T-Shirts', ['T-Shirts']), ('Activewear', ['Activewear']),
-           ('Sweatshirts & Hoodies', ['Sweatshirts/Fleece']),
-           ('Polos & Button-Downs', ['Polos/Knits', 'Woven Shirts']), ('Outerwear', ['Outerwear']),
+           ('Crewneck Sweatshirts', ['Sweatshirts/Fleece']),
+           ('Polos & Button-Downs', ['Polos/Knits', 'Woven Shirts']), ('Jackets', ['Outerwear']),
            ('Headwear', ['Caps']), ('Bags', ['Bags']), ('Drinkware', ['Drinkware']),
            ('Journals & Notebooks', ['Journals & Notebooks']), ('Pens', ['Pens']),
            ('Technology', ['Technology']), ('Keychains', ['Keychains']),
@@ -35,6 +35,21 @@ def _bucket(p):
         return 'Long Sleeve'
     if re.search(r'\btank\b', n):
         return 'Tank Tops'
+    # Sweatshirt split, same rules as bucketForProduct() in index.html.
+    cat = p.get('category')
+    if cat in ('Sweatshirts/Fleece', 'Activewear', 'Polos/Knits', 'Outerwear') and \
+            re.search(r'(1/4|1/2|quarter|half)[\s-]*(zip|snap)', n):
+        return '1/4 Zips quarter zip'
+    if cat == 'Sweatshirts/Fleece':
+        if re.search(r'\b(sweat\s?pants?|joggers?|pants?)\b', n):
+            return 'Bottoms'
+        if re.search(r'\b(jackets?|vests?|bombers?|cardigans?|shirt jac|cover-up)\b', n):
+            return 'Jackets'
+        if re.search(r'\bzip', n):
+            return 'Full Zip-Ups zip up'
+        if 'hood' in n:
+            return 'Pullover Hoodies hoodie'
+        return 'Crewneck Sweatshirts'
     for label, cats in BUCKETS:
         if p.get('category') in cats:
             return label

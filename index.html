@@ -534,8 +534,11 @@ var QUICK_CATEGORIES=[
   {label:'T-Shirts',              chip:'T-Shirts'},
   {label:'Headwear',              chip:'Hats'},
   {label:'Polos & Button-Downs',  chip:'Polos'},
-  {label:'Sweatshirts & Hoodies', chip:'Hoodies'},
-  {label:'Outerwear',             chip:'Jackets'},
+  {label:'Pullover Hoodies',      chip:'Hoodies'},
+  {label:'Crewneck Sweatshirts',  chip:'Crewnecks'},
+  {label:'Full Zip-Ups',          chip:'Zip-Ups'},
+  {label:'1/4 Zips',              chip:'1/4 Zips'},
+  {label:'Jackets',               chip:'Jackets'},
   {label:'Activewear',            chip:'Activewear'},
   {label:'Bags',                  chip:'Bags'},
   {label:'Drinkware',             chip:'Drinkware'},
@@ -622,8 +625,11 @@ var CATEGORY_BANNERS={
   'T-Shirts':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
   'Headwear':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
   'Polos & Button-Downs':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
-  'Sweatshirts & Hoodies':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
-  'Outerwear':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png'
+  'Pullover Hoodies':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
+  'Crewneck Sweatshirts':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
+  'Full Zip-Ups':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
+  '1/4 Zips':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png',
+  'Jackets':'https://aliveprintshop.com/wp-content/uploads/2026/11/order-with-confidence-alive-print-shop-2.png'
 };
 // Fall 2026 SanMar brand banners (968x285), uploaded to the WordPress media library 16 Nov 2026.
 var BRAND_BANNERS={
@@ -752,11 +758,26 @@ var FEATURED={
     {s:'LS15009',tag:'New'},          {s:'CTK126', tag:'Built Tough'},
     {s:'G2400',  tag:'Best Value'}
   ],
-  'Sweatshirts & Hoodies':[
+  'Pullover Hoodies':[
     {s:'CTK121', tag:'Best Seller'},  {s:'DT7800', tag:'Supersoft'},
     {s:'LS14001',tag:'New'},          {s:'1567',   tag:'Fan Favorite'},
     {s:'DT1101', tag:'Most Popular'}, {s:'NL9307', tag:'Heavy Weight'},
     {s:'NKDR1499',tag:'Premium'},     {s:'DT8100', tag:'Best Value'}
+  ],
+  'Crewneck Sweatshirts':[
+    {s:'1566',   tag:'Best Seller'},  {s:'DT7804', tag:'Supersoft'},
+    {s:'CTK124', tag:'Built Tough'},  {s:'SS3000', tag:'Most Popular'},
+    {s:'NL9007', tag:'Heavy Weight'}, {s:'PC90',   tag:'Best Value'}
+  ],
+  'Full Zip-Ups':[
+    {s:'CTK122', tag:'Best Seller'},  {s:'DT6102', tag:'Supersoft'},
+    {s:'SS4500Z',tag:'Most Popular'}, {s:'NKDR1513',tag:'Premium'},
+    {s:'IND4000Z',tag:'Heavy Weight'},{s:'PC90ZH', tag:'Best Value'}
+  ],
+  '1/4 Zips':[
+    {s:'CT105294',tag:'Built Tough'}, {s:'1580',   tag:'Fan Favorite'},
+    {s:'NKIO8128',tag:'Premium'},     {s:'ST850',  tag:'Most Popular'},
+    {s:'DM392',  tag:'Supersoft'},    {s:'ST253',  tag:'Best Value'}
   ],
   'Polos & Button-Downs':[
     {s:'799802', tag:'Best Seller'},  {s:'K540',   tag:'Most Popular'},
@@ -768,7 +789,7 @@ var FEATURED={
     {s:'C934',   tag:'Best Fit'},     {s:'C932',   tag:'Most Popular'},
     {s:'CP90',   tag:'Best Value'},   {s:'STC10',  tag:'Lightweight'}
   ],
-  'Outerwear':[
+  'Jackets':[
     {s:'CT102208',tag:'Best Seller'}, {s:'J317',   tag:'Best Value'},
     {s:'CT104670',tag:'Premium'},     {s:'J333',   tag:'Waterproof'}
   ],
@@ -796,7 +817,7 @@ var FEATURED={
     {s:'SM-2360',tag:'Best Value'},   {s:'SM-9737',tag:'Most Popular'}
   ],
   'Activewear':[
-    {s:'ST700',  tag:'Best Seller'},  {s:'ST850',  tag:'Premium'}
+    {s:'ST700',  tag:'Best Seller'}
   ],
   'Workwear & Safety':[
     {s:'CTK87',  tag:'Built Tough'},  {s:'CS200',  tag:'Best Value'}
@@ -839,8 +860,13 @@ function featuredList(){
   if(_search||_industry||_gbb||_dealsMode)return null;
   if(_brands.size||_colors.size)return null;
   if(_sort!=='featured')return null;
-  if(_cats.size!==1)return null;
-  return FEATURED[Array.from(_cats)[0]]||null;
+  if(_cats.size===1)return FEATURED[Array.from(_cats)[0]]||null;
+  // Menu groups (e.g. Sweatshirts = Pullover Hoodies + Crewnecks): take turns
+  // from each category's list so the lead picks mix both kinds.
+  if(!groupSlugForCats())return null;
+  var lists=Array.from(_cats).map(function(c){return FEATURED[c]||[];}),out=[];
+  for(var i=0;i<12;i++)lists.forEach(function(l){if(l[i])out.push(l[i]);});
+  return out.length?out:null;
 }
 function isDefaultGrid(){
   return !_search&&!_industry&&!_gbb&&!_dealsMode&&!_brands.size&&!_colors.size&&
@@ -1416,9 +1442,15 @@ var CATEGORY_BUCKETS=[
   {label:'Long Sleeve',           cats:[],                         longSleeveFromName:true},
   {label:'Tank Tops',             cats:[],                         tankFromName:true},
   {label:'Activewear',            cats:['Activewear']},
-  {label:'Sweatshirts & Hoodies', cats:['Sweatshirts/Fleece']},
+  // Sweatshirts/Fleece is split by product name in bucketForProduct():
+  // hood -> Pullover Hoodies, zip -> Full Zip-Ups, 1/4 or 1/2 zip -> 1/4 Zips,
+  // jackets/vests -> Jackets, sweatpants/joggers -> Bottoms, the rest -> Crewneck.
+  {label:'Pullover Hoodies',      cats:[]},
+  {label:'Crewneck Sweatshirts',  cats:['Sweatshirts/Fleece']},
+  {label:'Full Zip-Ups',          cats:[]},
+  {label:'1/4 Zips',              cats:[]},
   {label:'Polos & Button-Downs',  cats:['Polos/Knits','Woven Shirts']},
-  {label:'Outerwear',             cats:['Outerwear']},
+  {label:'Jackets',               cats:['Outerwear']},
   {label:'Headwear',              cats:['Caps']},
   {label:'Bags',                  cats:['Bags']},
   {label:'Drinkware',             cats:['Drinkware']},
@@ -1488,7 +1520,7 @@ function gbbByLabel(label){for(var i=0;i<GBB_LISTS.length;i++){if(GBB_LISTS[i].l
 // Slug format: lowercase, "&" dropped, non-alphanumeric -> hyphens.
 //   "Headwear"             -> "headwear"
 //   "Bags"                 -> "bags"
-//   "Sweatshirts & Hoodies"-> "sweatshirts-hoodies"
+//   "Full Zip-Ups"         -> "full-zip-ups"   ("1/4 Zips" -> "1-4-zips")
 //   "Polos & Button-Downs" -> "polos-button-downs"
 // Parent /products page uses the fragment (#headwear) as the canonical URL.
 // On boot we read ?cat= from our own URL (set by the Hostinger embed),
@@ -1497,6 +1529,28 @@ function gbbByLabel(label){for(var i=0;i<GBB_LISTS.length;i++){if(GBB_LISTS[i].l
 // =====================================================================
 function labelToSlug(label){
   return String(label||'').toLowerCase().replace(/&/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+// Menu groups: one link opens several sidebar categories at once. Also keeps
+// old links working after the Nov 2026 rename (#sweatshirts-hoodies, #outerwear).
+var CATEGORY_GROUPS={
+  'tees':['T-Shirts','Long Sleeve'],
+  'sweatshirts':['Pullover Hoodies','Crewneck Sweatshirts'],
+  'zip-ups':['Full Zip-Ups','1/4 Zips'],
+  'stationery':['Journals & Notebooks','Pens'],
+  'sweatshirts-hoodies':['Pullover Hoodies','Crewneck Sweatshirts','Full Zip-Ups','1/4 Zips'],
+  'outerwear':['Jackets']
+};
+function slugToBucketLabels(slug){
+  var one=slugToBucketLabel(slug);if(one)return [one];
+  var g=CATEGORY_GROUPS[String(slug||'').toLowerCase().trim()];
+  return g?g.slice():null;
+}
+function groupSlugForCats(){
+  for(var k in CATEGORY_GROUPS){
+    var g=CATEGORY_GROUPS[k];if(g.length<2||g.length!==_cats.size)continue;
+    if(g.every(function(l){return _cats.has(l);}))return k;
+  }
+  return '';
 }
 function slugToBucketLabel(slug){
   if(!slug)return null;
@@ -1550,6 +1604,7 @@ function notifyParentRoute(){
   else if(_industry){slug=labelToSlug(_industry);}
   else if(_cats.size===1&&_brands.size===0){slug=labelToSlug(Array.from(_cats)[0]);}
   else if(_brands.size===1&&_cats.size===0){slug=labelToSlug(Array.from(_brands)[0]);}
+  else if(_cats.size>1&&_brands.size===0&&groupSlugForCats()){slug=groupSlugForCats();}
   else if(_colors.size===1&&_cats.size===0&&_brands.size===0&&!_industry){slug=Array.from(_colors)[0];}
   try{window.parent.postMessage({type:'alive-route',slug:slug},'*');}catch(e){}
 }
@@ -1569,6 +1624,20 @@ function isToddlerByName(p){return !!(p && p.name && /\b(infant|toddler)\b/i.tes
 function isSportTekOrA4Tee(p){
   return !!(p && p.category==='T-Shirts' && (p.brand==='Sport-Tek' || p.brand==='A4'));
 }
+// Sweatshirt split (Nov 2026). Quarter/half-zips from these garment categories
+// all go to "1/4 Zips" (Women's / Youth / Tall keep their audience tabs).
+var QUARTER_ZIP_CATS={'Sweatshirts/Fleece':1,'Activewear':1,'Polos/Knits':1,'Outerwear':1};
+function isQuarterZip(p){
+  return !!(p && p.name && QUARTER_ZIP_CATS[p.category] && /(1\/4|1\/2|quarter|half)[\s-]*(zip|snap)/i.test(p.name));
+}
+function sweatshirtBucket(p){
+  var n=p.name||'';
+  if(/\b(sweat\s?pants?|joggers?|pants?)\b/i.test(n))return 'Bottoms';
+  if(/\b(jackets?|vests?|bombers?|cardigans?|shirt jac|cover-up)\b/i.test(n))return 'Jackets';
+  if(/\bzip/i.test(n))return 'Full Zip-Ups';
+  if(/hood/i.test(n))return 'Pullover Hoodies';
+  return 'Crewneck Sweatshirts';
+}
 function bucketForProduct(p){
   if(!p)return null;
   // 1. Audience overrides (kids' stuff goes to their tab regardless of garment).
@@ -1578,6 +1647,8 @@ function bucketForProduct(p){
   if(isTankTop(p))return 'Tank Tops';
   if(isShort(p))return 'Bottoms';
   if(isLegging(p))return 'Bottoms';
+  if(isQuarterZip(p))return '1/4 Zips';
+  if(p.category==='Sweatshirts/Fleece')return sweatshirtBucket(p);
   if(isLongSleeveTee(p))return 'Long Sleeve';
   // 3. Brand override — Sport-Tek + A4 "T-Shirts" are all moisture-wicking
   // performance gear and belong in Activewear, not the regular T-Shirts bucket.
@@ -2575,10 +2646,10 @@ async function loadProducts(){
         var _sq=searchFromSlug(rawSlug);
         // Resolve in priority order: deals > category > industry > brand.
         // The hidden "Buy-It-Now Deals" view is reached only by the deals slug.
-        var label=_sq?null:slugToBucketLabel(rawSlug);
+        var labels=_sq?null:slugToBucketLabels(rawSlug);
         if(_sq){applySearchFromSlug(_sq);}
         else if(rawSlug===DEALS_SLUG){_dealsMode=true;}
-        else if(label){_cats.clear();_cats.add(label);}
+        else if(labels){_cats.clear();labels.forEach(function(l){_cats.add(l);});}
         else{
           var indLabel=slugToIndustryLabel(rawSlug);
           if(indLabel){_industry=indLabel;_cats.clear();_brands.clear();}
@@ -2634,8 +2705,8 @@ window.addEventListener('message',function(e){
   if(slug&&!_sq){
     if(slug===DEALS_SLUG){_dealsMode=true;}
     else{
-      var label=slugToBucketLabel(slug);
-      if(label){_cats.add(label);}
+      var labels=slugToBucketLabels(slug);
+      if(labels){labels.forEach(function(l){_cats.add(l);});}
       else{
         var ind=slugToIndustryLabel(slug);
         if(ind){_industry=ind;}
