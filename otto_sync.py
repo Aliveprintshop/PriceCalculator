@@ -58,7 +58,7 @@ def clean_html(s):
     s = re.sub(r'<[^>]+>', ' ', s)
     s = unescape(s)
     lines = [re.sub(r'\s+', ' ', l).strip() for l in s.split('\n')]
-    lines = [l for l in lines if l and not l.startswith('*We are implementing')]
+    lines = [l for l in lines if l and not l.startswith('*')]  # drop Otto's running-change notices
     return ' '.join(lines)[:900]
 
 def img(images, kind):
