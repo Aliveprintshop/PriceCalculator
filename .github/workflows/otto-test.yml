@@ -1,0 +1,25 @@
+name: Otto Cap connection test
+
+# Manual only. Checks the Otto Cap login and reads stock for sample hats; prints counts, no prices.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test Otto Cap API
+        env:
+          OTTO_USER: ${{ secrets.OTTO_USER }}
+          OTTO_PASSWORD: ${{ secrets.OTTO_PASSWORD }}
+          OTTO_CLIENT_ID: ${{ secrets.OTTO_CLIENT_ID }}
+          OTTO_CLIENT_SECRET: ${{ secrets.OTTO_CLIENT_SECRET }}
+        run: python otto_test.py
