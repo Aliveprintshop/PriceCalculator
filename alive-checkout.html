@@ -454,7 +454,7 @@ var EM_SIDE ={12: 6.95,24:5.95,36:4.45,72:4.25,144:3.95,300:3.45,500:3.25};
 var EM_SETUP_FEE=45.00, EM_MIN_QTY=12;
 var HT_BREAKS=[[10,12.75],[20,8.00],[50,5.41],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
 var HT_SMALL_BREAKS=[[10,12.75],[20,6.00],[50,5.00],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
-var FOAM_TRUCKER_STYLES={'C936':1,'C993':1,'OG605':1,'NE410':1,'C950':1,'DT624':1,'NE212':1};
+var FOAM_TRUCKER_STYLES={'C936':1,'C993':1,'OG605':1,'NE410':1,'C950':1,'DT624':1,'NE212':1,'39-165':1};
 var SLEEVE_SP=1.50, ADDON_NECK=0.75, ADDON_BAG=0.85;
 var RUSH_MULT={std:1, rush:1.15, super:1.25};
 var RUSH_DAYS={std:10, rush:7, super:5}, HEM_EXTRA_DAYS=5;
@@ -547,6 +547,8 @@ function productType(p){
 }
 function isFoamTrucker(p){return !!FOAM_TRUCKER_STYLES[String((p&&p.style)||'').toUpperCase()];}
 function decoMethods(p){
+  /* a product can name its own methods (e.g. OTTO CAP hats: embroidery only) */
+  if(p&&Array.isArray(p.deco_methods)&&p.deco_methods.length)return p.deco_methods.filter(function(m){return m==='sp'||m==='em'||m==='ht'});
   switch(productType(p)){
     case 'tshirt':return ['sp','ht']; case 'sweatshirt':return ['sp','ht','em'];
     case 'polo':return ['em','ht']; case 'jacket':return ['em','ht'];

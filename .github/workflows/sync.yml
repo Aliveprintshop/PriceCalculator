@@ -79,6 +79,15 @@ jobs:
             python merge-pcna.py products.json ss-products.json || echo "::warning::S&S merge failed - site publishes without S&S"
           fi
 
+      # OTTO CAP (weekly otto-sync.yml writes otto-products.json in the SanMar
+      # shape: Austin's 6 picked hats). Same merge script; a failure must not
+      # block the publish.
+      - name: Merge OTTO CAP hats
+        run: |
+          if [ -f merge-pcna.py ] && [ -f otto-products.json ]; then
+            python merge-pcna.py products.json otto-products.json || echo "::warning::OTTO CAP merge failed - site publishes without OTTO CAP"
+          fi
+
       - name: Show summary
         run: |
           echo "products.json size: $(wc -c < products.json) bytes"

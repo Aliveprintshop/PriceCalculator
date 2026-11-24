@@ -1,0 +1,59 @@
+name: OTTO CAP sync
+
+# Weekly (+ manual): builds otto-products.json from OTTO CAP's public catalog
+# (Austin's 6 picked hats), commits it, then starts the nightly catalog sync,
+# which merges it into products.json and publishes the site.
+on:
+  schedule:
+    - cron: '41 14 * * 1'   # Mondays 14:41 UTC (6:41am PST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: otto-sync
+  cancel-in-progress: false
+
+jobs:
+  otto:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install photo tools
+        run: pip install --quiet pillow
+
+      - name: Build otto-products.json
+        run: python otto_sync.py
+
+      - name: Commit otto-products.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B main
+            git reset origin/main
+            git add otto-products.json
+            if [ -f media/brands/otto-cap.png ]; then git add media/brands/otto-cap.png; fi
+            if git diff --staged --quiet; then
+              echo "No changes to otto-products.json"
+              git checkout -- .
+              break
+            fi
+            git commit -m "chore: OTTO CAP sync $(date -u +%Y-%m-%d)"
+            if git push origin main; then git checkout -- .; break; fi
+            echo "Push rejected, retrying ($attempt/3)"; sleep 5
+          done
+
+      - name: Publish (run the catalog sync)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run sync.yml --ref main
