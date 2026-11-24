@@ -3632,7 +3632,7 @@ function mbar(label, disabled, sub){
 function barSub(){
   var q = realQty(), t = orderTotal();
   /* before any sizes are in, the bar sets the expectation rather than guessing */
-  if(!q) return minQ() + ' piece minimum · ' + basisLabel();
+  if(!q) return 'Price at ' + priceQty() + ' pcs · ' + minQ() + ' piece minimum · ' + basisLabel();
   if(q < minQ()) return q + ' pcs · add ' + minGap() + ' to reach ' + minQ();
   return money(t) + ' total · ' + q + ' pcs';
 }
@@ -6523,7 +6523,7 @@ function upcView(n, extra){
     body = '<div class="upc-tick"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
       '<h2 id="upc-h">Your graphic is uploaded!</h2>' +
       '<p class="upc-lead">How would you like to finish your order?</p>' +
-      '<button type="button" class="upc-btn upc-pri" data-upc="go">Continue my order</button>' +
+      '<button type="button" class="upc-btn upc-pri" data-upc="go">Continue to sizes</button>' +
       '<p class="upc-sub">Choose sizes and quantities, see your total, and check out.</p>' +
       '<div class="upc-or">or</div>' +
       '<button type="button" class="upc-btn upc-sec" data-upc="help">Help me finish</button>' +
@@ -6655,7 +6655,13 @@ function upcOpen(){
     var a = t.closest && t.closest('[data-upc]'); if(!a) return;
     var k = a.getAttribute('data-upc');
     if(k === 'x') upcClose(UPC.box && UPC.box.querySelector('#upc-f') ? 'x-form' : 'x');
-    else if(k === 'go'){ upcTrack('upload_continue', {item_id:String(S.p.style)}); upcClose(); }
+    else if(k === 'go'){
+      upcTrack('upload_continue', {item_id:String(S.p.style)});
+      upcClose();
+      /* Reuse the existing Continue action, including artwork/ink validation. */
+      var next = root.querySelector('.mbar button.cta');
+      if(next && !next.disabled) next.click();
+    }
     else if(k === 'help'){ upcTrack('upload_help_open', {item_id:String(S.p.style)}); upcView(2); }
     else if(k === 'back'){ upcGrab(); upcView(1); }
   });
