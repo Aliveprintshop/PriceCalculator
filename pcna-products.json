@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-18T16:11:25Z",
+ "generated_at": "2026-11-24T23:57:22Z",
  "source": "PCNA PromoStandards",
  "pricing": "coded all-in incl. setup, run, freight",
  "product_count": 73,
@@ -8246,8 +8246,8 @@
    "brand": "Leuchtturm1917",
    "category": "Journals & Notebooks",
    "subcategory": "",
-   "description": "The Leuchtturm1917 Classic Hard Medium Notebook is a staple notebook for everyday notetaking. Features include a hard bound cover, 251 numbered lined pages, gusseted back pocket, 2 ribbon page markers and elastic closure. Bulk Bulk Bulk Bulk",
-   "desc": "The Leuchtturm1917 Classic Hard Medium Notebook is a staple notebook for everyday notetaking. Features include a hard bound cover, 251 numbered lined pages, gusseted back pocket, 2 ribbon page markers and elastic closure. Bulk Bulk Bulk Bulk",
+   "description": "The Leuchtturm1917 Classic Hard Medium Notebook is a staple notebook for everyday notetaking. Features include a hard bound cover, 251 numbered lined pages, gusseted back pocket, 2 ribbon page markers and elastic closure. Bulk Bulk Bulk Bulk Bulk Bulk",
+   "desc": "The Leuchtturm1917 Classic Hard Medium Notebook is a staple notebook for everyday notetaking. Features include a hard bound cover, 251 numbered lined pages, gusseted back pocket, 2 ribbon page markers and elastic closure. Bulk Bulk Bulk Bulk Bulk Bulk",
    "features": [
     "{070302} NOTEBOOKS AND JOURNALS",
     "PRODUCT",
@@ -8346,6 +8346,50 @@
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01RD_B_AL.jpg",
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01RD_B_AR.jpg",
        "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01RD_DETAIL.jpg"
+      ]
+     },
+     "imprintBox": [
+      0.28,
+      0.17,
+      0.33,
+      0.66
+     ],
+     "_view": "_B_FR"
+    },
+    {
+     "name": "Blue",
+     "hex": "#0000FF",
+     "sku": "0917-01BL",
+     "images": {
+      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01BL_B_FR.jpg",
+      "back_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01BL_B_BACK.jpg",
+      "gallery": [
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01BL_D_FR.jpg",
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01BL_B_AL.jpg",
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01BL_B_AR.jpg",
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01BL_B_OPEN.jpg"
+      ]
+     },
+     "imprintBox": [
+      0.28,
+      0.17,
+      0.33,
+      0.66
+     ],
+     "_view": "_B_FR"
+    },
+    {
+     "name": "Green",
+     "hex": "#007A53",
+     "sku": "0917-01GR",
+     "images": {
+      "front_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01GR_B_FR.jpg",
+      "back_flat": "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01GR_B_BACK.jpg",
+      "gallery": [
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01GR_D_FR.jpg",
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01GR_B_AL.jpg",
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01GR_B_AR.jpg",
+       "https://assets.pcna.com/t_PS_EXTRALARGE2/Images/0917-01GR_B_OPEN.jpg"
       ]
      },
      "imprintBox": [
