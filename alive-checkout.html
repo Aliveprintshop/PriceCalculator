@@ -330,6 +330,15 @@
 #alive-flow .cnote a{color:var(--blue);font-weight:700;}
 #alive-flow .cnote.small{margin:12px 0 0;font-size:12px;color:var(--text3);}
 #alive-flow .cartitems .hd b{font-size:13px;color:var(--text3);font-weight:700;}
+#alive-flow .tot + .sorder{margin-top:16px;}
+#alive-flow .sitem{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line,#E6E8EC);}
+#alive-flow .sitem:first-of-type{border-top:0;}
+#alive-flow .sitem-art{width:52px;height:52px;border:1px solid var(--line,#E6E8EC);border-radius:8px;overflow:hidden;background:#fff;display:grid;place-items:center;position:relative;}
+#alive-flow .sitem-art img{max-width:100%;max-height:100%;object-fit:contain;}
+#alive-flow .sitem-t{min-width:0;display:flex;flex-direction:column;gap:2px;}
+#alive-flow .sitem-t b{font-size:13.5px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+#alive-flow .sitem-t span{font-size:12.5px;color:var(--text3,#6B7280);}
+#alive-flow .sitem .num{font-weight:700;font-size:14px;}
 #alive-flow .sorder .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
 #alive-flow .backcart{display:inline-block;margin:0 0 12px;font-weight:700;}
 #alive-flow .upgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
@@ -2185,8 +2194,15 @@ function renderCart(t, promo){
 /* ---- Step 4: checkout (details, delivery, payment) ---------------------- */
 function renderDetails(t, pickup, promo){
   var items = S.items.map(itemHtml).join('');
+  /* Same side as the cart: totals and the pay button first, then a short list of
+     what's in the order (the full item cards already showed on the cart step). */
+  var compact = S.items.map(function(it){
+    return '<div class="sitem"><div class="sitem-art">' + (it.productImage ? '<img src="' + esc(it.productImage) + '" alt="">' : '') + '</div>' +
+      '<div class="sitem-t"><b>' + esc(it.productName || it.style) + '</b><span>' + esc(it.color || '') + ' · ' + (it.qty|0) + ' pcs</span></div>' +
+      '<span class="num">' + money(it.lineTotal) + '</span></div>';
+  }).join('');
+  var orderList = '<div class="card sorder"><div class="hd"><h2>Your order · ' + S.items.length + ' ' + (S.items.length === 1 ? 'item' : 'items') + '</h2><button type="button" class="linkbtn" data-tocart="1">Edit cart</button></div>' + compact + '</div>';
   var summary =
-    '<div class="card sorder"><div class="hd"><h2>Your order</h2><button type="button" class="linkbtn" data-tocart="1">Edit cart</button></div>' + items + '</div>' +
     '<div class="card tot">' +
       '<div class="row"><span>' + t.pieces + ' pieces</span><b class="num">' + money(t.base) + '</b></div>' +
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
@@ -2199,7 +2215,7 @@ function renderDetails(t, pickup, promo){
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-submit="1"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting secure checkout…' : 'Pay &amp; place order') + '</button>' +
       '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' + RATING +
-    '</div>';
+    '</div>' + orderList;
   root.innerHTML = stepper() +
     '<div class="wrap"><div class="co">' +
       '<div>' +
@@ -2420,7 +2436,7 @@ function discRefresh(){
 /* Checkout has already chosen the best code (bfAutoApply / promoWorth). */
 function discActive(){ try{ return CART.getPromo(); }catch(e){ return null; } }
 function stepper(){
-  var defs = ['Design','Sizes','Cart'], cur = S.stage === 'details' ? 3 : 2, out = '<div class="steps"><div class="steps-in">';
+  var defs = ['Design','Sizes','Cart'], cur = 2,   /* checkout is part of the Cart step, so the bar stays put */ out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(l, i){
     var done = i < cur, now = i === cur;
     var b = (i === 2) ? discBadge() : '';
