@@ -272,6 +272,9 @@ function lineTotal(p,cfg,sizes){
 }
 /* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
 function turnaroundDays(rush,hem){return (RUSH_DAYS[rush]||10)+(hem?HEM_EXTRA_DAYS:0);}
+/* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
+   Only the day counts move; RUSH_MULT (the price) never does. */
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});}
 function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
 
 root.AliveEngine={
@@ -279,7 +282,7 @@ root.AliveEngine={
   isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
   minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
   upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
-  hemRate:getHem, turnaroundDays:turnaroundDays, methodLabel:methodLabel,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, methodLabel:methodLabel,
   PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
   MAX_INK:8
 };

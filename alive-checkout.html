@@ -327,6 +327,8 @@
 #alive-flow .shipnote{font-size:12.5px;color:var(--text3);margin-top:6px;}
 #alive-flow .cnote{margin:-4px 0 12px;font-size:13px;color:var(--text2);line-height:1.45;}
 #alive-flow .ships + .cnote{margin:12px 0 0;}
+#alive-flow .busynote{margin:12px 0 0;background:#fff7ed;border:1px solid #f0c9a8;color:#7a3d06;border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.45;}
+#alive-flow .busynote + .cnote{margin:12px 0 0;}
 #alive-flow .cnote a{color:var(--blue);font-weight:700;}
 #alive-flow .cnote.small{margin:12px 0 0;font-size:12px;color:var(--text3);}
 #alive-flow .cartitems .hd b{font-size:13px;color:var(--text3);font-weight:700;}
@@ -706,6 +708,9 @@ function lineTotal(p,cfg,sizes){
 }
 /* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
 function turnaroundDays(rush,hem){return (RUSH_DAYS[rush]||10)+(hem?HEM_EXTRA_DAYS:0);}
+/* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
+   Only the day counts move; RUSH_MULT (the price) never does. */
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});}
 function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
 
 root.AliveEngine={
@@ -713,7 +718,7 @@ root.AliveEngine={
   isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
   minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
   upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
-  hemRate:getHem, turnaroundDays:turnaroundDays, methodLabel:methodLabel,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, methodLabel:methodLabel,
   PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
   MAX_INK:8
 };
@@ -1471,7 +1476,7 @@ function placeBar(){
 if(window.AliveViewport) window.AliveViewport.subscribe(function(){ placeBar(); root.querySelectorAll('.tipbox,.lbox').forEach(placeOverlay); });
 
 var TIPS = {
-  turnaround:['Turnaround', '10 business days, Monday to Friday, after you approve your proof. Order before 4 PM and today counts as day one. Rush moves you up the queue. Woven hem tags add 5 business days.'],
+  turnaround:['Turnaround', 'Counted in business days, Monday to Friday, skipping the days we are closed, after you approve your proof. Order before 4 PM and today counts as day one. Rush moves you up the queue. Woven hem tags add 5 business days.'],
   payment:['Payment', 'You pay securely by card through Stripe. We email a proof before anything prints. Custom orders are made for you, so they can’t be returned — but if we get it wrong, we reprint it.'],
   shipping:['Shipping', 'Flat $45 per box, shipped anywhere in the US. A box holds about 72 tees, 48 polos, 24 hoodies or 12 jackets, and mixed orders share boxes. Or pick it up free at our North Las Vegas shop.'],
   tax:['Sales tax', 'Nevada sales tax is added at payment.']
@@ -1502,6 +1507,32 @@ var CART = {
 
 /* ------------------------------------------------------------ dates */
 var CUTOFF_HOUR = 16, SHOP_TZ = 'America/Los_Angeles', CLOSED_DATES = [];
+/* Closed days + turnaround from the Turnaround tab on the Orders dashboard
+   (alive-orders /api/schedule). The last copy is kept in localStorage so the
+   first paint already has it; the fresh one re-renders when it lands. If the
+   call fails the page simply runs on the defaults above. */
+var SCHED_URL = 'https://alive-orders.austin-662.workers.dev/api/schedule';
+var SCHED = {rush_on:true, super_on:true, busy:false, note:''};
+function applySched(s){
+  if(!s || !Array.isArray(s.closed_dates) || !s.days) return false;
+  CLOSED_DATES.length = 0;
+  s.closed_dates.forEach(function(d){ if(/^\d{4}-\d{2}-\d{2}$/.test(d)) CLOSED_DATES.push(d); });
+  E.setSchedule(s);
+  SCHED = {rush_on:s.rush_on !== false, super_on:s.super_on !== false, busy:!!s.busy, note:s.busy ? String(s.note || '') : ''};
+  return true;
+}
+try{ applySched(JSON.parse(localStorage.getItem('aps_sched') || 'null')); }catch(e){}
+function loadSched(after){
+  try{
+    fetch(SCHED_URL, {mode:'cors'}).then(function(r){ return r.ok ? r.json() : null; }).then(function(s){
+      if(!applySched(s)) return;
+      try{ localStorage.setItem('aps_sched', JSON.stringify(s)); }catch(e){}
+      if(after) after();
+    }).catch(function(){});
+  }catch(e){}
+}
+function rushOn(key){ return key === 'std' || (key === 'rush' ? SCHED.rush_on : SCHED.super_on); }
+function busyNote(cls){ return SCHED.busy && SCHED.note ? '<div class="' + cls + '">' + esc(SCHED.note) + '</div>' : ''; }
 function shopNow(){
   var now = new Date(), p = {};
   try{ new Intl.DateTimeFormat('en-US',{timeZone:SHOP_TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hour12:false}).formatToParts(now).forEach(function(x){ p[x.type] = x.value; }); }catch(e){}
@@ -1674,7 +1705,11 @@ function priceItem(it, addons, rush){
   return {unit:E.unitPrice(p, c), line:E.lineTotal(p, c, it.sizes || {}), cfg:c};
 }
 /* Write the chosen options onto every re-priceable item (what the Worker reads). */
+/* A rush the shop has switched off on the Turnaround tab can't be bought:
+   step down to the next option that is still on. */
+function fixRush(){ if(!rushOn(S.rush)) S.rush = (S.rush === 'super' && rushOn('rush')) ? 'rush' : 'std'; }
 function applyOptions(){
+  fixRush();
   S.items = S.items.map(function(it){
     if(!priceable(it)) return it;
     var r = priceItem(it, S.addon, S.rush), c = r.cfg;
@@ -2120,8 +2155,11 @@ function missBlock(){
     '<p class="or">Can’t upload it? Email it to <a href="mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Artwork for order ' + orderRef()) + '">' + CONFIG.email + '</a> and quote <b>' + esc(orderRef()) + '</b>.</p>' +
     '<label class="ack"><input type="checkbox" id="miss-ack"' + (S.missAck ? ' checked' : '') + '> I’ll email my artwork with that reference.</label></div>';
 }
+/* The live schedule landed after the first paint: redraw (not mid-payment). */
+loadSched(function(){ if(!S.busy && !S.pay) render(); });
 function render(){
   if(S.done){ renderDone(); return; }
+  fixRush();
   if(S.pay){ renderPay(); return; }
   if(!S.items.length){
     var cats = [['T-shirts','t-shirts'],['Hoodies','sweatshirts-hoodies'],['Hats','headwear'],['Polos','polos-button-downs'],['Bags','bags'],['Drinkware','drinkware']];
@@ -2154,8 +2192,10 @@ function rushCard(){
   /* Turnaround is the decision customers care about most, so it leads the cart. */
   return '<div class="card"><div class="hd"><h2 class="h2t">Need it sooner?' + tip('turnaround') + '</h2></div>' +
     '<p class="cnote">One turnaround covers the whole order. The date is when it leaves our shop.</p><div class="ships">' +
-    rushRow('std', 'Standard — ' + E.turnaroundDays('std', false) + ' business days') + rushRow('rush', '7 business day rush') + rushRow('super', '5 business day rush') +
-    '</div><p class="cnote">Need it in 3 days? <a href="' + CONFIG.phoneHref + '">Call ' + esc(CONFIG.phone) + '</a> and we’ll check the schedule.</p></div>';
+    rushRow('std', 'Standard — ' + E.turnaroundDays('std', false) + ' business days') +
+    (rushOn('rush') ? rushRow('rush', E.turnaroundDays('rush', false) + ' business day rush') : '') +
+    (rushOn('super') ? rushRow('super', E.turnaroundDays('super', false) + ' business day rush') : '') +
+    '</div>' + busyNote('busynote') + '<p class="cnote">Need it in 3 days? <a href="' + CONFIG.phoneHref + '">Call ' + esc(CONFIG.phone) + '</a> and we’ll check the schedule.</p></div>';
 }
 function addonCard(){
   return ADDONS.some(function(a){ return addonPieces(a) > 0; })

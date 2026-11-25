@@ -1033,6 +1033,7 @@
 #alive-flow .taline .tastd{font-family:var(--disp);font-size:14px;font-weight:800;color:var(--text);}
 #alive-flow .taline .tadate{font-family:var(--disp);font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;}
 #alive-flow .tanote{margin-top:8px;font-size:12.5px;color:var(--text3);line-height:1.5;}
+#alive-flow .tabusy{margin-top:8px;background:#fff7ed;border:1px solid #f0c9a8;color:#7a3d06;border-radius:8px;padding:8px 11px;font-size:12.5px;line-height:1.45;}
 /* desktop: photo left, choices right */
 @media(min-width:980px){
   #alive-flow .wrap:has(.shell.dual){max-width:1180px;}
@@ -1829,6 +1830,9 @@ function lineTotal(p,cfg,sizes){
 }
 /* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
 function turnaroundDays(rush,hem){return (RUSH_DAYS[rush]||10)+(hem?HEM_EXTRA_DAYS:0);}
+/* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
+   Only the day counts move; RUSH_MULT (the price) never does. */
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});}
 function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
 
 root.AliveEngine={
@@ -1836,7 +1840,7 @@ root.AliveEngine={
   isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
   minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
   upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
-  hemRate:getHem, turnaroundDays:turnaroundDays, methodLabel:methodLabel,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, methodLabel:methodLabel,
   PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
   MAX_INK:8
 };
@@ -3254,7 +3258,7 @@ var TIPS = {
   includes: ['What the price includes', 'The garment and your decoration as set up on this page — print spots, ink colors or embroidery. Change any of them and the price updates right away. No setup or screen fees.'],
   minimum:  ['Minimum order', 'Screen print: 24 pieces. Embroidery: 12. Full color: 10. Mix sizes however you like — your sizes add up to your total.'],
   sizes:    ['Sizes', '2XL and up use more fabric, so they cost a little more. The extra shows under each size.'],
-  turnaround:['Turnaround', 'Standard is 10 business days, Monday to Friday. Order before 4 PM Las Vegas time and today counts as day one. Rush (7 days) and Super Rush (5 days) are chosen in your cart — the date shown is when your order leaves our shop, so add transit time on top.'],
+  turnaround:['Turnaround', 'Counted in business days, Monday to Friday (we skip the days we are closed). Order before 4 PM Las Vegas time and today counts as day one. Rush options are chosen in your cart. The date shown is when your order leaves our shop, so add transit time on top.'],
   artwork:  ['Artwork', 'AI, EPS, PDF, SVG, PSD, PNG, JPG or ZIP, up to 25 MB each. We confirm ink colors and placement on your proof. Nothing prints until you approve it.'],
   method:   ['Decoration', 'Screen print: bold, durable, best value at 24+ and priced by ink colors. Full color: any number of colors or photos, great for small runs. Embroidery: stitched, premium, priced per location.'],
   colors:   ['Ink colors', 'Screen printing is priced by the number of ink colors in your design. The shirt color does not count. Not sure? Pick your best guess — we confirm it on your proof before anything prints.']
@@ -4155,6 +4159,32 @@ function oneSizeFoot(){
    with them. Checked against Austin's example: Tue 22 Sep 2026, 10 AM,
    10 business days -> Monday, October 5. */
 var SHOP_TZ = 'America/Los_Angeles', CUTOFF_HOUR = 16, CLOSED_DATES = [];
+/* Closed days + turnaround from the Turnaround tab on the Orders dashboard
+   (alive-orders /api/schedule). The last copy is kept in localStorage so the
+   first paint already has it; the fresh one re-renders when it lands. If the
+   call fails the page simply runs on the defaults above. */
+var SCHED_URL = 'https://alive-orders.austin-662.workers.dev/api/schedule';
+var SCHED = {rush_on:true, super_on:true, busy:false, note:''};
+function applySched(s){
+  if(!s || !Array.isArray(s.closed_dates) || !s.days) return false;
+  CLOSED_DATES.length = 0;
+  s.closed_dates.forEach(function(d){ if(/^\d{4}-\d{2}-\d{2}$/.test(d)) CLOSED_DATES.push(d); });
+  E.setSchedule(s);
+  SCHED = {rush_on:s.rush_on !== false, super_on:s.super_on !== false, busy:!!s.busy, note:s.busy ? String(s.note || '') : ''};
+  return true;
+}
+try{ applySched(JSON.parse(localStorage.getItem('aps_sched') || 'null')); }catch(e){}
+function loadSched(after){
+  try{
+    fetch(SCHED_URL, {mode:'cors'}).then(function(r){ return r.ok ? r.json() : null; }).then(function(s){
+      if(!applySched(s)) return;
+      try{ localStorage.setItem('aps_sched', JSON.stringify(s)); }catch(e){}
+      if(after) after();
+    }).catch(function(){});
+  }catch(e){}
+}
+function rushOn(key){ return key === 'std' || (key === 'rush' ? SCHED.rush_on : SCHED.super_on); }
+function busyNote(cls){ return SCHED.busy && SCHED.note ? '<div class="' + cls + '">' + esc(SCHED.note) + '</div>' : ''; }
 var TA_KEYS = ['std','rush','super'];
 var TA_NAME = {std:'Standard', rush:'Rush', super:'Super Rush'};
 function shopNow(){
@@ -4214,9 +4244,23 @@ function taFoot(){
   return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span></div>' +
     '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false) + ' business days</span>' +
       '<span class="tadate" data-tadate="std">Ships by ' + fmtDay(taDate('std')) + '</span></div>' +
-    '<div class="tanote">Need it sooner? Pick a 7 or 5 day rush in your cart, the next step. ' +
-    'Dates are when it leaves our shop; transit is on top.</div></div>';
+    busyNote('tabusy') +
+    '<div class="tanote">' + rushLine() + 'Dates are when it leaves our shop; transit is on top.</div></div>';
 }
+function rushLine(){
+  var r = [];
+  if(rushOn('rush')) r.push(E.turnaroundDays('rush', false));
+  if(rushOn('super')) r.push(E.turnaroundDays('super', false));
+  if(!r.length) return '';
+  return 'Need it sooner? Pick a ' + r.join(' or ') + ' day rush in your cart, the next step. ';
+}
+/* The schedule arrived after the first paint: redraw the turnaround block in place. */
+loadSched(function(){
+  document.querySelectorAll('#alive-flow .tapick').forEach(function(el){
+    var t = document.createElement('div'); t.innerHTML = taFoot();
+    if(t.firstChild) el.replaceWith(t.firstChild);
+  });
+});
 function sizesReady(){ var q = realQty(); return q > 0 && q >= minQ(); }
 
 /* ------------------------------------------------- the minimum (24 pcs)
