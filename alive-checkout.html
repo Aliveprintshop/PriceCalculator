@@ -2420,13 +2420,13 @@ function discRefresh(){
 /* Checkout has already chosen the best code (bfAutoApply / promoWorth). */
 function discActive(){ try{ return CART.getPromo(); }catch(e){ return null; } }
 function stepper(){
-  var defs = ['Design','Sizes','Cart','Checkout'], cur = S.stage === 'details' ? 3 : 2, out = '<div class="steps"><div class="steps-in">';
+  var defs = ['Design','Sizes','Cart'], cur = S.stage === 'details' ? 3 : 2, out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(l, i){
     var done = i < cur, now = i === cur;
-    var b = (i === 3 && !done) ? discBadge() : '';
+    var b = (i === 2) ? discBadge() : '';
     var dot = '<span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : (i + 1)) + '</span><span class="nm">' + l + '</span>';
     out += (done && i === 2)
-      ? '<button type="button" class="stp done" data-tocart="1">' + dot + '</button>'
+      ? '<button type="button" class="stp done' + (b ? ' has-disc' : '') + '" data-tocart="1">' + dot + b + '</button>'
       : '<span class="stp ' + (done ? 'done' : now ? 'now' : '') + (b ? ' has-disc' : '') + '">' + dot + b + '</span>';
     if(i < defs.length - 1) out += '<span class="rule' + (i < cur ? ' done' : '') + '"></span>';
   });

@@ -1470,7 +1470,7 @@
 @media(max-width:767px){
   #alive-flow{position:relative;}
   #alive-flow .steps{border-bottom:0;}
-  #alive-flow .steps-in{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr);gap:6px;align-items:start;height:auto !important;padding:12px 14px 6px 56px !important;max-width:none;}
+  #alive-flow .steps-in{display:grid !important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr);gap:6px;align-items:start;height:auto !important;padding:12px 14px 6px 56px !important;max-width:none;}
   #alive-flow .steps .rule{display:none !important;}
   #alive-flow .steps .stp{display:grid !important;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:6px;row-gap:5px;height:auto !important;min-width:0;padding:0 !important;margin:0;background:none;border:0;text-align:left;}
   #alive-flow .steps .stp::before{content:"";grid-column:1/-1;height:3px;border-radius:999px;background:#E3E7EC;}
@@ -1481,7 +1481,7 @@
   #alive-flow .steps .stp.done .nm{color:#374151;}
   #alive-flow .steps .disc-badge{position:static !important;transform:none !important;margin:0 !important;font-size:9.5px !important;padding:2px 6px !important;justify-self:start;animation:none !important;box-shadow:none;}
   #alive-flow .steps .disc-badge svg{width:10px;height:10px;}
-  /* Four steps: the badge sits under CHECKOUT instead of beside it. */
+  /* Three steps: the badge sits under CART instead of beside it. */
   #alive-flow .steps .stp.has-disc{grid-template-columns:minmax(0,1fr);}
   #alive-flow .steps .disc-note{display:none;}
   #alive-flow .allprod{position:absolute;top:0;left:6px;z-index:5;margin:0 !important;width:44px;height:44px;min-height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:0 !important;color:var(--text,#1E1E1E);}
@@ -3459,13 +3459,13 @@ function discActive(){
   return p;
 }
 function stepper(cur){
-  var defs = [{n:1,label:'Design'},{n:2,label:'Sizes'},{n:3,label:'Cart'},{n:4,label:'Checkout'}];
+  var defs = [{n:1,label:'Design'},{n:2,label:'Sizes'},{n:3,label:'Cart'}];
   var out = '<div class="steps"><div class="steps-in">';
   defs.forEach(function(s, i){
     var done = s.n < cur, now = s.n === cur;
     var inner = '<span class="dot">' + (done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>' : s.n) + '</span><span class="nm">' + s.label + '</span>';
     out += done ? '<button type="button" class="stp done" data-goto="' + (s.n === 1 ? 'artwork' : 'sizes') + '">' + inner + '</button>'
-                : (s.n === 4 ? (function(b){ return '<span class="stp ' + (now ? 'now' : '') + (b ? ' has-disc' : '') + '">' + inner + b + '</span>'; })(discBadge())
+                : (s.n === 3 ? (function(b){ return '<span class="stp ' + (now ? 'now' : '') + (b ? ' has-disc' : '') + '">' + inner + b + '</span>'; })(discBadge())
                              : '<span class="stp ' + (now ? 'now' : '') + '">' + inner + '</span>');
     if(i < defs.length - 1) out += '<span class="rule' + (done ? ' done' : '') + '"></span>';
   });
@@ -5946,8 +5946,8 @@ function wire(){
   /* Email capture. The typed value is kept on S so a redraw (a colour tap, an
      upload finishing) cannot wipe what someone is halfway through typing —
      and it is NOT re-rendered on every keystroke, which would steal focus. */
-  root.querySelectorAll('[data-phase]').forEach(function(b){ b.onclick = function(){ go(b.dataset.phase, 'foot'); }; });
-  root.querySelectorAll('[data-goto]').forEach(function(b){ b.onclick = function(){ go(b.dataset.goto, b.dataset.goto === 'sizes' ? 'foot' : null); }; });
+  root.querySelectorAll('[data-phase]').forEach(function(b){ b.onclick = function(){ go(b.dataset.phase); }; });
+  root.querySelectorAll('[data-goto]').forEach(function(b){ b.onclick = function(){ go(b.dataset.goto); }; });
   root.querySelectorAll('[data-size]').forEach(function(inp){
     inp.oninput = function(){
       var v = inp.value.replace(/\D/g,'').slice(0,5); if(inp.value !== v) inp.value = v;
@@ -6129,7 +6129,7 @@ function wire(){
   var mc = root.querySelector('[data-mcta]');
   if(mc) mc.onclick = function(){
     if(S.phase === 'artwork'){
-      if(artReady()) go('sizes', 'foot');
+      if(artReady()) go('sizes');
       else { var pk = S.locs.filter(function(k){ return S.art[k]; }).filter(inkPending)[0];
         if(pk && S.locs.every(function(k){ return !!S.art[k]; })){ inkPrompt(pk); return; }
         S.nudge = true; render(); scrollToEl(root.querySelector('.modes')); }   /* show what's missing */
