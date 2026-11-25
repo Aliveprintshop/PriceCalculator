@@ -3186,8 +3186,10 @@ if(window.ResizeObserver) new ResizeObserver(broadcast).observe(document.body);
 function scrollToEl(el){
   if(!el) return;
   /* Phones: the site's sticky header is taller, so leave more room above the target. */
-  var pad = (window.matchMedia && window.matchMedia('(max-width:899px)').matches) ? 56 : 12;
-  var y = Math.max(0, Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - pad));
+  /* Desktop: the site header is two lines (~120px) but the parent snippet only allows 80, so add the rest here. */
+  var pad = (window.matchMedia && window.matchMedia('(max-width:899px)').matches) ? 56 : (EMBEDDED ? 70 : 12);
+  var y = Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - pad);
+  if(!EMBEDDED) y = Math.max(0, y);   /* in the embed y may go above our top, so the step bar clears the site header */
   if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-scrollto', y:y}, '*'); }catch(e){} }
   else window.scrollTo({top:y, behavior:'smooth'});
 }
