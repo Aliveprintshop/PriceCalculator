@@ -498,6 +498,322 @@ body.extsearch .toolbar{display:none !important;}
 
 <!-- Buy-It-Now Deals config (shared with deal.html). Must load before the main
      script so the hidden #deals view can read window.ALIVE_DEALS on boot. -->
+<script>
+/* Pricing engine, copied from alive-product.html so the card "starts at" price
+   is exactly the product page's price at the minimum. Keep in step with it. */
+/* =====================================================================
+   ALIVE PRICING ENGINE — DOM-free port of alive-pricing-calculator-v2.html
+   ---------------------------------------------------------------------
+   Every number here is copied from v2, which is what the alive-checkout
+   Worker's pricing-core recomputes and charges. If v2 changes, change this
+   and re-run test_engine_parity.js (must stay 100% exact).
+
+   Usage:
+     var prod = AliveEngine.prepare(rawProductFromProductsJson);
+     var cfg  = { qty, locs:['front','back'], locMethod:{front:'sp',back:'sp'},
+                  frontColors:3, backColors:1,
+                  addons:{neck,hem,bag}, rush:'std'|'rush'|'super',
+                  promoDiscount:0 };
+     AliveEngine.unitPrice(prod, cfg)          -> per-piece price or null
+     AliveEngine.sizeUpchargePer(prod, sz, cfg)-> extra per piece for 2XL+
+     AliveEngine.lineTotal(prod, cfg, sizes)   -> order line total
+   ===================================================================== */
+(function(root){
+'use strict';
+
+var FRONT={24:[6.55,7.05,8.05,8.55,9.05,10.05,11.55,12.05],36:[3.55,4.05,5.05,5.55,6.05,7.05,8.55,9.05],50:[3.15,3.55,4.20,5.10,5.75,6.40,7.05,7.70],72:[2.75,3.10,3.65,4.25,4.54,5.40,5.90,6.40],144:[2.60,2.75,3.40,3.75,4.15,4.50,4.90,5.30],300:[2.35,2.45,3.05,3.40,3.75,4.10,4.45,4.80],500:[2.05,2.25,2.70,3.00,3.30,3.60,3.90,4.20],1000:[1.90,2.20,2.50,2.80,3.10,3.40,3.70,4.00],2500:[1.85,2.10,2.40,2.70,3.00,3.30,3.60,3.90],5000:[1.80,1.95,2.10,2.30,2.65,3.05,3.35,3.55]};
+var BACK={24:[6.19,6.64,7.54,7.99,8.44,9.34,10.69,11.14],36:[3.19,3.64,4.54,4.99,5.44,6.34,7.69,8.14],50:[2.83,3.19,3.78,4.59,5.17,5.76,6.34,6.93],72:[2.47,2.79,3.28,3.82,4.08,4.86,5.31,5.76],144:[2.34,2.47,3.06,3.37,3.73,4.05,4.41,4.77],300:[2.11,2.20,2.74,3.06,3.37,3.69,4.00,4.32],500:[1.84,2.02,2.43,2.70,2.97,3.24,3.51,3.78],1000:[1.71,1.98,2.25,2.52,2.79,3.06,3.33,3.60],2500:[1.66,1.89,2.16,2.43,2.70,2.97,3.24,3.51],5000:[1.62,1.75,1.80,2.07,2.38,2.74,3.01,3.19]};
+var HEMTAG=[[25,6.89],[50,3.75],[100,3.30],[300,2.09],[500,1.62],[1000,1.36],[2000,1.20]];
+var QB=[24,36,50,72,144,300,500,1000,2500,5000];
+var EM_QB=[12,24,36,72,144,300,500];
+var EM_FRONT={12:12.50,24:7.50,36:6.00,72:5.25,144:5.00,300:4.85,500:4.65};
+var EM_SIDE ={12: 6.95,24:5.95,36:4.45,72:4.25,144:3.95,300:3.45,500:3.25};
+var EM_SETUP_FEE=45.00, EM_MIN_QTY=12;
+var HT_BREAKS=[[10,12.75],[20,8.00],[50,5.41],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
+var HT_SMALL_BREAKS=[[10,12.75],[20,6.00],[50,5.00],[100,4.95],[200,4.33],[300,4.15],[500,4.11],[1000,4.08],[2500,4.03],[5000,4.00]];
+var FOAM_TRUCKER_STYLES={'C936':1,'C993':1,'OG605':1,'NE410':1,'C950':1,'DT624':1,'NE212':1,'39-165':1};
+var SLEEVE_SP=1.50, ADDON_NECK=0.75, ADDON_BAG=0.85;
+var RUSH_MULT={std:1, rush:1.15, super:1.25};
+var RUSH_DAYS={std:10, rush:7, super:5}, HEM_EXTRA_DAYS=5;
+var PROMO_CODES={'SAMPLE50':0.5,'SAMPLE80':0.8};
+
+var _EXT={'2XL':1,'3XL':1,'4XL':1,'5XL':1,'6XL':1,'7XL':1,'8XL':1,'XXL':1,'XXXL':1,'XXXXL':1,'XXXXXL':1};
+function isExtendedSize(sz){return !!_EXT[String(sz||'').trim().toUpperCase()];}
+
+var BASIC_TEE_DEAL_STYLES={};   /* Basic Tee Deal OFF since 2026-09-25 (Austin): normal pricing on 5000/5000B */
+var BASIC_TEE_DEAL_COST_BASE=2.30;
+var BASIC_TEE_DEAL_COST_BYSIZE={'2XL':3.89,'3XL':5.09,'4XL':5.09,'5XL':5.09};
+var HOODIE_DEAL_STYLES={}, HOODIE_DEAL_MIN_QTY=50;   /* 18500 deal OFF since 2026-09-24 — matches v2 and the Worker */
+var HOODIE_DEAL_COST_BASE=9.1467;
+var HOODIE_DEAL_COST_BYSIZE={'2XL':10.6334,'3XL':12.0200,'4XL':12.0200,'5XL':12.0200};
+var CALC_EXCLUDE_STYLES={'LACE':1};
+
+function pick(br,q){var r=br[0][1];for(var i=0;i<br.length;i++){if(q>=br[i][0])r=br[i][1];}return r;}
+function getQB(q){for(var i=QB.length-1;i>=0;i--){if(q>=QB[i])return QB[i];}return 24;}
+function getEMQB(q){var r=EM_QB[0];for(var i=0;i<EM_QB.length;i++){if(q>=EM_QB[i])r=EM_QB[i];}return r;}
+function getHem(q){return pick(HEMTAG,q);}
+function r2(n){return parseFloat((+n).toFixed(2));}
+
+/* ---- product preparation (same as v2 loadProducts) ------------------- */
+function normalizeProductUpcharges(p){
+  var su=p.size_upcharges;
+  if(!su||typeof su!=='object')return;
+  var stdUp=Infinity;
+  Object.keys(su).forEach(function(sz){if(!isExtendedSize(sz)){var v=parseFloat(su[sz]);if(!isNaN(v)&&v<stdUp)stdUp=v;}});
+  if(!isFinite(stdUp)||stdUp<0)stdUp=0;
+  if(stdUp>0){
+    if(p.case_price!=null&&!isNaN(p.case_price))p.case_price=parseFloat((p.case_price+stdUp).toFixed(2));
+    if(p.case_sale_price!=null&&!isNaN(p.case_sale_price))p.case_sale_price=parseFloat((p.case_sale_price+stdUp).toFixed(2));
+  }
+  var clean={};
+  Object.keys(su).forEach(function(sz){
+    if(!isExtendedSize(sz))return;
+    var v=parseFloat(su[sz]);if(isNaN(v))return;
+    var net=parseFloat((v-stdUp).toFixed(2));if(net>0)clean[sz]=net;
+  });
+  p.size_upcharges=clean;
+}
+function applyBasicTeeDeal(p){
+  if(!p||!p.style)return;
+  if(!BASIC_TEE_DEAL_STYLES[String(p.style).trim().toUpperCase()])return;
+  p._dealBasicTee=true;
+  p.case_price=BASIC_TEE_DEAL_COST_BASE;
+  p.case_sale_price=null;
+  var up={};
+  Object.keys(BASIC_TEE_DEAL_COST_BYSIZE).forEach(function(sz){
+    var d=parseFloat((BASIC_TEE_DEAL_COST_BYSIZE[sz]-BASIC_TEE_DEAL_COST_BASE).toFixed(2));if(d>0)up[sz]=d;});
+  p.size_upcharges=up;
+}
+function dwFromPrice(p){
+  if(!p||!p._dwMatrix)return null;var lo=null;
+  for(var qb in p._dwMatrix){var row=p._dwMatrix[qb];for(var c in row){var v=row[c];if(lo===null||v<lo)lo=v;}}
+  return lo;
+}
+/* Returns a prepared product, or null when v2 would not list it. Manual
+   products (drinkware) are passed with manual=true: v2 does not normalise them. */
+function prepare(raw, manual){
+  if(!raw||!raw.style)return null;
+  var p=JSON.parse(JSON.stringify(raw));
+  /* PCNA promo products (source:'pcna') sit in products.json but price like drinkware. */
+  if(manual||p._pcna){ p._blank = p._drinkware ? dwFromPrice(p) : (p.p||null); return p; }
+  if(p.discontinued===true)return null;
+  if(CALC_EXCLUDE_STYLES[String(p.style).toUpperCase()])return null;
+  normalizeProductUpcharges(p);
+  applyBasicTeeDeal(p);
+  var base=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
+  if(base==null||isNaN(base))return null;
+  p._blank=+(base*1.5).toFixed(2);
+  return p;
+}
+
+/* ---- product type, methods, locations -------------------------------- */
+function productType(p){
+  if(!p)return 'other';
+  if(p._drinkware)return 'drinkware';
+  var cat=String(p.category||'').toLowerCase(), name=String(p.name||'').toLowerCase();
+  if(cat.indexOf('cap')>-1){
+    if(/(\bbeanie\b|\bknit\s*cap\b|\bknit\s*hat\b|\bknit\s*beanie\b)/.test(name))return 'beanie';
+    return 'hat';
+  }
+  if(cat.indexOf('bag')>-1)return 'bag';
+  if(cat.indexOf('outerwear')>-1)return 'jacket';
+  if(cat.indexOf('polo')>-1||cat.indexOf('knit')>-1||cat.indexOf('woven')>-1)return 'polo';
+  if(cat.indexOf('sweatshirt')>-1||cat.indexOf('fleece')>-1)return 'sweatshirt';
+  if(cat.indexOf('bottom')>-1)return 'bottom';
+  if(cat==='t-shirts'||cat==='activewear'||cat==='workwear'||cat==='personal protection'||cat==="women's"||cat==='youth'||cat==='infant & toddler'||cat==='tall'||cat==='accessories')return 'tshirt';
+  return 'other';
+}
+function isFoamTrucker(p){return !!FOAM_TRUCKER_STYLES[String((p&&p.style)||'').toUpperCase()];}
+function decoMethods(p){
+  /* a product can name its own methods (e.g. OTTO CAP hats: embroidery only) */
+  if(p&&Array.isArray(p.deco_methods)&&p.deco_methods.length)return p.deco_methods.filter(function(m){return m==='sp'||m==='em'||m==='ht'});
+  switch(productType(p)){
+    case 'tshirt':return ['sp','ht']; case 'sweatshirt':return ['sp','ht','em'];
+    case 'polo':return ['em','ht']; case 'jacket':return ['em','ht'];
+    case 'hat':return ['em','ht']; case 'beanie':return ['em'];
+    case 'bag':return ['em','ht']; case 'bottom':return ['sp','ht'];
+    case 'drinkware':return ['sp']; default:return ['sp','ht'];
+  }
+}
+function locations(p, method){
+  if(!p)return [];
+  var pt=productType(p);
+  if(pt==='drinkware')return [{key:'front',label:'Front'}];
+  if(pt==='hat'&&isFoamTrucker(p))return [{key:'front',label:'Front',cls:'front'}];
+  if(method==='em'){
+    switch(pt){
+      case 'hat':return [{key:'front',label:'Front',cls:'front'},{key:'back',label:'Back',cls:'side'},{key:'left-side',label:'Left Side',cls:'side'},{key:'right-side',label:'Right Side',cls:'side'}];
+      case 'beanie':return [{key:'front',label:'Front',cls:'front'},{key:'back',label:'Back',cls:'side'}];
+      case 'polo': case 'jacket':
+        return [{key:'left-chest',label:'Left Chest',cls:'front'},{key:'right-chest',label:'Right Chest',cls:'front'},{key:'left-sleeve',label:'Left Sleeve',cls:'side'},{key:'right-sleeve',label:'Right Sleeve',cls:'side'}];
+      case 'bag':return [{key:'front-center',label:'Front Center',cls:'front'}];
+      case 'sweatshirt':return [{key:'front-center',label:'Front Center (8" max)',cls:'front'},{key:'left-sleeve',label:'Left Sleeve',cls:'side'},{key:'right-sleeve',label:'Right Sleeve',cls:'side'}];
+      default:return [];
+    }
+  }
+  return [{key:'front',label:'Front'},{key:'back',label:'Back'},{key:'left-sleeve',label:'Left Sleeve'},{key:'right-sleeve',label:'Right Sleeve'}];
+}
+function emLocCls(p,key){
+  var list=locations(p,'em');
+  for(var i=0;i<list.length;i++){if(list[i].key===key)return list[i].cls||'side';}
+  return 'side';
+}
+function isEmbroideryOnly(p){
+  if(!p||p._drinkware)return false;
+  var a=decoMethods(p);return a.indexOf('sp')===-1&&a.indexOf('ht')===-1;
+}
+/* The order's representative method (drives the minimum and the deal rule). */
+function orderMethod(p,cfg){
+  if(p._drinkware)return 'sp';
+  if(isEmbroideryOnly(p))return 'em';
+  var sp=false,ht=false,em=false;
+  (cfg.locs||[]).forEach(function(k){var m=(cfg.locMethod||{})[k]||'sp';if(m==='ht')ht=true;else if(m==='em')em=true;else sp=true;});
+  if(em&&!sp&&!ht)return 'em';
+  return (ht&&!sp)?'ht':'sp';
+}
+function dwBreaks(p){
+  if(p&&p._dwMatrix){
+    var ks=Object.keys(p._dwMatrix).map(function(k){return parseInt(k,10);}).filter(function(n){return !isNaN(n);});
+    ks.sort(function(a,b){return a-b;});if(ks.length)return ks;
+  }
+  return [24,48,72,144];
+}
+function minQty(p,cfg){
+  if(p._drinkware)return dwBreaks(p)[0];
+  var m=orderMethod(p,cfg||{});
+  if(m==='em')return EM_MIN_QTY;
+  if(m==='ht')return 10;
+  return 24;
+}
+function priceBreaks(p,cfg){
+  if(p._drinkware)return dwBreaks(p);
+  var m=orderMethod(p,cfg||{});
+  if(m==='em')return EM_QB.filter(function(q){return q>=EM_MIN_QTY;});
+  if(m==='ht')return HT_BREAKS.map(function(b){return b[0];});
+  return QB.slice();
+}
+
+/* ---- pricing ------------------------------------------------------------ */
+function hoodieDealOn(p,qty){return !!(p&&p.style&&HOODIE_DEAL_STYLES[String(p.style).trim().toUpperCase()])&&(qty||0)>=HOODIE_DEAL_MIN_QTY;}
+function baseCostAt(p,qty){
+  if(hoodieDealOn(p,qty))return HOODIE_DEAL_COST_BASE;
+  var bp=(p.case_sale_price!=null)?p.case_sale_price:p.case_price;
+  return (bp==null||isNaN(bp))?null:bp;
+}
+function blankUnit(p,qty,promo){
+  var bp=baseCostAt(p,qty);
+  var list=hoodieDealOn(p,qty)?parseFloat((bp*1.5).toFixed(2)):p._blank;
+  if(!promo)return list;
+  if(bp==null||isNaN(bp))return list;
+  return parseFloat((bp+(bp*0.5*(1-promo))).toFixed(2));
+}
+function colorsIdx(n){var v=parseInt(n,10);if(!v||v<1)v=1;return v-1;}
+function decoUnit(p,cfg,qty){
+  var c=0,anyEM=false,qb=getQB(qty),htp=pick(HT_BREAKS,qty),hts=pick(HT_SMALL_BREAKS,qty),eqb=getEMQB(qty);
+  var isHat=productType(p)==='hat';
+  var deal=!!p._dealBasicTee&&orderMethod(p,cfg)==='sp'&&qty>=50;
+  var fe=colorsIdx(cfg.frontColors), be=colorsIdx(cfg.backColors);
+  if(deal&&fe>=0&&fe<=2)fe=0;
+  if(deal&&be>=0&&be<=2)be=0;
+  (cfg.locs||[]).forEach(function(key){
+    var m=(cfg.locMethod||{})[key]||'sp';
+    var isSleeve=(key==='left-sleeve'||key==='right-sleeve');
+    var smallHT=(isHat||key==='left-chest'||key==='right-chest'||isSleeve);
+    if(m==='em'){anyEM=true;c+=(emLocCls(p,key)==='front')?EM_FRONT[eqb]:EM_SIDE[eqb];}
+    else if(m==='ht'){c+=smallHT?hts:htp;}
+    else{
+      if(key==='front')c+=(FRONT[qb]||FRONT[24])[fe];
+      else if(key==='back')c+=(BACK[qb]||BACK[24])[be];
+      else if(isSleeve)c+=SLEEVE_SP;
+      else c+=(FRONT[qb]||FRONT[24])[fe];
+    }
+  });
+  if(anyEM)c+=EM_SETUP_FEE/qty;
+  return c;
+}
+function dwUnit(p,cfg,qty){
+  if(!p._dwMatrix)return null;
+  var b=dwBreaks(p),qb=b[0];for(var i=0;i<b.length;i++){if(qty>=b[i])qb=b[i];}
+  var row=p._dwMatrix[qb]||p._dwMatrix[24];if(!row)return null;
+  var c=parseInt(cfg.frontColors,10)||1;if(c<1)c=1;if(c>4)c=4;
+  var v=row[c];return (v==null||isNaN(v))?null:parseFloat((+v).toFixed(2));
+}
+function unitPrice(p,cfg){
+  var qty=cfg.qty|0;
+  if(!p||qty<minQty(p,cfg))return null;
+  if(p._drinkware)return dwUnit(p,cfg,qty);
+  var c=blankUnit(p,qty,cfg.promoDiscount||0);
+  c+=decoUnit(p,cfg,qty);
+  var a=cfg.addons||{};
+  if(a.neck)c+=ADDON_NECK;
+  if(a.hem)c+=getHem(qty);
+  if(a.bag)c+=ADDON_BAG;
+  c*=(RUSH_MULT[cfg.rush]||1);
+  return parseFloat(c.toFixed(2));
+}
+function sizeUpchargePer(p,sz,cfg){
+  if(p._drinkware||!isExtendedSize(sz))return 0;
+  var qty=cfg.qty|0, raw;
+  if(hoodieDealOn(p,qty)){
+    var dv=HOODIE_DEAL_COST_BYSIZE[String(sz).toUpperCase()];
+    raw=(dv==null)?0:parseFloat((dv-HOODIE_DEAL_COST_BASE).toFixed(4));
+  }else{
+    var v=(p.size_upcharges||{})[sz];raw=(v==null||isNaN(v)||v<=0)?0:v;
+  }
+  if(!raw)return 0;
+  var promo=cfg.promoDiscount||0;
+  var mk=promo?(1+0.5*(1-promo)):1.5;
+  return parseFloat((raw*mk*(RUSH_MULT[cfg.rush]||1)).toFixed(2));
+}
+function upchargeTotal(p,cfg,sizes){
+  var t=0;Object.keys(sizes||{}).forEach(function(sz){var per=sizeUpchargePer(p,sz,cfg);if(per>0)t+=per*(sizes[sz]|0);});
+  return parseFloat(t.toFixed(2));
+}
+function lineTotal(p,cfg,sizes){
+  var pp=unitPrice(p,cfg);if(pp==null)return null;
+  return parseFloat((pp*(cfg.qty|0)+upchargeTotal(p,cfg,sizes)).toFixed(2));
+}
+/* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
+/* depts (optional): the production departments on the order. Each has its
+   own turnaround on the Orders dashboard; the slowest one sets the date. */
+var DEPT_DAYS=null;
+function deptsOf(p,cfg){
+  if(p&&(p._drinkware||p._pcna))return ['promo'];
+  var out=[];cfg=cfg||{};
+  (cfg.locs||[]).forEach(function(k){var m=(cfg.locMethod||{})[k]||'sp';m=(m==='em'||m==='ht')?m:'sp';if(out.indexOf(m)<0)out.push(m);});
+  return out.length?out:['sp'];
+}
+function deptDays(k,rush){var d=DEPT_DAYS&&(DEPT_DAYS[k]||DEPT_DAYS.sp);return d?(d.days[rush]||d.days.std):(RUSH_DAYS[rush]||10);}
+function turnaroundDays(rush,hem,depts){
+  var n=(depts&&depts.length&&DEPT_DAYS)?Math.max.apply(null,depts.map(function(k){return deptDays(k,rush);})):(RUSH_DAYS[rush]||10);
+  return n+(hem?HEM_EXTRA_DAYS:0);
+}
+/* A rush is sold only when every department on the order offers it. */
+function rushAllowed(rush,depts){
+  if(rush==='std')return true;
+  if(!DEPT_DAYS)return true;
+  return (depts&&depts.length?depts:['sp']).every(function(k){var d=DEPT_DAYS[k]||DEPT_DAYS.sp;return rush==='rush'?d.rush_on!==false:d.super_on!==false;});
+}
+function deptBusy(depts){
+  if(!DEPT_DAYS)return false;
+  return (depts&&depts.length?depts:['sp']).some(function(k){var d=DEPT_DAYS[k];return !!(d&&d.busy);});
+}
+/* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
+   Only the day counts move; RUSH_MULT (the price) never does. */
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});if(s.depts&&typeof s.depts==='object')DEPT_DAYS=s.depts;}
+function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
+
+root.AliveEngine={
+  prepare:prepare, productType:productType, decoMethods:decoMethods, locations:locations,
+  isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
+  minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
+  upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, deptsOf:deptsOf, rushAllowed:rushAllowed, deptBusy:deptBusy, methodLabel:methodLabel,
+  PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
+  MAX_INK:8
+};
+})(typeof window!=='undefined'?window:globalThis);
+</script>
 <script src="deals-config.js"></script>
 <script>
 // =====================================================================
@@ -1429,7 +1745,35 @@ function dwBreakList(p){
   if(!p||!p._dwMatrix)return [];
   return Object.keys(p._dwMatrix).map(function(k){return parseInt(k,10);}).filter(function(n){return !isNaN(n);}).sort(function(a,b){return a-b;});
 }
-function cardAtQty(p){var b=dwBreakList(p);return (p&&p._drinkware&&b.length)?b[b.length-1]:144;}
+/* The card quotes the price at the MINIMUM order, the same number the product
+   page opens on (Austin, 24 Nov 2026): "at 144+" read as if 144 was required. */
+function cardAtQty(p){var b=dwBreakList(p);return b.length?b[0]:24;}
+function dwStartPrice(p){
+  var b=dwBreakList(p);if(!b.length)return null;
+  var row=p._dwMatrix[b[0]],lo=null;
+  for(var c in row){var v=+row[c];if(!isNaN(v)&&(lo===null||v<lo))lo=v;}
+  return lo;
+}
+/* Garment + the product page's default decoration (its first method, first
+   location, 1 color) at that method's minimum. prepare() deep-copies, so it is
+   handed the row without its colors and images. */
+function startAt(raw,blank){
+  try{
+    var E=window.AliveEngine;if(!E)return null;
+    var lite={};for(var k in raw){if(k!=='colors'&&k!=='images'&&k!=='description'&&k!=='sizes')lite[k]=raw[k];}
+    var p=E.prepare(lite);if(!p)return null;
+    var m=E.isEmbroideryOnly(p)?'em':E.decoMethods(p)[0];
+    var l=E.locations(p,m),loc=l.length?l[0].key:'front',lm={};lm[loc]=m;
+    var cfg={qty:24,locs:[loc],locMethod:lm,frontColors:1,backColors:1,addons:{neck:false,hem:false,bag:false},rush:'std',promoDiscount:0};
+    cfg.qty=E.minQty(p,cfg);
+    var u=E.unitPrice(p,cfg);
+    return (u==null||isNaN(u))?null:{u:+(+u).toFixed(2),q:cfg.qty};
+  }catch(e){return null;}
+}
+function cardQty(it){var p=it._full;if(p&&(p._drinkware||p._pcna))return cardAtQty(p);return it.mq||24;}
+function cardPriceHtml(it){
+  return '<div class="card-price">Starts at <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">&middot; '+cardQty(it)+' pcs</span></div>';
+}
 function dwCardMeta(p){
   var b=dwBreakList(p),min=b.length?b[0]:24;
   var what=(p&&p._pcna)?'item, logo &amp; shipping included':'bottle + logo included';
@@ -2318,7 +2662,7 @@ function renderGrid(){
     var metaHtml=isDw
       ? dwCardMeta(p)
       : '<span class="card-meta-rush">Rush Available</span>'+
-        '<span class="card-meta-moq">'+(bucketForProduct(p)==='Polos & Button-Downs'?'Embroidery: 12-piece minimum':'Minimum 24 pcs')+' &middot; 10-day standard turnaround</span>';
+        '<span class="card-meta-moq">'+('Minimum '+(it.mq||24)+' pcs')+' &middot; 10-day standard turnaround</span>';
     return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
            dealBadge+projStarHtml(it.s)+
            cardImgHtml(p,src,displayName)+
@@ -2326,7 +2670,7 @@ function renderGrid(){
            '<div class="card-info">'+
              (brand?'<div class="card-brand">'+brand+'</div>':'')+
              '<div class="card-name">'+displayName+'</div>'+
-             '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at '+cardAtQty(p)+'+</span></div>'+
+             cardPriceHtml(it)+
              saleNoteHtml(_st)+
              '<div class="card-meta">'+metaHtml+'</div>'+
            '</div></a>';
@@ -2420,7 +2764,7 @@ function gbbCardHtml(it){
   var isDw=!!(p&&p._drinkware);
   var metaHtml=isDw
     ? dwCardMeta(p)
-    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">'+(bucketForProduct(p)==='Polos & Button-Downs'?'Embroidery: 12-piece minimum':'Minimum 24 pcs')+' &middot; 10-day standard turnaround</span>';
+    : '<span class="card-meta-rush">Rush Available</span><span class="card-meta-moq">'+('Minimum '+(it.mq||24)+' pcs')+' &middot; 10-day standard turnaround</span>';
   return '<a class="card" href="https://aliveprintshop.com/insta-price/?style='+safeStyle+'" target="_top">'+
          dealBadge+projStarHtml(it.s)+
          cardImgHtml(p,src,displayName)+
@@ -2428,7 +2772,7 @@ function gbbCardHtml(it){
          '<div class="card-info">'+
            (brand?'<div class="card-brand">'+brand+'</div>':'')+
            '<div class="card-name">'+displayName+'</div>'+
-           '<div class="card-price">from <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">at '+cardAtQty(p)+'+</span></div>'+
+           cardPriceHtml(it)+
            saleNoteHtml(_st)+
            '<div class="card-meta">'+metaHtml+'</div>'+
          '</div></a>';
@@ -2598,7 +2942,7 @@ async function loadProducts(){
       // from the product page's Decoration dropdown.
       if(p._pcna){
         if(p._hidden)continue;
-        var _pfp=dwFromPrice(p);if(_pfp==null)continue;
+        var _pfp=dwStartPrice(p);if(_pfp==null)_pfp=dwFromPrice(p);if(_pfp==null)continue;
         var _pfc=(Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].name)?p.colors[0].name:'';
         flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:_pfc,p:_pfp,fp:_pfp,_full:p});
         continue;
@@ -2617,13 +2961,14 @@ async function loadProducts(){
       var unitPrice=+(basePrice*1.5).toFixed(2);
       var firstColor='';
       if(Array.isArray(p.colors)&&p.colors.length&&p.colors[0].name)firstColor=p.colors[0].name;
-      var fromPrice=computeFromPrice(p,unitPrice);
-      flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,fp:fromPrice,_full:p});
+      var _st=startAt(p,unitPrice);
+      var fromPrice=_st?_st.u:computeFromPrice(p,unitPrice);
+      flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:firstColor,p:unitPrice,fp:fromPrice,mq:_st?_st.q:null,_full:p});
     }
     // Append manual (non-SanMar) products, e.g. drinkware.
     MANUAL_PRODUCTS.forEach(function(p){
       var fc=(Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].name)?p.colors[0].name:'';
-      var fp=p._drinkware?dwFromPrice(p):(p.p||null);
+      var fp=p._drinkware?(dwStartPrice(p)!=null?dwStartPrice(p):dwFromPrice(p)):(p.p||null);
       flat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:fc,p:fp,fp:fp,_full:p});
     });
     ITEMS=flat;
@@ -2675,7 +3020,7 @@ async function loadProducts(){
       var mflat=[];
       MANUAL_PRODUCTS.forEach(function(p){
         var fc=(Array.isArray(p.colors)&&p.colors[0]&&p.colors[0].name)?p.colors[0].name:'';
-        var fp=p._drinkware?dwFromPrice(p):(p.p||null);
+        var fp=p._drinkware?(dwStartPrice(p)!=null?dwStartPrice(p):dwFromPrice(p)):(p.p||null);
         mflat.push({s:String(p.style),n:p.name||'',b:p.brand||'',c:fc,p:fp,fp:fp,_full:p});
       });
       if(mflat.length){
