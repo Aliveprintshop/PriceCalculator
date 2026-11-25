@@ -1829,10 +1829,33 @@ function lineTotal(p,cfg,sizes){
   return parseFloat((pp*(cfg.qty|0)+upchargeTotal(p,cfg,sizes)).toFixed(2));
 }
 /* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
-function turnaroundDays(rush,hem){return (RUSH_DAYS[rush]||10)+(hem?HEM_EXTRA_DAYS:0);}
+/* depts (optional): the production departments on the order. Each has its
+   own turnaround on the Orders dashboard; the slowest one sets the date. */
+var DEPT_DAYS=null;
+function deptsOf(p,cfg){
+  if(p&&(p._drinkware||p._pcna))return ['promo'];
+  var out=[];cfg=cfg||{};
+  (cfg.locs||[]).forEach(function(k){var m=(cfg.locMethod||{})[k]||'sp';m=(m==='em'||m==='ht')?m:'sp';if(out.indexOf(m)<0)out.push(m);});
+  return out.length?out:['sp'];
+}
+function deptDays(k,rush){var d=DEPT_DAYS&&(DEPT_DAYS[k]||DEPT_DAYS.sp);return d?(d.days[rush]||d.days.std):(RUSH_DAYS[rush]||10);}
+function turnaroundDays(rush,hem,depts){
+  var n=(depts&&depts.length&&DEPT_DAYS)?Math.max.apply(null,depts.map(function(k){return deptDays(k,rush);})):(RUSH_DAYS[rush]||10);
+  return n+(hem?HEM_EXTRA_DAYS:0);
+}
+/* A rush is sold only when every department on the order offers it. */
+function rushAllowed(rush,depts){
+  if(rush==='std')return true;
+  if(!DEPT_DAYS)return true;
+  return (depts&&depts.length?depts:['sp']).every(function(k){var d=DEPT_DAYS[k]||DEPT_DAYS.sp;return rush==='rush'?d.rush_on!==false:d.super_on!==false;});
+}
+function deptBusy(depts){
+  if(!DEPT_DAYS)return false;
+  return (depts&&depts.length?depts:['sp']).some(function(k){var d=DEPT_DAYS[k];return !!(d&&d.busy);});
+}
 /* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
    Only the day counts move; RUSH_MULT (the price) never does. */
-function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});}
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});if(s.depts&&typeof s.depts==='object')DEPT_DAYS=s.depts;}
 function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
 
 root.AliveEngine={
@@ -1840,7 +1863,7 @@ root.AliveEngine={
   isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
   minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
   upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
-  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, methodLabel:methodLabel,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, deptsOf:deptsOf, rushAllowed:rushAllowed, deptBusy:deptBusy, methodLabel:methodLabel,
   PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
   MAX_INK:8
 };
@@ -4170,7 +4193,7 @@ function applySched(s){
   CLOSED_DATES.length = 0;
   s.closed_dates.forEach(function(d){ if(/^\d{4}-\d{2}-\d{2}$/.test(d)) CLOSED_DATES.push(d); });
   E.setSchedule(s);
-  SCHED = {rush_on:s.rush_on !== false, super_on:s.super_on !== false, busy:!!s.busy, note:s.busy ? String(s.note || '') : ''};
+  SCHED = {rush_on:s.rush_on !== false, super_on:s.super_on !== false, busy:!!s.busy, note:s.busy ? String(s.note || '') : '', hasDepts:!!s.depts};
   return true;
 }
 try{ applySched(JSON.parse(localStorage.getItem('aps_sched') || 'null')); }catch(e){}
@@ -4183,8 +4206,17 @@ function loadSched(after){
     }).catch(function(){});
   }catch(e){}
 }
-function rushOn(key){ return key === 'std' || (key === 'rush' ? SCHED.rush_on : SCHED.super_on); }
-function busyNote(cls){ return SCHED.busy && SCHED.note ? '<div class="' + cls + '">' + esc(SCHED.note) + '</div>' : ''; }
+/* depts: the departments on this item / cart. Without the per-department
+   data (an old cached copy) it falls back to the shop-wide switches. */
+function rushOn(key, depts){
+  if(key === 'std') return true;
+  if(!(key === 'rush' ? SCHED.rush_on : SCHED.super_on) && !SCHED.hasDepts) return false;
+  return E.rushAllowed(key, depts);
+}
+function busyNote(cls, depts){
+  var b = SCHED.hasDepts ? E.deptBusy(depts) : SCHED.busy;
+  return b && SCHED.note ? '<div class="' + cls + '">' + esc(SCHED.note) + '</div>' : '';
+}
 var TA_KEYS = ['std','rush','super'];
 var TA_NAME = {std:'Standard', rush:'Rush', super:'Super Rush'};
 function shopNow(){
@@ -4214,12 +4246,15 @@ function shipReady(days){
   if(n.getHours() >= CUTOFF_HOUR) d.setDate(d.getDate() + 1);
   return addBizDays(nextBiz(d), days);
 }
-function taDate(key){ return shipReady(E.turnaroundDays(key, false)); }
+/* The department this product goes to (screen print, embroidery, heat
+   transfer or promo): each has its own turnaround on the Orders dashboard. */
+function pDepts(){ try{ return S.p ? E.deptsOf(S.p, pricingCfg()) : ['sp']; }catch(e){ return ['sp']; } }
+function taDate(key){ return shipReady(E.turnaroundDays(key, false, pDepts())); }
 function fmtDay(d){
   try{ return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'}); }
   catch(e){ return (d.getMonth() + 1) + '/' + d.getDate(); }
 }
-function taLabel(key){ return TA_NAME[key] + ' (' + E.turnaroundDays(key, false) + ' business days)'; }
+function taLabel(key){ return TA_NAME[key] + ' (' + E.turnaroundDays(key, false, pDepts()) + ' business days)'; }
 /* What the extra speed costs, given everything already chosen on this page. */
 function taFee(key){
   if(key === 'std') return 'Included';
@@ -4242,15 +4277,16 @@ function taFoot(){
      even with the click handlers gone. Standard only; the rush upgrade is a
      checkout decision because one turnaround covers the whole order. */
   return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span></div>' +
-    '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false) + ' business days</span>' +
+    '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false, pDepts()) + ' business days</span>' +
       '<span class="tadate" data-tadate="std">Ships by ' + fmtDay(taDate('std')) + '</span></div>' +
-    busyNote('tabusy') +
+    busyNote('tabusy', pDepts()) +
     '<div class="tanote">' + rushLine() + 'Dates are when it leaves our shop; transit is on top.</div></div>';
 }
 function rushLine(){
   var r = [];
-  if(rushOn('rush')) r.push(E.turnaroundDays('rush', false));
-  if(rushOn('super')) r.push(E.turnaroundDays('super', false));
+  var dp = pDepts();
+  if(rushOn('rush', dp)) r.push(E.turnaroundDays('rush', false, dp));
+  if(rushOn('super', dp)) r.push(E.turnaroundDays('super', false, dp));
   if(!r.length) return '';
   return 'Need it sooner? Pick a ' + r.join(' or ') + ' day rush in your cart, the next step. ';
 }

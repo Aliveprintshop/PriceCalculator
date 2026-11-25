@@ -271,10 +271,33 @@ function lineTotal(p,cfg,sizes){
   return parseFloat((pp*(cfg.qty|0)+upchargeTotal(p,cfg,sizes)).toFixed(2));
 }
 /* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
-function turnaroundDays(rush,hem){return (RUSH_DAYS[rush]||10)+(hem?HEM_EXTRA_DAYS:0);}
+/* depts (optional): the production departments on the order. Each has its
+   own turnaround on the Orders dashboard; the slowest one sets the date. */
+var DEPT_DAYS=null;
+function deptsOf(p,cfg){
+  if(p&&(p._drinkware||p._pcna))return ['promo'];
+  var out=[];cfg=cfg||{};
+  (cfg.locs||[]).forEach(function(k){var m=(cfg.locMethod||{})[k]||'sp';m=(m==='em'||m==='ht')?m:'sp';if(out.indexOf(m)<0)out.push(m);});
+  return out.length?out:['sp'];
+}
+function deptDays(k,rush){var d=DEPT_DAYS&&(DEPT_DAYS[k]||DEPT_DAYS.sp);return d?(d.days[rush]||d.days.std):(RUSH_DAYS[rush]||10);}
+function turnaroundDays(rush,hem,depts){
+  var n=(depts&&depts.length&&DEPT_DAYS)?Math.max.apply(null,depts.map(function(k){return deptDays(k,rush);})):(RUSH_DAYS[rush]||10);
+  return n+(hem?HEM_EXTRA_DAYS:0);
+}
+/* A rush is sold only when every department on the order offers it. */
+function rushAllowed(rush,depts){
+  if(rush==='std')return true;
+  if(!DEPT_DAYS)return true;
+  return (depts&&depts.length?depts:['sp']).every(function(k){var d=DEPT_DAYS[k]||DEPT_DAYS.sp;return rush==='rush'?d.rush_on!==false:d.super_on!==false;});
+}
+function deptBusy(depts){
+  if(!DEPT_DAYS)return false;
+  return (depts&&depts.length?depts:['sp']).some(function(k){var d=DEPT_DAYS[k];return !!(d&&d.busy);});
+}
 /* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
    Only the day counts move; RUSH_MULT (the price) never does. */
-function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});}
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});if(s.depts&&typeof s.depts==='object')DEPT_DAYS=s.depts;}
 function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
 
 root.AliveEngine={
@@ -282,7 +305,7 @@ root.AliveEngine={
   isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
   minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
   upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
-  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, methodLabel:methodLabel,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, deptsOf:deptsOf, rushAllowed:rushAllowed, deptBusy:deptBusy, methodLabel:methodLabel,
   PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
   MAX_INK:8
 };

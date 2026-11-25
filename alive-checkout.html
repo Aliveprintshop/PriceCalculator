@@ -707,10 +707,33 @@ function lineTotal(p,cfg,sizes){
   return parseFloat((pp*(cfg.qty|0)+upchargeTotal(p,cfg,sizes)).toFixed(2));
 }
 /* "Starting at" — v2's lowest price for the product: 1-color front at the top break. */
-function turnaroundDays(rush,hem){return (RUSH_DAYS[rush]||10)+(hem?HEM_EXTRA_DAYS:0);}
+/* depts (optional): the production departments on the order. Each has its
+   own turnaround on the Orders dashboard; the slowest one sets the date. */
+var DEPT_DAYS=null;
+function deptsOf(p,cfg){
+  if(p&&(p._drinkware||p._pcna))return ['promo'];
+  var out=[];cfg=cfg||{};
+  (cfg.locs||[]).forEach(function(k){var m=(cfg.locMethod||{})[k]||'sp';m=(m==='em'||m==='ht')?m:'sp';if(out.indexOf(m)<0)out.push(m);});
+  return out.length?out:['sp'];
+}
+function deptDays(k,rush){var d=DEPT_DAYS&&(DEPT_DAYS[k]||DEPT_DAYS.sp);return d?(d.days[rush]||d.days.std):(RUSH_DAYS[rush]||10);}
+function turnaroundDays(rush,hem,depts){
+  var n=(depts&&depts.length&&DEPT_DAYS)?Math.max.apply(null,depts.map(function(k){return deptDays(k,rush);})):(RUSH_DAYS[rush]||10);
+  return n+(hem?HEM_EXTRA_DAYS:0);
+}
+/* A rush is sold only when every department on the order offers it. */
+function rushAllowed(rush,depts){
+  if(rush==='std')return true;
+  if(!DEPT_DAYS)return true;
+  return (depts&&depts.length?depts:['sp']).every(function(k){var d=DEPT_DAYS[k]||DEPT_DAYS.sp;return rush==='rush'?d.rush_on!==false:d.super_on!==false;});
+}
+function deptBusy(depts){
+  if(!DEPT_DAYS)return false;
+  return (depts&&depts.length?depts:['sp']).some(function(k){var d=DEPT_DAYS[k];return !!(d&&d.busy);});
+}
 /* Live turnaround days from the Turnaround tab (alive-orders /api/schedule).
    Only the day counts move; RUSH_MULT (the price) never does. */
-function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});}
+function setSchedule(s){if(!s||!s.days)return;['std','rush','super'].forEach(function(k){var n=Math.round(+s.days[k]);if(n>0&&n<=60)RUSH_DAYS[k]=n;});if(s.depts&&typeof s.depts==='object')DEPT_DAYS=s.depts;}
 function methodLabel(m){return m==='em'?'Embroidery':m==='ht'?'Full Color (heat transfer)':'Screen print';}
 
 root.AliveEngine={
@@ -718,7 +741,7 @@ root.AliveEngine={
   isFoamTrucker:isFoamTrucker, isEmbroideryOnly:isEmbroideryOnly, orderMethod:orderMethod,
   minQty:minQty, priceBreaks:priceBreaks, unitPrice:unitPrice, sizeUpchargePer:sizeUpchargePer,
   upchargeTotal:upchargeTotal, lineTotal:lineTotal, isExtendedSize:isExtendedSize,
-  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, methodLabel:methodLabel,
+  hemRate:getHem, turnaroundDays:turnaroundDays, setSchedule:setSchedule, deptsOf:deptsOf, rushAllowed:rushAllowed, deptBusy:deptBusy, methodLabel:methodLabel,
   PROMO_CODES:PROMO_CODES, RUSH_MULT:RUSH_MULT, ADDON:{neck:ADDON_NECK,bag:ADDON_BAG},
   MAX_INK:8
 };
@@ -939,6 +962,7 @@ root.AliveEngine={
       art_missing: (it.artworkFiles || []).filter(function (f) { return f && f.pending && !f.url; })
         .map(function (f) { return f.location || 'artwork'; }),
       pcna: !!(it.pricingProduct && it.pricingProduct._pcna),
+      dept: Array.isArray(it.dept) ? it.dept : undefined,
       bg_removed: (it.artworkFiles || []).filter(function (f) { return f && f.bgRemoved; })
         .map(function (f) { return f.location || 'artwork'; }),
       promo_code: it.promoCodeAtAdd || '',
@@ -1073,6 +1097,9 @@ root.AliveEngine={
          actually happens. On 16 Oct 2026 Canyon Springs came through twice,
          once standard and once with Super Rush, and landed as two orders. */
       order_ref: ctx.orderRef || null,
+      /* The ready date the customer was shown, so the dashboard's due date
+         matches it exactly (departments, closed days, busy mode). */
+      due_date: /^\d{4}-\d{2}-\d{2}$/.test(ctx.dueDate || '') ? ctx.dueDate : undefined,
       /* What the 7-day (x1.15) or 5-day (x1.25) multiplier added. Rush has
          never been a line item — it is folded into every unit price — so the
          shop could see "Super Rush" on an order but never how much of the
@@ -1518,7 +1545,7 @@ function applySched(s){
   CLOSED_DATES.length = 0;
   s.closed_dates.forEach(function(d){ if(/^\d{4}-\d{2}-\d{2}$/.test(d)) CLOSED_DATES.push(d); });
   E.setSchedule(s);
-  SCHED = {rush_on:s.rush_on !== false, super_on:s.super_on !== false, busy:!!s.busy, note:s.busy ? String(s.note || '') : ''};
+  SCHED = {rush_on:s.rush_on !== false, super_on:s.super_on !== false, busy:!!s.busy, note:s.busy ? String(s.note || '') : '', hasDepts:!!s.depts};
   return true;
 }
 try{ applySched(JSON.parse(localStorage.getItem('aps_sched') || 'null')); }catch(e){}
@@ -1531,8 +1558,17 @@ function loadSched(after){
     }).catch(function(){});
   }catch(e){}
 }
-function rushOn(key){ return key === 'std' || (key === 'rush' ? SCHED.rush_on : SCHED.super_on); }
-function busyNote(cls){ return SCHED.busy && SCHED.note ? '<div class="' + cls + '">' + esc(SCHED.note) + '</div>' : ''; }
+/* depts: the departments on this item / cart. Without the per-department
+   data (an old cached copy) it falls back to the shop-wide switches. */
+function rushOn(key, depts){
+  if(key === 'std') return true;
+  if(!(key === 'rush' ? SCHED.rush_on : SCHED.super_on) && !SCHED.hasDepts) return false;
+  return E.rushAllowed(key, depts);
+}
+function busyNote(cls, depts){
+  var b = SCHED.hasDepts ? E.deptBusy(depts) : SCHED.busy;
+  return b && SCHED.note ? '<div class="' + cls + '">' + esc(SCHED.note) + '</div>' : '';
+}
 function shopNow(){
   var now = new Date(), p = {};
   try{ new Intl.DateTimeFormat('en-US',{timeZone:SHOP_TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hour12:false}).formatToParts(now).forEach(function(x){ p[x.type] = x.value; }); }catch(e){}
@@ -1545,7 +1581,22 @@ function nextBizDay(d){ var x = new Date(d); do{ x.setDate(x.getDate()+1); }whil
 function productionStart(){ var n = shopNow(); return (isBizDay(n.date) && n.hour < CUTOFF_HOUR) ? n.date : nextBizDay(n.date); }
 function addBizDays(from, n){ var d = new Date(from); while(!isBizDay(d)) d.setDate(d.getDate()+1); for(var i = 1; i < n; i++) d = nextBizDay(d); return d; }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'}); }
-function readyDate(rush){ return addBizDays(productionStart(), E.turnaroundDays(rush, S.addon.hem && hemApplies())); }
+/* The production departments on this cart (screen print, embroidery, heat
+   transfer, promo). Each has its own turnaround; the slowest sets the date and
+   a rush is offered only if every one of them sells it (Austin, 24 Nov 2026). */
+function itemDepts(it){
+  if(!it) return ['sp'];
+  var p = it.pricingProduct || {};
+  if(p._drinkware || p._pcna) return ['promo'];
+  return E.deptsOf(p, {locs: it.locations && it.locations.length ? it.locations : ['front'],
+                       locMethod: it.locMethod && Object.keys(it.locMethod).length ? it.locMethod : {front: it.decoMethod || 'sp'}});
+}
+function cartDepts(){
+  var out = [];
+  (S.items || []).forEach(function(it){ itemDepts(it).forEach(function(d){ if(out.indexOf(d) < 0) out.push(d); }); });
+  return out.length ? out : ['sp'];
+}
+function readyDate(rush){ return addBizDays(productionStart(), E.turnaroundDays(rush, S.addon.hem && hemApplies(), cartDepts())); }
 
 /* ------------------------------------------------------------ state */
 var S = {
@@ -1707,14 +1758,14 @@ function priceItem(it, addons, rush){
 /* Write the chosen options onto every re-priceable item (what the Worker reads). */
 /* A rush the shop has switched off on the Turnaround tab can't be bought:
    step down to the next option that is still on. */
-function fixRush(){ if(!rushOn(S.rush)) S.rush = (S.rush === 'super' && rushOn('rush')) ? 'rush' : 'std'; }
+function fixRush(){ var d = cartDepts(); if(!rushOn(S.rush, d)) S.rush = (S.rush === 'super' && rushOn('rush', d)) ? 'rush' : 'std'; }
 function applyOptions(){
   fixRush();
   S.items = S.items.map(function(it){
     if(!priceable(it)) return it;
     var r = priceItem(it, S.addon, S.rush), c = r.cfg;
     var list = []; if(c.addons.neck) list.push('Inside Neck Print'); if(c.addons.hem) list.push('Custom Hem Tag'); if(c.addons.bag) list.push('Fold & Bag');
-    var days = E.turnaroundDays(S.rush, c.addons.hem);
+    var days = E.turnaroundDays(S.rush, c.addons.hem, cartDepts());
     var promo = CART.getPromo();
     var perSize = {}; Object.keys(it.sizes || {}).forEach(function(z){ var u = E.sizeUpchargePer(it.pricingProduct, z, c); if(u > 0) perSize[z] = u; });
     var listBlank = E.unitPrice(it.pricingProduct, Object.assign({}, c, {promoDiscount:0}));
@@ -1939,7 +1990,7 @@ function upBuild(src, raw, sizesIn){
     decoMethod:E.orderMethod(p, cfg), decoLabel:(p._pcna && p._decoLabel) ? p._decoLabel : E.methodLabel(m), locMethod:lm, locations:locs.slice(),
     frontColors: lm.front === 'sp' ? ink.front : null, backColors: lm.back === 'sp' ? ink.back : null,
     qty:q, sizes:sizes, addons:{neck:false, hem:false, bag:false}, addonList:[], rush:'std',
-    turnaroundLabel:'Standard (' + E.turnaroundDays('std', false) + ' business days)',
+    turnaroundLabel:'Standard (' + E.turnaroundDays('std', false, E.deptsOf(p, cfg)) + ' business days)',
     artworkLink: src.artworkLater ? 'Customer will email artwork after checkout.' : up.join('\n'), artworkFiles:files, artworkByLocation:byLoc, artworkNote:up.join(', '), artworkLater:!!src.artworkLater,
     notes:['Added from a cart suggestion: same artwork as the ' + (src.productName || src.style) + ' (' + (src.color || '') + '). Check placement on the proof.'].concat(inkNotes).join(' · '),
     unitPrice:unit, lineTotal:E.lineTotal(p, cfg, sizes), sizeUpchargeTotal:E.upchargeTotal(p, cfg, sizes), sizeUpchargePerSize:{},
@@ -2189,13 +2240,14 @@ function promoInput(promo){
    step with CONFIG.reviews on the product page — both are typed in. */
 var RATING = '<div class="rating"><span class="stars">★★★★★</span> <b>4.9</b> from 295 Google reviews</div>';
 function rushCard(){
+  var cd = cartDepts();
   /* Turnaround is the decision customers care about most, so it leads the cart. */
   return '<div class="card"><div class="hd"><h2 class="h2t">Need it sooner?' + tip('turnaround') + '</h2></div>' +
     '<p class="cnote">One turnaround covers the whole order. The date is when it leaves our shop.</p><div class="ships">' +
-    rushRow('std', 'Standard — ' + E.turnaroundDays('std', false) + ' business days') +
-    (rushOn('rush') ? rushRow('rush', E.turnaroundDays('rush', false) + ' business day rush') : '') +
-    (rushOn('super') ? rushRow('super', E.turnaroundDays('super', false) + ' business day rush') : '') +
-    '</div>' + busyNote('busynote') + '<p class="cnote">Need it in 3 days? <a href="' + CONFIG.phoneHref + '">Call ' + esc(CONFIG.phone) + '</a> and we’ll check the schedule.</p></div>';
+    rushRow('std', 'Standard — ' + E.turnaroundDays('std', false, cd) + ' business days') +
+    (rushOn('rush', cd) ? rushRow('rush', E.turnaroundDays('rush', false, cd) + ' business day rush') : '') +
+    (rushOn('super', cd) ? rushRow('super', E.turnaroundDays('super', false, cd) + ' business day rush') : '') +
+    '</div>' + busyNote('busynote', cd) + (cd.length > 1 ? '<p class="cnote">Your order goes to more than one department, so the date is the later of them.</p>' : '') + '<p class="cnote">Need it in 3 days? <a href="' + CONFIG.phoneHref + '">Call ' + esc(CONFIG.phone) + '</a> and we’ll check the schedule.</p></div>';
 }
 function addonCard(){
   return ADDONS.some(function(a){ return addonPieces(a) > 0; })
@@ -2954,11 +3006,12 @@ function submit(){
           return Promise.resolve({ok:false, error:'client missing'});
         }};
         return AO.recordOrder({
-          items: S.items,
+          items: S.items.map(function(it){ return Object.assign({}, it, {dept: itemDepts(it)}); }),
           form: S.form,
           totals: tt,                                    /* .ship and .off */
           shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
           turnaround: S.rush,                            /* std | rush | super */
+          dueDate: ymd(readyDate(S.rush)),
           orderRef: ref,                                 /* one row per cart, not per attempt */
           rushFee: S.rush === 'std' ? 0 : rushExtra(S.rush),
           discount: tt.off,                              /* the Stripe-level promo */
