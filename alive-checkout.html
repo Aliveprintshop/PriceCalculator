@@ -1423,8 +1423,11 @@ if(window.ResizeObserver) new ResizeObserver(broadcast).observe(document.body);
 function scrollToEl(el){
   if(!el) return;
   /* Phones: the site's sticky header is taller, so leave more room above the target. */
-  var pad = (window.matchMedia && window.matchMedia('(max-width:899px)').matches) ? 56 : 12;
-  var y = Math.max(0, Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - pad));
+  var phone = !!(window.matchMedia && window.matchMedia('(max-width:899px)').matches);
+  /* Desktop embed: the two-line site header is ~133px but the parent only allows 80, so add the rest. */
+  var pad = phone ? 56 : (EMBEDDED ? 70 : 12);
+  var y = Math.round(el.getBoundingClientRect().top + (window.scrollY || 0) - pad);
+  if(!EMBEDDED || phone) y = Math.max(0, y);
   if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-scrollto', y:y}, '*'); }catch(e){} }
   else window.scrollTo({top:y, behavior:'smooth'});
 }
