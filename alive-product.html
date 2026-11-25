@@ -3013,7 +3013,10 @@ var CONFIG = {
      refreshing this nightly into reviews.json instead of typing it. */
   reviews: {rating: 4.9, count: 295, href: 'https://www.google.com/search?q=Alive+Print+Shop+North+Las+Vegas+reviews'},
   maxFileMB: 25,
-  defaultEstimate: 50,
+  /* 0 = open on the minimum (24 screen print, 12 embroidery, 10 full color),
+     so the first price a customer sees is the one the product card quotes
+     (Austin, 24 Nov 2026). It was 50. */
+  defaultEstimate: 0,
   /* Real finished work. Every file is a 900x900 square — the strip crops to a
      square tile, and tapping one swaps it into the full product stage, so
      anything smaller goes soft there. Replacing a photo: new filename, not a
@@ -4488,6 +4491,8 @@ function setMethod(m){
   /* Keep the spots that still exist under the new method; else the first. */
   S.locs = S.locs.filter(function(k){ return LOC[k]; });
   if(!S.locs.length) S.locs = [defaultLoc(m)];
+  /* Still on the opening estimate: follow the new method's minimum. */
+  if(S.estAuto && S.p) S.est = E.minQty(S.p, pricingCfg(24));
   Object.keys(S.art).forEach(function(k){ if(!LOC[k]) delete S.art[k]; });
 }
 function methodTabs(){
@@ -6397,7 +6402,7 @@ function applySnapshot(e){
   if(e.side) S.side = e.side;
   if(e.sizes) S.sizes = e.sizes;
   if(e.qty) S.qty = e.qty;
-  if(e.est) S.est = e.est;
+  if(e.est){ S.est = e.est; S.estAuto = false; }
   if(e.art) Object.keys(e.art).forEach(function(k){
     if(!LOC[k]) return;
     var a = e.art[k];
@@ -6466,9 +6471,10 @@ function boot(data){
   if(E.isEmbroideryOnly(p)) setMethod('em');
   /* Hand-off from the /start landing page: ?method=sp|ht|em&qty=48&intent=upload */
   var wm = qp('method'); if(wm && E.decoMethods(p).indexOf(wm) > -1) setMethod(wm);
-  S.est = Math.max(CONFIG.defaultEstimate, E.minQty(p, pricingCfg(CONFIG.defaultEstimate)));
+  S.est = Math.max(CONFIG.defaultEstimate, E.minQty(p, pricingCfg(24)));
+  S.estAuto = !CONFIG.defaultEstimate;
   var wq = parseInt(qp('qty'), 10);
-  if(wq > 0 && wq < 100000) S.est = Math.max(wq, E.minQty(p, pricingCfg(wq)));
+  if(wq > 0 && wq < 100000){ S.est = Math.max(wq, E.minQty(p, pricingCfg(wq))); S.estAuto = false; }
   if(isOneSize()) S.qty = S.est;
   S.phase = 'artwork';   /* every visit starts on the Design step */
   /* ?edit=<cart item id> reopens a line from checkout exactly as it was, and
