@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T23:00:39.705729+00:00",
+  "generated_at": "2026-11-25T23:14:11.694892+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -769060,7 +769060,7 @@
       "brand": "Lane Seven",
       "category": "T-Shirts",
       "subcategory": "Tshirt",
-      "description": "Heavyweight Tee TEES SALE",
+      "description": "Heavyweight Tee TEES",
       "case_price": 4.24,
       "case_sale_price": null,
       "sale_start_date": null,
@@ -769422,22 +769422,6 @@
           }
         },
         {
-          "name": "Toasted Coconut",
-          "code": "TC",
-          "hex": "#A07A59",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15001TC7flat_093026100440.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15001TC8FLATBACK_093026100503.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15001TC1front_093026100222.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15001TC3back_093026100308.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15001TC2side_093026100245.png"
-            ]
-          }
-        },
-        {
           "name": "True Royal",
           "code": "TR",
           "hex": "#1C90F7",
@@ -769478,7 +769462,7 @@
       "brand": "Lane Seven",
       "category": "T-Shirts",
       "subcategory": "Tshirt",
-      "description": "Heavyweight Long Sleeve Tee TEES SALE",
+      "description": "Heavyweight Long Sleeve Tee TEES",
       "case_price": 5.2,
       "case_sale_price": null,
       "sale_start_date": null,
@@ -769550,22 +769534,6 @@
           }
         },
         {
-          "name": "Colony Blue",
-          "code": "CB",
-          "hex": "#96A6D7",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15009CB7flat_071125092818.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15009CB8FLATBACK_071125092839.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009CB1front_071125092614.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009CB3back_071125092655.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009CB2side_071125092635.png"
-            ]
-          }
-        },
-        {
           "name": "Heather Grey",
           "code": "HG",
           "hex": "#CECED5",
@@ -769610,22 +769578,6 @@
             "gallery": [
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009MND3back_021126142603.png",
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009MND2side_021126142542.png"
-            ]
-          }
-        },
-        {
-          "name": "Mushroom",
-          "code": "MSH",
-          "hex": "#DFC9AF",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15009MSH7flat_100226142020.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15009MSH8FLATBACK_100226142042.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009MSH1front_100226140500.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009MSH3back_100226140541.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009MSH2side_100226140521.png"
             ]
           }
         },
@@ -769722,22 +769674,6 @@
             "gallery": [
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009SMK3back_021126143315.png",
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009SMK2side_021126143252.png"
-            ]
-          }
-        },
-        {
-          "name": "Toasted Coconut",
-          "code": "TC",
-          "hex": "#A07A59",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15009TC7flat_093026100820.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls15009TC8FLATBACK_093026100843.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009TC1front_093026100608.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009TC3back_093026100652.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls15009TC2side_093026100629.png"
             ]
           }
         },
@@ -769941,7 +769877,7 @@
       "brand": "Lane Seven",
       "category": "Sweatshirts/Fleece",
       "subcategory": "Fleece",
-      "description": "Urban Hoodie Garment Dyed FLEECE SALE",
+      "description": "Urban Hoodie Garment Dyed FLEECE",
       "case_price": 19.14,
       "case_sale_price": null,
       "sale_start_date": null,
@@ -770093,38 +770029,6 @@
           }
         },
         {
-          "name": "Pigment Peanut Butter",
-          "code": "PNB",
-          "hex": "#D4A24E",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16001gdPNB7flat_061625082345.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16001gdPNB8flat2_061625082406.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16001gdPNB1front_061625082143.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16001gdPNB3back_061625082224.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16001gdPNB2side_061625082204.png"
-            ]
-          }
-        },
-        {
-          "name": "Pigment Pistachio",
-          "code": "PT",
-          "hex": "#EEEEC5",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16001gdPT7flat_061625082656.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16001gdPT8flat2_061625082717.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16001gdPT1front_061625082448.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16001gdPT3back_061625082531.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16001gdPT2side_061625082509.png"
-            ]
-          }
-        },
-        {
           "name": "Pigment Salmon",
           "code": "SM",
           "hex": "#F8D8CD",
@@ -770229,7 +770133,7 @@
       "brand": "Lane Seven",
       "category": "Sweatshirts/Fleece",
       "subcategory": "Fleece",
-      "description": "Urban Crewneck Garment Dyed FLEECE SALE",
+      "description": "Urban Crewneck Garment Dyed FLEECE",
       "case_price": 15.24,
       "case_sale_price": null,
       "sale_start_date": null,
@@ -770329,38 +770233,6 @@
             "gallery": [
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPLB3back_090425145650.png",
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPLB2side_090425145633.png"
-            ]
-          }
-        },
-        {
-          "name": "Pigment Peanut Butter",
-          "code": "PNB",
-          "hex": "#D4A24E",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16004gdPNB8flat2_090425150427.jpg",
-            "back_flat": null,
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPNB1front_090425150223.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPNB3back_090425150258.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPNB2side_090425150240.png"
-            ]
-          }
-        },
-        {
-          "name": "Pigment Pistachio",
-          "code": "PT",
-          "hex": "#EEEEC5",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16004gdPT8flat2_090425150710.jpg",
-            "back_flat": null,
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPT1front_090425150504.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPT3back_090425150540.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16004gdPT2side_090425150522.png"
             ]
           }
         },
@@ -770869,7 +770741,7 @@
       "brand": "Lane Seven",
       "category": "Bottoms",
       "subcategory": "Joggers",
-      "description": "Urban Sweatpants Garment Dyed FLEECE SALE",
+      "description": "Urban Sweatpants Garment Dyed FLEECE",
       "case_price": 16.18,
       "case_sale_price": null,
       "sale_start_date": null,
@@ -770893,22 +770765,6 @@
       },
       "colors": [
         {
-          "name": "Pigment Burro",
-          "code": "BR",
-          "hex": "#E3CAB4",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16006gdBR7flat_090425160239.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16006gdBR8flat2_090425160304.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdBR1front_090425160007.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdBR3back_090425160058.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdBR2side_090425160033.png"
-            ]
-          }
-        },
-        {
           "name": "Pigment Lunar Rock",
           "code": "LR",
           "hex": "#ECECEC",
@@ -770921,22 +770777,6 @@
             "gallery": [
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdLR3back_090425155200.png",
               "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdLR2side_090425155135.png"
-            ]
-          }
-        },
-        {
-          "name": "Pigment Oil Green",
-          "code": "OG",
-          "hex": "#B1C0A1",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16006gdOG7flat_090425154926.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/ls16006gdOG8flat2_090425154951.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdOG1front_090425153704.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdOG3back_090425154746.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/ls16006gdOG2side_090425153729.png"
             ]
           }
         },
@@ -773617,38 +773457,6 @@
       },
       "colors": [
         {
-          "name": "Army Green",
-          "code": "AG",
-          "hex": "#60653B",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006AG7flat_062923141304.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006AG8FLATBACK_062923141322.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006AG1front_062923141122.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006AG3back_062923141156.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006AG2side_062923141139.png"
-            ]
-          }
-        },
-        {
-          "name": "Burgundy",
-          "code": "BG",
-          "hex": "#632031",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006BG7flat_020223111824.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006BG8FLATBACK_020223111844.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006BG1front_013123112158.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006BG3back_013123112218.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006BG2side_020223111904.png"
-            ]
-          }
-        },
-        {
           "name": "Black",
           "code": "BK",
           "hex": "#000000",
@@ -773681,22 +773489,6 @@
           }
         },
         {
-          "name": "Chestnut",
-          "code": "CNT",
-          "hex": "#5F473D",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006CNT7flat_013123113431.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006CNT8FLATBACK_013123113452.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006CNT1front_013123113227.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006CNT3back_013123113308.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006CNT2side_013123113248.png"
-            ]
-          }
-        },
-        {
           "name": "Heather Grey",
           "code": "HG",
           "hex": "#CECED5",
@@ -773725,38 +773517,6 @@
             "gallery": [
               "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006NB3back_071824080355.png",
               "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006NB2side_071824080333.png"
-            ]
-          }
-        },
-        {
-          "name": "Red",
-          "code": "RD",
-          "hex": "#F9123C",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006RD7flat_013123114247.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006RD8FLATBACK_013123114338.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006RD1front_013123114002.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006RD3back_013123114043.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006RD2side_013123114022.png"
-            ]
-          }
-        },
-        {
-          "name": "Seafoam",
-          "code": "SF",
-          "hex": "#B6D6C4",
-          "images": {
-            "front_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006SF7flat_053023201437.jpg",
-            "back_flat": "https://aliveprintshop.github.io/PriceCalculator/media/lane7/lst006SF8FLATBACK_053023201455.jpg",
-            "front_model": "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006SF1front_053023201229.png",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006SF3back_053023201305.png",
-              "https://www.lanesevenapparel.com/images/WAM_LARGE/lst006SF2side_053023201247.png"
             ]
           }
         },
