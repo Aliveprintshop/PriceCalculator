@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T22:55:45.862951+00:00",
+  "generated_at": "2026-11-26T23:18:32.876233+00:00",
   "source": "SanMar SFTP (ftp.sanmar.com) + custom-products.xlsx",
   "markup_percent": 50,
   "turnaround": {
@@ -800767,36 +800767,6 @@
           }
         },
         {
-          "name": "Southwest",
-          "code": "25",
-          "hex": "#FFFFFF",
-          "pms": null,
-          "images": {
-            "front_flat": "https://cdn.ssactivewear.com/Images/Color/94596_f_fl.jpg",
-            "back_flat": "https://cdn.ssactivewear.com/Images/Color/94596_b_fl.jpg",
-            "front_model": null,
-            "back_model": null,
-            "side_model": null,
-            "gallery": []
-          },
-          "crop": {
-            "f": [
-              19,
-              143,
-              983,
-              857,
-              800
-            ],
-            "b": [
-              19,
-              143,
-              983,
-              857,
-              800
-            ]
-          }
-        },
-        {
           "name": "Tiger Camo",
           "code": "12",
           "hex": "#000000",
@@ -817443,41 +817413,6 @@
               17,
               962,
               983,
-              800
-            ]
-          }
-        },
-        {
-          "name": "Navy",
-          "code": "65",
-          "hex": "#032E54",
-          "pms": null,
-          "images": {
-            "front_flat": "https://cdn.ssactivewear.com/Images/Color/31220_f_fl.jpg",
-            "back_flat": "https://cdn.ssactivewear.com/Images/Color/31220_b_fl.jpg",
-            "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/31220_omf_fl.jpg",
-            "back_model": null,
-            "side_model": null,
-            "gallery": [
-              "https://cdn.ssactivewear.com/Images/ModelColor/31220_omb_fl.jpg",
-              "https://cdn.ssactivewear.com/Images/ModelColor/31220_oms_fl.jpg",
-              "https://cdn.ssactivewear.com/Images/Color/31220_d_fl.jpg"
-            ]
-          },
-          "upcharge": 2.22,
-          "crop": {
-            "f": [
-              78,
-              19,
-              922,
-              982,
-              800
-            ],
-            "b": [
-              70,
-              19,
-              932,
-              982,
               800
             ]
           }
