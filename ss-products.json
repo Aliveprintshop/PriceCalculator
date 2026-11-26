@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-20T18:41:31Z",
+ "generated_at": "2026-11-26T23:15:51Z",
  "source": "S&S Activewear API v2",
  "brands": [
   "Imperial",
@@ -27019,36 +27019,6 @@
      }
     },
     {
-     "name": "Southwest",
-     "code": "25",
-     "hex": "#FFFFFF",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/94596_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/94596_b_fl.jpg",
-      "front_model": null,
-      "back_model": null,
-      "side_model": null,
-      "gallery": []
-     },
-     "crop": {
-      "f": [
-       19,
-       143,
-       983,
-       857,
-       800
-      ],
-      "b": [
-       19,
-       143,
-       983,
-       857,
-       800
-      ]
-     }
-    },
-    {
      "name": "Tiger Camo",
      "code": "12",
      "hex": "#000000",
@@ -43695,41 +43665,6 @@
        17,
        962,
        983,
-       800
-      ]
-     }
-    },
-    {
-     "name": "Navy",
-     "code": "65",
-     "hex": "#032E54",
-     "pms": null,
-     "images": {
-      "front_flat": "https://cdn.ssactivewear.com/Images/Color/31220_f_fl.jpg",
-      "back_flat": "https://cdn.ssactivewear.com/Images/Color/31220_b_fl.jpg",
-      "front_model": "https://cdn.ssactivewear.com/Images/ModelColor/31220_omf_fl.jpg",
-      "back_model": null,
-      "side_model": null,
-      "gallery": [
-       "https://cdn.ssactivewear.com/Images/ModelColor/31220_omb_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/ModelColor/31220_oms_fl.jpg",
-       "https://cdn.ssactivewear.com/Images/Color/31220_d_fl.jpg"
-      ]
-     },
-     "upcharge": 2.22,
-     "crop": {
-      "f": [
-       78,
-       19,
-       922,
-       982,
-       800
-      ],
-      "b": [
-       70,
-       19,
-       932,
-       982,
        800
       ]
      }
