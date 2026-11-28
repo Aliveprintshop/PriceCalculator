@@ -367,8 +367,8 @@
 #alive-flow .backcart{display:inline-block;margin:0 0 12px;font-weight:700;}
 #alive-flow .upgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 #alive-flow .upc{border:1px solid var(--border);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0;}
-#alive-flow .upimg{background:none;border-radius:var(--r);overflow:hidden;display:flex;justify-content:center;align-items:center;}
-#alive-flow .upimg .mk{width:82%;background:none;}
+#alive-flow .upimg{background:none;border-radius:var(--r);overflow:hidden;display:flex;justify-content:center;align-items:center;aspect-ratio:1/1;}
+#alive-flow .upimg .mk{width:82%;background:none;flex:none;}
 #alive-flow .upb{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 auto;}
 #alive-flow .upk{font-family:var(--disp);font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);}
 #alive-flow .upb b{font-size:14px;line-height:1.25;}
@@ -2088,8 +2088,9 @@ function upBuild(src, raw, sizesIn){
     var a = art[from[k]] || {}, pl = a.place || {cx:0.5, cy:0.4, w:0.3, rot:0};
     var ib = (Array.isArray(c.imprintBox) && c.imprintBox.length === 4) ? c.imprintBox : (Array.isArray(p._imprintBox) && p._imprintBox.length === 4 ? p._imprintBox : null);
     if(ib) return {cx:ib[0] + ib[2] / 2, cy:ib[1] + ib[3] / 2, w:Math.min(ib[2], ib[3] * 2.5) * 0.9, rot:0};
-    if(isCap) return k === 'back' ? {cx:0.5, cy:0.22, w:0.12, rot:0} : {cx:0.5, cy:0.19, w:0.17, rot:0};
-    if(ptype === 'bag') return {cx:0.5, cy:0.52, w:0.36, rot:0};
+    /* Centred on the cap's front panel and on the tote's body, not up on the crown / near the handles (Austin, 27 Nov 2026). */
+    if(isCap) return k === 'back' ? {cx:0.5, cy:0.25, w:0.12, rot:0} : {cx:0.5, cy:0.22, w:0.17, rot:0};
+    if(ptype === 'bag') return {cx:0.5, cy:0.60, w:0.36, rot:0};
     if(ptype === 'drinkware') return {cx:0.5, cy:0.5, w:0.34, rot:0};
     var srcCap = srcOdd;
     if(srcCap || from[k] !== k) return k === 'left-chest' ? {cx:0.62, cy:0.33, w:0.12, rot:0} : k === 'back' ? {cx:0.5, cy:0.37, w:0.34, rot:0} : {cx:0.5, cy:0.40, w:0.30, rot:0};
@@ -2185,7 +2186,7 @@ function upsellCard(){
       var btn = it._one
         ? '<button type="button" class="upadd" data-upsell="' + esc(it.style) + '">Add ' + it.qty + ' · ' + money(line) + '</button>'
         : '<button type="button" class="upadd' + (UP.open === it.style ? ' on' : '') + '" data-upsize="' + esc(it.style) + '" aria-expanded="' + (UP.open === it.style) + '">Choose sizes</button>';
-      return '<div class="upc' + (UP.open === it.style ? ' open' : '') + '"><div class="upimg" data-ar="' + it.mock.ar + '">' + mockHtml(it.mock) + '</div>' +
+      return '<div class="upc' + (UP.open === it.style ? ' open' : '') + '"><div class="upimg" data-ar="' + it.mock.ar + '">' + mockHtml(it.mock, true) + '</div>' +
         '<div class="upb"><span class="upk">' + esc(it._kind) + '</span><b>' + esc(it.productName) + '</b>' +
         '<span class="ups">' + esc(it.color) + ' · ' + (it._one ? per : 'from ' + per) + '</span>' +
         (it._one && it._m !== upSource().decoMethod ? '<span class="upm">' + esc(it.decoLabel) + '</span>' : '') + btn + '</div></div>';
@@ -2262,7 +2263,7 @@ function itemHtml(it){
 }
 /* The garment with the customer's artwork, rebuilt from where they placed it
    on the product page (same photo box, same crop, same coordinates). */
-function mockHtml(m){
+function mockHtml(m, square){
   if(!m || !m.img) return '';
   var ar = +m.ar || 2/3, outer = ar, inner = 'inset:0';
   if(m.crop && m.crop.length === 4){
@@ -2276,7 +2277,10 @@ function mockHtml(m){
     var src = l.src || l.url; if(!src) return '';
     return '<span class="mk-l" style="left:' + (l.cx * 100) + '%;top:' + (l.cy * 100) + '%;width:' + (l.w * 100) + '%;transform:translate(-50%,-50%) rotate(' + (+l.rot || 0) + 'deg)"><img src="' + esc(src) + '" alt=""></span>';
   }).join('');
-  return '<span class="mk" style="aspect-ratio:' + (+outer).toFixed(4) + '"><span class="mk-a" style="' + inner + '"><img class="mk-g" src="' + esc(m.img) + '" alt="">' + layers + '</span></span>';
+  /* square: the photo sits in a square box (cart suggestions), so wide and tall
+     products get the same box and the text under them lines up. */
+  var fit = square ? ';width:' + Math.min(84, 92 * outer).toFixed(2) + '%' : '';
+  return '<span class="mk" style="aspect-ratio:' + (+outer).toFixed(4) + fit + '"><span class="mk-a" style="' + inner + '"><img class="mk-g" src="' + esc(m.img) + '" alt="">' + layers + '</span></span>';
 }
 function field(key, label, type, ac, extra){
   var bad = S.bad[key] ? ' bad' : '';
