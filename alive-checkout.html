@@ -1303,6 +1303,10 @@ var CONFIG = {
      the same math with the same /ship-quote number and charges from it. */
   shipFallbackPerBox: 51.75,
   defaultZip: '89032',
+  /* Flat Free Shipping (Austin, 27 Nov 2026): the same box price for every ZIP.
+     Small box (20x16x8) when the order fills up to 2/3 of a standard box.
+     The Worker's /ship-quote returns the live prices (flat); these are fallbacks. */
+  flat: {large:40, small:30}, smallMaxShare: 48/72,
   boxCap: {tshirt:72, polo:72, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:48, drinkware:24, other:48},
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   address: '2350 W Cheyenne Ave, North Las Vegas',
@@ -1626,7 +1630,7 @@ try{
 /* The delivery ZIP typed on the product page (free shipping box) carries over. */
 /* A ZIP there means the prices they saw were for shipping to it, so start on
    "Ship it to me" with that ZIP: the cart then shows the same prices. */
-try{ var zz = localStorage.getItem('aps_zip'); if(zz && /^\d{5}$/.test(zz)){ if(!S.form.zip) S.form.zip = zz; if(S.form.zip === zz) S.ship = 'ship'; } }catch(e){}
+try{ var zz = localStorage.getItem('aps_zip'); if(zz && /^\d{5}$/.test(zz) && !S.form.zip) S.form.zip = zz; }catch(e){}
 /* Re-send an artwork file that didn't reach storage on the product page. */
 function reupload(key){
   var parts = key.split('|'), id = parts[0], idx = +parts[1];
@@ -1826,7 +1830,11 @@ function loadShipQuote(){
     .then(function(j){ done(j && j.ok && j.ground ? j : {fallback:true, ground:{perBox:CONFIG.shipFallbackPerBox, days:null}, air:[]}); },
           function(){ done({fallback:true, ground:{perBox:CONFIG.shipFallbackPerBox, days:null}, air:[]}); });
 }
-function perBoxNow(){ var q = shipQuote(); return q ? +q.ground.perBox : CONFIG.shipFallbackPerBox; }
+function flatNow(){
+  var q = shipQuote(); if(q && q.flat) return q.flat;
+  for(var k in SHIPQ){ if(SHIPQ[k] && SHIPQ[k].flat) return SHIPQ[k].flat; }
+  return CONFIG.flat;
+}
 /* Same math as shipSplit() in the checkout Worker. */
 function shipCalc(){
   var share = 0, pieces = 0;
@@ -1835,16 +1843,22 @@ function shipCalc(){
     var q = it.qty | 0; pieces += q;
     share += q / (CONFIG.boxCap[itemType(it)] || CONFIG.boxCap.other);
   });
-  var boxes = share > 0 ? Math.ceil(share - 1e-9) : 0, pb = perBoxNow();
-  var total = +(boxes * pb).toFixed(2);
-  return {boxes:boxes, perBox:pb, total:total, perPiece: pieces ? Math.ceil(total / pieces * 100 - 1e-6) / 100 : 0};
+  var fl = flatNow(), small = share > 0 && share <= CONFIG.smallMaxShare + 1e-9;
+  var boxes = share > 0 ? (small ? 1 : Math.ceil(share - 1e-9)) : 0, pb = small ? +fl.small : +fl.large;
+  var total = +(small ? pb : boxes * pb).toFixed(2);
+  return {boxes:boxes, box: small ? 'small' : 'large', perBox:pb, total:total, perPiece: pieces ? Math.ceil(total / pieces * 100 - 1e-6) / 100 : 0};
 }
 function shipPP(it){ return isPcna(it) ? 0 : shipCalc().perPiece; }
 function shippedUnit(it){ return +(+it.unitPrice + shipPP(it)).toFixed(2); }
 function shippedLine(it){ return +(+it.lineTotal + shipPP(it) * (it.qty|0)).toFixed(2); }
 /* Copies of the cart lines with ground shipping inside, as the Worker charges them. */
 function shippedItems(){ return S.items.map(function(it){ var pp = shipPP(it); return Object.assign({}, it, {unitPrice:+(+it.unitPrice + pp).toFixed(2), lineTotal:shippedLine(it), shipPerPiece:pp}); }); }
-function airOptions(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.air) ? q.air : []; }
+/* Faster FedEx: what it really costs for the box we'd use, minus the Free Shipping already in the price. */
+function airOptions(){
+  var q = shipQuote(); if(!(S.ship === 'ship' && validZip(S.form.zip) && q && q.air)) return [];
+  var c = shipCalc(), src = (c.box === 'small' && q.small) ? q.small : q;
+  return (src.air || []).map(function(a){ return {code:a.code, name:a.name, days:a.days, upgradePerBox:+Math.max(0, a.perBox - c.perBox).toFixed(2)}; });
+}
 function shipUpgrade(){
   if(S.ship !== 'ship' || !S.shipSvc) return null;
   var a = airOptions().filter(function(x){ return x.code === S.shipSvc; })[0];
@@ -3038,7 +3052,7 @@ function submit(){
   var body = {items:S.items.map(function(it){ var c = Object.assign({}, it); delete c.mock; return c; }), total:t.total, orderRef:ref,
     customer:{name:f.name, email:f.email, phone:f.phone, company:f.company},
     /* The Worker recounts boxes itself; these are for the receipt and the note. */
-    shipping:{mode:'fedex', method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:S.ship === 'pickup' ? '' : (S.shipSvc || ''), zip:shipZip(),
+    shipping:{mode:'flat', method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:S.ship === 'pickup' ? '' : (S.shipSvc || ''), zip:shipZip(),
       address:S.ship === 'pickup' ? null : {line1:f.addr1, line2:f.addr2, city:f.city, state:f.state, postal_code:f.zip, country:'US'}},
     embedded:embed, promoCode:stripePromo() ? stripePromo().code : '',
     returnUrl:here + '?paid={CHECKOUT_SESSION_ID}' + (FLOW === 'stage' ? '&flow=stage' : ''),

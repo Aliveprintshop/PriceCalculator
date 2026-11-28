@@ -1775,18 +1775,18 @@ function cardQty(it){var p=it._full;if(p&&(p._drinkware||p._pcna))return cardAtQ
    adds one product's share of its boxes at the shop's (or the customer's saved)
    ZIP, the same way the product page does, so the two numbers agree. */
 var SHIP_CAP={tshirt:72,polo:72,sweatshirt:24,jacket:12,bottom:24,hat:72,beanie:72,bag:48,drinkware:24,other:48};
-var SHIP_PB=null;
+var SHIP_PB=null, SHIP_FLAT={large:40,small:30};
 (function(){
   var z='';try{z=localStorage.getItem('aps_zip')||'';}catch(e){}
   if(!/^\d{5}$/.test(z))z='89032';
   fetch('https://alive-checkout.austin-662.workers.dev/ship-quote?zip='+z).then(function(r){return r.json();})
-    .then(function(j){SHIP_PB=(j&&j.ok&&j.ground)?+j.ground.perBox:51.75;},function(){SHIP_PB=51.75;})
+    .then(function(j){if(j&&j.ok&&j.flat)SHIP_FLAT=j.flat;SHIP_PB=1;},function(){SHIP_PB=1;})
     .then(function(){try{renderGrid();}catch(e){}});
 })();
 function cardShipPP(it,q){
   var p=it._full; if(!p||p._pcna||!q)return 0;
   var t='other';try{t=window.AliveEngine.productType(p);}catch(e){}
-  var tot=+(Math.ceil(q/(SHIP_CAP[t]||48)-1e-9)*(SHIP_PB==null?51.75:SHIP_PB)).toFixed(2);
+  var sh=q/(SHIP_CAP[t]||48), tot=sh<=48/72+1e-9?+SHIP_FLAT.small:+(Math.ceil(sh-1e-9)*SHIP_FLAT.large).toFixed(2);
   return Math.ceil(tot/q*100-1e-6)/100;
 }
 function cardPriceHtml(it){

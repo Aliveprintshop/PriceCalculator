@@ -3016,6 +3016,8 @@ var CONFIG = {
      rates one standard box to a ZIP (+15%); boxes and the split match the cart. */
   payEndpoint: 'https://alive-checkout.austin-662.workers.dev',
   shipFallbackPerBox: 51.75, defaultZip: '89032',
+  /* Flat Free Shipping: same box price for every ZIP (the ZIP only sets the date). */
+  flat: {large:40, small:30}, smallMaxShare: 48/72,
   boxCap: {tshirt:72, polo:72, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:48, drinkware:24, other:48},
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   /* Shop-wide Google rating shown on every product. ONE place to keep it
@@ -3438,8 +3440,8 @@ function shipPPAt(q){
   q = q | 0;
   if(!S.p || S.p._pcna || q <= 0) return 0;
   var cap = CONFIG.boxCap[E.productType(S.p)] || CONFIG.boxCap.other;
-  var pb = shipQ() ? +shipQ().ground.perBox : CONFIG.shipFallbackPerBox;
-  var total = +(Math.ceil(q / cap - 1e-9) * pb).toFixed(2);
+  var fl = (shipQ() && shipQ().flat) || CONFIG.flat, share = q / cap;
+  var total = share <= CONFIG.smallMaxShare + 1e-9 ? +fl.small : +(Math.ceil(share - 1e-9) * fl.large).toFixed(2);
   return Math.ceil(total / q * 100 - 1e-6) / 100;
 }
 function withShip(u, q){ return u == null ? null : +(u + shipPPAt(q)).toFixed(2); }
