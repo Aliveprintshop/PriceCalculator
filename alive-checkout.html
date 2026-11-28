@@ -126,6 +126,16 @@
 #alive-flow .taxex{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:13.5px;color:var(--text2);cursor:pointer;}
 #alive-flow .taxex input{width:18px;height:18px;accent-color:var(--blue);}
 #alive-flow .taxnote{font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5;}
+#alive-flow .dopts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;}
+#alive-flow .dopt{position:relative;text-align:left;background:#fff;border:1.5px solid var(--line,#D9DEE5);border-radius:14px;padding:12px 14px;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column;min-height:112px;}
+#alive-flow .dopt.on{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-light);}
+#alive-flow .dopt .dk{font-size:12px;color:var(--text2);}
+#alive-flow .dopt .dd{font-size:17px;font-weight:700;margin-top:2px;}
+#alive-flow .dopt .dn{margin-top:auto;padding-top:10px;font-size:14px;}
+#alive-flow .dopt .df{font-size:14px;font-weight:700;}
+#alive-flow .dopt .dck{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;line-height:20px;text-align:center;}
+#alive-flow .dopts-h{margin-top:18px;font-size:15px;font-weight:700;}
+@media (max-width:560px){#alive-flow .dopts{grid-template-columns:1fr;}#alive-flow .dopt{min-height:0;}}
 #alive-flow .speednote{margin-top:14px;font-size:13px;color:var(--text2);background:#EEF7F1;border:1px solid #CDE8D6;border-radius:10px;padding:10px 12px;}
 #alive-flow .keynote{font-size:12px;color:var(--text3);margin:-2px 0 4px;}
 #alive-flow .empty{text-align:center;padding:40px 20px;color:var(--text2);}
@@ -1316,6 +1326,7 @@ var CONFIG = {
      The Worker's /ship-quote returns the live prices (flat); these are fallbacks. */
   flat: {large:40, small:30}, smallMaxShare: 48/72,
   boxCap: {tshirt:72, polo:72, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:48, drinkware:24, other:48},
+  airOnline: false,
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   address: '2350 W Cheyenne Ave, North Las Vegas',
   addonImg: {neck:'media/addon-neck.jpg', hem:'media/addon-hem.jpg', bag:'media/addon-bag.jpg'}
@@ -1876,6 +1887,9 @@ function shippedLine(it){ return +(+it.lineTotal + shipPP(it) * (it.qty|0)).toFi
 function shippedItems(){ return S.items.map(function(it){ var pp = shipPP(it); return Object.assign({}, it, {unitPrice:+(+it.unitPrice + pp).toFixed(2), lineTotal:shippedLine(it), shipPerPiece:pp}); }); }
 /* Faster FedEx: what it really costs for the box we'd use. */
 function airOptions(){
+  /* Option 1 (Austin, 27 Nov 2026): the website sells production speed only;
+     every shipped order goes Free Shipping (FedEx Ground). Faster air is by phone. */
+  if(!CONFIG.airOnline) return [];
   var q = shipQuote(); if(!(S.ship === 'ship' && validZip(S.form.zip) && q && q.air)) return [];
   var c = shipCalc(), src = (c.box === 'small' && q.small) ? q.small : q;
   /* Faster shipping is the full FedEx price + 15% (Austin, 27 Nov 2026). */
@@ -2290,7 +2304,31 @@ function shipRow(key, label, sub, amt){
   return '<button class="ship' + (S.ship === key ? ' on' : '') + '" type="button" data-ship="' + key + '"><span class="radio"><i></i></span>' +
     '<span><h4>' + label + '</h4><span class="sub">' + sub + '</span></span><span class="amt">' + amt + '</span></button>';
 }
+/* Delivery options (Austin, 27 Nov 2026): three cards, each a date —
+   production speed + Free Shipping transit to their ZIP (or ready for pickup). */
+function fmtShort(d){ return d.toLocaleDateString('en-US',{weekday:'short'}) + ' ' + (d.getMonth()+1) + '/' + d.getDate(); }
+function optDate(key){
+  var d = readyDate(key);
+  if(S.ship === 'pickup') return {k:'Ready for pickup', d:d};
+  var gd = groundDays();
+  if(validZip(S.form.zip) && gd){ for(var i = 0; i < gd; i++) d = nextBizDay(d); return {k:'Arrives by', d:d}; }
+  return {k:'Ships by', d:d};
+}
+function deliveryCard(){
+  var cd = cartDepts(), keys = ['super','rush','std'].filter(function(k){ return rushOn(k, cd); });
+  var names = {std:'Standard', rush:'Rush', 'super':'Super Rush ⚡'};
+  var cards = keys.map(function(k){
+    var on = S.rush === k, x = optDate(k), extra = k === 'std' ? 0 : rushExtra(k);
+    return '<button type="button" class="dopt' + (on ? ' on' : '') + '" data-rush="' + k + '">' + (on ? '<span class="dck">✓</span>' : '') +
+      '<span class="dk">' + x.k + '</span><span class="dd">' + esc(fmtShort(x.d)) + '</span>' +
+      '<span class="dn">' + names[k] + '</span><span class="df">' + (extra ? '+ ' + money(extra) : (k === 'std' ? 'FREE' : 'Included')) + '</span></button>';
+  }).join('');
+  var hint = (S.ship === 'ship' && !(validZip(S.form.zip) && groundDays())) ? '<p class="cnote">Add your ZIP code to see your arrival date.</p>' : '';
+  return '<h4 class="dopts-h">Delivery options' + tip('turnaround') + '</h4><div class="dopts">' + cards + '</div>' + hint + busyNote('busynote', cd) +
+    '<p class="cnote" style="margin-top:12px">Need it sooner? <a href="' + CONFIG.phoneHref + '">Call ' + esc(CONFIG.phone) + '</a> and we’ll check the schedule.</p>';
+}
 function speedCard(){
+  if(!CONFIG.airOnline) return '';
   var air = airOptions();
   if(!air.length){
     var gd0 = groundDays();
@@ -2420,7 +2458,7 @@ function renderCart(t, promo){
         (S.restored ? '<div class="restored">We loaded the cart that was shared with you — ' + S.restored + ' ' + (S.restored === 1 ? 'item' : 'items') + '. Check the sizes, then place your order.</div>' : '') +
         '<div class="card cartitems"><div class="hd"><h2>Your cart</h2><b class="num">' + S.items.length + ' ' + (S.items.length === 1 ? 'item' : 'items') + '</b></div>' + items +
           '<button class="addmore" type="button" data-products="1">+ Add another product</button>' + shareBtn() + '</div>' +
-        rushCard() + addonCard() + upsellCard() +
+        addonCard() + upsellCard() +
       '</div>' +
       '<div class="side">' + tot + '</div>' +
     '</div></div>' +
@@ -2473,7 +2511,7 @@ function renderDetails(t, pickup, promo){
           '<div class="fields" style="margin-top:14px">' + field('addr2','Apt, suite, floor <span>(optional)</span>','text','address-line2') + '</div>' +
           '<div class="fields two" style="margin-top:14px">' + field('city','City','text','address-level2') + field('state','State','text','address-level1') + '</div>' +
           '<div class="fields" style="margin-top:14px;max-width:200px">' + field('zip','ZIP code','text','postal-code',' inputmode="numeric"') + '</div>' +
-          speedCard()) +
+          speedCard()) + deliveryCard() +
         '</div>' +
         '<div class="card"><div class="hd"><h2>Anything else?</h2></div><div class="fields">' + field('notes','Notes for your order <span>(optional)</span>','textarea','') + '</div></div>' +
       '</div>' +
