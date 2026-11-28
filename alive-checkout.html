@@ -134,6 +134,7 @@
 #alive-flow .dopt .dn{margin-top:auto;padding-top:10px;font-size:14px;}
 #alive-flow .dopt .df{font-size:14px;font-weight:700;}
 #alive-flow .dopt .dck{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;line-height:20px;text-align:center;}
+#alive-flow .cartship{margin-top:8px;font-size:13px;font-weight:700;color:var(--green);}
 #alive-flow .dopts-h{margin-top:18px;font-size:15px;font-weight:700;}
 @media (max-width:560px){#alive-flow .dopts{grid-template-columns:1fr;}#alive-flow .dopt{min-height:0;}}
 #alive-flow .speednote{margin-top:14px;font-size:13px;color:var(--text2);background:#EEF7F1;border:1px solid #CDE8D6;border-radius:10px;padding:10px 12px;}
@@ -2445,8 +2446,9 @@ function renderCart(t, promo){
       '<div class="row"><span>Shipping' + tip('shipping') + '</span><b class="num free">Free Shipping</b></div>' +
       '<div class="row"><span>Sales tax</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(sub) + '</span></div>' +
-      '<div class="shipnote">Free Shipping to the lower 48 states, or free pickup at our shop. Faster shipping is available at checkout.</div>' +
+      '<div class="shipnote">Free Shipping to the lower 48 states, or free pickup at our shop.</div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
+      '<div class="cartship">Free Shipping · Rush options at checkout</div>' +
       promoInput(promo) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-next="1">Continue to checkout &rarr;</button>' +

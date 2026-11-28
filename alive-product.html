@@ -1042,6 +1042,7 @@
 #alive-flow .taline{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 14px;margin-top:6px;}
 #alive-flow .taline .tastd{font-family:var(--disp);font-size:14px;font-weight:800;color:var(--text);}
 #alive-flow .taline .tadate{font-family:var(--disp);font-size:14px;font-weight:800;color:var(--green);white-space:nowrap;}
+#alive-flow .fship{color:var(--green);font-weight:700;white-space:nowrap;}
 #alive-flow .tanote{margin-top:8px;font-size:12.5px;color:var(--text3);line-height:1.5;}
 #alive-flow .tabusy{margin-top:8px;background:#fff7ed;border:1px solid #f0c9a8;color:#7a3d06;border-radius:8px;padding:8px 11px;font-size:12.5px;line-height:1.45;}
 /* desktop: photo left, choices right */
@@ -3322,7 +3323,7 @@ var TIPS = {
   includes: ['What the price includes', 'The garment and your decoration as set up on this page — print spots, ink colors or embroidery. Change any of them and the price updates right away. No setup or screen fees.'],
   minimum:  ['Minimum order', 'Screen print: 24 pieces. Embroidery: 12. Full color: 10. Mix sizes however you like — your sizes add up to your total.'],
   sizes:    ['Sizes', '2XL and up use more fabric, so they cost a little more. The extra shows under each size.'],
-  turnaround:['Turnaround', 'Counted in business days, Monday to Friday (we skip the days we are closed). Order before 4 PM Las Vegas time and today counts as day one. Rush options are chosen in your cart. The date shown is when your order leaves our shop, so add transit time on top.'],
+  turnaround:['Turnaround', 'Counted in business days, Monday to Friday (we skip the days we are closed). Order before 4 PM Las Vegas time and today counts as day one. Rush and Super Rush are chosen at checkout. "Ships by" is when your order leaves our shop; checkout shows the arrival date for your address.'],
   artwork:  ['Artwork', 'AI, EPS, PDF, SVG, PSD, PNG, JPG or ZIP, up to 25 MB each. We confirm ink colors and placement on your proof. Nothing prints until you approve it.'],
   method:   ['Decoration', 'Screen print: bold, durable, best value at 24+ and priced by ink colors. Full color: any number of colors or photos, great for small runs. Embroidery: stitched, premium, priced per location.'],
   colors:   ['Ink colors', 'Screen printing is priced by the number of ink colors in your design. The shirt color does not count. Not sure? Pick your best guess — we confirm it on your proof before anything prints.']
@@ -3744,7 +3745,7 @@ function mbar(label, disabled, sub){
 function barSub(){
   var q = realQty(), t = orderTotal();
   /* before any sizes are in, the bar sets the expectation rather than guessing */
-  var fs = (S.p && !S.p._pcna) ? ' · Free Shipping' : '';
+  var fs = (S.p && !S.p._pcna) ? ' · <span class="fship"><svg width="15" height="11" viewBox="0 0 24 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-1px;margin-right:4px"><path d="M1 2h13v10H1zM14 6h5l4 4v2h-9z"/><circle cx="6" cy="14" r="2" fill="#fff"/><circle cx="18" cy="14" r="2" fill="#fff"/></svg>Free Shipping</span>' : '';
   if(!q) return minQ() + ' piece minimum · ' + basisLabel() + fs;
   if(q < minQ()) return q + ' pcs · add ' + minGap() + ' to reach ' + minQ();
   return money(t) + ' total · ' + q + ' pcs' + fs;
@@ -4357,11 +4358,11 @@ function taFoot(){
   /* One plain line, not three card-shaped rows — those still read as buttons
      even with the click handlers gone. Standard only; the rush upgrade is a
      checkout decision because one turnaround covers the whole order. */
-  return '<div class="tapick"><div class="fhead"><span class="lbl">Turnaround' + tip('turnaround') + '</span></div>' +
-    '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false, pDepts()) + ' business days</span>' +
+  return '<div class="tapick"><div class="fhead"><span class="lbl">Delivery' + tip('turnaround') + '</span></div>' +
+    '<div class="taline"><span class="tastd">Standard &middot; ' + (S.p && S.p._pcna ? E.turnaroundDays('std', false, pDepts()) + ' business days' : 'Free Shipping') + '</span>' +
       '<span class="tadate" data-tadate="std">Ships by ' + fmtDay(taDate('std')) + '</span></div>' +
     busyNote('tabusy', pDepts()) +
-    '<div class="tanote">' + rushLine() + '"Ships by" is when it leaves our shop. ' + (S.p && S.p._pcna ? '' : 'Free Shipping to the lower 48 states, or free pickup at our North Las Vegas shop.') + '</div></div>';
+    '<div class="tanote">' + rushLine() + (S.p && S.p._pcna ? '' : 'Free Shipping to the lower 48, or free pickup in North Las Vegas.') + '</div></div>';
 }
 function rushLine(){
   var r = [];
@@ -4369,7 +4370,10 @@ function rushLine(){
   if(rushOn('rush', dp)) r.push(E.turnaroundDays('rush', false, dp));
   if(rushOn('super', dp)) r.push(E.turnaroundDays('super', false, dp));
   if(!r.length) return '';
-  return 'Need it sooner? Pick a ' + r.join(' or ') + ' day rush in your cart, the next step. ';
+  var n = [];
+  if(rushOn('rush', dp)) n.push('Rush (' + E.turnaroundDays('rush', false, dp) + ' days)');
+  if(rushOn('super', dp)) n.push('Super Rush (' + E.turnaroundDays('super', false, dp) + ' days)');
+  return 'Need it sooner? Choose ' + n.join(' or ') + ' at checkout. ';
 }
 /* The schedule arrived after the first paint: redraw the turnaround block in place. */
 loadSched(function(){
@@ -6023,7 +6027,7 @@ function refreshPrice(){
   var mv = document.getElementById('mb-v'), ms = document.getElementById('mb-s');
   var u = unitNow();
   if(mv) mv.textContent = u == null ? 'Min ' + minQ() + ' pcs' : money(u);
-  if(ms) ms.textContent = barSub();
+  if(ms) ms.innerHTML = barSub();
   var a = sizeTotal(), tot = root.querySelector('.sztot');
   if(tot && !isOneSize()){ tot.querySelector('b').textContent = a + ' pcs'; tot.classList.toggle('ok', a >= minQ()); tot.classList.toggle('off', a > 0 && a < minQ()); }
   root.querySelectorAll('[data-size]').forEach(function(inp){
