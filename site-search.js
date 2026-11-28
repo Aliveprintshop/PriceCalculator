@@ -111,7 +111,7 @@
      designer (Austin, 27 Nov 2026): logo, "All products", phone, cart. The menu
      row, the search bar and the two buttons are hidden so the product fits. */
   css+='@media(min-width:1025px){'+
-    'header.aps-minimal{padding-bottom:12px!important;box-shadow:0 1px 0 #e9edf2!important;}'+
+    'header.elementor-element-92c3014.aps-minimal{padding-bottom:10px!important;padding-top:10px!important;box-shadow:0 1px 0 #e9edf2!important;}'+
     'header.aps-minimal::after,header.aps-minimal .aps-sb-main,header.aps-minimal .elementor-element-0225283,'+
       'header.aps-minimal .elementor-element-f6fecbb,header.aps-minimal .elementor-element-80b5470{display:none!important;}'+
     'header.aps-minimal .aps-back{order:2;display:inline-flex;align-items:center;gap:8px;font:600 15px/1 Montserrat,sans-serif;color:#1e1e1e;'+
