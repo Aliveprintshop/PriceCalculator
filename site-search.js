@@ -601,3 +601,15 @@
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
+
+/* Homepage "Choose any product category" cards on phones and tablets: show the
+   whole garment instead of a tight crop (Austin, 28 Nov 2026). The photos are
+   4:5 on the same light grey as the card, so "contain" blends in. */
+(function(){
+  if(window.__aliveCatFit) return; window.__aliveCatFit = true;
+  if(location.pathname !== '/' && location.pathname !== '') return;
+  var st = document.createElement('style');
+  st.textContent = '@media (max-width:1024px){[data-elementor-id="21"] .elementor-element-875c798 .elementor-widget-image img{height:320px !important;width:100% !important;object-fit:contain !important;object-position:center !important}}' +
+    '@media (max-width:480px){[data-elementor-id="21"] .elementor-element-875c798 .elementor-widget-image img{height:280px !important}}';
+  (document.head || document.documentElement).appendChild(st);
+})();
