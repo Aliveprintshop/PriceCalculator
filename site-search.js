@@ -508,3 +508,29 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
+
+/* Free Shipping in the /insta-price footer price bar (#alive-hostbar .ahb-s):
+   the host page writes plain text there, so we turn its "Free Shipping" part
+   into a green label with a truck icon, the same as inside the product page
+   (Austin, 27 Nov 2026). Runs once even though this file loads twice. */
+(function(){
+  if(window.__aliveFreeShip) return; window.__aliveFreeShip = true;
+  var TRUCK = '<svg width="15" height="11" viewBox="0 0 24 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-1px;margin-right:4px"><path d="M1 2h13v10H1zM14 6h5l4 4v2h-9z"/><circle cx="6" cy="14" r="2" fill="#fff"/><circle cx="18" cy="14" r="2" fill="#fff"/></svg>';
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function paint(el){
+    if(el.querySelector('.afs')) return;
+    var t = el.textContent, i = t.indexOf('Free Shipping');
+    if(i < 0) return;
+    el.innerHTML = esc(t.slice(0, i)) + '<span class="afs" style="color:#16a34a;font-weight:700;white-space:nowrap">' + TRUCK + 'Free Shipping</span>' + esc(t.slice(i + 13));
+  }
+  function hook(){
+    var el = document.querySelector('#alive-hostbar .ahb-s');
+    if(!el){ return false; }
+    paint(el);
+    new MutationObserver(function(){ paint(el); }).observe(el, {childList:true, characterData:true, subtree:true});
+    return true;
+  }
+  if(!hook()){
+    var n = 0, iv = setInterval(function(){ if(hook() || ++n > 60) clearInterval(iv); }, 500);
+  }
+})();
