@@ -264,6 +264,13 @@
 #alive-flow .autofill{background:none;font-size:12px;color:var(--blue);text-decoration:underline;}
 
 /* ---- ship line + zip ------------------------------------------------- */
+#alive-flow .freeship{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;color:var(--text2);
+  background:#EEF7F1;border:1px solid #CDE8D6;border-radius:var(--r);padding:11px 13px;}
+#alive-flow .freeship svg{width:18px;height:18px;flex:none;color:#0B6B35;margin-top:1px;}
+#alive-flow .freeship b{color:var(--text);}
+#alive-flow .fszip{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:7px;font-size:12.5px;}
+#alive-flow .fszip label{font-weight:700;color:var(--text2);}
+#alive-flow .fszip input{width:84px;font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line,#C9D1DC);border-radius:8px;}
 #alive-flow .onesize{display:flex;gap:11px;align-items:flex-start;background:var(--blue-light);
   border:1px solid var(--blue-mid);border-radius:var(--r);padding:13px 15px;margin-top:4px;}
 #alive-flow .onesize svg{width:18px;height:18px;flex:0 0 18px;color:var(--blue);margin-top:1px;}
@@ -3005,6 +3012,11 @@ var CONFIG = {
   artEndpoint: 'https://alive-artwork.austin-662.workers.dev',
   /* Saves a design as a draft so we can email the customer their mockup. */
   ordersEndpoint: 'https://alive-orders.austin-662.workers.dev',
+  /* Free FedEx Ground built into the price (27 Nov 2026): the checkout Worker
+     rates one standard box to a ZIP (+15%); boxes and the split match the cart. */
+  payEndpoint: 'https://alive-checkout.austin-662.workers.dev',
+  shipFallbackPerBox: 51.75, defaultZip: '89032',
+  boxCap: {tshirt:72, polo:72, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:48, drinkware:24, other:48},
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   /* Shop-wide Google rating shown on every product. ONE place to keep it
      honest — these must be the real figures from the Google Business Profile.
@@ -3201,6 +3213,11 @@ function trackDesign(how){ if(designTracked) return; designTracked = true; track
 function productsUrl(){ return CONFIG.pages[FLOW].products; }
 
 var root = document.getElementById('alive-flow');
+if(root) root.addEventListener('input', function(e){
+  var el = e.target; if(!el || !el.dataset || !el.dataset.fszip) return;
+  var v = el.value.replace(/\D/g, '').slice(0, 5); if(v !== el.value) el.value = v;
+  if(v.length === 5){ S.zip = v; try{ localStorage.setItem('aps_zip', v); }catch(err){} loadShipQ(); refreshPrice(); shipLineRefresh(); }
+});
 function broadcast(){
   var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
   try{ window.parent.postMessage({type:'alive-resize', height:h, page:'product'}, '*'); }catch(e){}
@@ -3399,13 +3416,52 @@ function inkFor(key){
   return Math.max(1, Math.min(E.MAX_INK, n));
 }
 function minQ(){ return E.minQty(S.p, pricingCfg(S.est)); }
-function unitNow(){ return E.unitPrice(S.p, pricingCfg()); }
+/* ---- FedEx ground shipping inside the price per piece (27 Nov 2026) ---- */
+var SHIPQ = {};
+function lsGet(k){ try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } }
+function shipZip(){ var z = S.zip || lsGet('aps_zip'); return /^\d{5}$/.test(z) ? z : CONFIG.defaultZip; }
+function shipQ(){ var z = shipZip(); if(!SHIPQ[z]) loadShipQ(); var q = SHIPQ[z]; return q && q.ground ? q : null; }
+function loadShipQ(cb){
+  var z = shipZip();
+  if(SHIPQ[z] && SHIPQ[z].ground){ if(cb) cb(); return; }
+  if(SHIPQ[z]) return;
+  SHIPQ[z] = {loading:true};
+  var done = function(q){ SHIPQ[z] = q; if(shipZip() !== z) return; try{ refreshPrice(); shipLineRefresh(); }catch(e){} if(cb) cb(); };
+  var fb = {fallback:true, ground:{perBox:CONFIG.shipFallbackPerBox, days:null}, air:[]};
+  fetch(CONFIG.payEndpoint + '/ship-quote?zip=' + z).then(function(r){ return r.json(); })
+    .then(function(j){ done(j && j.ok && j.ground ? j : fb); }, function(){ done(fb); });
+}
+/* Ground shipping per piece for THIS product alone at q pieces: whole boxes at
+   the quoted box price, split evenly, rounded up to the cent. The cart re-splits
+   it across everything in the order (mixed items share boxes). */
+function shipPPAt(q){
+  q = q | 0;
+  if(!S.p || S.p._pcna || q <= 0) return 0;
+  var cap = CONFIG.boxCap[E.productType(S.p)] || CONFIG.boxCap.other;
+  var pb = shipQ() ? +shipQ().ground.perBox : CONFIG.shipFallbackPerBox;
+  var total = +(Math.ceil(q / cap - 1e-9) * pb).toFixed(2);
+  return Math.ceil(total / q * 100 - 1e-6) / 100;
+}
+function withShip(u, q){ return u == null ? null : +(u + shipPPAt(q)).toFixed(2); }
+function lineShip(t, q){ return t == null ? null : +(t + shipPPAt(q) * (q | 0)).toFixed(2); }
+function arriveBy(){
+  var q = shipQ(); if(!q || !q.ground.days) return null;
+  var d = taDate('std');
+  for(var i = 0; i < q.ground.days; i++){ d = new Date(d.getTime()); d.setDate(d.getDate() + 1); nextBiz(d); }
+  return d;
+}
+function shipLineHtml(){
+  var a = arriveBy(), z = shipZip(), typed = /^\d{5}$/.test(S.zip || lsGet('aps_zip'));
+  return '<span data-shiptxt="1">' + (a && typed ? 'Arrives by <b>' + fmtDay(a) + '</b> to ' + z : 'Enter your ZIP for a delivery date') + '</span>';
+}
+function shipLineRefresh(){ document.querySelectorAll('#alive-flow [data-shiptxt]').forEach(function(el){ var t = document.createElement('span'); t.innerHTML = shipLineHtml(); el.replaceWith(t.firstChild); }); }
+function unitNow(){ var c = pricingCfg(); return withShip(E.unitPrice(S.p, c), c.qty); }
 function sizesForTotal(){
   if(isOneSize()){ var o = {}; o[(S.p.available_sizes||['OSFA'])[0] || 'OSFA'] = S.qty; return o; }
   return S.sizes;
 }
 function orderTotal(){ var u = unitNow(); if(u == null) return null;
-  return E.lineTotal(S.p, pricingCfg(), realQty() ? sizesForTotal() : {}); }
+  return lineShip(E.lineTotal(S.p, pricingCfg(), realQty() ? sizesForTotal() : {}), realQty()); }
 function defaultLoc(method){ var l = E.locations(S.p, method); return l.length ? l[0].key : 'front'; }
 function basisLabel(){
   var m = S.method;
@@ -3667,9 +3723,10 @@ function mbar(label, disabled, sub){
 function barSub(){
   var q = realQty(), t = orderTotal();
   /* before any sizes are in, the bar sets the expectation rather than guessing */
-  if(!q) return minQ() + ' piece minimum · ' + basisLabel();
+  var fs = (S.p && !S.p._pcna) ? ' · free shipping' : '';
+  if(!q) return minQ() + ' piece minimum · ' + basisLabel() + fs;
   if(q < minQ()) return q + ' pcs · add ' + minGap() + ' to reach ' + minQ();
-  return money(t) + ' total · ' + q + ' pcs';
+  return money(t) + ' total · ' + q + ' pcs' + fs;
 }
 
 /* ------------------------------------------------------------ gallery */
@@ -4283,7 +4340,11 @@ function taFoot(){
     '<div class="taline"><span class="tastd">Standard &middot; ' + E.turnaroundDays('std', false, pDepts()) + ' business days</span>' +
       '<span class="tadate" data-tadate="std">Ships by ' + fmtDay(taDate('std')) + '</span></div>' +
     busyNote('tabusy', pDepts()) +
-    '<div class="tanote">' + rushLine() + 'Dates are when it leaves our shop; transit is on top.</div></div>';
+    (S.p && S.p._pcna ? '' :
+    '<div class="freeship"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>' +
+      '<div><b>Free FedEx Ground shipping</b> &middot; built into your price<div class="fszip"><label for="fs-zip">Delivery ZIP</label>' +
+      '<input id="fs-zip" data-fszip="1" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="e.g. 85004" value="' + esc(S.zip || lsGet('aps_zip')) + '"> ' + shipLineHtml() + '</div></div></div>') +
+    '<div class="tanote">' + rushLine() + '"Ships by" is when it leaves our shop. Pickup at our North Las Vegas shop is free too.</div></div>';
 }
 function rushLine(){
   var r = [];
@@ -4333,8 +4394,8 @@ function altMethodFor(q){
      a different number feels switched on, so the number goes in the offer. */
   if(best){
     var loc = defaultLoc(best.m), lm = {}; lm[loc] = best.m;
-    best.u = E.unitPrice(S.p, {qty:q, locs:[loc], locMethod:lm, frontColors:inkFor('front'),
-      backColors:inkFor('back'), addons:{neck:false,hem:false,bag:false}, rush:'std', promoDiscount:S.promo});
+    best.u = withShip(E.unitPrice(S.p, {qty:q, locs:[loc], locMethod:lm, frontColors:inkFor('front'),
+      backColors:inkFor('back'), addons:{neck:false,hem:false,bag:false}, rush:'std', promoDiscount:S.promo}), q);
   }
   return best;
 }
@@ -4358,20 +4419,21 @@ function projSizes(target){
   return out;
 }
 /* Order total at a hypothetical quantity, size upcharges and all. */
-function totalAt(target){ return E.lineTotal(S.p, pricingCfg(target), projSizes(target)); }
+function totalAt(target){ return lineShip(E.lineTotal(S.p, pricingCfg(target), projSizes(target)), target); }
 function totalAtMethod(m){
   var loc = defaultLoc(m), lm = {}; lm[loc] = m;
   var c = pricingCfg(); c.locs = [loc]; c.locMethod = lm;
-  return E.lineTotal(S.p, c, sizesForTotal());
+  var sz = sizesForTotal(), n = 0; for(var k in sz) n += (+sz[k] || 0);
+  return lineShip(E.lineTotal(S.p, c, sz), n);
 }
 /* The next price break past the minimum, for the quiet second offer. */
 function nextBreak(){
   var mn = minQ(), brs = [];
   try{ brs = E.priceBreaks(S.p, pricingCfg(mn)) || []; }catch(e){ return null; }
-  var u0 = E.unitPrice(S.p, pricingCfg(mn));
+  var u0 = withShip(E.unitPrice(S.p, pricingCfg(mn)), mn);
   for(var i = 0; i < brs.length; i++){
     if(brs[i] > mn){
-      var u = E.unitPrice(S.p, pricingCfg(brs[i]));
+      var u = withShip(E.unitPrice(S.p, pricingCfg(brs[i])), brs[i]);
       if(u != null && u0 != null && u < u0 - 0.004) return {q:brs[i], u:u, save:u0 - u};
       }
   }
@@ -4393,7 +4455,7 @@ function minBody(){
     '<div class="minscale"><span>' + q + ' now</span><span>' + mn + ' minimum</span></div>';
 
   /* Card one: get to the minimum. The button does the typing. */
-  var uMin = E.unitPrice(S.p, pricingCfg(mn)), tMin = totalAt(mn);
+  var uMin = withShip(E.unitPrice(S.p, pricingCfg(mn)), mn), tMin = totalAt(mn);
   var nb = nextBreak();
   var more = nb ? '<button type="button" class="minmore" data-bump="' + nb.q + '">or ' + nb.q +
     ' for <b>' + money(nb.u) + '</b> each</button>' : '';
@@ -4532,7 +4594,7 @@ function optsBlock(){
 function priceBreaks(){
   var q = realQty(), mn = minQ(), tiers = [mn, 24, 36, 48, 50, 72, 144, 300].filter(function(t, i, a){ return t >= mn && a.indexOf(t) === i; });
   var rows = [], last = null;
-  tiers.forEach(function(t){ var u = E.unitPrice(S.p, pricingCfg(t)); if(u != null && (last == null || u < last - 0.004)){ rows.push({q:t, u:u}); last = u; } });
+  tiers.forEach(function(t){ var u = withShip(E.unitPrice(S.p, pricingCfg(t)), t); if(u != null && (last == null || u < last - 0.004)){ rows.push({q:t, u:u}); last = u; } });
   if(rows.length < 2) return '';
   var cur = null, next = null;
   rows.forEach(function(r){ if(q >= r.q) cur = r; else if(!next) next = r; });

@@ -325,6 +325,9 @@
 #alive-flow .sharebox .small{font-size:12px;margin-top:12px;}
 /* ---- cart step + upsell (20 Nov 2026) ---- */
 #alive-flow .shipnote{font-size:12.5px;color:var(--text3);margin-top:6px;}
+#alive-flow .num.free{color:#0B6B35;}
+#alive-flow .speed{margin-top:14px;display:grid;gap:8px;}
+#alive-flow .speedh{margin:4px 0 0;font-family:var(--disp);font-size:13px;font-weight:800;}
 #alive-flow .cnote{margin:-4px 0 12px;font-size:13px;color:var(--text2);line-height:1.45;}
 #alive-flow .ships + .cnote{margin:12px 0 0;}
 #alive-flow .busynote{margin:12px 0 0;background:#fff7ed;border:1px solid #f0c9a8;color:#7a3d06;border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.45;}
@@ -1292,11 +1295,15 @@ var CONFIG = {
            stage:{products: SITE + '/products/', product: SITE + '/insta-price-new/', cart: SITE + '/cart-new/'} },
   /* Stripe publishable key (public by design). Empty = pay on Stripe's own page. */
   stripeKey: 'pk_live_fHTXnaxQCr8At0CeD7QJORFd',
-  /* Flat-rate shipping: $45 per box. Pieces that fit in one box, by product type.
-     Mixed orders share boxes (36 tees + 12 hoodies = half + half = 1 box).
-     The checkout Worker holds the same table and charges from it. */
-  shipPerBox: 45,
-  boxCap: {tshirt:72, polo:48, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:50, drinkware:24, other:48},
+  /* Free FedEx Ground, built into the price per piece (Austin, 27 Nov 2026).
+     One standard box (20x16x14) is rated by FedEx to the delivery ZIP (the shop's
+     ZIP for pickup or before an address), x1.15. Boxes = each item's share of a
+     box, rounded up once; the cost is split evenly across the pieces (PCNA promo
+     items excluded: freight is already in their price). The checkout Worker does
+     the same math with the same /ship-quote number and charges from it. */
+  shipFallbackPerBox: 51.75,
+  defaultZip: '89032',
+  boxCap: {tshirt:72, polo:72, sweatshirt:24, jacket:12, bottom:24, hat:72, beanie:72, bag:48, drinkware:24, other:48},
   phone: '(702) 685-6270', phoneHref: 'tel:7026856270', email: 'info@aliveprintshop.com',
   address: '2350 W Cheyenne Ave, North Las Vegas',
   addonImg: {neck:'media/addon-neck.jpg', hem:'media/addon-hem.jpg', bag:'media/addon-bag.jpg'}
@@ -1505,7 +1512,7 @@ if(window.AliveViewport) window.AliveViewport.subscribe(function(){ placeBar(); 
 var TIPS = {
   turnaround:['Turnaround', 'Counted in business days, Monday to Friday, skipping the days we are closed, after you approve your proof. Order before 4 PM and today counts as day one. Rush moves you up the queue. Woven hem tags add 5 business days.'],
   payment:['Payment', 'You pay securely by card through Stripe. We email a proof before anything prints. Custom orders are made for you, so they can’t be returned — but if we get it wrong, we reprint it.'],
-  shipping:['Shipping', 'Flat $45 per box, shipped anywhere in the US. A box holds about 72 tees, 48 polos, 24 hoodies or 12 jackets, and mixed orders share boxes. Or pick it up free at our North Las Vegas shop.'],
+  shipping:['Shipping', 'FedEx Ground to anywhere in the US is free: it is built into your price per piece. Delivery dates come from FedEx and start the day your order ships. Need it faster? Pick 2Day or overnight at checkout for an extra charge. Or pick it up free at our North Las Vegas shop.'],
   tax:['Sales tax', 'Nevada sales tax is added at payment.']
 };
 function tip(keys){ return '<button type="button" class="qi" data-tip="' + keys + '" aria-label="How this works">?</button>'; }
@@ -1616,6 +1623,10 @@ try{
   var remembered = localStorage.getItem('alive_email');
   if(remembered && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(remembered)) S.form.email = remembered;
 }catch(e){}
+/* The delivery ZIP typed on the product page (free shipping box) carries over. */
+/* A ZIP there means the prices they saw were for shipping to it, so start on
+   "Ship it to me" with that ZIP: the cart then shows the same prices. */
+try{ var zz = localStorage.getItem('aps_zip'); if(zz && /^\d{5}$/.test(zz)){ if(!S.form.zip) S.form.zip = zz; if(S.form.zip === zz) S.ship = 'ship'; } }catch(e){}
 /* Re-send an artwork file that didn't reach storage on the product page. */
 function reupload(key){
   var parts = key.split('|'), id = parts[0], idx = +parts[1];
@@ -1794,17 +1805,64 @@ function boxCount(items){
   }, 0);
   return share > 0 ? Math.ceil(share - 1e-9) : 0;
 }
+/* ---- FedEx shipping (27 Nov 2026) ---- */
+var SHIPQ = {};
+function validZip(z){ z = String(z || '').trim(); return /^\d{5}$/.test(z) ? z : ''; }
+function shipZip(){ return (S.ship === 'ship' && validZip(S.form.zip)) || CONFIG.defaultZip; }
+function shipQuote(){ var q = SHIPQ[shipZip()]; return q && q.ground ? q : null; }
+function loadShipQuote(){
+  var z = shipZip();
+  if(SHIPQ[z]) return;
+  SHIPQ[z] = {loading:true};
+  var done = function(q){
+    SHIPQ[z] = q;
+    if(shipZip() !== z || S.pay || S.done) return;
+    var a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
+    render();
+    if(id){ var el = document.getElementById(id); if(el && el.focus){ el.focus({preventScroll:true}); try{ if(pos != null) el.setSelectionRange(pos, pos); }catch(e){} } }
+  };
+  fetch(CONFIG.payEndpoint.replace(/\/$/,'') + '/ship-quote?zip=' + z)
+    .then(function(r){ return r.json(); })
+    .then(function(j){ done(j && j.ok && j.ground ? j : {fallback:true, ground:{perBox:CONFIG.shipFallbackPerBox, days:null}, air:[]}); },
+          function(){ done({fallback:true, ground:{perBox:CONFIG.shipFallbackPerBox, days:null}, air:[]}); });
+}
+function perBoxNow(){ var q = shipQuote(); return q ? +q.ground.perBox : CONFIG.shipFallbackPerBox; }
+/* Same math as shipSplit() in the checkout Worker. */
+function shipCalc(){
+  var share = 0, pieces = 0;
+  S.items.forEach(function(it){
+    if(isPcna(it)) return;
+    var q = it.qty | 0; pieces += q;
+    share += q / (CONFIG.boxCap[itemType(it)] || CONFIG.boxCap.other);
+  });
+  var boxes = share > 0 ? Math.ceil(share - 1e-9) : 0, pb = perBoxNow();
+  var total = +(boxes * pb).toFixed(2);
+  return {boxes:boxes, perBox:pb, total:total, perPiece: pieces ? Math.ceil(total / pieces * 100 - 1e-6) / 100 : 0};
+}
+function shipPP(it){ return isPcna(it) ? 0 : shipCalc().perPiece; }
+function shippedUnit(it){ return +(+it.unitPrice + shipPP(it)).toFixed(2); }
+function shippedLine(it){ return +(+it.lineTotal + shipPP(it) * (it.qty|0)).toFixed(2); }
+/* Copies of the cart lines with ground shipping inside, as the Worker charges them. */
+function shippedItems(){ return S.items.map(function(it){ var pp = shipPP(it); return Object.assign({}, it, {unitPrice:+(+it.unitPrice + pp).toFixed(2), lineTotal:shippedLine(it), shipPerPiece:pp}); }); }
+function airOptions(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.air) ? q.air : []; }
+function shipUpgrade(){
+  if(S.ship !== 'ship' || !S.shipSvc) return null;
+  var a = airOptions().filter(function(x){ return x.code === S.shipSvc; })[0];
+  return a ? {code:a.code, name:a.name, days:a.days, amount:+(a.upgradePerBox * shipCalc().boxes).toFixed(2)} : null;
+}
+function arriveDate(days){ var d = readyDate(S.rush); for(var i = 0; i < (days || 0); i++) d = nextBizDay(d); return d; }
 function shipInfo(){
-  if(S.ship === 'pickup') return {boxes:0, cost:0};
-  var n = boxCount(); return {boxes:n, cost:n * CONFIG.shipPerBox};
+  var up = shipUpgrade(), c = shipCalc();
+  return {boxes:c.boxes, cost: up ? up.amount : 0, upgrade: up};
 }
 function boxesText(n){ return n + ' box' + (n === 1 ? '' : 'es'); }
 function totals(){
   var base = sum(function(it){ return priceItem(it, priceable(it) ? null : it.addons, priceable(it) ? 'std' : it.rush).line; });
   var withAdd = sum(function(it){ return priceItem(it, priceable(it) ? S.addon : it.addons, priceable(it) ? 'std' : it.rush).line; });
-  var fin = sum(function(it){ return +it.lineTotal; }), sh = shipInfo(), off = promoOff(fin + sh.cost);
-  return {base:base, addons:+(withAdd - base).toFixed(2), rush:+(fin - withAdd).toFixed(2), total:fin,
-          ship:sh.cost, boxes:sh.boxes, off:off, grand:+(fin + sh.cost - off).toFixed(2),
+  var fin = sum(function(it){ return +it.lineTotal; }), sh = shipInfo();
+  var inc = sum(function(it){ return shippedLine(it) - (+it.lineTotal); }), tot = +(fin + inc).toFixed(2), off = promoOff(tot + sh.cost);
+  return {base:+(base + inc).toFixed(2), addons:+(withAdd - base).toFixed(2), rush:+(fin - withAdd).toFixed(2), total:tot, shipIncluded:inc,
+          ship:sh.cost, boxes:sh.boxes, upgrade:sh.upgrade, off:off, grand:+(tot + sh.cost - off).toFixed(2),
           pieces:S.items.reduce(function(t, it){ return t + (it.qty|0); }, 0)};
 }
 function rushExtra(key){
@@ -2113,11 +2171,11 @@ function itemHtml(it){
       (it.artworkLater ? '<div>Artwork: <b>you’ll email it after ordering</b></div>' : '') +
     '</dl>' +
     (staleDeal(it) ? '<div class="stale">Our pricing on this item has changed. Please remove it and add it again to see today’s price. <a href="' + esc(CONFIG.pages[FLOW].product + '?style=' + encodeURIComponent(it.style || '')) + '" data-readd="1">Add it again &rarr;</a></div>' : '') +
-    '<div class="line"><span>' + (it.qty|0) + ' pcs · ' + money(it.unitPrice) + '/pc' +
+    '<div class="line"><span>' + (it.qty|0) + ' pcs · ' + money(shippedUnit(it)) + '/pc' +
       '<span class="iacts"><a class="rm" href="' + esc(editUrl(it, 'artwork')) + '" data-edit="1">Edit design</a>' +
       '<a class="rm" href="' + esc(editUrl(it, 'sizes')) + '" data-edit="1">Edit sizes</a>' +
       '<button class="rm" type="button" data-rm="' + esc(it.id) + '">Remove</button></span></span>' +
-      '<span class="amt num">' + money(it.lineTotal) + '</span></div></div></div>';
+      '<span class="amt num">' + money(shippedLine(it)) + '</span></div></div></div>';
 }
 /* The garment with the customer's artwork, rebuilt from where they placed it
    on the product page (same photo box, same crop, same coordinates). */
@@ -2163,6 +2221,17 @@ function rushRow(key, label){
 function shipRow(key, label, sub, amt){
   return '<button class="ship' + (S.ship === key ? ' on' : '') + '" type="button" data-ship="' + key + '"><span class="radio"><i></i></span>' +
     '<span><h4>' + label + '</h4><span class="sub">' + sub + '</span></span><span class="amt">' + amt + '</span></button>';
+}
+function speedCard(){
+  var air = airOptions(); if(!air.length) return '';
+  var q = shipQuote(), boxes = shipCalc().boxes;
+  var row = function(code, name, sub, amt){
+    return '<button class="ship' + ((S.shipSvc || '') === code ? ' on' : '') + '" type="button" data-svc="' + code + '"><span class="radio"><i></i></span>' +
+      '<span><h4>' + esc(name) + '</h4><span class="sub">' + sub + '</span></span><span class="amt">' + amt + '</span></button>';
+  };
+  return '<div class="speed"><h4 class="speedh">Shipping speed</h4>' +
+    row('', 'FedEx Ground', q.ground.days ? 'Arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : 'Business days vary by distance', 'Free') +
+    air.map(function(a){ return row(a.code, a.name, 'Arrives by ' + esc(fmtDate(arriveDate(a.days))), '+' + money(a.upgradePerBox * boxes)); }).join('') + '</div>';
 }
 function missingArtwork(){
   var out = [];
@@ -2210,6 +2279,7 @@ function missBlock(){
 loadSched(function(){ if(!S.busy && !S.pay) render(); });
 function render(){
   if(S.done){ renderDone(); return; }
+  if(S.items.length) loadShipQuote();
   fixRush();
   if(S.pay){ renderPay(); return; }
   if(!S.items.length){
@@ -2262,10 +2332,10 @@ function renderCart(t, promo){
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       promoRow(promo, offC, t) +
-      '<div class="row"><span>Pickup at our shop</span><b class="num">Free</b></div>' +
+      '<div class="row"><span>Ground shipping' + tip('shipping') + '</span><b class="num free">FREE</b></div>' +
       '<div class="row"><span>Sales tax</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(sub) + '</span></div>' +
-      '<div class="shipnote">Want it shipped? Choose shipping at checkout ($' + CONFIG.shipPerBox + ' per box).</div>' +
+      '<div class="shipnote">Free FedEx Ground anywhere in the US is built into your price. Pickup at our shop is free too. Faster shipping is available at checkout.</div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
       promoInput(promo) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
@@ -2294,7 +2364,7 @@ function renderDetails(t, pickup, promo){
   var compact = S.items.map(function(it){
     return '<div class="sitem"><div class="sitem-art">' + (it.productImage ? '<img src="' + esc(it.productImage) + '" alt="">' : '') + '</div>' +
       '<div class="sitem-t"><b>' + esc(it.productName || it.style) + '</b><span>' + esc(it.color || '') + ' · ' + (it.qty|0) + ' pcs</span></div>' +
-      '<span class="num">' + money(it.lineTotal) + '</span></div>';
+      '<span class="num">' + money(shippedLine(it)) + '</span></div>';
   }).join('');
   var orderList = '<div class="card sorder"><div class="hd"><h2>Your order · ' + S.items.length + ' ' + (S.items.length === 1 ? 'item' : 'items') + '</h2><button type="button" class="linkbtn" data-tocart="1">Edit cart</button></div>' + compact + '</div>';
   var summary =
@@ -2303,7 +2373,8 @@ function renderDetails(t, pickup, promo){
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       promoRow(promo, t.off, t) +
-      '<div class="row"><span>' + (pickup ? 'Pickup' : t.boxes ? 'Shipping · ' + boxesText(t.boxes) : 'Shipping · included') + tip('shipping') + '</span><b class="num">' + (pickup ? 'Free' : money(t.ship)) + '</b></div>' +
+      '<div class="row"><span>' + (pickup ? 'Pickup at our shop' : 'FedEx Ground' + (t.boxes ? ' · ' + boxesText(t.boxes) : '')) + tip('shipping') + '</span><b class="num free">FREE</b></div>' +
+      (t.upgrade ? '<div class="row"><span>Faster shipping · ' + esc(t.upgrade.name) + '</span><b class="num">+' + money(t.upgrade.amount) + '</b></div>' : '') +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
@@ -2324,7 +2395,8 @@ function renderDetails(t, pickup, promo){
           '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
           shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') +
-          shipRow('ship', 'Ship it to me', boxCount() ? 'Flat $' + CONFIG.shipPerBox + ' per box · your order fits in ' + boxesText(boxCount()) : 'Shipping is included in your promo item prices', boxCount() ? '+' + money(boxCount() * CONFIG.shipPerBox) : 'Included') + '</div>' +
+          shipRow('ship', 'Ship it to me', 'Free FedEx Ground' + (function(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.ground.days) ? ' · arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : ' · anywhere in the US'; })(), 'Free') + '</div>' +
+          speedCard() +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
           '<div class="fields" style="margin-top:14px">' + field('addr2','Apt, suite, floor <span>(optional)</span>','text','address-line2') + '</div>' +
@@ -2555,9 +2627,11 @@ function wire(){
   scheduleSnap();
   root.querySelectorAll('[data-f]').forEach(function(el){
     el.oninput = function(){ S.form[el.dataset.f] = el.value; scheduleSnap();
+      if(el.dataset.f === 'zip' && S.ship === 'ship'){ if(validZip(el.value)) loadShipQuote(); }
       if(S.bad[el.dataset.f]){ delete S.bad[el.dataset.f]; var w = root.querySelector('[data-wrap="' + el.dataset.f + '"]'); if(w) w.classList.remove('bad'); } };
   });
   root.querySelectorAll('[data-ship]').forEach(function(b){ b.onclick = function(){ S.ship = b.dataset.ship; render(); }; });
+  root.querySelectorAll('[data-svc]').forEach(function(b){ b.onclick = function(){ S.shipSvc = b.dataset.svc; render(); }; });
   root.querySelectorAll('[data-rush]').forEach(function(b){ b.onclick = function(){ S.rush = b.dataset.rush; applyOptions(); render(); }; });
   root.querySelectorAll('[data-addon]').forEach(function(b){
     b.onclick = function(e){ if(e.target.closest('[data-ex]')) return; S.addon[b.dataset.addon] = !S.addon[b.dataset.addon]; applyOptions(); render(); };
@@ -2668,7 +2742,7 @@ function shippingText(){
    full order. Sent AFTER the order is recorded, so it can carry the number. */
 var ORDERS_ADMIN = 'https://alive-orders.austin-662.workers.dev/admin';
 function ghlPayload(orderNo, ref){
-  var items = S.items, f = S.form, ship = shipInfo(), sp = stripePromo();
+  var items = shippedItems(), f = S.form, ship = shipInfo(), sp = stripePromo();
   var parts = String(f.name||'').trim().split(/\s+/), firstName = parts[0] || '', lastName = parts.slice(1).join(' ');
   var subtotal = +items.reduce(function(s, it){ return s + (+it.lineTotal || 0); }, 0).toFixed(2);
   var spOff = promoOff(subtotal + ship.cost);
@@ -2946,7 +3020,7 @@ function submit(){
     if(!AO){ ghlOnce(null); return; }
     mockWork.then(function(){
       return AO.recordOrder({
-        items: S.items, form: S.form, totals: totals(),
+        items: shippedItems(), form: S.form, totals: totals(),
         shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
         turnaround: S.rush, orderRef: ref,
         rushFee: S.rush === 'std' ? 0 : rushExtra(S.rush),
@@ -2964,7 +3038,7 @@ function submit(){
   var body = {items:S.items.map(function(it){ var c = Object.assign({}, it); delete c.mock; return c; }), total:t.total, orderRef:ref,
     customer:{name:f.name, email:f.email, phone:f.phone, company:f.company},
     /* The Worker recounts boxes itself; these are for the receipt and the note. */
-    shipping:{method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship,
+    shipping:{mode:'fedex', method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:S.ship === 'pickup' ? '' : (S.shipSvc || ''), zip:shipZip(),
       address:S.ship === 'pickup' ? null : {line1:f.addr1, line2:f.addr2, city:f.city, state:f.state, postal_code:f.zip, country:'US'}},
     embedded:embed, promoCode:stripePromo() ? stripePromo().code : '',
     returnUrl:here + '?paid={CHECKOUT_SESSION_ID}' + (FLOW === 'stage' ? '&flow=stage' : ''),
@@ -3006,7 +3080,7 @@ function submit(){
           return Promise.resolve({ok:false, error:'client missing'});
         }};
         return AO.recordOrder({
-          items: S.items.map(function(it){ return Object.assign({}, it, {dept: itemDepts(it)}); }),
+          items: shippedItems().map(function(it){ return Object.assign({}, it, {dept: itemDepts(it)}); }),
           form: S.form,
           totals: tt,                                    /* .ship and .off */
           shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},

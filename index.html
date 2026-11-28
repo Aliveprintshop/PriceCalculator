@@ -1771,8 +1771,28 @@ function startAt(raw,blank){
   }catch(e){return null;}
 }
 function cardQty(it){var p=it._full;if(p&&(p._drinkware||p._pcna))return cardAtQty(p);return it.mq||24;}
+/* Free FedEx Ground is built into the price per piece (27 Nov 2026): the card
+   adds one product's share of its boxes at the shop's (or the customer's saved)
+   ZIP, the same way the product page does, so the two numbers agree. */
+var SHIP_CAP={tshirt:72,polo:72,sweatshirt:24,jacket:12,bottom:24,hat:72,beanie:72,bag:48,drinkware:24,other:48};
+var SHIP_PB=null;
+(function(){
+  var z='';try{z=localStorage.getItem('aps_zip')||'';}catch(e){}
+  if(!/^\d{5}$/.test(z))z='89032';
+  fetch('https://alive-checkout.austin-662.workers.dev/ship-quote?zip='+z).then(function(r){return r.json();})
+    .then(function(j){SHIP_PB=(j&&j.ok&&j.ground)?+j.ground.perBox:51.75;},function(){SHIP_PB=51.75;})
+    .then(function(){try{renderGrid();}catch(e){}});
+})();
+function cardShipPP(it,q){
+  var p=it._full; if(!p||p._pcna||!q)return 0;
+  var t='other';try{t=window.AliveEngine.productType(p);}catch(e){}
+  var tot=+(Math.ceil(q/(SHIP_CAP[t]||48)-1e-9)*(SHIP_PB==null?51.75:SHIP_PB)).toFixed(2);
+  return Math.ceil(tot/q*100-1e-6)/100;
+}
 function cardPriceHtml(it){
-  return '<div class="card-price">Starts at <strong>$'+((it.fp!=null?it.fp:it.p)).toFixed(2)+'</strong>/pc <span class="card-at">&middot; '+cardQty(it)+' pcs</span></div>';
+  var q=cardQty(it), base=(it.fp!=null?it.fp:it.p);
+  if(SHIP_PB==null) return '<div class="card-price">Starts at <strong>&hellip;</strong>/pc <span class="card-at">&middot; '+q+' pcs</span></div>';
+  return '<div class="card-price">Starts at <strong>$'+(+base+cardShipPP(it,q)).toFixed(2)+'</strong>/pc <span class="card-at">&middot; '+q+' pcs</span></div>';
 }
 function dwCardMeta(p){
   var b=dwBreakList(p),min=b.length?b[0]:24;
