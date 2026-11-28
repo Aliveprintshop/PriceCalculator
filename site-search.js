@@ -107,10 +107,18 @@
     '#alive-hostbar .ahb-k{order:2;}'+
     '#alive-hostbar .ahb-v{order:1;}'+
     '#alive-hostbar .ahb-s{order:3;flex-basis:100%;}}';
-  /* Product pages: the header slides away while scrolling down and comes back on
-     the first scroll up, so the whole product section fits (Austin, 27 Nov 2026). */
-  css+='header.aps-hdauto{transition:transform .25s ease,box-shadow .25s ease!important;will-change:transform;}'+
-    'header.aps-hdauto.aps-hdhide{transform:translateY(calc(-100% - 12px))!important;box-shadow:none!important;}';
+  /* Product pages on desktop: a minimal one-row header, like Custom Ink's
+     designer (Austin, 27 Nov 2026): logo, "All products", phone, cart. The menu
+     row, the search bar and the two buttons are hidden so the product fits. */
+  css+='@media(min-width:1025px){'+
+    'header.aps-minimal{padding-bottom:12px!important;box-shadow:0 1px 0 #e9edf2!important;}'+
+    'header.aps-minimal::after,header.aps-minimal .aps-sb-main,header.aps-minimal .elementor-element-0225283,'+
+      'header.aps-minimal .elementor-element-f6fecbb,header.aps-minimal .elementor-element-80b5470{display:none!important;}'+
+    'header.aps-minimal .aps-back{order:2;display:inline-flex;align-items:center;gap:8px;font:600 15px/1 Montserrat,sans-serif;color:#1e1e1e;'+
+      'text-decoration:none;padding:9px 14px;border-radius:999px;border:1px solid #e3e7ec;background:#fff;white-space:nowrap;}'+
+    'header.aps-minimal .aps-back:hover{border-color:#1b6cce;color:#1b6cce;}'+
+    'header.aps-minimal .aps-back svg{width:16px;height:16px;}}'+
+  '.aps-back{display:none;}';
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
   /* ---------------- search engine (copy of index.html) ---------------- */
@@ -343,6 +351,15 @@
       if(cart&&cart.parentNode)cart.parentNode.insertBefore(ph,cart);else bar.parentNode.insertBefore(ph,bar.nextSibling);
       if(PRODUCT_PAGE){
         hd.classList.add('aps-compact');
+        hd.classList.add('aps-minimal');
+        var bk=document.createElement('a');bk.className='aps-back';bk.href='/products/';
+        bk.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>All products';
+        if(ghost){bk.setAttribute('aria-hidden','true');bk.tabIndex=-1;}
+        else bk.addEventListener('click',function(e){
+          /* came from the product grid: go back to it, filters and scroll kept */
+          try{if(document.referrer&&new URL(document.referrer).pathname.indexOf('/products')===0&&history.length>1){e.preventDefault();history.back();}}catch(x){}
+        });
+        logo.parentNode.insertBefore(bk,bar.nextSibling);
         if(!ghost){
           var sb=document.createElement('button');sb.type='button';sb.className='aps-sbtn';sb.setAttribute('aria-label','Search products');sb.setAttribute('aria-expanded','false');
           sb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>';
@@ -417,33 +434,8 @@
     window.addEventListener('storage',function(e){if(e.key===CC_KEY)ccDraw();});
   })();
 
-  /* ---------------- product pages: hide the header on scroll down ---------------- */
-  function autoHideHeader(){
-    if(!PRODUCT_PAGE)return;
-    var lastY=window.pageYOffset,acc=0;
-    function hd(){return document.querySelector('header.elementor-element-92c3014:not(.elementor-sticky__spacer)');}
-    function busy(h){
-      /* never hide while the customer is using the header: search open, typing, a menu open or hovered */
-      return h.classList.contains('aps-sopen')||h.contains(document.activeElement)||h.matches(':hover')||
-        !!h.querySelector('.aps-sb.open');
-    }
-    function step(){
-      var h=hd();if(!h)return;
-      h.classList.add('aps-hdauto');
-      var y=window.pageYOffset,d=y-lastY;lastY=y;
-      var hh=h.offsetHeight||130;
-      if(y<=hh){h.classList.remove('aps-hdhide');acc=0;return;}
-      acc=(d>0)===(acc>0)?acc+d:d;           /* distance moved in the current direction */
-      if(acc>12&&!busy(h))h.classList.add('aps-hdhide');
-      else if(acc<-8)h.classList.remove('aps-hdhide');
-    }
-    window.addEventListener('scroll',step,{passive:true});
-    /* the pointer heading for the top edge brings it back too (desktop) */
-    document.addEventListener('mousemove',function(e){if(e.clientY<24){var h=hd();if(h)h.classList.remove('aps-hdhide');}},{passive:true});
-  }
-
   function boot(){
-    gridSetup();watchPopup();mobileCta();autoHideHeader();
+    gridSetup();watchPopup();mobileCta();
     ccDraw();setTimeout(ccDraw,600);setTimeout(ccDraw,2000);
     if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}
     /* Elementor makes the invisible copy of a sticky header a moment later */
