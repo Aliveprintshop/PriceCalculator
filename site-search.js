@@ -118,7 +118,22 @@
       'text-decoration:none;padding:9px 14px;border-radius:999px;border:1px solid #e3e7ec;background:#fff;white-space:nowrap;}'+
     'header.aps-minimal .aps-back:hover{border-color:#1b6cce;color:#1b6cce;}'+
     'header.aps-minimal .aps-back svg{width:16px;height:16px;}}'+
-  '.aps-back{display:none;}';
+  '.aps-back{display:none;}'+
+  /* the product page's 1-2-3 steps, moved into the minimal header (desktop) */
+  '.aps-hsteps{display:none;}'+
+  '@media(min-width:1025px){'+
+    'header.aps-minimal .aps-hsteps.on{order:2;flex:1 1 auto;display:flex;justify-content:center;align-items:center;gap:0;min-width:0;}'+
+    '.aps-hsteps .st{display:inline-flex;align-items:center;gap:8px;background:none;border:0;padding:4px 2px;font:700 14px/1 Montserrat,sans-serif;color:#9aa3ae;cursor:default;position:relative;}'+
+    '.aps-hsteps .st i{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#e3e7ec;color:#fff;font:800 13px/1 Montserrat,sans-serif;font-style:normal;}'+
+    '.aps-hsteps .st.now{color:#1b6cce;}.aps-hsteps .st.now i{background:#1b6cce;box-shadow:0 0 0 4px #e3eefb;}'+
+    '.aps-hsteps .st.done{color:#1e1e1e;cursor:pointer;}.aps-hsteps .st.done i{background:#1b6cce;}'+
+    '.aps-hsteps .st.done:hover{color:#1b6cce;}'+
+    '.aps-hsteps .st i svg{width:14px;height:14px;}'+
+    '.aps-hsteps .rl{width:56px;height:2px;background:#e3e7ec;margin:0 14px;border-radius:2px;}.aps-hsteps .rl.done{background:#1b6cce;}'+
+    '.aps-hsteps .bd{display:inline-flex;flex-direction:column;align-items:flex-start;margin-left:10px;line-height:1;}'+
+    '.aps-hsteps .bd b{display:inline-flex;align-items:center;gap:5px;background:#16a34a;color:#fff;font:800 12px/1 Montserrat,sans-serif;padding:6px 10px;border-radius:999px;white-space:nowrap;}'+
+    '.aps-hsteps .bd b svg{width:12px;height:12px;}'+
+    '.aps-hsteps .bd small{font:700 10.5px/1.2 Montserrat,sans-serif;color:#15803d;margin-top:3px;white-space:nowrap;}}';
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
   /* ---------------- search engine (copy of index.html) ---------------- */
@@ -434,8 +449,58 @@
     window.addEventListener('storage',function(e){if(e.key===CC_KEY)ccDraw();});
   })();
 
+  /* ---------------- product page: 1-2-3 steps in the header (desktop) ----------------
+     The product page (cross-origin iframe) sends its step; clicks on a done step
+     go back to it. The iframe hides its own step bar while this one is on. */
+  function headerSteps(){
+    if(!PRODUCT_PAGE)return;
+    var ORIGIN='https://aliveprintshop.github.io',model=null,lastOn=null;
+    function frame(){return document.querySelector('iframe[src*="alive-product"]');}
+    function hd(){return document.querySelector('header.elementor-element-92c3014:not(.elementor-sticky__spacer)');}
+    function box(){
+      var h=hd();if(!h)return null;
+      var b=h.querySelector('.aps-hsteps');
+      if(!b){b=document.createElement('nav');b.className='aps-hsteps';b.setAttribute('aria-label','Order steps');
+        var back=h.querySelector('.aps-back');
+        if(back&&back.parentNode)back.parentNode.insertBefore(b,back.nextSibling);else return null;
+        b.addEventListener('click',function(e){var t=e.target.closest('[data-to]');if(!t)return;
+          var f=frame();if(f)try{f.contentWindow.postMessage({type:'alive-step-go',to:t.getAttribute('data-to')},ORIGIN);}catch(x){}});}
+      return b;
+    }
+    var TICK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+    var TAG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>';
+    function esc(t){return String(t||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function draw(){
+      var b=box();if(!b||!model)return;
+      var defs=[[1,'Design','artwork'],[2,'Sizes','sizes'],[3,'Cart','']],html='';
+      defs.forEach(function(d,i){
+        var done=d[0]<model.cur,now=d[0]===model.cur;
+        var inner='<i>'+(done?TICK:d[0])+'</i>'+d[1];
+        html+=done?'<button type="button" class="st done" data-to="'+d[2]+'">'+inner+'</button>'
+                  :'<span class="st'+(now?' now':'')+'"'+(now?' aria-current="step"':'')+'>'+inner+'</span>';
+        if(d[0]===3&&model.badge)html+='<span class="bd"><b>'+TAG+esc(model.badge)+'</b>'+(model.note?'<small>'+esc(model.note)+'</small>':'')+'</span>';
+        if(i<2)html+='<span class="rl'+(done?' done':'')+'"></span>';
+      });
+      b.innerHTML=html;b.classList.add('on');
+    }
+    function wide(){return window.innerWidth>=1025;}
+    function tell(force){
+      var on=wide(),f=frame();if(!f)return;
+      if(!force&&on===lastOn)return;lastOn=on;
+      try{f.contentWindow.postMessage({type:'alive-hdr-steps',on:on},ORIGIN);}catch(x){}
+    }
+    window.addEventListener('message',function(e){
+      if(e.origin!==ORIGIN)return;var d=e.data||{};
+      if(d.type==='alive-hello')tell(true);
+      if(d.type==='alive-steps'&&d.steps){model=d.steps;draw();}
+    });
+    window.addEventListener('resize',function(){tell(false);});
+    var f=frame();if(f)f.addEventListener('load',function(){setTimeout(function(){tell(true);},300);});
+    tell(true);setTimeout(function(){tell(true);},1500);
+  }
+
   function boot(){
-    gridSetup();watchPopup();mobileCta();
+    gridSetup();watchPopup();mobileCta();headerSteps();
     ccDraw();setTimeout(ccDraw,600);setTimeout(ccDraw,2000);
     if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}
     /* Elementor makes the invisible copy of a sticky header a moment later */

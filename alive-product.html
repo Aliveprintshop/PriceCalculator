@@ -876,6 +876,9 @@
 #alive-flow .allprod{display:inline-block;margin:16px 0 0;font-family:var(--disp);font-size:12.5px;font-weight:700;
   color:var(--text2);text-decoration:none;}
 #alive-flow .allprod:hover{color:var(--blue);}
+/* Desktop on aliveprintshop.com: the 1-2-3 steps and "All products" live in the site header (27 Nov 2026). */
+#alive-flow.hdrsteps .steps,#alive-flow.hdrsteps .allprod{display:none !important;}
+#alive-flow.hdrsteps .shell.solo{padding-top:20px;}
 /* Sizes step: "Back to design" sits where "All products" sits on step 1. */
 #alive-flow button.allprod{background:none;border:0;padding:0;cursor:pointer;gap:6px;}
 #alive-flow .shell.solo{padding-top:12px;}
@@ -3288,7 +3291,23 @@ window.addEventListener('message', function(e){
     lastBar = ''; pushBar(); broadcast(); }
   else if(d.type === 'alive-bar-cta'){ var c = root.querySelector('.mbar button.cta'); if(c && !c.disabled) c.click(); }
   else if(d.type === 'alive-bar-tip'){ var q = root.querySelector('.mbar .qi'); if(q) q.click(); }
+  else if(d.type === 'alive-hdr-steps'){
+    /* The site header shows the 1-2-3 steps itself (desktop): hide ours and the
+       "All products" line under it, and keep the header told where we are. */
+    HDRSTEPS = !!d.on; root.classList.toggle('hdrsteps', HDRSTEPS); lastSteps = ''; pushSteps(); broadcast();
+  }
+  else if(d.type === 'alive-step-go'){ if(d.to === 'artwork' || d.to === 'sizes'){ if(d.to !== S.phase) go(d.to); } }
 });
+var HDRSTEPS = false, lastSteps = '';
+function pushSteps(){
+  if(!HDRSTEPS) return;
+  var lbl = '', note = '';
+  try{ lbl = discLabel(discActive()) || ''; }catch(e){}
+  try{ var p = discActive(); if(p && p.code === 'BLACKFRIDAY50' && Date.now() < DISC_BF.endsAt) note = 'Black Friday Deal'; }catch(e){}
+  var m = {cur: S.phase === 'artwork' ? 1 : 2, badge: lbl, note: note}, j = JSON.stringify(m);
+  if(j === lastSteps) return; lastSteps = j;
+  try{ window.parent.postMessage({type:'alive-steps', steps:m}, 'https://aliveprintshop.com'); }catch(e){}
+}
 if(EMBEDDED){ try{ window.parent.postMessage({type:'alive-hello'}, '*'); }catch(e){} }
 function subscribeViewport(){
   if(window.AliveViewport) window.AliveViewport.subscribe(function(){
@@ -6041,6 +6060,7 @@ function refreshPrice(){
   var mc = root.querySelector('[data-mcta]');
   if(mc && S.phase === 'sizes'){ var st = mctaState(); mc.innerHTML = st.label; mc.disabled = st.off; }
   pushBar();   /* last, so the page's footer bar gets the up-to-date enabled state */
+  pushSteps();
 }
 
 function go(phase, scroll){
