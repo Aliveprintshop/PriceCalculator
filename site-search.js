@@ -107,6 +107,10 @@
     '#alive-hostbar .ahb-k{order:2;}'+
     '#alive-hostbar .ahb-v{order:1;}'+
     '#alive-hostbar .ahb-s{order:3;flex-basis:100%;}}';
+  /* Product pages: the header slides away while scrolling down and comes back on
+     the first scroll up, so the whole product section fits (Austin, 27 Nov 2026). */
+  css+='header.aps-hdauto{transition:transform .25s ease,box-shadow .25s ease!important;will-change:transform;}'+
+    'header.aps-hdauto.aps-hdhide{transform:translateY(calc(-100% - 12px))!important;box-shadow:none!important;}';
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
   /* ---------------- search engine (copy of index.html) ---------------- */
@@ -413,8 +417,34 @@
     window.addEventListener('storage',function(e){if(e.key===CC_KEY)ccDraw();});
   })();
 
+  /* ---------------- product pages: hide the header on scroll down ---------------- */
+  function autoHideHeader(){
+    if(!PRODUCT_PAGE)return;
+    var lastY=window.pageYOffset,acc=0,ticking=false;
+    function hd(){return document.querySelector('header.elementor-element-92c3014:not(.elementor-sticky__spacer)');}
+    function busy(h){
+      /* never hide while the customer is using the header: search open, typing, a menu open or hovered */
+      return h.classList.contains('aps-sopen')||h.contains(document.activeElement)||h.matches(':hover')||
+        !!h.querySelector('.aps-sb.open');
+    }
+    function step(){
+      ticking=false;
+      var h=hd();if(!h)return;
+      h.classList.add('aps-hdauto');
+      var y=window.pageYOffset,d=y-lastY;lastY=y;
+      var hh=h.offsetHeight||130;
+      if(y<=hh){h.classList.remove('aps-hdhide');acc=0;return;}
+      acc=(d>0)===(acc>0)?acc+d:d;           /* distance moved in the current direction */
+      if(acc>12&&!busy(h))h.classList.add('aps-hdhide');
+      else if(acc<-8)h.classList.remove('aps-hdhide');
+    }
+    window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(step);}},{passive:true});
+    /* the pointer heading for the top edge brings it back too (desktop) */
+    document.addEventListener('mousemove',function(e){if(e.clientY<24){var h=hd();if(h)h.classList.remove('aps-hdhide');}},{passive:true});
+  }
+
   function boot(){
-    gridSetup();watchPopup();mobileCta();
+    gridSetup();watchPopup();mobileCta();autoHideHeader();
     ccDraw();setTimeout(ccDraw,600);setTimeout(ccDraw,2000);
     if(!mount()){var n=0,iv=setInterval(function(){if(mount()||++n>40)clearInterval(iv);},250);}
     /* Elementor makes the invisible copy of a sticky header a moment later */
