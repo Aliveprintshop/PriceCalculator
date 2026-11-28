@@ -566,7 +566,7 @@
       bar.className = 'alive-shipbar';
       if(r.classList.contains('elementor-sticky__spacer')) bar.setAttribute('aria-hidden', 'true');
       else { bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Free Shipping'); }
-      bar.innerHTML = TRUCK + '<b>NEW: FREE SHIPPING ON EVERY ORDER</b><span class="sb-sub">Lower 48 states · Local pickup in Las Vegas</span><a href="/products/"' + (bar.getAttribute('aria-hidden') ? ' tabindex="-1"' : '') + '>Shop now →</a>';
+      bar.innerHTML = TRUCK + '<b>FREE SHIPPING</b><span class="sb-sub">Lower 48 states · Local pickup in Las Vegas</span><a href="/products/"' + (bar.getAttribute('aria-hidden') ? ' tabindex="-1"' : '') + '>Shop now →</a>';
       r.insertBefore(bar, r.firstChild);
     }
     fit();
