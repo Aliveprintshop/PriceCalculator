@@ -545,7 +545,7 @@
   if(window.__aliveShipBar) return; window.__aliveShipBar = true;
   if(/^\/(insta-price|cart|checkout)(\/|$)/.test(location.pathname)) return;
   if(/[?&](elementor-preview|preview)=/.test(location.search)) return;
-  var TRUCK = '<svg width="24" height="17" viewBox="0 0 24 17" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><path d="M1 2h13v10H1zM14 6h5l4 4v2h-9z"/><circle cx="6" cy="14" r="2" fill="#1D6FD1"/><circle cx="18" cy="14" r="2" fill="#1D6FD1"/></svg>';
+  var TRUCK = '<svg width="34" height="21" viewBox="0 0 72 44" aria-hidden="true" style="flex:0 0 auto"><g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"><path d="M3 12h9"/><path d="M1 20h11"/><path d="M5 28h7"/></g><rect x="16" y="4" width="32" height="26" rx="5" fill="#fff"/><path d="M50 11h10.5c1.2 0 2.3.6 3 1.5l5.2 7.1c.5.7.8 1.5.8 2.4V30H50z" fill="#DCEBFF"/><path d="M54 15h6.2l3.8 5.2H54z" fill="#1D6FD1"/><rect x="16" y="27" width="54" height="4" rx="2" fill="#B9D4F7"/><circle cx="27" cy="34" r="6.5" fill="#1D6FD1" stroke="#fff" stroke-width="3.5"/><circle cx="58" cy="34" r="6.5" fill="#1D6FD1" stroke="#fff" stroke-width="3.5"/></svg>';
   var styled = false;
   function style(){
     if(styled) return; styled = true;
