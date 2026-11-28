@@ -535,7 +535,10 @@
   }
 })();
 
-/* Free Shipping announcement bar above the site header (Austin, 27 Nov 2026).
+/* Free Shipping announcement bar at the top of the site header (Austin, 27 Nov 2026).
+   The header is an Elementor sticky header: a fixed copy plus a hidden spacer
+   copy that holds its place. The bar goes inside BOTH, as their first row, so
+   it stays visible and the page below moves down by the same amount.
    Every page except the product designer and cart/checkout, which keep their
    own compact headers. Runs once even though this file loads twice. */
 (function(){
@@ -543,23 +546,35 @@
   if(/^\/(insta-price|cart|checkout)(\/|$)/.test(location.pathname)) return;
   if(/[?&](elementor-preview|preview)=/.test(location.search)) return;
   var TRUCK = '<svg width="24" height="17" viewBox="0 0 24 17" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 auto"><path d="M1 2h13v10H1zM14 6h5l4 4v2h-9z"/><circle cx="6" cy="14" r="2" fill="#1D6FD1"/><circle cx="18" cy="14" r="2" fill="#1D6FD1"/></svg>';
-  function mount(){
-    if(document.getElementById('alive-shipbar')) return true;
-    var hdr = document.querySelector('header.elementor-location-header') || document.querySelector('[data-elementor-type="header"]');
-    if(!hdr || !hdr.parentNode) return false;
+  var styled = false;
+  function style(){
+    if(styled) return; styled = true;
     var st = document.createElement('style');
-    st.textContent = '#alive-shipbar{background:#1D6FD1;color:#fff;font-family:inherit;font-size:15px;line-height:1.3;padding:9px 16px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;text-align:center;position:relative;z-index:10}' +
-      '#alive-shipbar b{font-weight:800;letter-spacing:.04em}#alive-shipbar .sb-sub{opacity:.92}#alive-shipbar a{color:#fff;font-weight:700;text-decoration:underline}' +
-      '@media(max-width:767px){#alive-shipbar{font-size:13px;padding:8px 10px;gap:4px 10px}#alive-shipbar .sb-sub{display:none}}';
+    st.textContent = '.alive-shipbar{flex:0 0 100%;width:100%;max-width:none;order:-1;box-sizing:border-box;background:#1D6FD1;color:#fff;font-family:inherit;font-size:15px;line-height:1.3;padding:9px 16px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;text-align:center}' +
+      '.alive-shipbar b{font-weight:800;letter-spacing:.04em}.alive-shipbar .sb-sub{opacity:.92}.alive-shipbar a{color:#fff !important;font-weight:700;text-decoration:underline}' +
+      '@media(max-width:767px){.alive-shipbar{font-size:13px;padding:8px 10px;gap:4px 10px}.alive-shipbar .sb-sub{display:none}}';
     document.head.appendChild(st);
-    var bar = document.createElement('div');
-    bar.id = 'alive-shipbar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Free Shipping');
-    bar.innerHTML = TRUCK + '<b>NEW: FREE SHIPPING ON EVERY ORDER</b><span class="sb-sub">Lower 48 states · Local pickup in Las Vegas</span><a href="/products/">Shop now →</a>';
-    hdr.parentNode.insertBefore(bar, hdr);
-    return true;
   }
-  if(!mount()){
-    var n = 0, iv = setInterval(function(){ if(mount() || ++n > 40) clearInterval(iv); }, 250);
-    document.addEventListener('DOMContentLoaded', mount);
+  function mount(){
+    var roots = document.querySelectorAll('header.elementor-location-header > .e-con, [data-elementor-type="header"] > .e-con');
+    var n = 0;
+    for(var i = 0; i < roots.length; i++){
+      var r = roots[i]; n++;
+      if(r.querySelector(':scope > .alive-shipbar')) continue;
+      style();
+      var bar = document.createElement('div');
+      bar.className = 'alive-shipbar';
+      if(r.classList.contains('elementor-sticky__spacer')) bar.setAttribute('aria-hidden', 'true');
+      else { bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Free Shipping'); }
+      bar.innerHTML = TRUCK + '<b>NEW: FREE SHIPPING ON EVERY ORDER</b><span class="sb-sub">Lower 48 states · Local pickup in Las Vegas</span><a href="/products/"' + (bar.getAttribute('aria-hidden') ? ' tabindex="-1"' : '') + '>Shop now →</a>';
+      r.insertBefore(bar, r.firstChild);
+    }
+    return n > 0;
   }
+  function boot(){
+    if(!mount()){ var k = 0, iv = setInterval(function(){ if(mount() || ++k > 40) clearInterval(iv); }, 250); }
+    /* Elementor makes the spacer copy of a sticky header a moment later */
+    setTimeout(mount, 600); setTimeout(mount, 2000); setTimeout(mount, 4000);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
