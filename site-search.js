@@ -420,7 +420,7 @@
   /* ---------------- product pages: hide the header on scroll down ---------------- */
   function autoHideHeader(){
     if(!PRODUCT_PAGE)return;
-    var lastY=window.pageYOffset,acc=0,ticking=false;
+    var lastY=window.pageYOffset,acc=0;
     function hd(){return document.querySelector('header.elementor-element-92c3014:not(.elementor-sticky__spacer)');}
     function busy(h){
       /* never hide while the customer is using the header: search open, typing, a menu open or hovered */
@@ -428,7 +428,6 @@
         !!h.querySelector('.aps-sb.open');
     }
     function step(){
-      ticking=false;
       var h=hd();if(!h)return;
       h.classList.add('aps-hdauto');
       var y=window.pageYOffset,d=y-lastY;lastY=y;
@@ -438,7 +437,7 @@
       if(acc>12&&!busy(h))h.classList.add('aps-hdhide');
       else if(acc<-8)h.classList.remove('aps-hdhide');
     }
-    window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(step);}},{passive:true});
+    window.addEventListener('scroll',step,{passive:true});
     /* the pointer heading for the top edge brings it back too (desktop) */
     document.addEventListener('mousemove',function(e){if(e.clientY<24){var h=hd();if(h)h.classList.remove('aps-hdhide');}},{passive:true});
   }
