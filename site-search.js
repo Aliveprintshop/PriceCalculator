@@ -569,8 +569,24 @@
       bar.innerHTML = TRUCK + '<b>NEW: FREE SHIPPING ON EVERY ORDER</b><span class="sb-sub">Lower 48 states · Local pickup in Las Vegas</span><a href="/products/"' + (bar.getAttribute('aria-hidden') ? ' tabindex="-1"' : '') + '>Shop now →</a>';
       r.insertBefore(bar, r.firstChild);
     }
+    fit();
     return n > 0;
   }
+  /* The header sits in a boxed, padded container: stretch the bar to the full
+     window width and up to the header's top edge. */
+  function fit(){
+    var cw = document.documentElement.clientWidth;
+    var bars = document.querySelectorAll('.alive-shipbar');
+    for(var i = 0; i < bars.length; i++){
+      var bar = bars[i], p = bar.parentElement, r = p.getBoundingClientRect(), cs = getComputedStyle(p);
+      if(!r.width) continue;
+      bar.style.marginLeft = (-r.left) + 'px';
+      bar.style.marginRight = (r.right - cw) + 'px';
+      bar.style.width = cw + 'px'; bar.style.flexBasis = cw + 'px';
+      bar.style.marginTop = '-' + cs.paddingTop;
+    }
+  }
+  window.addEventListener('resize', function(){ fit(); });
   function boot(){
     if(!mount()){ var k = 0, iv = setInterval(function(){ if(mount() || ++k > 40) clearInterval(iv); }, 250); }
     /* Elementor makes the spacer copy of a sticky header a moment later */
