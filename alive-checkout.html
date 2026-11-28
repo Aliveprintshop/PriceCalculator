@@ -126,6 +126,7 @@
 #alive-flow .taxex{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:13.5px;color:var(--text2);cursor:pointer;}
 #alive-flow .taxex input{width:18px;height:18px;accent-color:var(--blue);}
 #alive-flow .taxnote{font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5;}
+#alive-flow .speednote{margin-top:14px;font-size:13px;color:var(--text2);background:#EEF7F1;border:1px solid #CDE8D6;border-radius:10px;padding:10px 12px;}
 #alive-flow .keynote{font-size:12px;color:var(--text3);margin:-2px 0 4px;}
 #alive-flow .empty{text-align:center;padding:40px 20px;color:var(--text2);}
 
@@ -2290,7 +2291,11 @@ function shipRow(key, label, sub, amt){
     '<span><h4>' + label + '</h4><span class="sub">' + sub + '</span></span><span class="amt">' + amt + '</span></button>';
 }
 function speedCard(){
-  var air = airOptions(); if(!air.length) return '';
+  var air = airOptions();
+  if(!air.length){
+    var gd0 = groundDays();
+    return (S.ship === 'ship' && validZip(S.form.zip) && gd0) ? '<div class="speednote">Free Shipping is the fastest option to this address.</div>' : '';
+  }
   var q = shipQuote(), boxes = shipCalc().boxes;
   var row = function(code, name, sub, amt){
     return '<button class="ship' + ((S.shipSvc || '') === code ? ' on' : '') + '" type="button" data-svc="' + code + '"><span class="radio"><i></i></span>' +
