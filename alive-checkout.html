@@ -1516,7 +1516,7 @@ if(window.AliveViewport) window.AliveViewport.subscribe(function(){ placeBar(); 
 var TIPS = {
   turnaround:['Turnaround', 'Counted in business days, Monday to Friday, skipping the days we are closed, after you approve your proof. Order before 4 PM and today counts as day one. Rush moves you up the queue. Woven hem tags add 5 business days.'],
   payment:['Payment', 'You pay securely by card through Stripe. We email a proof before anything prints. Custom orders are made for you, so they can’t be returned — but if we get it wrong, we reprint it.'],
-  shipping:['Shipping', 'Free Shipping anywhere in the US. Delivery dates come from FedEx and start the day your order ships. Need it faster? Pick 2Day or overnight at checkout for an extra charge. Or pick it up free at our North Las Vegas shop.'],
+  shipping:['Shipping', 'Free Shipping anywhere in the lower 48 states (not Alaska, Hawaii or US territories). Delivery dates come from FedEx and start the day your order ships. Need it faster? Pick 2Day or overnight at checkout for an extra charge. Or pick it up free at our North Las Vegas shop.'],
   tax:['Sales tax', 'Nevada sales tax is added at payment.']
 };
 function tip(keys){ return '<button type="button" class="qi" data-tip="' + keys + '" aria-label="How this works">?</button>'; }
@@ -1811,6 +1811,19 @@ function boxCount(items){
 }
 /* ---- FedEx shipping (27 Nov 2026) ---- */
 var SHIPQ = {};
+/* Free Shipping is the lower 48 only (Austin, 27 Nov 2026): no Alaska, Hawaii,
+   territories or military addresses. Checked by state and by ZIP prefix. */
+function lower48(state, zip){
+  var st = String(state || '').trim().toUpperCase().replace(/\./g, '');
+  if(/^(AK|ALASKA|HI|HAWAII|PR|PUERTO RICO|VI|GU|GUAM|AS|MP|AA|AE|AP|FM|MH|PW)$/.test(st)) return false;
+  var z3 = parseInt(String(zip || '').slice(0, 3), 10);
+  if(isNaN(z3)) return true;
+  if(z3 >= 6 && z3 <= 9) return false;       /* Puerto Rico, Virgin Islands, AE */
+  if(z3 === 340 || z3 === 962 || z3 === 963 || z3 === 964 || z3 === 965 || z3 === 966) return false;   /* AA / AP */
+  if(z3 >= 967 && z3 <= 969) return false;   /* Hawaii, Guam, territories */
+  if(z3 >= 995 && z3 <= 999) return false;   /* Alaska */
+  return true;
+}
 function validZip(z){ z = String(z || '').trim(); return /^\d{5}$/.test(z) ? z : ''; }
 function shipZip(){ return (S.ship === 'ship' && validZip(S.form.zip)) || CONFIG.defaultZip; }
 function shipQuote(){ var q = SHIPQ[shipZip()]; return q && q.ground ? q : null; }
@@ -2350,7 +2363,7 @@ function renderCart(t, promo){
       '<div class="row"><span>Shipping' + tip('shipping') + '</span><b class="num free">Free Shipping</b></div>' +
       '<div class="row"><span>Sales tax</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(sub) + '</span></div>' +
-      '<div class="shipnote">Free Shipping anywhere in the US, or free pickup at our shop. Faster shipping is available at checkout.</div>' +
+      '<div class="shipnote">Free Shipping to the lower 48 states, or free pickup at our shop. Faster shipping is available at checkout.</div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
       promoInput(promo) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
@@ -2410,7 +2423,7 @@ function renderDetails(t, pickup, promo){
           '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
           shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') +
-          shipRow('ship', 'Ship it to me', 'Free Shipping' + (function(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.ground.days) ? ' · arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : ' · anywhere in the US'; })(), 'Free') + '</div>' +
+          shipRow('ship', 'Ship it to me', 'Free Shipping to the lower 48 states' + (function(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.ground.days) ? ' · arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : ' · anywhere in the US'; })(), 'Free') + '</div>' +
           speedCard() +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
@@ -2735,6 +2748,7 @@ function validate(){
     if(!String(S.form.city||'').trim()) S.bad.city = 'City is needed';
     if(!String(S.form.state||'').trim()) S.bad.state = 'State is needed';
     if(!/^\d{5}$/.test(String(S.form.zip||'').trim())) S.bad.zip = 'A 5-digit ZIP, please';
+    else if(!lower48(S.form.state, S.form.zip)) S.bad.state = 'Free Shipping covers the lower 48 states. For Alaska, Hawaii or US territories, please call ' + CONFIG.phone + '.';
   }
   return Object.keys(S.bad).length === 0;
 }
