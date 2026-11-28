@@ -1853,11 +1853,12 @@ function shippedUnit(it){ return +(+it.unitPrice + shipPP(it)).toFixed(2); }
 function shippedLine(it){ return +(+it.lineTotal + shipPP(it) * (it.qty|0)).toFixed(2); }
 /* Copies of the cart lines with ground shipping inside, as the Worker charges them. */
 function shippedItems(){ return S.items.map(function(it){ var pp = shipPP(it); return Object.assign({}, it, {unitPrice:+(+it.unitPrice + pp).toFixed(2), lineTotal:shippedLine(it), shipPerPiece:pp}); }); }
-/* Faster FedEx: what it really costs for the box we'd use, minus the Free Shipping already in the price. */
+/* Faster FedEx: what it really costs for the box we'd use. */
 function airOptions(){
   var q = shipQuote(); if(!(S.ship === 'ship' && validZip(S.form.zip) && q && q.air)) return [];
   var c = shipCalc(), src = (c.box === 'small' && q.small) ? q.small : q;
-  return (src.air || []).map(function(a){ return {code:a.code, name:a.name, days:a.days, upgradePerBox:+Math.max(0, a.perBox - c.perBox).toFixed(2)}; });
+  /* Faster shipping is the full FedEx price + 15% (Austin, 27 Nov 2026). */
+  return (src.air || []).map(function(a){ return {code:a.code, name:a.name, days:a.days, upgradePerBox:+a.perBox}; });
 }
 function shipUpgrade(){
   if(S.ship !== 'ship' || !S.shipSvc) return null;
@@ -3052,7 +3053,7 @@ function submit(){
   var body = {items:S.items.map(function(it){ var c = Object.assign({}, it); delete c.mock; return c; }), total:t.total, orderRef:ref,
     customer:{name:f.name, email:f.email, phone:f.phone, company:f.company},
     /* The Worker recounts boxes itself; these are for the receipt and the note. */
-    shipping:{mode:'flat', method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:S.ship === 'pickup' ? '' : (S.shipSvc || ''), zip:shipZip(),
+    shipping:{mode:'flat', airFull:true, method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:S.ship === 'pickup' ? '' : (S.shipSvc || ''), zip:shipZip(),
       address:S.ship === 'pickup' ? null : {line1:f.addr1, line2:f.addr2, city:f.city, state:f.state, postal_code:f.zip, country:'US'}},
     embedded:embed, promoCode:stripePromo() ? stripePromo().code : '',
     returnUrl:here + '?paid={CHECKOUT_SESSION_ID}' + (FLOW === 'stage' ? '&flow=stage' : ''),
