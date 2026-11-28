@@ -3723,7 +3723,7 @@ function mbar(label, disabled, sub){
 function barSub(){
   var q = realQty(), t = orderTotal();
   /* before any sizes are in, the bar sets the expectation rather than guessing */
-  var fs = (S.p && !S.p._pcna) ? ' · free shipping' : '';
+  var fs = (S.p && !S.p._pcna) ? ' · Free Shipping' : '';
   if(!q) return minQ() + ' piece minimum · ' + basisLabel() + fs;
   if(q < minQ()) return q + ' pcs · add ' + minGap() + ' to reach ' + minQ();
   return money(t) + ' total · ' + q + ' pcs' + fs;
@@ -4342,7 +4342,7 @@ function taFoot(){
     busyNote('tabusy', pDepts()) +
     (S.p && S.p._pcna ? '' :
     '<div class="freeship"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>' +
-      '<div><b>Free FedEx Ground shipping</b> &middot; built into your price<div class="fszip"><label for="fs-zip">Delivery ZIP</label>' +
+      '<div><b>Free Shipping</b><div class="fszip"><label for="fs-zip">Delivery ZIP</label>' +
       '<input id="fs-zip" data-fszip="1" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="e.g. 85004" value="' + esc(S.zip || lsGet('aps_zip')) + '"> ' + shipLineHtml() + '</div></div></div>') +
     '<div class="tanote">' + rushLine() + '"Ships by" is when it leaves our shop. Pickup at our North Las Vegas shop is free too.</div></div>';
 }

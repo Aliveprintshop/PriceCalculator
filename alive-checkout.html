@@ -1512,7 +1512,7 @@ if(window.AliveViewport) window.AliveViewport.subscribe(function(){ placeBar(); 
 var TIPS = {
   turnaround:['Turnaround', 'Counted in business days, Monday to Friday, skipping the days we are closed, after you approve your proof. Order before 4 PM and today counts as day one. Rush moves you up the queue. Woven hem tags add 5 business days.'],
   payment:['Payment', 'You pay securely by card through Stripe. We email a proof before anything prints. Custom orders are made for you, so they can’t be returned — but if we get it wrong, we reprint it.'],
-  shipping:['Shipping', 'FedEx Ground to anywhere in the US is free: it is built into your price per piece. Delivery dates come from FedEx and start the day your order ships. Need it faster? Pick 2Day or overnight at checkout for an extra charge. Or pick it up free at our North Las Vegas shop.'],
+  shipping:['Shipping', 'Free Shipping anywhere in the US. Delivery dates come from FedEx and start the day your order ships. Need it faster? Pick 2Day or overnight at checkout for an extra charge. Or pick it up free at our North Las Vegas shop.'],
   tax:['Sales tax', 'Nevada sales tax is added at payment.']
 };
 function tip(keys){ return '<button type="button" class="qi" data-tip="' + keys + '" aria-label="How this works">?</button>'; }
@@ -2230,7 +2230,7 @@ function speedCard(){
       '<span><h4>' + esc(name) + '</h4><span class="sub">' + sub + '</span></span><span class="amt">' + amt + '</span></button>';
   };
   return '<div class="speed"><h4 class="speedh">Shipping speed</h4>' +
-    row('', 'FedEx Ground', q.ground.days ? 'Arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : 'Business days vary by distance', 'Free') +
+    row('', 'Free Shipping', q.ground.days ? 'Arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : 'Business days vary by distance', 'Free') +
     air.map(function(a){ return row(a.code, a.name, 'Arrives by ' + esc(fmtDate(arriveDate(a.days))), '+' + money(a.upgradePerBox * boxes)); }).join('') + '</div>';
 }
 function missingArtwork(){
@@ -2332,10 +2332,10 @@ function renderCart(t, promo){
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       promoRow(promo, offC, t) +
-      '<div class="row"><span>Ground shipping' + tip('shipping') + '</span><b class="num free">FREE</b></div>' +
+      '<div class="row"><span>Shipping' + tip('shipping') + '</span><b class="num free">Free Shipping</b></div>' +
       '<div class="row"><span>Sales tax</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(sub) + '</span></div>' +
-      '<div class="shipnote">Free FedEx Ground anywhere in the US is built into your price. Pickup at our shop is free too. Faster shipping is available at checkout.</div>' +
+      '<div class="shipnote">Free Shipping anywhere in the US, or free pickup at our shop. Faster shipping is available at checkout.</div>' +
       '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
       promoInput(promo) +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
@@ -2373,7 +2373,7 @@ function renderDetails(t, pickup, promo){
       (t.addons ? '<div class="row"><span>Finishing add-ons</span><b class="num">' + money(t.addons) + '</b></div>' : '') +
       (t.rush ? '<div class="row"><span>' + (S.rush === 'rush' ? '7-day rush (+15%)' : '5-day rush (+25%)') + '</span><b class="num">' + money(t.rush) + '</b></div>' : '') +
       promoRow(promo, t.off, t) +
-      '<div class="row"><span>' + (pickup ? 'Pickup at our shop' : 'FedEx Ground' + (t.boxes ? ' · ' + boxesText(t.boxes) : '')) + tip('shipping') + '</span><b class="num free">FREE</b></div>' +
+      '<div class="row"><span>' + (pickup ? 'Pickup at our shop' : 'Shipping') + tip('shipping') + '</span><b class="num free">' + (pickup ? 'Free' : 'Free Shipping') + '</b></div>' +
       (t.upgrade ? '<div class="row"><span>Faster shipping · ' + esc(t.upgrade.name) + '</span><b class="num">+' + money(t.upgrade.amount) + '</b></div>' : '') +
       '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
@@ -2395,7 +2395,7 @@ function renderDetails(t, pickup, promo){
           '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
           shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') +
-          shipRow('ship', 'Ship it to me', 'Free FedEx Ground' + (function(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.ground.days) ? ' · arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : ' · anywhere in the US'; })(), 'Free') + '</div>' +
+          shipRow('ship', 'Ship it to me', 'Free Shipping' + (function(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.ground.days) ? ' · arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : ' · anywhere in the US'; })(), 'Free') + '</div>' +
           speedCard() +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
