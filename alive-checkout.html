@@ -121,6 +121,12 @@
 #alive-flow .item .iacts a.rm:hover{color:var(--blue);}
 #alive-flow .row.due{border-top:1px dashed var(--border);margin-top:2px;padding-top:10px;}
 #alive-flow .row.due b{color:var(--green);}
+#alive-flow .row.key span{font-weight:700;color:var(--text);}
+#alive-flow .row.key b{font-size:16px;font-weight:800;}
+#alive-flow .taxex{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:13.5px;color:var(--text2);cursor:pointer;}
+#alive-flow .taxex input{width:18px;height:18px;accent-color:var(--blue);}
+#alive-flow .taxnote{font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5;}
+#alive-flow .keynote{font-size:12px;color:var(--text3);margin:-2px 0 4px;}
 #alive-flow .empty{text-align:center;padding:40px 20px;color:var(--text2);}
 
 /* ---- form ------------------------------------------------------------ */
@@ -1872,12 +1878,44 @@ function airOptions(){
   var q = shipQuote(); if(!(S.ship === 'ship' && validZip(S.form.zip) && q && q.air)) return [];
   var c = shipCalc(), src = (c.box === 'small' && q.small) ? q.small : q;
   /* Faster shipping is the full FedEx price + 15% (Austin, 27 Nov 2026). */
-  return (src.air || []).map(function(a){ return {code:a.code, name:a.name, days:a.days, upgradePerBox:+a.perBox}; });
+  var gd = (src.ground && src.ground.days) || q.ground.days || 99;
+  return (src.air || []).filter(function(a){ return a.days && a.days < gd; })
+    .map(function(a){ return {code:a.code, name:a.name, days:a.days, upgradePerBox:+a.perBox}; });
 }
 function shipUpgrade(){
   if(S.ship !== 'ship' || !S.shipSvc) return null;
   var a = airOptions().filter(function(x){ return x.code === S.shipSvc; })[0];
   return a ? {code:a.code, name:a.name, days:a.days, amount:+(a.upgradePerBox * shipCalc().boxes).toFixed(2)} : null;
+}
+/* The one date that matters, in the checkout summary (Austin, 27 Nov 2026):
+   pickup → ready for pickup; shipping with an address → arrives by (for the
+   chosen speed); shipping without one yet → when it ships, and a nudge. */
+function groundDays(){ var q = shipQuote(); if(!q) return null; var c = shipCalc(); return (c.box === 'small' && q.small && q.small.ground.days) || q.ground.days || null; }
+/* Tax exempt (Austin, 27 Nov 2026): the customer gives their exemption number
+   here and pays no sales tax at checkout. We confirm it and need the actual
+   exemption certificate before the order is produced; if they can't provide
+   it, sales tax is added. */
+function taxExemptBlock(){
+  var on = !!S.form.taxExempt;
+  return '<label class="taxex"><input type="checkbox" data-taxex="1"' + (on ? ' checked' : '') + '> <span><b>Tax exempt?</b> Add your exemption number</span></label>' +
+    (on ? '<div class="fields" style="margin-top:10px;max-width:340px">' + field('taxId','Tax-exempt number','text','') + '</div>' +
+      '<div class="taxnote">We\u2019ll confirm your exemption. Please email your tax-exempt certificate to ' + esc(CONFIG.email) + ' before we start your order. If we can\u2019t verify it, sales tax will be added.</div>' : '');
+}
+/* Staff see the exemption claim in the order notes (dashboard + GHL). */
+function formForRecord(){
+  var f = Object.assign({}, S.form);
+  if(f.taxExempt) f.notes = 'TAX EXEMPT CLAIMED: #' + String(f.taxId || '').trim() + ' (verify certificate before production; add sales tax if not provided).' + (f.notes ? '\n' + f.notes : '');
+  return f;
+}
+function keyDateRow(){
+  var k, d, note = '';
+  if(S.ship === 'pickup'){ k = 'Ready for pickup'; d = readyDate(S.rush); }
+  else {
+    var up = shipUpgrade(), gd = groundDays();
+    if(validZip(S.form.zip) && (up ? up.days : gd)){ k = 'Arrives by'; d = arriveDate(up ? up.days : gd); }
+    else { k = 'Ships'; d = readyDate(S.rush); note = '<div class="keynote">Add your address to see your delivery date.</div>'; }
+  }
+  return '<div class="row due key"><span>' + k + '</span><b>' + esc(fmtDate(d)) + '</b></div>' + note;
 }
 function arriveDate(days){ var d = readyDate(S.rush); for(var i = 0; i < (days || 0); i++) d = nextBizDay(d); return d; }
 function shipInfo(){
@@ -2259,7 +2297,7 @@ function speedCard(){
       '<span><h4>' + esc(name) + '</h4><span class="sub">' + sub + '</span></span><span class="amt">' + amt + '</span></button>';
   };
   return '<div class="speed"><h4 class="speedh">Shipping speed</h4>' +
-    row('', 'Free Shipping', q.ground.days ? 'Arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : 'Business days vary by distance', 'Free') +
+    row('', 'Free Shipping', groundDays() ? 'Arrives by ' + esc(fmtDate(arriveDate(groundDays()))) : 'Business days vary by distance', 'Free') +
     air.map(function(a){ return row(a.code, a.name, 'Arrives by ' + esc(fmtDate(arriveDate(a.days))), '+' + money(a.upgradePerBox * boxes)); }).join('') + '</div>';
 }
 function missingArtwork(){
@@ -2404,9 +2442,9 @@ function renderDetails(t, pickup, promo){
       promoRow(promo, t.off, t) +
       '<div class="row"><span>' + (pickup ? 'Pickup at our shop' : 'Shipping') + tip('shipping') + '</span><b class="num free">' + (pickup ? 'Free' : 'Free Shipping') + '</b></div>' +
       (t.upgrade ? '<div class="row"><span>Faster shipping · ' + esc(t.upgrade.name) + '</span><b class="num">+' + money(t.upgrade.amount) + '</b></div>' : '') +
-      '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">At payment</b></div>' +
+      '<div class="row"><span>Sales tax' + tip('tax') + '</span><b class="num">' + (S.form.taxExempt ? 'Exempt (we verify)' : 'At payment') + '</b></div>' +
       '<div class="row big"><span>Total</span><span class="v num">' + money(t.grand) + '</span></div>' +
-      '<div class="row due"><span>Ready to ship</span><b class="num">' + esc(fmtDate(readyDate(S.rush))) + '</b></div>' +
+      keyDateRow() +
       (S.err ? '<div class="warn">' + S.err + '</div>' : '') +
       '<button class="cta submit-d" type="button" data-submit="1"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Starting secure checkout…' : 'Pay &amp; place order') + '</button>' +
       '<div class="paynote">Secure payment by Stripe · proof before we print' + tip('payment') + '</div>' + RATING +
@@ -2421,16 +2459,16 @@ function renderDetails(t, pickup, promo){
         missBlock() +
         '<div class="card"><div class="hd"><h2>Your details</h2></div>' +
           '<div class="fields two">' + field('name','Full name','text','name') + field('email','Email','email','email') + '</div>' +
-          '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div></div>' +
+          '<div class="fields two" style="margin-top:14px">' + field('phone','Phone','tel','tel') + field('company','Company <span>(optional)</span>','text','organization') + '</div>' + taxExemptBlock() + '</div>' +
         '<div class="card"><div class="hd"><h2 class="h2t">Delivery' + tip('shipping') + '</h2></div><div class="ships">' +
           shipRow('pickup', 'Pick up in store', esc(CONFIG.address), 'Free') +
-          shipRow('ship', 'Ship it to me', 'Free Shipping to the lower 48 states' + (function(){ var q = shipQuote(); return (S.ship === 'ship' && validZip(S.form.zip) && q && q.ground.days) ? ' · arrives by ' + esc(fmtDate(arriveDate(q.ground.days))) : ' · anywhere in the US'; })(), 'Free') + '</div>' +
-          speedCard() +
+          shipRow('ship', 'Ship it to me', 'Free Shipping to the lower 48 states', 'Free') + '</div>' +
           (pickup ? '' :
           '<div class="fields" style="margin-top:14px">' + field('addr1','Street address','text','address-line1') + '</div>' +
           '<div class="fields" style="margin-top:14px">' + field('addr2','Apt, suite, floor <span>(optional)</span>','text','address-line2') + '</div>' +
           '<div class="fields two" style="margin-top:14px">' + field('city','City','text','address-level2') + field('state','State','text','address-level1') + '</div>' +
-          '<div class="fields" style="margin-top:14px;max-width:200px">' + field('zip','ZIP code','text','postal-code',' inputmode="numeric"') + '</div>') +
+          '<div class="fields" style="margin-top:14px;max-width:200px">' + field('zip','ZIP code','text','postal-code',' inputmode="numeric"') + '</div>' +
+          speedCard()) +
         '</div>' +
         '<div class="card"><div class="hd"><h2>Anything else?</h2></div><div class="fields">' + field('notes','Notes for your order <span>(optional)</span>','textarea','') + '</div></div>' +
       '</div>' +
@@ -2659,6 +2697,7 @@ function wire(){
       if(el.dataset.f === 'zip' && S.ship === 'ship'){ if(validZip(el.value)) loadShipQuote(); }
       if(S.bad[el.dataset.f]){ delete S.bad[el.dataset.f]; var w = root.querySelector('[data-wrap="' + el.dataset.f + '"]'); if(w) w.classList.remove('bad'); } };
   });
+  root.querySelectorAll('[data-taxex]').forEach(function(b){ b.onchange = function(){ S.form.taxExempt = b.checked; scheduleSnap(); render(); }; });
   root.querySelectorAll('[data-ship]').forEach(function(b){ b.onclick = function(){ S.ship = b.dataset.ship; render(); }; });
   root.querySelectorAll('[data-svc]').forEach(function(b){ b.onclick = function(){ S.shipSvc = b.dataset.svc; render(); }; });
   root.querySelectorAll('[data-rush]').forEach(function(b){ b.onclick = function(){ S.rush = b.dataset.rush; applyOptions(); render(); }; });
@@ -2744,6 +2783,7 @@ function validate(){
   S.bad = {};
   Object.keys(REQUIRED).forEach(function(k){ if(!String(S.form[k]||'').trim()) S.bad[k] = REQUIRED[k]; });
   if(S.form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(S.form.email.trim())) S.bad.email = 'That email does not look right';
+  if(S.form.taxExempt && !String(S.form.taxId||'').trim()) S.bad.taxId = 'Add your tax-exempt number, or untick Tax exempt';
   if(S.ship !== 'pickup'){
     if(!String(S.form.addr1||'').trim()) S.bad.addr1 = 'Where are we shipping to?';
     if(!String(S.form.city||'').trim()) S.bad.city = 'City is needed';
@@ -2781,7 +2821,7 @@ function ghlPayload(orderNo, ref){
   var submittedAt = new Date().toISOString();
   var noteText = '🛍 NEW WEBSITE ORDER' + (orderNo ? ' #' + orderNo : '') + '\n' +
     'Total (before tax): $' + preTax.toFixed(2) + '\n' +
-    'Reference: ' + ref + '\n\n' +
+    'Reference: ' + ref + '\n' + (f.taxExempt ? 'TAX EXEMPT CLAIMED: #' + String(f.taxId || '').trim() + ' (verify certificate)\n' : '') + '\n' +
     (orderNo
       ? 'Full order, artwork and notes: ' + link
       : 'Order number not assigned yet — find it on the Orders dashboard by the customer\'s email: ' + link);
@@ -3050,7 +3090,7 @@ function submit(){
     if(!AO){ ghlOnce(null); return; }
     mockWork.then(function(){
       return AO.recordOrder({
-        items: shippedItems(), form: S.form, totals: totals(),
+        items: shippedItems(), form: formForRecord(), totals: totals(),
         shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
         turnaround: S.rush, orderRef: ref,
         rushFee: S.rush === 'std' ? 0 : rushExtra(S.rush),
@@ -3066,9 +3106,9 @@ function submit(){
   if(embed) loadStripe().catch(function(){});   /* warm up while the session is created */
   var here = window.location.origin + window.location.pathname;
   var body = {items:S.items.map(function(it){ var c = Object.assign({}, it); delete c.mock; return c; }), total:t.total, orderRef:ref,
-    customer:{name:f.name, email:f.email, phone:f.phone, company:f.company},
+    customer:{name:f.name, email:f.email, phone:f.phone, company:f.company, notes:formForRecord().notes, taxExemptId:f.taxExempt ? String(f.taxId || '').trim() : ''},
     /* The Worker recounts boxes itself; these are for the receipt and the note. */
-    shipping:{mode:'flat', airFull:true, method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:S.ship === 'pickup' ? '' : (S.shipSvc || ''), zip:shipZip(),
+    shipping:{mode:'flat', airFull:true, method:S.ship === 'pickup' ? 'pickup' : 'ship', boxes:t.boxes, amount:t.ship, service:(shipUpgrade() || {}).code || '', zip:shipZip(),
       address:S.ship === 'pickup' ? null : {line1:f.addr1, line2:f.addr2, city:f.city, state:f.state, postal_code:f.zip, country:'US'}},
     embedded:embed, promoCode:stripePromo() ? stripePromo().code : '',
     returnUrl:here + '?paid={CHECKOUT_SESSION_ID}' + (FLOW === 'stage' ? '&flow=stage' : ''),
@@ -3111,7 +3151,7 @@ function submit(){
         }};
         return AO.recordOrder({
           items: shippedItems().map(function(it){ return Object.assign({}, it, {dept: itemDepts(it)}); }),
-          form: S.form,
+          form: formForRecord(),
           totals: tt,                                    /* .ship and .off */
           shipping: {method: S.ship === 'pickup' ? 'pickup' : 'ship'},
           turnaround: S.rush,                            /* std | rush | super */
