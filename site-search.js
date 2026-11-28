@@ -580,10 +580,17 @@
     for(var i = 0; i < bars.length; i++){
       var bar = bars[i], p = bar.parentElement, r = p.getBoundingClientRect(), cs = getComputedStyle(p);
       if(!r.width) continue;
-      bar.style.marginLeft = (-r.left) + 'px';
-      bar.style.marginRight = (r.right - cw) + 'px';
-      bar.style.width = cw + 'px'; bar.style.flexBasis = cw + 'px';
-      bar.style.marginTop = '-' + cs.paddingTop;
+      bar.style.setProperty('position', 'relative', 'important');
+      bar.style.setProperty('width', cw + 'px', 'important');
+      bar.style.setProperty('max-width', cw + 'px', 'important');
+      bar.style.setProperty('flex', '0 0 ' + cw + 'px', 'important');
+      bar.style.setProperty('margin-left', '0px', 'important');
+      bar.style.setProperty('margin-right', '0px', 'important');
+      bar.style.setProperty('left', '0px', 'important');
+      var cur = bar.getBoundingClientRect().left;     /* where it sits once sized */
+      bar.style.setProperty('left', (-cur) + 'px', 'important');
+      bar.style.setProperty('margin-top', '-' + cs.paddingTop, 'important');
+      bar.style.setProperty('margin-bottom', '14px', 'important');
     }
   }
   window.addEventListener('resize', function(){ fit(); });
